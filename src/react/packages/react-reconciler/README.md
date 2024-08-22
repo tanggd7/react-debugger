@@ -9,7 +9,7 @@ This is an experimental package for creating custom React renderers.
 ## Usage
 
 ```js
-const Reconciler = require('react-reconciler');
+const Reconciler = require("react-reconciler");
 
 const HostConfig = {
   // You'll need to implement some methods here.
@@ -22,7 +22,7 @@ const RendererPublicAPI = {
   render(element, container, callback) {
     // Call MyRenderer.updateContainer() to schedule changes on the roots.
     // See ReactDOM, React Native, or React ART for practical examples.
-  }
+  },
 };
 
 module.exports = RendererPublicAPI;
@@ -48,18 +48,18 @@ const HostConfig = {
 
 **For an introduction to writing a very simple custom renderer, check out this article series:**
 
-* **[Building a simple custom renderer to DOM](https://medium.com/@agent_hunt/hello-world-custom-react-renderer-9a95b7cd04bc)**
-* **[Building a simple custom renderer to native](https://medium.com/@agent_hunt/introduction-to-react-native-renderers-aka-react-native-is-the-java-and-react-native-renderers-are-828a0022f433)**
+- **[Building a simple custom renderer to DOM](https://medium.com/@agent_hunt/hello-world-custom-react-renderer-9a95b7cd04bc)**
+- **[Building a simple custom renderer to native](https://medium.com/@agent_hunt/introduction-to-react-native-renderers-aka-react-native-is-the-java-and-react-native-renderers-are-828a0022f433)**
 
 The full list of supported methods [can be found here](https://github.com/facebook/react/blob/main/packages/react-reconciler/src/forks/ReactFiberConfig.custom.js). For their signatures, we recommend looking at specific examples below.
 
 The React repository includes several renderers. Each of them has its own host config.
 
-The examples in the React repository are declared a bit differently than a third-party renderer would be. In particular, the `HostConfig` object mentioned above is never explicitly declared, and instead is a *module* in our code. However, its exports correspond directly to properties on a `HostConfig` object you'd need to declare in your code:
+The examples in the React repository are declared a bit differently than a third-party renderer would be. In particular, the `HostConfig` object mentioned above is never explicitly declared, and instead is a _module_ in our code. However, its exports correspond directly to properties on a `HostConfig` object you'd need to declare in your code:
 
-* [React ART](https://github.com/facebook/react/blob/main/packages/react-art/src/ReactART.js) and its [host config](https://github.com/facebook/react/blob/main/packages/react-art/src/ReactFiberConfigART.js)
-* [React DOM](https://github.com/facebook/react/blob/main/packages/react-dom/src/client/ReactDOM.js) and its [host config](https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/ReactFiberConfigDOM.js)
-* [React Native](https://github.com/facebook/react/blob/main/packages/react-native-renderer/src/ReactNativeRenderer.js) and its [host config](https://github.com/facebook/react/blob/main/packages/react-native-renderer/src/ReactFiberConfigNative.js)
+- [React ART](https://github.com/facebook/react/blob/main/packages/react-art/src/ReactART.js) and its [host config](https://github.com/facebook/react/blob/main/packages/react-art/src/ReactFiberConfigART.js)
+- [React DOM](https://github.com/facebook/react/blob/main/packages/react-dom/src/client/ReactDOM.js) and its [host config](https://github.com/facebook/react/blob/main/packages/react-dom-bindings/src/client/ReactFiberConfigDOM.js)
+- [React Native](https://github.com/facebook/react/blob/main/packages/react-native-renderer/src/ReactNativeRenderer.js) and its [host config](https://github.com/facebook/react/blob/main/packages/react-native-renderer/src/ReactFiberConfigNative.js)
 
 If these links break please file an issue and we’ll fix them. They intentionally link to the latest versions since the API is still evolving. If you have more questions please file an issue and we’ll try to help!
 
@@ -78,7 +78,7 @@ const HostConfig = {
   // ...
   supportsMutation: true,
   // ...
-}
+};
 ```
 
 If your target platform has immutable trees, you'll want the **persistent mode** instead. In that mode, existing nodes are never mutated, and instead every change clones the parent tree and then replaces the whole parent tree at the root. This is the mode used by the new React Native renderer, codenamed "Fabric".
@@ -88,7 +88,7 @@ const HostConfig = {
   // ...
   supportsPersistence: true,
   // ...
-}
+};
 ```
 
 Depending on the mode, the reconciler will call different methods on your host config.
@@ -133,7 +133,7 @@ If you don't want to do anything here, you should return `false`.
 
 React calls this method so that you can compare the previous and the next props, and decide whether you need to update the underlying instance or not. If you don't need to update it, return `null`. If you need to update it, you can return an arbitrary object representing the changes that need to happen. Then in `commitUpdate` you would need to apply those changes to the instance.
 
-This method happens **in the render phase**. It should only *calculate* the update — but not apply it! For example, the DOM renderer returns an array that looks like `[prop1, value1, prop2, value2, ...]` for all props that have actually changed. And only in `commitUpdate` it applies those changes. You should calculate as much as you can in `prepareUpdate` so that `commitUpdate` can be very fast and straightforward.
+This method happens **in the render phase**. It should only _calculate_ the update — but not apply it! For example, the DOM renderer returns an array that looks like `[prop1, value1, prop2, value2, ...]` for all props that have actually changed. And only in `commitUpdate` it applies those changes. You should calculate as much as you can in `prepareUpdate` so that `commitUpdate` can be very fast and straightforward.
 
 See the meaning of `rootContainer` and `hostContext` in the `createInstance` documentation.
 
@@ -202,13 +202,14 @@ This is a property (not a function) that should be set to something that can nev
 #### `supportsMicrotasks`
 
 Set this to true to indicate that your renderer supports `scheduleMicrotask`. We use microtasks as part of our discrete event implementation in React DOM. If you're not sure if your renderer should support this, you probably should. The option to not implement `scheduleMicrotask` exists so that platforms with more control over user events, like React Native, can choose to use a different mechanism.
+
 #### `scheduleMicrotask(fn)`
 
 Optional. You can proxy this to `queueMicrotask` or its equivalent in your environment.
 
 #### `isPrimaryRenderer`
 
-This is a property (not a function) that should be set to `true` if your renderer is the main one on the page. For example, if you're writing a renderer for the Terminal, it makes sense to set it to `true`, but if your renderer is used *on top of* React DOM or some other existing renderer, set it to `false`.
+This is a property (not a function) that should be set to `true` if your renderer is the main one on the page. For example, if you're writing a renderer for the Terminal, it makes sense to set it to `true`, but if your renderer is used _on top of_ React DOM or some other existing renderer, set it to `false`.
 
 #### `getCurrentEventPriority`
 
@@ -219,7 +220,7 @@ import {
   DiscreteEventPriority,
   ContinuousEventPriority,
   DefaultEventPriority,
-} from 'react-reconciler/constants';
+} from "react-reconciler/constants";
 
 const HostConfig = {
   // ...
@@ -227,18 +228,18 @@ const HostConfig = {
     return DefaultEventPriority;
   },
   // ...
-}
+};
 
 const MyRenderer = Reconciler(HostConfig);
 ```
 
 The constant you return depends on which event, if any, is being handled right now. (In the browser, you can check this using `window.event && window.event.type`).
 
-* **Discrete events:** If the active event is _directly caused by the user_ (such as mouse and keyboard events) and _each event in a sequence is intentional_ (e.g. `click`), return `DiscreteEventPriority`. This tells React that they should interrupt any background work and cannot be batched across time.
+- **Discrete events:** If the active event is _directly caused by the user_ (such as mouse and keyboard events) and _each event in a sequence is intentional_ (e.g. `click`), return `DiscreteEventPriority`. This tells React that they should interrupt any background work and cannot be batched across time.
 
-* **Continuous events:** If the active event is _directly caused by the user_ but _the user can't distinguish between individual events in a sequence_ (e.g. `mouseover`), return `ContinuousEventPriority`. This tells React they should interrupt any background work but can be batched across time.
+- **Continuous events:** If the active event is _directly caused by the user_ but _the user can't distinguish between individual events in a sequence_ (e.g. `mouseover`), return `ContinuousEventPriority`. This tells React they should interrupt any background work but can be batched across time.
 
-* **Other events / No active event:** In all other cases, return `DefaultEventPriority`. This tells React that this event is considered background work, and interactive events will be prioritized over it.
+- **Other events / No active event:** In all other cases, return `DefaultEventPriority`. This tells React that this event is considered background work, and interactive events will be prioritized over it.
 
 You can consult the `getCurrentEventPriority()` implementation in `ReactFiberConfigDOM.js` for a reference implementation.
 

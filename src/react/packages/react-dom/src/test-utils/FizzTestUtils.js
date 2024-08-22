@@ -4,30 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-'use strict';
+"use strict";
 
-async function insertNodesAndExecuteScripts(
-  source                    ,
-  target      ,
-  CSPnonce               ,
-) {
+async function insertNodesAndExecuteScripts(source, target, CSPnonce) {
   const ownerDocument = target.ownerDocument || target;
 
   // We need to remove the script content for any scripts that would not run based on CSP
   // We restore the script content after moving the nodes into the target
-  const badNonceScriptNodes                       = new Map();
+  const badNonceScriptNodes = new Map();
   if (CSPnonce) {
-    const scripts = source.querySelectorAll('script');
+    const scripts = source.querySelectorAll("script");
     for (let i = 0; i < scripts.length; i++) {
       const script = scripts[i];
       if (
-        !script.hasAttribute('src') &&
-        script.getAttribute('nonce') !== CSPnonce
+        !script.hasAttribute("src") &&
+        script.getAttribute("nonce") !== CSPnonce
       ) {
         badNonceScriptNodes.set(script, script.textContent);
-        script.textContent = '';
+        script.textContent = "";
       }
     }
   }
@@ -35,12 +31,12 @@ async function insertNodesAndExecuteScripts(
   while (source.firstChild) {
     const node = source.firstChild;
     if (lastChild === node) {
-      throw new Error('Infinite loop.');
+      throw new Error("Infinite loop.");
     }
     lastChild = node;
 
     if (node.nodeType === 1) {
-      const element          = (node     );
+      const element = node;
       if (
         // $FlowFixMe[prop-missing]
         element.dataset != null &&
@@ -53,14 +49,14 @@ async function insertNodesAndExecuteScripts(
         // When we have renderIntoContainer and renderDocument this will be
         // more enforceable. At the moment you can misconfigure your stream and end up
         // with instructions that are deep in the document
-        (ownerDocument.body     ).appendChild(element);
+        ownerDocument.body.appendChild(element);
       } else {
         target.appendChild(element);
 
-        if (element.nodeName === 'SCRIPT') {
+        if (element.nodeName === "SCRIPT") {
           await executeScript(element);
         } else {
-          const scripts = element.querySelectorAll('script');
+          const scripts = element.querySelectorAll("script");
           for (let i = 0; i < scripts.length; i++) {
             const script = scripts[i];
             await executeScript(script);
@@ -78,35 +74,35 @@ async function insertNodesAndExecuteScripts(
   });
 }
 
-async function executeScript(script         ) {
+async function executeScript(script) {
   const ownerDocument = script.ownerDocument;
   if (script.parentNode == null) {
     throw new Error(
-      'executeScript expects to be called on script nodes that are currently in a document',
+      "executeScript expects to be called on script nodes that are currently in a document",
     );
   }
   const parent = script.parentNode;
-  const scriptSrc = script.getAttribute('src');
+  const scriptSrc = script.getAttribute("src");
   if (scriptSrc) {
     if (document !== ownerDocument) {
       throw new Error(
-        'You must set the current document to the global document to use script src in tests',
+        "You must set the current document to the global document to use script src in tests",
       );
     }
     try {
       // $FlowFixMe
       require(scriptSrc);
     } catch (x) {
-      const event = new window.ErrorEvent('error', {error: x});
+      const event = new window.ErrorEvent("error", { error: x });
       window.dispatchEvent(event);
     }
   } else {
-    const newScript = ownerDocument.createElement('script');
+    const newScript = ownerDocument.createElement("script");
     newScript.textContent = script.textContent;
     // make sure to add nonce back to script if it exists
-    const scriptNonce = script.getAttribute('nonce');
+    const scriptNonce = script.getAttribute("nonce");
     if (scriptNonce) {
-      newScript.setAttribute('nonce', scriptNonce);
+      newScript.setAttribute("nonce", scriptNonce);
     }
 
     parent.insertBefore(newScript, script);
@@ -114,17 +110,14 @@ async function executeScript(script         ) {
   }
 }
 
-function mergeOptions(options        , defaultOptions        )         {
+function mergeOptions(options, defaultOptions) {
   return {
     ...defaultOptions,
     ...options,
   };
 }
 
-function stripExternalRuntimeInNodes(
-  nodes                                             ,
-  externalRuntimeSrc               ,
-)                {
+function stripExternalRuntimeInNodes(nodes, externalRuntimeSrc) {
   if (!Array.isArray(nodes)) {
     nodes = Array.from(nodes);
   }
@@ -132,33 +125,30 @@ function stripExternalRuntimeInNodes(
     return nodes;
   }
   return nodes.filter(
-    n =>
-      (n.tagName !== 'SCRIPT' && n.tagName !== 'script') ||
-      n.getAttribute('src') !== externalRuntimeSrc,
+    (n) =>
+      (n.tagName !== "SCRIPT" && n.tagName !== "script") ||
+      n.getAttribute("src") !== externalRuntimeSrc,
   );
 }
 
 // Since JSDOM doesn't implement a streaming HTML parser, we manually overwrite
 // readyState here (currently read by ReactDOMServerExternalRuntime). This does
 // not trigger event callbacks, but we do not rely on any right now.
-async function withLoadingReadyState   (
-  fn         ,
-  document          ,
-)             {
+async function withLoadingReadyState(fn, document) {
   // JSDOM implements readyState in document's direct prototype, but this may
   // change in later versions
   let prevDescriptor = null;
-  let proto         = document;
+  let proto = document;
   while (proto != null) {
-    prevDescriptor = Object.getOwnPropertyDescriptor(proto, 'readyState');
+    prevDescriptor = Object.getOwnPropertyDescriptor(proto, "readyState");
     if (prevDescriptor != null) {
       break;
     }
     proto = Object.getPrototypeOf(proto);
   }
-  Object.defineProperty(document, 'readyState', {
+  Object.defineProperty(document, "readyState", {
     get() {
-      return 'loading';
+      return "loading";
     },
     configurable: true,
   });
@@ -166,7 +156,7 @@ async function withLoadingReadyState   (
   // $FlowFixMe[incompatible-type]
   delete document.readyState;
   if (prevDescriptor) {
-    Object.defineProperty(proto, 'readyState', prevDescriptor);
+    Object.defineProperty(proto, "readyState", prevDescriptor);
   }
   return result;
 }

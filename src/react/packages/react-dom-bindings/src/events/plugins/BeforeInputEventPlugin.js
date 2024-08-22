@@ -4,37 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                             
-                                                                   
-                                                                  
-                                                           
-                                                          
-                                                                    
+import { canUseDOM } from "shared/ExecutionEnvironment";
 
-import {canUseDOM} from 'shared/ExecutionEnvironment';
-
-import {registerTwoPhaseEvent} from '../EventRegistry';
+import { registerTwoPhaseEvent } from "../EventRegistry";
 import {
   getData as FallbackCompositionStateGetData,
   initialize as FallbackCompositionStateInitialize,
   reset as FallbackCompositionStateReset,
-} from '../FallbackCompositionState';
+} from "../FallbackCompositionState";
 import {
   SyntheticCompositionEvent,
   SyntheticInputEvent,
-} from '../SyntheticEvent';
-import {accumulateTwoPhaseListeners} from '../DOMPluginEventSystem';
+} from "../SyntheticEvent";
+import { accumulateTwoPhaseListeners } from "../DOMPluginEventSystem";
 
 const END_KEYCODES = [9, 13, 27, 32]; // Tab, Return, Esc, Space
 const START_KEYCODE = 229;
 
-const canUseCompositionEvent = canUseDOM && 'CompositionEvent' in window;
+const canUseCompositionEvent = canUseDOM && "CompositionEvent" in window;
 
 let documentMode = null;
-if (canUseDOM && 'documentMode' in document) {
+if (canUseDOM && "documentMode" in document) {
   documentMode = document.documentMode;
 }
 
@@ -42,7 +35,7 @@ if (canUseDOM && 'documentMode' in document) {
 // directly represent `beforeInput`. The IE `textinput` event is not as
 // useful, so we don't use it.
 const canUseTextInputEvent =
-  canUseDOM && 'TextEvent' in window && !documentMode;
+  canUseDOM && "TextEvent" in window && !documentMode;
 
 // In IE9+, we have access to composition events, but the data supplied
 // by the native compositionend event may be incorrect. Japanese ideographic
@@ -56,35 +49,35 @@ const SPACEBAR_CODE = 32;
 const SPACEBAR_CHAR = String.fromCharCode(SPACEBAR_CODE);
 
 function registerEvents() {
-  registerTwoPhaseEvent('onBeforeInput', [
-    'compositionend',
-    'keypress',
-    'textInput',
-    'paste',
+  registerTwoPhaseEvent("onBeforeInput", [
+    "compositionend",
+    "keypress",
+    "textInput",
+    "paste",
   ]);
-  registerTwoPhaseEvent('onCompositionEnd', [
-    'compositionend',
-    'focusout',
-    'keydown',
-    'keypress',
-    'keyup',
-    'mousedown',
+  registerTwoPhaseEvent("onCompositionEnd", [
+    "compositionend",
+    "focusout",
+    "keydown",
+    "keypress",
+    "keyup",
+    "mousedown",
   ]);
-  registerTwoPhaseEvent('onCompositionStart', [
-    'compositionstart',
-    'focusout',
-    'keydown',
-    'keypress',
-    'keyup',
-    'mousedown',
+  registerTwoPhaseEvent("onCompositionStart", [
+    "compositionstart",
+    "focusout",
+    "keydown",
+    "keypress",
+    "keyup",
+    "mousedown",
   ]);
-  registerTwoPhaseEvent('onCompositionUpdate', [
-    'compositionupdate',
-    'focusout',
-    'keydown',
-    'keypress',
-    'keyup',
-    'mousedown',
+  registerTwoPhaseEvent("onCompositionUpdate", [
+    "compositionupdate",
+    "focusout",
+    "keydown",
+    "keypress",
+    "keyup",
+    "mousedown",
   ]);
 }
 
@@ -96,7 +89,7 @@ let hasSpaceKeypress = false;
  * This is required because Firefox fires `keypress` events for key commands
  * (cut, copy, select-all, etc.) even though no character is inserted.
  */
-function isKeypressCommand(nativeEvent     ) {
+function isKeypressCommand(nativeEvent) {
   return (
     (nativeEvent.ctrlKey || nativeEvent.altKey || nativeEvent.metaKey) &&
     // ctrlKey && altKey is equivalent to AltGr, and is not a command.
@@ -107,14 +100,14 @@ function isKeypressCommand(nativeEvent     ) {
 /**
  * Translate native top level events into event types.
  */
-function getCompositionEventType(domEventName              ) {
+function getCompositionEventType(domEventName) {
   switch (domEventName) {
-    case 'compositionstart':
-      return 'onCompositionStart';
-    case 'compositionend':
-      return 'onCompositionEnd';
-    case 'compositionupdate':
-      return 'onCompositionUpdate';
+    case "compositionstart":
+      return "onCompositionStart";
+    case "compositionend":
+      return "onCompositionEnd";
+    case "compositionupdate":
+      return "onCompositionUpdate";
   }
 }
 
@@ -122,31 +115,25 @@ function getCompositionEventType(domEventName              ) {
  * Does our fallback best-guess model think this event signifies that
  * composition has begun?
  */
-function isFallbackCompositionStart(
-  domEventName              ,
-  nativeEvent     ,
-)          {
-  return domEventName === 'keydown' && nativeEvent.keyCode === START_KEYCODE;
+function isFallbackCompositionStart(domEventName, nativeEvent) {
+  return domEventName === "keydown" && nativeEvent.keyCode === START_KEYCODE;
 }
 
 /**
  * Does our fallback mode think that this event is the end of composition?
  */
-function isFallbackCompositionEnd(
-  domEventName              ,
-  nativeEvent     ,
-)          {
+function isFallbackCompositionEnd(domEventName, nativeEvent) {
   switch (domEventName) {
-    case 'keyup':
+    case "keyup":
       // Command keys insert or clear IME input.
       return END_KEYCODES.indexOf(nativeEvent.keyCode) !== -1;
-    case 'keydown':
+    case "keydown":
       // Expect IME keyCode on each keydown. If we get any other
       // code we must have exited earlier.
       return nativeEvent.keyCode !== START_KEYCODE;
-    case 'keypress':
-    case 'mousedown':
-    case 'focusout':
+    case "keypress":
+    case "mousedown":
+    case "focusout":
       // Events are not possible without cancelling IME.
       return true;
     default:
@@ -163,9 +150,9 @@ function isFallbackCompositionEnd(
  * @param {object} nativeEvent
  * @return {?string}
  */
-function getDataFromCustomEvent(nativeEvent     ) {
+function getDataFromCustomEvent(nativeEvent) {
   const detail = nativeEvent.detail;
-  if (typeof detail === 'object' && 'data' in detail) {
+  if (typeof detail === "object" && "data" in detail) {
     return detail.data;
   }
   return null;
@@ -181,8 +168,8 @@ function getDataFromCustomEvent(nativeEvent     ) {
  * @param {object} nativeEvent
  * @return {boolean}
  */
-function isUsingKoreanIME(nativeEvent     ) {
-  return nativeEvent.locale === 'ko';
+function isUsingKoreanIME(nativeEvent) {
+  return nativeEvent.locale === "ko";
 }
 
 // Track the current IME composition status, if any.
@@ -192,11 +179,11 @@ let isComposing = false;
  * @return {?object} A SyntheticCompositionEvent.
  */
 function extractCompositionEvent(
-  dispatchQueue               ,
-  domEventName              ,
-  targetInst              ,
-  nativeEvent                ,
-  nativeEventTarget                    ,
+  dispatchQueue,
+  domEventName,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget,
 ) {
   let eventType;
   let fallbackData;
@@ -205,10 +192,10 @@ function extractCompositionEvent(
     eventType = getCompositionEventType(domEventName);
   } else if (!isComposing) {
     if (isFallbackCompositionStart(domEventName, nativeEvent)) {
-      eventType = 'onCompositionStart';
+      eventType = "onCompositionStart";
     }
   } else if (isFallbackCompositionEnd(domEventName, nativeEvent)) {
-    eventType = 'onCompositionEnd';
+    eventType = "onCompositionEnd";
   }
 
   if (!eventType) {
@@ -218,9 +205,9 @@ function extractCompositionEvent(
   if (useFallbackCompositionData && !isUsingKoreanIME(nativeEvent)) {
     // The current composition is stored statically and must not be
     // overwritten while composition continues.
-    if (!isComposing && eventType === 'onCompositionStart') {
+    if (!isComposing && eventType === "onCompositionStart") {
       isComposing = FallbackCompositionStateInitialize(nativeEventTarget);
-    } else if (eventType === 'onCompositionEnd') {
+    } else if (eventType === "onCompositionEnd") {
       if (isComposing) {
         fallbackData = FallbackCompositionStateGetData();
       }
@@ -229,14 +216,14 @@ function extractCompositionEvent(
 
   const listeners = accumulateTwoPhaseListeners(targetInst, eventType);
   if (listeners.length > 0) {
-    const event                      = new SyntheticCompositionEvent(
+    const event = new SyntheticCompositionEvent(
       eventType,
       domEventName,
       null,
       nativeEvent,
       nativeEventTarget,
     );
-    dispatchQueue.push({event, listeners});
+    dispatchQueue.push({ event, listeners });
     if (fallbackData) {
       // Inject data generated from fallback path into the synthetic event.
       // This matches the property of native CompositionEventInterface.
@@ -252,14 +239,11 @@ function extractCompositionEvent(
   }
 }
 
-function getNativeBeforeInputChars(
-  domEventName              ,
-  nativeEvent     ,
-)          {
+function getNativeBeforeInputChars(domEventName, nativeEvent) {
   switch (domEventName) {
-    case 'compositionend':
+    case "compositionend":
       return getDataFromCustomEvent(nativeEvent);
-    case 'keypress':
+    case "keypress":
       /**
        * If native `textInput` events are available, our goal is to make
        * use of them. However, there is a special case: the spacebar key.
@@ -282,7 +266,7 @@ function getNativeBeforeInputChars(
       hasSpaceKeypress = true;
       return SPACEBAR_CHAR;
 
-    case 'textInput':
+    case "textInput":
       // Record the characters to be added to the DOM.
       const chars = nativeEvent.data;
 
@@ -305,17 +289,14 @@ function getNativeBeforeInputChars(
  * For browsers that do not provide the `textInput` event, extract the
  * appropriate string to use for SyntheticInputEvent.
  */
-function getFallbackBeforeInputChars(
-  domEventName              ,
-  nativeEvent     ,
-)          {
+function getFallbackBeforeInputChars(domEventName, nativeEvent) {
   // If we are currently composing (IME) and using a fallback to do so,
   // try to extract the composed characters from the fallback object.
   // If composition event is available, we extract a string only at
   // compositionevent, otherwise extract it at fallback events.
   if (isComposing) {
     if (
-      domEventName === 'compositionend' ||
+      domEventName === "compositionend" ||
       (!canUseCompositionEvent &&
         isFallbackCompositionEnd(domEventName, nativeEvent))
     ) {
@@ -328,11 +309,11 @@ function getFallbackBeforeInputChars(
   }
 
   switch (domEventName) {
-    case 'paste':
+    case "paste":
       // If a paste event occurs after a keypress, throw out the input
       // chars. Paste events should not lead to BeforeInput events.
       return null;
-    case 'keypress':
+    case "keypress":
       /**
        * As of v27, Firefox may fire keypress events even when no character
        * will be inserted. A few possibilities:
@@ -363,7 +344,7 @@ function getFallbackBeforeInputChars(
         }
       }
       return null;
-    case 'compositionend':
+    case "compositionend":
       return useFallbackCompositionData && !isUsingKoreanIME(nativeEvent)
         ? null
         : nativeEvent.data;
@@ -379,11 +360,11 @@ function getFallbackBeforeInputChars(
  * @return {?object} A SyntheticInputEvent.
  */
 function extractBeforeInputEvent(
-  dispatchQueue               ,
-  domEventName              ,
-  targetInst              ,
-  nativeEvent                ,
-  nativeEventTarget                    ,
+  dispatchQueue,
+  domEventName,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget,
 ) {
   let chars;
 
@@ -399,16 +380,16 @@ function extractBeforeInputEvent(
     return null;
   }
 
-  const listeners = accumulateTwoPhaseListeners(targetInst, 'onBeforeInput');
+  const listeners = accumulateTwoPhaseListeners(targetInst, "onBeforeInput");
   if (listeners.length > 0) {
-    const event                      = new SyntheticInputEvent(
-      'onBeforeInput',
-      'beforeinput',
+    const event = new SyntheticInputEvent(
+      "onBeforeInput",
+      "beforeinput",
       null,
       nativeEvent,
       nativeEventTarget,
     );
-    dispatchQueue.push({event, listeners});
+    dispatchQueue.push({ event, listeners });
     // $FlowFixMe[incompatible-use]
     event.data = chars;
   }
@@ -433,14 +414,14 @@ function extractBeforeInputEvent(
  * `composition` event types.
  */
 function extractEvents(
-  dispatchQueue               ,
-  domEventName              ,
-  targetInst              ,
-  nativeEvent                ,
-  nativeEventTarget                    ,
-  eventSystemFlags                  ,
-  targetContainer             ,
-)       {
+  dispatchQueue,
+  domEventName,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget,
+  eventSystemFlags,
+  targetContainer,
+) {
   extractCompositionEvent(
     dispatchQueue,
     domEventName,
@@ -457,4 +438,4 @@ function extractEvents(
   );
 }
 
-export {registerEvents, extractEvents};
+export { registerEvents, extractEvents };

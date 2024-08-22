@@ -10,7 +10,7 @@
 
 /* eslint-disable no-func-assign */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
@@ -20,73 +20,73 @@ let useEffect;
 let useLayoutEffect;
 let assertLog;
 
-describe('ReactEffectOrdering', () => {
+describe("ReactEffectOrdering", () => {
   beforeEach(() => {
     jest.resetModules();
     jest.useFakeTimers();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     useEffect = React.useEffect;
     useLayoutEffect = React.useLayoutEffect;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
   });
 
-  test('layout unmounts on deletion are fired in parent -> child order', async () => {
+  test("layout unmounts on deletion are fired in parent -> child order", async () => {
     const root = ReactNoop.createRoot();
 
     function Parent() {
       useLayoutEffect(() => {
-        return () => Scheduler.log('Unmount parent');
+        return () => Scheduler.log("Unmount parent");
       });
       return <Child />;
     }
 
     function Child() {
       useLayoutEffect(() => {
-        return () => Scheduler.log('Unmount child');
+        return () => Scheduler.log("Unmount child");
       });
-      return 'Child';
+      return "Child";
     }
 
     await act(() => {
       root.render(<Parent />);
     });
-    expect(root).toMatchRenderedOutput('Child');
+    expect(root).toMatchRenderedOutput("Child");
     await act(() => {
       root.render(null);
     });
-    assertLog(['Unmount parent', 'Unmount child']);
+    assertLog(["Unmount parent", "Unmount child"]);
   });
 
-  test('passive unmounts on deletion are fired in parent -> child order', async () => {
+  test("passive unmounts on deletion are fired in parent -> child order", async () => {
     const root = ReactNoop.createRoot();
 
     function Parent() {
       useEffect(() => {
-        return () => Scheduler.log('Unmount parent');
+        return () => Scheduler.log("Unmount parent");
       });
       return <Child />;
     }
 
     function Child() {
       useEffect(() => {
-        return () => Scheduler.log('Unmount child');
+        return () => Scheduler.log("Unmount child");
       });
-      return 'Child';
+      return "Child";
     }
 
     await act(() => {
       root.render(<Parent />);
     });
-    expect(root).toMatchRenderedOutput('Child');
+    expect(root).toMatchRenderedOutput("Child");
     await act(() => {
       root.render(null);
     });
-    assertLog(['Unmount parent', 'Unmount child']);
+    assertLog(["Unmount parent", "Unmount child"]);
   });
 });

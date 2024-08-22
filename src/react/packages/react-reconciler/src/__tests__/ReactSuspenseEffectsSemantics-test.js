@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 let React;
@@ -22,19 +22,19 @@ let assertLog;
 
 // TODO: These tests don't pass in persistent mode yet. Need to implement.
 
-describe('ReactSuspenseEffectsSemantics', () => {
+describe("ReactSuspenseEffectsSemantics", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     Suspense = React.Suspense;
 
     getCacheForType = React.unstable_getCacheForType;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     waitFor = InternalTestUtils.waitFor;
     assertLog = InternalTestUtils.assertLog;
@@ -43,16 +43,16 @@ describe('ReactSuspenseEffectsSemantics', () => {
     seededCache = null;
 
     ErrorBoundary = class extends React.Component {
-      state = {error: null};
+      state = { error: null };
       componentDidCatch(error) {
-        this.setState({error});
+        this.setState({ error });
       }
       render() {
         if (this.state.error) {
-          Scheduler.log('ErrorBoundary render: catch');
+          Scheduler.log("ErrorBoundary render: catch");
           return this.props.fallback;
         }
-        Scheduler.log('ErrorBoundary render: try');
+        Scheduler.log("ErrorBoundary render: try");
         return this.props.children;
       }
     };
@@ -77,30 +77,30 @@ describe('ReactSuspenseEffectsSemantics', () => {
         const record = data.get(text);
         if (record === undefined) {
           const newRecord = {
-            status: 'resolved',
+            status: "resolved",
             value: text,
           };
           data.set(text, newRecord);
-        } else if (record.status === 'pending') {
+        } else if (record.status === "pending") {
           const thenable = record.value;
-          record.status = 'resolved';
+          record.status = "resolved";
           record.value = text;
-          thenable.pings.forEach(t => t());
+          thenable.pings.forEach((t) => t());
         }
       },
       reject(text, error) {
         const record = data.get(text);
         if (record === undefined) {
           const newRecord = {
-            status: 'rejected',
+            status: "rejected",
             value: error,
           };
           data.set(text, newRecord);
-        } else if (record.status === 'pending') {
+        } else if (record.status === "pending") {
           const thenable = record.value;
-          record.status = 'rejected';
+          record.status = "rejected";
           record.value = error;
-          thenable.pings.forEach(t => t());
+          thenable.pings.forEach((t) => t());
         }
       },
     };
@@ -113,13 +113,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
     const record = textCache.data.get(text);
     if (record !== undefined) {
       switch (record.status) {
-        case 'pending':
+        case "pending":
           Scheduler.log(`Suspend:${text}`);
           throw record.value;
-        case 'rejected':
+        case "rejected":
           Scheduler.log(`Error:${text}`);
           throw record.value;
-        case 'resolved':
+        case "resolved":
           return textCache.version;
       }
     } else {
@@ -128,7 +128,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
       const thenable = {
         pings: [],
         then(resolve) {
-          if (newRecord.status === 'pending') {
+          if (newRecord.status === "pending") {
             thenable.pings.push(resolve);
           } else {
             Promise.resolve().then(() => resolve(newRecord.value));
@@ -137,7 +137,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
       };
 
       const newRecord = {
-        status: 'pending',
+        status: "pending",
         value: thenable,
       };
       textCache.data.set(text, newRecord);
@@ -146,7 +146,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
     }
   }
 
-  function Text({children = null, text}) {
+  function Text({ children = null, text }) {
     Scheduler.log(`Text:${text} render`);
     React.useLayoutEffect(() => {
       Scheduler.log(`Text:${text} create layout`);
@@ -163,7 +163,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
     return <span prop={text}>{children}</span>;
   }
 
-  function AsyncText({children = null, text}) {
+  function AsyncText({ children = null, text }) {
     readText(text);
     Scheduler.log(`AsyncText:${text} render`);
     React.useLayoutEffect(() => {
@@ -183,7 +183,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
   function resolveMostRecentTextCache(text) {
     if (caches.length === 0) {
-      throw Error('Cache does not exist.');
+      throw Error("Cache does not exist.");
     } else {
       // Resolve the most recently created cache. An older cache can by
       // resolved with `caches[index].resolve(text)`.
@@ -196,8 +196,8 @@ describe('ReactSuspenseEffectsSemantics', () => {
   function advanceTimers(ms) {
     // Note: This advances Jest's virtual time but not React's. Use
     // ReactNoop.expire for that.
-    if (typeof ms !== 'number') {
-      throw new Error('Must specify ms');
+    if (typeof ms !== "number") {
+      throw new Error("Must specify ms");
     }
     jest.advanceTimersByTime(ms);
     // Wait until the end of the current tick
@@ -205,41 +205,41 @@ describe('ReactSuspenseEffectsSemantics', () => {
     return Promise.resolve().then(() => {});
   }
 
-  describe('when a component suspends during initial mount', () => {
+  describe("when a component suspends during initial mount", () => {
     // @gate enableLegacyCache
-    it('should not change behavior in concurrent mode', async () => {
+    it("should not change behavior in concurrent mode", async () => {
       class ClassText extends React.Component {
         componentDidMount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidMount`);
         }
         componentDidUpdate() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidUpdate`);
         }
         componentWillUnmount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentWillUnmount`);
         }
         render() {
-          const {children, text} = this.props;
+          const { children, text } = this.props;
           Scheduler.log(`ClassText:${text} render`);
           return <span prop={text}>{children}</span>;
         }
       }
 
-      function App({children = null}) {
-        Scheduler.log('App render');
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -263,17 +263,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'App render',
-        'Text:Inside:Before render',
-        'Suspend:Async',
-        'Text:Fallback render',
-        'Text:Outside render',
-        'Text:Fallback create layout',
-        'Text:Outside create layout',
-        'App create layout',
-        'Text:Fallback create passive',
-        'Text:Outside create passive',
-        'App create passive',
+        "App render",
+        "Text:Inside:Before render",
+        "Suspend:Async",
+        "Text:Fallback render",
+        "Text:Outside render",
+        "Text:Fallback create layout",
+        "Text:Outside create layout",
+        "App create layout",
+        "Text:Fallback create passive",
+        "Text:Outside create passive",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -284,19 +284,19 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'Text:Inside:Before render',
-        'AsyncText:Async render',
-        'ClassText:Inside:After render',
-        'Text:Fallback destroy layout',
-        'Text:Inside:Before create layout',
-        'AsyncText:Async create layout',
-        'ClassText:Inside:After componentDidMount',
-        'Text:Fallback destroy passive',
-        'Text:Inside:Before create passive',
-        'AsyncText:Async create passive',
+        "Text:Inside:Before render",
+        "AsyncText:Async render",
+        "ClassText:Inside:After render",
+        "Text:Fallback destroy layout",
+        "Text:Inside:Before create layout",
+        "AsyncText:Async create layout",
+        "ClassText:Inside:After componentDidMount",
+        "Text:Fallback destroy passive",
+        "Text:Inside:Before create passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -311,53 +311,53 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'App destroy layout',
-        'Text:Inside:Before destroy layout',
-        'AsyncText:Async destroy layout',
-        'ClassText:Inside:After componentWillUnmount',
-        'Text:Outside destroy layout',
-        'App destroy passive',
-        'Text:Inside:Before destroy passive',
-        'AsyncText:Async destroy passive',
-        'Text:Outside destroy passive',
+        "App destroy layout",
+        "Text:Inside:Before destroy layout",
+        "AsyncText:Async destroy layout",
+        "ClassText:Inside:After componentWillUnmount",
+        "Text:Outside destroy layout",
+        "App destroy passive",
+        "Text:Inside:Before destroy passive",
+        "AsyncText:Async destroy passive",
+        "Text:Outside destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
 
     // @gate enableLegacyCache
-    it('should not change behavior in sync', async () => {
+    it("should not change behavior in sync", async () => {
       class ClassText extends React.Component {
         componentDidMount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidMount`);
         }
         componentDidUpdate() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidUpdate`);
         }
         componentWillUnmount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentWillUnmount`);
         }
         render() {
-          const {children, text} = this.props;
+          const { children, text } = this.props;
           Scheduler.log(`ClassText:${text} render`);
           return <span prop={text}>{children}</span>;
         }
       }
 
-      function App({children = null}) {
-        Scheduler.log('App render');
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -381,21 +381,21 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'App render',
-        'Text:Inside:Before render',
-        'Suspend:Async',
-        'ClassText:Inside:After render',
-        'Text:Fallback render',
-        'Text:Outside render',
-        'Text:Inside:Before create layout',
-        'ClassText:Inside:After componentDidMount',
-        'Text:Fallback create layout',
-        'Text:Outside create layout',
-        'App create layout',
-        'Text:Inside:Before create passive',
-        'Text:Fallback create passive',
-        'Text:Outside create passive',
-        'App create passive',
+        "App render",
+        "Text:Inside:Before render",
+        "Suspend:Async",
+        "ClassText:Inside:After render",
+        "Text:Fallback render",
+        "Text:Outside render",
+        "Text:Inside:Before create layout",
+        "ClassText:Inside:After componentDidMount",
+        "Text:Fallback create layout",
+        "Text:Outside create layout",
+        "App create layout",
+        "Text:Inside:Before create passive",
+        "Text:Fallback create passive",
+        "Text:Outside create passive",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -408,14 +408,14 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -430,35 +430,35 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.renderLegacySyncRoot(null);
       });
       assertLog([
-        'App destroy layout',
-        'Text:Inside:Before destroy layout',
-        'AsyncText:Async destroy layout',
-        'ClassText:Inside:After componentWillUnmount',
-        'Text:Outside destroy layout',
-        'App destroy passive',
-        'Text:Inside:Before destroy passive',
-        'AsyncText:Async destroy passive',
-        'Text:Outside destroy passive',
+        "App destroy layout",
+        "Text:Inside:Before destroy layout",
+        "AsyncText:Async destroy layout",
+        "ClassText:Inside:After componentWillUnmount",
+        "Text:Outside destroy layout",
+        "App destroy passive",
+        "Text:Inside:Before destroy passive",
+        "AsyncText:Async destroy passive",
+        "Text:Outside destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
   });
 
-  describe('layout effects within a tree that re-suspends in an update', () => {
+  describe("layout effects within a tree that re-suspends in an update", () => {
     // @gate enableLegacyCache
-    it('should not be destroyed or recreated in legacy roots', async () => {
-      function App({children = null}) {
-        Scheduler.log('App render');
+    it("should not be destroyed or recreated in legacy roots", async () => {
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -478,18 +478,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.renderLegacySyncRoot(<App />);
       });
       assertLog([
-        'App render',
-        'Text:Inside:Before render',
-        'Text:Inside:After render',
-        'Text:Outside render',
-        'Text:Inside:Before create layout',
-        'Text:Inside:After create layout',
-        'Text:Outside create layout',
-        'App create layout',
-        'Text:Inside:Before create passive',
-        'Text:Inside:After create passive',
-        'Text:Outside create passive',
-        'App create passive',
+        "App render",
+        "Text:Inside:Before render",
+        "Text:Inside:After render",
+        "Text:Outside render",
+        "Text:Inside:Before create layout",
+        "Text:Inside:After create layout",
+        "Text:Outside create layout",
+        "App create layout",
+        "Text:Inside:Before create passive",
+        "Text:Inside:After create passive",
+        "Text:Outside create passive",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -508,14 +508,14 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'App render',
-        'Text:Inside:Before render',
-        'Suspend:Async',
-        'Text:Inside:After render',
-        'Text:Fallback render',
-        'Text:Outside render',
-        'Text:Fallback create layout',
-        'Text:Fallback create passive',
+        "App render",
+        "Text:Inside:Before render",
+        "Suspend:Async",
+        "Text:Inside:After render",
+        "Text:Fallback render",
+        "Text:Outside render",
+        "Text:Fallback create layout",
+        "Text:Fallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -541,14 +541,14 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -563,33 +563,33 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.renderLegacySyncRoot(null);
       });
       assertLog([
-        'App destroy layout',
-        'Text:Inside:Before destroy layout',
-        'AsyncText:Async destroy layout',
-        'Text:Inside:After destroy layout',
-        'Text:Outside destroy layout',
-        'App destroy passive',
-        'Text:Inside:Before destroy passive',
-        'AsyncText:Async destroy passive',
-        'Text:Inside:After destroy passive',
-        'Text:Outside destroy passive',
+        "App destroy layout",
+        "Text:Inside:Before destroy layout",
+        "AsyncText:Async destroy layout",
+        "Text:Inside:After destroy layout",
+        "Text:Outside destroy layout",
+        "App destroy passive",
+        "Text:Inside:Before destroy passive",
+        "AsyncText:Async destroy passive",
+        "Text:Inside:After destroy passive",
+        "Text:Outside destroy passive",
       ]);
     });
 
     // @gate enableLegacyCache
-    it('should be destroyed and recreated for function components', async () => {
-      function App({children = null}) {
-        Scheduler.log('App render');
+    it("should be destroyed and recreated for function components", async () => {
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -608,18 +608,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'Text:Inside:Before render',
-        'Text:Inside:After render',
-        'Text:Outside render',
-        'Text:Inside:Before create layout',
-        'Text:Inside:After create layout',
-        'Text:Outside create layout',
-        'App create layout',
-        'Text:Inside:Before create passive',
-        'Text:Inside:After create passive',
-        'Text:Outside create passive',
-        'App create passive',
+        "App render",
+        "Text:Inside:Before render",
+        "Text:Inside:After render",
+        "Text:Outside render",
+        "Text:Inside:Before create layout",
+        "Text:Inside:After create layout",
+        "Text:Outside create layout",
+        "App create layout",
+        "Text:Inside:Before create passive",
+        "Text:Inside:After create passive",
+        "Text:Outside create passive",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -637,16 +637,16 @@ describe('ReactSuspenseEffectsSemantics', () => {
           </App>,
         );
         await waitFor([
-          'App render',
-          'Text:Inside:Before render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outside render',
-          'Text:Inside:Before destroy layout',
-          'Text:Inside:After destroy layout',
-          'Text:Fallback create layout',
+          "App render",
+          "Text:Inside:Before render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outside render",
+          "Text:Inside:Before destroy layout",
+          "Text:Inside:After destroy layout",
+          "Text:Fallback create layout",
         ]);
-        await waitForAll(['Text:Fallback create passive']);
+        await waitForAll(["Text:Fallback create passive"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop="Inside:Before" hidden={true} />
@@ -659,18 +659,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'Text:Inside:Before render',
-        'AsyncText:Async render',
-        'Text:Inside:After render',
-        'Text:Fallback destroy layout',
-        'Text:Inside:Before create layout',
-        'AsyncText:Async create layout',
-        'Text:Inside:After create layout',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "Text:Inside:Before render",
+        "AsyncText:Async render",
+        "Text:Inside:After render",
+        "Text:Fallback destroy layout",
+        "Text:Inside:Before create layout",
+        "AsyncText:Async create layout",
+        "Text:Inside:After create layout",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -685,53 +685,53 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'App destroy layout',
-        'Text:Inside:Before destroy layout',
-        'AsyncText:Async destroy layout',
-        'Text:Inside:After destroy layout',
-        'Text:Outside destroy layout',
-        'App destroy passive',
-        'Text:Inside:Before destroy passive',
-        'AsyncText:Async destroy passive',
-        'Text:Inside:After destroy passive',
-        'Text:Outside destroy passive',
+        "App destroy layout",
+        "Text:Inside:Before destroy layout",
+        "AsyncText:Async destroy layout",
+        "Text:Inside:After destroy layout",
+        "Text:Outside destroy layout",
+        "App destroy passive",
+        "Text:Inside:Before destroy passive",
+        "AsyncText:Async destroy passive",
+        "Text:Inside:After destroy passive",
+        "Text:Outside destroy passive",
       ]);
     });
 
     // @gate enableLegacyCache
-    it('should be destroyed and recreated for class components', async () => {
+    it("should be destroyed and recreated for class components", async () => {
       class ClassText extends React.Component {
         componentDidMount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidMount`);
         }
         componentDidUpdate() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidUpdate`);
         }
         componentWillUnmount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentWillUnmount`);
         }
         render() {
-          const {children, text} = this.props;
+          const { children, text } = this.props;
           Scheduler.log(`ClassText:${text} render`);
           return <span prop={text}>{children}</span>;
         }
       }
 
-      function App({children = null}) {
-        Scheduler.log('App render');
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -751,15 +751,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'ClassText:Inside:Before render',
-        'ClassText:Inside:After render',
-        'ClassText:Outside render',
-        'ClassText:Inside:Before componentDidMount',
-        'ClassText:Inside:After componentDidMount',
-        'ClassText:Outside componentDidMount',
-        'App create layout',
-        'App create passive',
+        "App render",
+        "ClassText:Inside:Before render",
+        "ClassText:Inside:After render",
+        "ClassText:Outside render",
+        "ClassText:Inside:Before componentDidMount",
+        "ClassText:Inside:After componentDidMount",
+        "ClassText:Outside componentDidMount",
+        "App create layout",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -778,15 +778,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
 
         await waitFor([
-          'App render',
-          'ClassText:Inside:Before render',
-          'Suspend:Async',
-          'ClassText:Fallback render',
-          'ClassText:Outside render',
-          'ClassText:Inside:Before componentWillUnmount',
-          'ClassText:Inside:After componentWillUnmount',
-          'ClassText:Fallback componentDidMount',
-          'ClassText:Outside componentDidUpdate',
+          "App render",
+          "ClassText:Inside:Before render",
+          "Suspend:Async",
+          "ClassText:Fallback render",
+          "ClassText:Outside render",
+          "ClassText:Inside:Before componentWillUnmount",
+          "ClassText:Inside:After componentWillUnmount",
+          "ClassText:Fallback componentDidMount",
+          "ClassText:Outside componentDidUpdate",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -800,17 +800,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'ClassText:Inside:Before render',
-        'AsyncText:Async render',
-        'ClassText:Inside:After render',
-        'ClassText:Fallback componentWillUnmount',
-        'ClassText:Inside:Before componentDidMount',
-        'AsyncText:Async create layout',
-        'ClassText:Inside:After componentDidMount',
-        'AsyncText:Async create passive',
+        "ClassText:Inside:Before render",
+        "AsyncText:Async render",
+        "ClassText:Inside:After render",
+        "ClassText:Fallback componentWillUnmount",
+        "ClassText:Inside:Before componentDidMount",
+        "AsyncText:Async create layout",
+        "ClassText:Inside:After componentDidMount",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -824,30 +824,30 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'App destroy layout',
-        'ClassText:Inside:Before componentWillUnmount',
-        'AsyncText:Async destroy layout',
-        'ClassText:Inside:After componentWillUnmount',
-        'ClassText:Outside componentWillUnmount',
-        'App destroy passive',
-        'AsyncText:Async destroy passive',
+        "App destroy layout",
+        "ClassText:Inside:Before componentWillUnmount",
+        "AsyncText:Async destroy layout",
+        "ClassText:Inside:After componentWillUnmount",
+        "ClassText:Outside componentWillUnmount",
+        "App destroy passive",
+        "AsyncText:Async destroy passive",
       ]);
     });
 
     // @gate enableLegacyCache
-    it('should be destroyed and recreated when nested below host components', async () => {
-      function App({children = null}) {
-        Scheduler.log('App render');
+    it("should be destroyed and recreated when nested below host components", async () => {
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -865,15 +865,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'Text:Outer render',
-        'Text:Inner render',
-        'Text:Inner create layout',
-        'Text:Outer create layout',
-        'App create layout',
-        'Text:Inner create passive',
-        'Text:Outer create passive',
-        'App create passive',
+        "App render",
+        "Text:Outer render",
+        "Text:Inner render",
+        "Text:Inner create layout",
+        "Text:Outer create layout",
+        "App create layout",
+        "Text:Inner create passive",
+        "Text:Outer create passive",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <span prop="Outer">
@@ -889,14 +889,14 @@ describe('ReactSuspenseEffectsSemantics', () => {
           </App>,
         );
         await waitFor([
-          'App render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outer destroy layout',
-          'Text:Inner destroy layout',
-          'Text:Fallback create layout',
+          "App render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outer destroy layout",
+          "Text:Inner destroy layout",
+          "Text:Fallback create layout",
         ]);
-        await waitForAll(['Text:Fallback create passive']);
+        await waitForAll(["Text:Fallback create passive"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span hidden={true} prop="Outer">
@@ -909,18 +909,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'Text:Outer render',
-        'Text:Inner render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'Text:Inner create layout',
-        'Text:Outer create layout',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "Text:Outer render",
+        "Text:Inner render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "Text:Inner create layout",
+        "Text:Outer create layout",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -935,33 +935,33 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'App destroy layout',
-        'AsyncText:Async destroy layout',
-        'Text:Outer destroy layout',
-        'Text:Inner destroy layout',
-        'App destroy passive',
-        'AsyncText:Async destroy passive',
-        'Text:Outer destroy passive',
-        'Text:Inner destroy passive',
+        "App destroy layout",
+        "AsyncText:Async destroy layout",
+        "Text:Outer destroy layout",
+        "Text:Inner destroy layout",
+        "App destroy passive",
+        "AsyncText:Async destroy passive",
+        "Text:Outer destroy passive",
+        "Text:Inner destroy passive",
       ]);
     });
 
     // @gate enableLegacyCache
-    it('should be destroyed and recreated even if there is a bailout because of memoization', async () => {
+    it("should be destroyed and recreated even if there is a bailout because of memoization", async () => {
       const MemoizedText = React.memo(Text, () => true);
 
-      function App({children = null}) {
-        Scheduler.log('App render');
+      function App({ children = null }) {
+        Scheduler.log("App render");
         React.useLayoutEffect(() => {
-          Scheduler.log('App create layout');
+          Scheduler.log("App create layout");
           return () => {
-            Scheduler.log('App destroy layout');
+            Scheduler.log("App destroy layout");
           };
         }, []);
         React.useEffect(() => {
-          Scheduler.log('App create passive');
+          Scheduler.log("App create passive");
           return () => {
-            Scheduler.log('App destroy passive');
+            Scheduler.log("App destroy passive");
           };
         }, []);
         return (
@@ -979,15 +979,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'Text:Outer render',
-        'Text:MemoizedInner render',
-        'Text:MemoizedInner create layout',
-        'Text:Outer create layout',
-        'App create layout',
-        'Text:MemoizedInner create passive',
-        'Text:Outer create passive',
-        'App create passive',
+        "App render",
+        "Text:Outer render",
+        "Text:MemoizedInner render",
+        "Text:MemoizedInner create layout",
+        "Text:Outer create layout",
+        "App create layout",
+        "Text:MemoizedInner create passive",
+        "Text:Outer create passive",
+        "App create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <span prop="Outer">
@@ -1003,15 +1003,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
           </App>,
         );
         await waitFor([
-          'App render',
-          'Suspend:Async',
+          "App render",
+          "Suspend:Async",
           // Text:MemoizedInner is memoized
-          'Text:Fallback render',
-          'Text:Outer destroy layout',
-          'Text:MemoizedInner destroy layout',
-          'Text:Fallback create layout',
+          "Text:Fallback render",
+          "Text:Outer destroy layout",
+          "Text:MemoizedInner destroy layout",
+          "Text:Fallback create layout",
         ]);
-        await waitForAll(['Text:Fallback create passive']);
+        await waitForAll(["Text:Fallback create passive"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span hidden={true} prop="Outer">
@@ -1024,17 +1024,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'Text:Outer render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'Text:MemoizedInner create layout',
-        'Text:Outer create layout',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "Text:Outer render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "Text:MemoizedInner create layout",
+        "Text:Outer create layout",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1049,20 +1049,20 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'App destroy layout',
-        'AsyncText:Async destroy layout',
-        'Text:Outer destroy layout',
-        'Text:MemoizedInner destroy layout',
-        'App destroy passive',
-        'AsyncText:Async destroy passive',
-        'Text:Outer destroy passive',
-        'Text:MemoizedInner destroy passive',
+        "App destroy layout",
+        "AsyncText:Async destroy layout",
+        "Text:Outer destroy layout",
+        "Text:MemoizedInner destroy layout",
+        "App destroy passive",
+        "AsyncText:Async destroy passive",
+        "Text:Outer destroy passive",
+        "Text:MemoizedInner destroy passive",
       ]);
     });
 
     // @gate enableLegacyCache
-    it('should respect nested suspense boundaries', async () => {
-      function App({innerChildren = null, outerChildren = null}) {
+    it("should respect nested suspense boundaries", async () => {
+      function App({ innerChildren = null, outerChildren = null }) {
         return (
           <Suspense fallback={<Text text="OuterFallback" />}>
             <Text text="Outer" />
@@ -1080,12 +1080,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'Text:Outer render',
-        'Text:Inner render',
-        'Text:Outer create layout',
-        'Text:Inner create layout',
-        'Text:Outer create passive',
-        'Text:Inner create passive',
+        "Text:Outer render",
+        "Text:Inner render",
+        "Text:Outer create layout",
+        "Text:Inner create layout",
+        "Text:Outer create passive",
+        "Text:Inner create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1101,13 +1101,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'Text:Outer render',
-        'Text:Inner render',
-        'Suspend:InnerAsync_1',
-        'Text:InnerFallback render',
-        'Text:Inner destroy layout',
-        'Text:InnerFallback create layout',
-        'Text:InnerFallback create passive',
+        "Text:Outer render",
+        "Text:Inner render",
+        "Suspend:InnerAsync_1",
+        "Text:InnerFallback render",
+        "Text:Inner destroy layout",
+        "Text:InnerFallback create layout",
+        "Text:InnerFallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1129,13 +1129,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'Text:Outer render',
-        'Suspend:OuterAsync_1',
-        'Text:OuterFallback render',
-        'Text:Outer destroy layout',
-        'Text:InnerFallback destroy layout',
-        'Text:OuterFallback create layout',
-        'Text:OuterFallback create passive',
+        "Text:Outer render",
+        "Suspend:OuterAsync_1",
+        "Text:OuterFallback render",
+        "Text:Outer destroy layout",
+        "Text:InnerFallback destroy layout",
+        "Text:OuterFallback create layout",
+        "Text:OuterFallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1148,9 +1148,9 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Show the inner Suspense subtree (no effects should be recreated)
       await act(async () => {
-        await resolveText('InnerAsync_1');
+        await resolveText("InnerAsync_1");
       });
-      assertLog(['Text:Outer render', 'Suspend:OuterAsync_1']);
+      assertLog(["Text:Outer render", "Suspend:OuterAsync_1"]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
           <span prop="Outer" hidden={true} />
@@ -1171,9 +1171,9 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'Text:Outer render',
-        'Suspend:OuterAsync_1',
-        'Text:OuterFallback render',
+        "Text:Outer render",
+        "Suspend:OuterAsync_1",
+        "Text:OuterFallback render",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1186,20 +1186,20 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Show the outer Suspense subtree (only outer effects should be recreated)
       await act(async () => {
-        await resolveText('OuterAsync_1');
+        await resolveText("OuterAsync_1");
       });
       assertLog([
-        'Text:Outer render',
-        'AsyncText:OuterAsync_1 render',
-        'Text:Inner render',
-        'Suspend:InnerAsync_2',
-        'Text:InnerFallback render',
-        'Text:OuterFallback destroy layout',
-        'Text:Outer create layout',
-        'AsyncText:OuterAsync_1 create layout',
-        'Text:InnerFallback create layout',
-        'Text:OuterFallback destroy passive',
-        'AsyncText:OuterAsync_1 create passive',
+        "Text:Outer render",
+        "AsyncText:OuterAsync_1 render",
+        "Text:Inner render",
+        "Suspend:InnerAsync_2",
+        "Text:InnerFallback render",
+        "Text:OuterFallback destroy layout",
+        "Text:Outer create layout",
+        "AsyncText:OuterAsync_1 create layout",
+        "Text:InnerFallback create layout",
+        "Text:OuterFallback destroy passive",
+        "AsyncText:OuterAsync_1 create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1212,16 +1212,16 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Show the inner Suspense subtree (only inner effects should be recreated)
       await act(async () => {
-        await resolveText('InnerAsync_2');
+        await resolveText("InnerAsync_2");
       });
       assertLog([
-        'Text:Inner render',
-        'AsyncText:InnerAsync_2 render',
-        'Text:InnerFallback destroy layout',
-        'Text:Inner create layout',
-        'AsyncText:InnerAsync_2 create layout',
-        'Text:InnerFallback destroy passive',
-        'AsyncText:InnerAsync_2 create passive',
+        "Text:Inner render",
+        "AsyncText:InnerAsync_2 render",
+        "Text:InnerFallback destroy layout",
+        "Text:Inner create layout",
+        "AsyncText:InnerAsync_2 create layout",
+        "Text:InnerFallback destroy passive",
+        "AsyncText:InnerAsync_2 create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1242,15 +1242,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'Text:Outer render',
-        'Suspend:OuterAsync_2',
-        'Text:OuterFallback render',
-        'Text:Outer destroy layout',
-        'AsyncText:OuterAsync_1 destroy layout',
-        'Text:Inner destroy layout',
-        'AsyncText:InnerAsync_2 destroy layout',
-        'Text:OuterFallback create layout',
-        'Text:OuterFallback create passive',
+        "Text:Outer render",
+        "Suspend:OuterAsync_2",
+        "Text:OuterFallback render",
+        "Text:Outer destroy layout",
+        "AsyncText:OuterAsync_1 destroy layout",
+        "Text:Inner destroy layout",
+        "AsyncText:InnerAsync_2 destroy layout",
+        "Text:OuterFallback create layout",
+        "Text:OuterFallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1264,19 +1264,19 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Show the outer Suspense subtree (all effects should be recreated)
       await act(async () => {
-        await resolveText('OuterAsync_2');
+        await resolveText("OuterAsync_2");
       });
       assertLog([
-        'Text:Outer render',
-        'AsyncText:OuterAsync_2 render',
-        'Text:Inner render',
-        'AsyncText:InnerAsync_2 render',
-        'Text:OuterFallback destroy layout',
-        'Text:Outer create layout',
-        'AsyncText:OuterAsync_2 create layout',
-        'Text:Inner create layout',
-        'AsyncText:InnerAsync_2 create layout',
-        'Text:OuterFallback destroy passive',
+        "Text:Outer render",
+        "AsyncText:OuterAsync_2 render",
+        "Text:Inner render",
+        "AsyncText:InnerAsync_2 render",
+        "Text:OuterFallback destroy layout",
+        "Text:Outer create layout",
+        "AsyncText:OuterAsync_2 create layout",
+        "Text:Inner create layout",
+        "AsyncText:InnerAsync_2 create layout",
+        "Text:OuterFallback destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1289,8 +1289,8 @@ describe('ReactSuspenseEffectsSemantics', () => {
     });
 
     // @gate enableLegacyCache
-    it('should show nested host nodes if multiple boundaries resolve at the same time', async () => {
-      function App({innerChildren = null, outerChildren = null}) {
+    it("should show nested host nodes if multiple boundaries resolve at the same time", async () => {
+      function App({ innerChildren = null, outerChildren = null }) {
         return (
           <Suspense fallback={<Text text="OuterFallback" />}>
             <Text text="Outer" />
@@ -1308,12 +1308,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'Text:Outer render',
-        'Text:Inner render',
-        'Text:Outer create layout',
-        'Text:Inner create layout',
-        'Text:Outer create passive',
-        'Text:Inner create passive',
+        "Text:Outer render",
+        "Text:Inner render",
+        "Text:Outer create layout",
+        "Text:Inner create layout",
+        "Text:Outer create passive",
+        "Text:Inner create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1329,13 +1329,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'Text:Outer render',
-        'Text:Inner render',
-        'Suspend:InnerAsync_1',
-        'Text:InnerFallback render',
-        'Text:Inner destroy layout',
-        'Text:InnerFallback create layout',
-        'Text:InnerFallback create passive',
+        "Text:Outer render",
+        "Text:Inner render",
+        "Suspend:InnerAsync_1",
+        "Text:InnerFallback render",
+        "Text:Inner destroy layout",
+        "Text:InnerFallback create layout",
+        "Text:InnerFallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1356,13 +1356,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'Text:Outer render',
-        'Suspend:OuterAsync_1',
-        'Text:OuterFallback render',
-        'Text:Outer destroy layout',
-        'Text:InnerFallback destroy layout',
-        'Text:OuterFallback create layout',
-        'Text:OuterFallback create passive',
+        "Text:Outer render",
+        "Suspend:OuterAsync_1",
+        "Text:OuterFallback render",
+        "Text:Outer destroy layout",
+        "Text:InnerFallback destroy layout",
+        "Text:OuterFallback create layout",
+        "Text:OuterFallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1375,23 +1375,23 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolve both suspended trees.
       await act(async () => {
-        await resolveText('OuterAsync_1');
-        await resolveText('InnerAsync_1');
+        await resolveText("OuterAsync_1");
+        await resolveText("InnerAsync_1");
       });
       assertLog([
-        'Text:Outer render',
-        'AsyncText:OuterAsync_1 render',
-        'Text:Inner render',
-        'AsyncText:InnerAsync_1 render',
-        'Text:OuterFallback destroy layout',
-        'Text:Outer create layout',
-        'AsyncText:OuterAsync_1 create layout',
-        'Text:Inner create layout',
-        'AsyncText:InnerAsync_1 create layout',
-        'Text:OuterFallback destroy passive',
-        'Text:InnerFallback destroy passive',
-        'AsyncText:OuterAsync_1 create passive',
-        'AsyncText:InnerAsync_1 create passive',
+        "Text:Outer render",
+        "AsyncText:OuterAsync_1 render",
+        "Text:Inner render",
+        "AsyncText:InnerAsync_1 render",
+        "Text:OuterFallback destroy layout",
+        "Text:Outer create layout",
+        "AsyncText:OuterAsync_1 create layout",
+        "Text:Inner create layout",
+        "AsyncText:InnerAsync_1 create layout",
+        "Text:OuterFallback destroy passive",
+        "Text:InnerFallback destroy passive",
+        "AsyncText:OuterAsync_1 create passive",
+        "AsyncText:InnerAsync_1 create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1404,8 +1404,8 @@ describe('ReactSuspenseEffectsSemantics', () => {
     });
 
     // @gate enableLegacyCache
-    it('should be cleaned up inside of a fallback that suspends', async () => {
-      function App({fallbackChildren = null, outerChildren = null}) {
+    it("should be cleaned up inside of a fallback that suspends", async () => {
+      function App({ fallbackChildren = null, outerChildren = null }) {
         return (
           <>
             <Suspense
@@ -1417,7 +1417,8 @@ describe('ReactSuspenseEffectsSemantics', () => {
                   </Suspense>
                   <Text text="Fallback:Outside" />
                 </>
-              }>
+              }
+            >
               <Text text="Inside" />
               {outerChildren}
             </Suspense>
@@ -1431,12 +1432,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'Text:Inside render',
-        'Text:Outside render',
-        'Text:Inside create layout',
-        'Text:Outside create layout',
-        'Text:Inside create passive',
-        'Text:Outside create passive',
+        "Text:Inside render",
+        "Text:Outside render",
+        "Text:Inside create layout",
+        "Text:Outside create layout",
+        "Text:Inside create passive",
+        "Text:Outside create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1451,18 +1452,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
           <App outerChildren={<AsyncText text="OutsideAsync" ms={1000} />} />,
         );
         await waitFor([
-          'Text:Inside render',
-          'Suspend:OutsideAsync',
-          'Text:Fallback:Inside render',
-          'Text:Fallback:Outside render',
-          'Text:Outside render',
-          'Text:Inside destroy layout',
-          'Text:Fallback:Inside create layout',
-          'Text:Fallback:Outside create layout',
+          "Text:Inside render",
+          "Suspend:OutsideAsync",
+          "Text:Fallback:Inside render",
+          "Text:Fallback:Outside render",
+          "Text:Outside render",
+          "Text:Inside destroy layout",
+          "Text:Fallback:Inside create layout",
+          "Text:Fallback:Outside create layout",
         ]);
         await waitForAll([
-          'Text:Fallback:Inside create passive',
-          'Text:Fallback:Outside create passive',
+          "Text:Fallback:Inside create passive",
+          "Text:Fallback:Outside create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -1483,17 +1484,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
           />,
         );
         await waitFor([
-          'Text:Inside render',
-          'Suspend:OutsideAsync',
-          'Text:Fallback:Inside render',
-          'Suspend:FallbackAsync',
-          'Text:Fallback:Fallback render',
-          'Text:Fallback:Outside render',
-          'Text:Outside render',
-          'Text:Fallback:Inside destroy layout',
-          'Text:Fallback:Fallback create layout',
+          "Text:Inside render",
+          "Suspend:OutsideAsync",
+          "Text:Fallback:Inside render",
+          "Suspend:FallbackAsync",
+          "Text:Fallback:Fallback render",
+          "Text:Fallback:Outside render",
+          "Text:Outside render",
+          "Text:Fallback:Inside destroy layout",
+          "Text:Fallback:Fallback create layout",
         ]);
-        await waitForAll(['Text:Fallback:Fallback create passive']);
+        await waitForAll(["Text:Fallback:Fallback create passive"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop="Inside" hidden={true} />
@@ -1507,20 +1508,20 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving both resources should cleanup fallback effects and recreate main effects
       await act(async () => {
-        await resolveText('FallbackAsync');
-        await resolveText('OutsideAsync');
+        await resolveText("FallbackAsync");
+        await resolveText("OutsideAsync");
       });
       assertLog([
-        'Text:Inside render',
-        'AsyncText:OutsideAsync render',
-        'Text:Fallback:Fallback destroy layout',
-        'Text:Fallback:Outside destroy layout',
-        'Text:Inside create layout',
-        'AsyncText:OutsideAsync create layout',
-        'Text:Fallback:Inside destroy passive',
-        'Text:Fallback:Fallback destroy passive',
-        'Text:Fallback:Outside destroy passive',
-        'AsyncText:OutsideAsync create passive',
+        "Text:Inside render",
+        "AsyncText:OutsideAsync render",
+        "Text:Fallback:Fallback destroy layout",
+        "Text:Fallback:Outside destroy layout",
+        "Text:Inside create layout",
+        "AsyncText:OutsideAsync create layout",
+        "Text:Fallback:Inside destroy passive",
+        "Text:Fallback:Fallback destroy passive",
+        "Text:Fallback:Outside destroy passive",
+        "AsyncText:OutsideAsync create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1532,8 +1533,8 @@ describe('ReactSuspenseEffectsSemantics', () => {
     });
 
     // @gate enableLegacyCache
-    it('should be cleaned up inside of a fallback that suspends (alternate)', async () => {
-      function App({fallbackChildren = null, outerChildren = null}) {
+    it("should be cleaned up inside of a fallback that suspends (alternate)", async () => {
+      function App({ fallbackChildren = null, outerChildren = null }) {
         return (
           <>
             <Suspense
@@ -1545,7 +1546,8 @@ describe('ReactSuspenseEffectsSemantics', () => {
                   </Suspense>
                   <Text text="Fallback:Outside" />
                 </>
-              }>
+              }
+            >
               <Text text="Inside" />
               {outerChildren}
             </Suspense>
@@ -1559,12 +1561,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'Text:Inside render',
-        'Text:Outside render',
-        'Text:Inside create layout',
-        'Text:Outside create layout',
-        'Text:Inside create passive',
-        'Text:Outside create passive',
+        "Text:Inside render",
+        "Text:Outside render",
+        "Text:Inside create layout",
+        "Text:Outside create layout",
+        "Text:Inside create passive",
+        "Text:Outside create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1583,18 +1585,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
       });
       assertLog([
-        'Text:Inside render',
-        'Suspend:OutsideAsync',
-        'Text:Fallback:Inside render',
-        'Suspend:FallbackAsync',
-        'Text:Fallback:Fallback render',
-        'Text:Fallback:Outside render',
-        'Text:Outside render',
-        'Text:Inside destroy layout',
-        'Text:Fallback:Fallback create layout',
-        'Text:Fallback:Outside create layout',
-        'Text:Fallback:Fallback create passive',
-        'Text:Fallback:Outside create passive',
+        "Text:Inside render",
+        "Suspend:OutsideAsync",
+        "Text:Fallback:Inside render",
+        "Suspend:FallbackAsync",
+        "Text:Fallback:Fallback render",
+        "Text:Fallback:Outside render",
+        "Text:Outside render",
+        "Text:Inside destroy layout",
+        "Text:Fallback:Fallback create layout",
+        "Text:Fallback:Outside create layout",
+        "Text:Fallback:Fallback create passive",
+        "Text:Fallback:Outside create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1607,17 +1609,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the inside fallback
       await act(async () => {
-        await resolveText('FallbackAsync');
+        await resolveText("FallbackAsync");
       });
       assertLog([
-        'Text:Fallback:Inside render',
-        'AsyncText:FallbackAsync render',
-        'Text:Fallback:Fallback destroy layout',
-        'Text:Fallback:Inside create layout',
-        'AsyncText:FallbackAsync create layout',
-        'Text:Fallback:Fallback destroy passive',
-        'Text:Fallback:Inside create passive',
-        'AsyncText:FallbackAsync create passive',
+        "Text:Fallback:Inside render",
+        "AsyncText:FallbackAsync render",
+        "Text:Fallback:Fallback destroy layout",
+        "Text:Fallback:Inside create layout",
+        "AsyncText:FallbackAsync create layout",
+        "Text:Fallback:Fallback destroy passive",
+        "Text:Fallback:Inside create passive",
+        "AsyncText:FallbackAsync create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1631,20 +1633,20 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the outer fallback only
       await act(async () => {
-        await resolveText('OutsideAsync');
+        await resolveText("OutsideAsync");
       });
       assertLog([
-        'Text:Inside render',
-        'AsyncText:OutsideAsync render',
-        'Text:Fallback:Inside destroy layout',
-        'AsyncText:FallbackAsync destroy layout',
-        'Text:Fallback:Outside destroy layout',
-        'Text:Inside create layout',
-        'AsyncText:OutsideAsync create layout',
-        'Text:Fallback:Inside destroy passive',
-        'AsyncText:FallbackAsync destroy passive',
-        'Text:Fallback:Outside destroy passive',
-        'AsyncText:OutsideAsync create passive',
+        "Text:Inside render",
+        "AsyncText:OutsideAsync render",
+        "Text:Fallback:Inside destroy layout",
+        "AsyncText:FallbackAsync destroy layout",
+        "Text:Fallback:Outside destroy layout",
+        "Text:Inside create layout",
+        "AsyncText:OutsideAsync create layout",
+        "Text:Fallback:Inside destroy passive",
+        "AsyncText:FallbackAsync destroy passive",
+        "Text:Fallback:Outside destroy passive",
+        "AsyncText:OutsideAsync create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1656,15 +1658,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
     });
 
     // @gate enableLegacyCache
-    it('should be cleaned up deeper inside of a subtree that suspends', async () => {
-      function ConditionalSuspense({shouldSuspend}) {
+    it("should be cleaned up deeper inside of a subtree that suspends", async () => {
+      function ConditionalSuspense({ shouldSuspend }) {
         if (shouldSuspend) {
-          readText('Suspend');
+          readText("Suspend");
         }
         return <Text text="Inside" />;
       }
 
-      function App({children = null, shouldSuspend}) {
+      function App({ children = null, shouldSuspend }) {
         return (
           <>
             <Suspense fallback={<Text text="Fallback" />}>
@@ -1680,12 +1682,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App shouldSuspend={false} />);
       });
       assertLog([
-        'Text:Inside render',
-        'Text:Outside render',
-        'Text:Inside create layout',
-        'Text:Outside create layout',
-        'Text:Inside create passive',
-        'Text:Outside create passive',
+        "Text:Inside render",
+        "Text:Outside render",
+        "Text:Inside create layout",
+        "Text:Outside create layout",
+        "Text:Inside create passive",
+        "Text:Outside create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1699,13 +1701,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
       await act(async () => {
         ReactNoop.render(<App shouldSuspend={true} />);
         await waitFor([
-          'Suspend:Suspend',
-          'Text:Fallback render',
-          'Text:Outside render',
-          'Text:Inside destroy layout',
-          'Text:Fallback create layout',
+          "Suspend:Suspend",
+          "Text:Fallback render",
+          "Text:Outside render",
+          "Text:Inside destroy layout",
+          "Text:Fallback create layout",
         ]);
-        await waitForAll(['Text:Fallback create passive']);
+        await waitForAll(["Text:Fallback create passive"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop="Inside" hidden={true} />
@@ -1717,13 +1719,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving should cleanup.
       await act(async () => {
-        await resolveText('Suspend');
+        await resolveText("Suspend");
       });
       assertLog([
-        'Text:Inside render',
-        'Text:Fallback destroy layout',
-        'Text:Inside create layout',
-        'Text:Fallback destroy passive',
+        "Text:Inside render",
+        "Text:Fallback destroy layout",
+        "Text:Inside create layout",
+        "Text:Fallback destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -1733,33 +1735,33 @@ describe('ReactSuspenseEffectsSemantics', () => {
       );
     });
 
-    describe('that throw errors', () => {
+    describe("that throw errors", () => {
       // @gate enableLegacyCache
-      it('are properly handled for componentDidMount', async () => {
+      it("are properly handled for componentDidMount", async () => {
         let componentDidMountShouldThrow = false;
 
         class ThrowsInDidMount extends React.Component {
           componentWillUnmount() {
-            Scheduler.log('ThrowsInDidMount componentWillUnmount');
+            Scheduler.log("ThrowsInDidMount componentWillUnmount");
           }
           componentDidMount() {
-            Scheduler.log('ThrowsInDidMount componentDidMount');
+            Scheduler.log("ThrowsInDidMount componentDidMount");
             if (componentDidMountShouldThrow) {
-              throw Error('expected');
+              throw Error("expected");
             }
           }
           render() {
-            Scheduler.log('ThrowsInDidMount render');
+            Scheduler.log("ThrowsInDidMount render");
             return <span prop="ThrowsInDidMount" />;
           }
         }
 
-        function App({children = null}) {
-          Scheduler.log('App render');
+        function App({ children = null }) {
+          Scheduler.log("App render");
           React.useLayoutEffect(() => {
-            Scheduler.log('App create layout');
+            Scheduler.log("App create layout");
             return () => {
-              Scheduler.log('App destroy layout');
+              Scheduler.log("App destroy layout");
             };
           }, []);
           return (
@@ -1782,17 +1784,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'ThrowsInDidMount render',
-          'Text:Inside render',
-          'Text:Outside render',
-          'ThrowsInDidMount componentDidMount',
-          'Text:Inside create layout',
-          'Text:Outside create layout',
-          'App create layout',
-          'Text:Inside create passive',
-          'Text:Outside create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "ThrowsInDidMount render",
+          "Text:Inside render",
+          "Text:Outside render",
+          "ThrowsInDidMount componentDidMount",
+          "Text:Inside create layout",
+          "Text:Outside create layout",
+          "App create layout",
+          "Text:Inside create passive",
+          "Text:Outside create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -1813,15 +1815,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outside render',
-          'ThrowsInDidMount componentWillUnmount',
-          'Text:Inside destroy layout',
-          'Text:Fallback create layout',
-          'Text:Fallback create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outside render",
+          "ThrowsInDidMount componentWillUnmount",
+          "Text:Inside destroy layout",
+          "Text:Fallback create layout",
+          "Text:Fallback create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -1835,65 +1837,65 @@ describe('ReactSuspenseEffectsSemantics', () => {
         // Resolve the pending suspense and throw
         componentDidMountShouldThrow = true;
         await act(async () => {
-          await resolveText('Async');
+          await resolveText("Async");
         });
         assertLog([
-          'AsyncText:Async render',
-          'ThrowsInDidMount render',
-          'Text:Inside render',
-          'Text:Fallback destroy layout',
-          'AsyncText:Async create layout',
+          "AsyncText:Async render",
+          "ThrowsInDidMount render",
+          "Text:Inside render",
+          "Text:Fallback destroy layout",
+          "AsyncText:Async create layout",
 
           // Even though an error was thrown in componentDidMount,
           // subsequent layout effects should still be destroyed.
-          'ThrowsInDidMount componentDidMount',
-          'Text:Inside create layout',
+          "ThrowsInDidMount componentDidMount",
+          "Text:Inside create layout",
 
           // Finish the in-progress commit
-          'Text:Fallback destroy passive',
-          'AsyncText:Async create passive',
+          "Text:Fallback destroy passive",
+          "AsyncText:Async create passive",
 
           // Destroy layout and passive effects in the errored tree.
-          'App destroy layout',
-          'AsyncText:Async destroy layout',
-          'ThrowsInDidMount componentWillUnmount',
-          'Text:Inside destroy layout',
-          'Text:Outside destroy layout',
-          'AsyncText:Async destroy passive',
-          'Text:Inside destroy passive',
-          'Text:Outside destroy passive',
+          "App destroy layout",
+          "AsyncText:Async destroy layout",
+          "ThrowsInDidMount componentWillUnmount",
+          "Text:Inside destroy layout",
+          "Text:Outside destroy layout",
+          "AsyncText:Async destroy passive",
+          "Text:Inside destroy passive",
+          "Text:Outside destroy passive",
 
           // Render fallback
-          'ErrorBoundary render: catch',
-          'Text:Error render',
-          'Text:Error create layout',
-          'Text:Error create passive',
+          "ErrorBoundary render: catch",
+          "Text:Error render",
+          "Text:Error create layout",
+          "Text:Error create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Error" />);
       });
 
       // @gate enableLegacyCache
-      it('are properly handled for componentWillUnmount', async () => {
+      it("are properly handled for componentWillUnmount", async () => {
         class ThrowsInWillUnmount extends React.Component {
           componentDidMount() {
-            Scheduler.log('ThrowsInWillUnmount componentDidMount');
+            Scheduler.log("ThrowsInWillUnmount componentDidMount");
           }
           componentWillUnmount() {
-            Scheduler.log('ThrowsInWillUnmount componentWillUnmount');
-            throw Error('expected');
+            Scheduler.log("ThrowsInWillUnmount componentWillUnmount");
+            throw Error("expected");
           }
           render() {
-            Scheduler.log('ThrowsInWillUnmount render');
+            Scheduler.log("ThrowsInWillUnmount render");
             return <span prop="ThrowsInWillUnmount" />;
           }
         }
 
-        function App({children = null}) {
-          Scheduler.log('App render');
+        function App({ children = null }) {
+          Scheduler.log("App render");
           React.useLayoutEffect(() => {
-            Scheduler.log('App create layout');
+            Scheduler.log("App create layout");
             return () => {
-              Scheduler.log('App destroy layout');
+              Scheduler.log("App destroy layout");
             };
           }, []);
           return (
@@ -1916,17 +1918,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'ThrowsInWillUnmount render',
-          'Text:Inside render',
-          'Text:Outside render',
-          'ThrowsInWillUnmount componentDidMount',
-          'Text:Inside create layout',
-          'Text:Outside create layout',
-          'App create layout',
-          'Text:Inside create passive',
-          'Text:Outside create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "ThrowsInWillUnmount render",
+          "Text:Inside render",
+          "Text:Outside render",
+          "ThrowsInWillUnmount componentDidMount",
+          "Text:Inside create layout",
+          "Text:Outside create layout",
+          "App create layout",
+          "Text:Inside create passive",
+          "Text:Outside create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -1947,63 +1949,63 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outside render',
+          "ErrorBoundary render: try",
+          "App render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outside render",
 
           // Even though an error was thrown in componentWillUnmount,
           // subsequent layout effects should still be destroyed.
-          'ThrowsInWillUnmount componentWillUnmount',
-          'Text:Inside destroy layout',
+          "ThrowsInWillUnmount componentWillUnmount",
+          "Text:Inside destroy layout",
 
           // Finish the in-progress commit
-          'Text:Fallback create layout',
-          'Text:Fallback create passive',
+          "Text:Fallback create layout",
+          "Text:Fallback create passive",
 
           // Destroy layout and passive effects in the errored tree.
-          'App destroy layout',
-          'Text:Fallback destroy layout',
-          'Text:Outside destroy layout',
-          'Text:Inside destroy passive',
-          'Text:Fallback destroy passive',
-          'Text:Outside destroy passive',
+          "App destroy layout",
+          "Text:Fallback destroy layout",
+          "Text:Outside destroy layout",
+          "Text:Inside destroy passive",
+          "Text:Fallback destroy passive",
+          "Text:Outside destroy passive",
 
           // Render fallback
-          'ErrorBoundary render: catch',
-          'Text:Error render',
-          'Text:Error create layout',
-          'Text:Error create passive',
+          "ErrorBoundary render: catch",
+          "Text:Error render",
+          "Text:Error create layout",
+          "Text:Error create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Error" />);
       });
 
       // @gate enableLegacyCache
       // @gate replayFailedUnitOfWorkWithInvokeGuardedCallback
-      it('are properly handled for layout effect creation', async () => {
+      it("are properly handled for layout effect creation", async () => {
         let useLayoutEffectShouldThrow = false;
 
         function ThrowsInLayoutEffect() {
-          Scheduler.log('ThrowsInLayoutEffect render');
+          Scheduler.log("ThrowsInLayoutEffect render");
           React.useLayoutEffect(() => {
-            Scheduler.log('ThrowsInLayoutEffect useLayoutEffect create');
+            Scheduler.log("ThrowsInLayoutEffect useLayoutEffect create");
             if (useLayoutEffectShouldThrow) {
-              throw Error('expected');
+              throw Error("expected");
             }
             return () => {
-              Scheduler.log('ThrowsInLayoutEffect useLayoutEffect destroy');
+              Scheduler.log("ThrowsInLayoutEffect useLayoutEffect destroy");
             };
           }, []);
           return <span prop="ThrowsInLayoutEffect" />;
         }
 
-        function App({children = null}) {
-          Scheduler.log('App render');
+        function App({ children = null }) {
+          Scheduler.log("App render");
           React.useLayoutEffect(() => {
-            Scheduler.log('App create layout');
+            Scheduler.log("App create layout");
             return () => {
-              Scheduler.log('App destroy layout');
+              Scheduler.log("App destroy layout");
             };
           }, []);
           return (
@@ -2026,17 +2028,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'ThrowsInLayoutEffect render',
-          'Text:Inside render',
-          'Text:Outside render',
-          'ThrowsInLayoutEffect useLayoutEffect create',
-          'Text:Inside create layout',
-          'Text:Outside create layout',
-          'App create layout',
-          'Text:Inside create passive',
-          'Text:Outside create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "ThrowsInLayoutEffect render",
+          "Text:Inside render",
+          "Text:Outside render",
+          "ThrowsInLayoutEffect useLayoutEffect create",
+          "Text:Inside create layout",
+          "Text:Outside create layout",
+          "App create layout",
+          "Text:Inside create passive",
+          "Text:Outside create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -2057,15 +2059,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outside render',
-          'ThrowsInLayoutEffect useLayoutEffect destroy',
-          'Text:Inside destroy layout',
-          'Text:Fallback create layout',
-          'Text:Fallback create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outside render",
+          "ThrowsInLayoutEffect useLayoutEffect destroy",
+          "Text:Inside destroy layout",
+          "Text:Fallback create layout",
+          "Text:Fallback create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -2079,66 +2081,66 @@ describe('ReactSuspenseEffectsSemantics', () => {
         // Resolve the pending suspense and throw
         useLayoutEffectShouldThrow = true;
         await act(async () => {
-          await resolveText('Async');
+          await resolveText("Async");
         });
         assertLog([
-          'AsyncText:Async render',
-          'ThrowsInLayoutEffect render',
-          'Text:Inside render',
+          "AsyncText:Async render",
+          "ThrowsInLayoutEffect render",
+          "Text:Inside render",
 
-          'Text:Fallback destroy layout',
+          "Text:Fallback destroy layout",
 
           // Even though an error was thrown in useLayoutEffect,
           // subsequent layout effects should still be created.
-          'AsyncText:Async create layout',
-          'ThrowsInLayoutEffect useLayoutEffect create',
-          'Text:Inside create layout',
+          "AsyncText:Async create layout",
+          "ThrowsInLayoutEffect useLayoutEffect create",
+          "Text:Inside create layout",
 
           // Finish the in-progress commit
-          'Text:Fallback destroy passive',
-          'AsyncText:Async create passive',
+          "Text:Fallback destroy passive",
+          "AsyncText:Async create passive",
 
           // Destroy layout and passive effects in the errored tree.
-          'App destroy layout',
-          'AsyncText:Async destroy layout',
-          'Text:Inside destroy layout',
-          'Text:Outside destroy layout',
-          'AsyncText:Async destroy passive',
-          'Text:Inside destroy passive',
-          'Text:Outside destroy passive',
+          "App destroy layout",
+          "AsyncText:Async destroy layout",
+          "Text:Inside destroy layout",
+          "Text:Outside destroy layout",
+          "AsyncText:Async destroy passive",
+          "Text:Inside destroy passive",
+          "Text:Outside destroy passive",
 
           // Render fallback
-          'ErrorBoundary render: catch',
-          'Text:Error render',
-          'Text:Error create layout',
-          'Text:Error create passive',
+          "ErrorBoundary render: catch",
+          "Text:Error render",
+          "Text:Error create layout",
+          "Text:Error create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Error" />);
       });
 
       // @gate enableLegacyCache
       // @gate replayFailedUnitOfWorkWithInvokeGuardedCallback
-      it('are properly handled for layout effect destruction', async () => {
+      it("are properly handled for layout effect destruction", async () => {
         function ThrowsInLayoutEffectDestroy() {
-          Scheduler.log('ThrowsInLayoutEffectDestroy render');
+          Scheduler.log("ThrowsInLayoutEffectDestroy render");
           React.useLayoutEffect(() => {
-            Scheduler.log('ThrowsInLayoutEffectDestroy useLayoutEffect create');
+            Scheduler.log("ThrowsInLayoutEffectDestroy useLayoutEffect create");
             return () => {
               Scheduler.log(
-                'ThrowsInLayoutEffectDestroy useLayoutEffect destroy',
+                "ThrowsInLayoutEffectDestroy useLayoutEffect destroy",
               );
-              throw Error('expected');
+              throw Error("expected");
             };
           }, []);
           return <span prop="ThrowsInLayoutEffectDestroy" />;
         }
 
-        function App({children = null}) {
-          Scheduler.log('App render');
+        function App({ children = null }) {
+          Scheduler.log("App render");
           React.useLayoutEffect(() => {
-            Scheduler.log('App create layout');
+            Scheduler.log("App create layout");
             return () => {
-              Scheduler.log('App destroy layout');
+              Scheduler.log("App destroy layout");
             };
           }, []);
           return (
@@ -2161,17 +2163,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'ThrowsInLayoutEffectDestroy render',
-          'Text:Inside render',
-          'Text:Outside render',
-          'ThrowsInLayoutEffectDestroy useLayoutEffect create',
-          'Text:Inside create layout',
-          'Text:Outside create layout',
-          'App create layout',
-          'Text:Inside create passive',
-          'Text:Outside create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "ThrowsInLayoutEffectDestroy render",
+          "Text:Inside render",
+          "Text:Outside render",
+          "ThrowsInLayoutEffectDestroy useLayoutEffect create",
+          "Text:Inside create layout",
+          "Text:Outside create layout",
+          "App create layout",
+          "Text:Inside create passive",
+          "Text:Outside create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -2192,62 +2194,62 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outside render',
+          "ErrorBoundary render: try",
+          "App render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outside render",
 
           // Even though an error was thrown in useLayoutEffect destroy,
           // subsequent layout effects should still be destroyed.
-          'ThrowsInLayoutEffectDestroy useLayoutEffect destroy',
-          'Text:Inside destroy layout',
+          "ThrowsInLayoutEffectDestroy useLayoutEffect destroy",
+          "Text:Inside destroy layout",
 
           // Finish the in-progress commit
-          'Text:Fallback create layout',
-          'Text:Fallback create passive',
+          "Text:Fallback create layout",
+          "Text:Fallback create passive",
 
           // Destroy layout and passive effects in the errored tree.
-          'App destroy layout',
-          'Text:Fallback destroy layout',
-          'Text:Outside destroy layout',
-          'Text:Inside destroy passive',
-          'Text:Fallback destroy passive',
-          'Text:Outside destroy passive',
+          "App destroy layout",
+          "Text:Fallback destroy layout",
+          "Text:Outside destroy layout",
+          "Text:Inside destroy passive",
+          "Text:Fallback destroy passive",
+          "Text:Outside destroy passive",
 
           // Render fallback
-          'ErrorBoundary render: catch',
-          'Text:Error render',
-          'Text:Error create layout',
-          'Text:Error create passive',
+          "ErrorBoundary render: catch",
+          "Text:Error render",
+          "Text:Error create layout",
+          "Text:Error create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Error" />);
       });
     });
 
     // @gate enableLegacyCache
-    it('should be only destroy layout effects once if a tree suspends in multiple places', async () => {
+    it("should be only destroy layout effects once if a tree suspends in multiple places", async () => {
       class ClassText extends React.Component {
         componentDidMount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidMount`);
         }
         componentDidUpdate() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidUpdate`);
         }
         componentWillUnmount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentWillUnmount`);
         }
         render() {
-          const {children, text} = this.props;
+          const { children, text } = this.props;
           Scheduler.log(`ClassText:${text} render`);
           return <span prop={text}>{children}</span>;
         }
       }
 
-      function App({children = null}) {
+      function App({ children = null }) {
         return (
           <Suspense fallback={<ClassText text="Fallback" />}>
             <Text text="Function" />
@@ -2261,11 +2263,11 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'Text:Function render',
-        'ClassText:Class render',
-        'Text:Function create layout',
-        'ClassText:Class componentDidMount',
-        'Text:Function create passive',
+        "Text:Function render",
+        "ClassText:Class render",
+        "Text:Function create layout",
+        "ClassText:Class componentDidMount",
+        "Text:Function create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2283,12 +2285,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
           </App>,
         );
         await waitFor([
-          'Text:Function render',
-          'Suspend:Async_1',
-          'ClassText:Fallback render',
-          'Text:Function destroy layout',
-          'ClassText:Class componentWillUnmount',
-          'ClassText:Fallback componentDidMount',
+          "Text:Function render",
+          "Suspend:Async_1",
+          "ClassText:Fallback render",
+          "Text:Function destroy layout",
+          "ClassText:Class componentWillUnmount",
+          "ClassText:Fallback componentDidMount",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -2301,12 +2303,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async_1');
+        await resolveText("Async_1");
       });
       assertLog([
-        'Text:Function render',
-        'AsyncText:Async_1 render',
-        'Suspend:Async_2',
+        "Text:Function render",
+        "AsyncText:Async_1 render",
+        "Suspend:Async_2",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2318,20 +2320,20 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async_2');
+        await resolveText("Async_2");
       });
       assertLog([
-        'Text:Function render',
-        'AsyncText:Async_1 render',
-        'AsyncText:Async_2 render',
-        'ClassText:Class render',
-        'ClassText:Fallback componentWillUnmount',
-        'Text:Function create layout',
-        'AsyncText:Async_1 create layout',
-        'AsyncText:Async_2 create layout',
-        'ClassText:Class componentDidMount',
-        'AsyncText:Async_1 create passive',
-        'AsyncText:Async_2 create passive',
+        "Text:Function render",
+        "AsyncText:Async_1 render",
+        "AsyncText:Async_2 render",
+        "ClassText:Class render",
+        "ClassText:Fallback componentWillUnmount",
+        "Text:Function create layout",
+        "AsyncText:Async_1 create layout",
+        "AsyncText:Async_2 create layout",
+        "ClassText:Class componentDidMount",
+        "AsyncText:Async_1 create passive",
+        "AsyncText:Async_2 create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2346,33 +2348,33 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'Text:Function destroy layout',
-        'AsyncText:Async_1 destroy layout',
-        'AsyncText:Async_2 destroy layout',
-        'ClassText:Class componentWillUnmount',
-        'Text:Function destroy passive',
-        'AsyncText:Async_1 destroy passive',
-        'AsyncText:Async_2 destroy passive',
+        "Text:Function destroy layout",
+        "AsyncText:Async_1 destroy layout",
+        "AsyncText:Async_2 destroy layout",
+        "ClassText:Class componentWillUnmount",
+        "Text:Function destroy passive",
+        "AsyncText:Async_1 destroy passive",
+        "AsyncText:Async_2 destroy passive",
       ]);
     });
 
     // @gate enableLegacyCache
-    it('should be only destroy layout effects once if a component suspends multiple times', async () => {
+    it("should be only destroy layout effects once if a component suspends multiple times", async () => {
       class ClassText extends React.Component {
         componentDidMount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidMount`);
         }
         componentDidUpdate() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentDidUpdate`);
         }
         componentWillUnmount() {
-          const {text} = this.props;
+          const { text } = this.props;
           Scheduler.log(`ClassText:${text} componentWillUnmount`);
         }
         render() {
-          const {children, text} = this.props;
+          const { children, text } = this.props;
           Scheduler.log(`ClassText:${text} render`);
           return <span prop={text}>{children}</span>;
         }
@@ -2388,7 +2390,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
         return <span prop="Suspender" />;
       }
 
-      function App({children = null}) {
+      function App({ children = null }) {
         return (
           <Suspense fallback={<ClassText text="Fallback" />}>
             <Text text="Function" />
@@ -2402,12 +2404,12 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'Text:Function render',
+        "Text:Function render",
         'Suspender "null" render',
-        'ClassText:Class render',
-        'Text:Function create layout',
-        'ClassText:Class componentDidMount',
-        'Text:Function create passive',
+        "ClassText:Class render",
+        "Text:Function create layout",
+        "ClassText:Class componentDidMount",
+        "Text:Function create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2418,17 +2420,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
       );
 
       // Schedule an update that causes React to suspend.
-      textToRead = 'A';
+      textToRead = "A";
       await act(async () => {
         ReactNoop.render(<App />);
         await waitFor([
-          'Text:Function render',
+          "Text:Function render",
           'Suspender "A" render',
-          'Suspend:A',
-          'ClassText:Fallback render',
-          'Text:Function destroy layout',
-          'ClassText:Class componentWillUnmount',
-          'ClassText:Fallback componentDidMount',
+          "Suspend:A",
+          "ClassText:Fallback render",
+          "Text:Function destroy layout",
+          "ClassText:Class componentWillUnmount",
+          "ClassText:Fallback componentDidMount",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -2441,11 +2443,11 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
 
       // Resolving the suspended resource should re-create inner layout effects.
-      textToRead = 'B';
+      textToRead = "B";
       await act(async () => {
-        await resolveText('A');
+        await resolveText("A");
       });
-      assertLog(['Text:Function render', 'Suspender "B" render', 'Suspend:B']);
+      assertLog(["Text:Function render", 'Suspender "B" render', "Suspend:B"]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
           <span prop="Function" hidden={true} />
@@ -2457,15 +2459,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('B');
+        await resolveText("B");
       });
       assertLog([
-        'Text:Function render',
+        "Text:Function render",
         'Suspender "B" render',
-        'ClassText:Class render',
-        'ClassText:Fallback componentWillUnmount',
-        'Text:Function create layout',
-        'ClassText:Class componentDidMount',
+        "ClassText:Class render",
+        "ClassText:Fallback componentWillUnmount",
+        "Text:Function create layout",
+        "ClassText:Class componentDidMount",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2479,19 +2481,19 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'Text:Function destroy layout',
-        'ClassText:Class componentWillUnmount',
-        'Text:Function destroy passive',
+        "Text:Function destroy layout",
+        "ClassText:Class componentWillUnmount",
+        "Text:Function destroy passive",
       ]);
     });
   });
 
-  describe('refs within a tree that re-suspends in an update', () => {
-    function RefCheckerOuter({Component}) {
+  describe("refs within a tree that re-suspends in an update", () => {
+    function RefCheckerOuter({ Component }) {
       const refObject = React.useRef(null);
 
-      const manualRef = React.useMemo(() => ({current: null}), []);
-      const refCallback = React.useCallback(value => {
+      const manualRef = React.useMemo(() => ({ current: null }), []);
+      const refCallback = React.useCallback((value) => {
         Scheduler.log(`RefCheckerOuter refCallback value? ${value != null}`);
         manualRef.current = value;
       }, []);
@@ -2525,7 +2527,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
       );
     }
 
-    function RefCheckerInner({forwardedRef, text}) {
+    function RefCheckerInner({ forwardedRef, text }) {
       Scheduler.log(`RefCheckerInner:${text} render`);
       React.useLayoutEffect(() => {
         Scheduler.log(
@@ -2545,7 +2547,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
     }
 
     // @gate enableLegacyCache
-    it('should not be cleared within legacy roots', async () => {
+    it("should not be cleared within legacy roots", async () => {
       class ClassComponent extends React.Component {
         render() {
           Scheduler.log(`ClassComponent:${this.props.prop} render`);
@@ -2553,7 +2555,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
         }
       }
 
-      function App({children}) {
+      function App({ children }) {
         Scheduler.log(`App render`);
         return (
           <Suspense fallback={<Text text="Fallback" />}>
@@ -2567,16 +2569,16 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.renderLegacySyncRoot(<App />);
       });
       assertLog([
-        'App render',
-        'RefCheckerOuter render',
-        'ClassComponent:refObject render',
-        'RefCheckerInner:refObject render',
-        'ClassComponent:refCallback render',
-        'RefCheckerInner:refCallback render',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
+        "App render",
+        "RefCheckerOuter render",
+        "ClassComponent:refObject render",
+        "RefCheckerInner:refObject render",
+        "ClassComponent:refCallback render",
+        "RefCheckerInner:refCallback render",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
 
@@ -2588,29 +2590,29 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'App render',
-        'Suspend:Async',
-        'RefCheckerOuter render',
-        'ClassComponent:refObject render',
-        'RefCheckerInner:refObject render',
-        'ClassComponent:refCallback render',
-        'RefCheckerInner:refCallback render',
-        'Text:Fallback render',
-        'Text:Fallback create layout',
-        'Text:Fallback create passive',
+        "App render",
+        "Suspend:Async",
+        "RefCheckerOuter render",
+        "ClassComponent:refObject render",
+        "RefCheckerInner:refObject render",
+        "ClassComponent:refCallback render",
+        "RefCheckerInner:refCallback render",
+        "Text:Fallback render",
+        "Text:Fallback create layout",
+        "Text:Fallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Fallback" />);
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Async" />);
 
@@ -2618,19 +2620,19 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.renderLegacySyncRoot(null);
       });
       assertLog([
-        'AsyncText:Async destroy layout',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'AsyncText:Async destroy passive',
+        "AsyncText:Async destroy layout",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "AsyncText:Async destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
 
     // @gate enableLegacyCache
-    it('should be cleared and reset for host components', async () => {
-      function App({children}) {
+    it("should be cleared and reset for host components", async () => {
+      function App({ children }) {
         Scheduler.log(`App render`);
         return (
           <Suspense fallback={<Text text="Fallback" />}>
@@ -2645,14 +2647,14 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'RefCheckerOuter render',
-        'RefCheckerInner:refObject render',
-        'RefCheckerInner:refCallback render',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
+        "App render",
+        "RefCheckerOuter render",
+        "RefCheckerInner:refObject render",
+        "RefCheckerInner:refCallback render",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2669,15 +2671,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'App render',
-        'Suspend:Async',
-        'Text:Fallback render',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'Text:Fallback create layout',
-        'Text:Fallback create passive',
+        "App render",
+        "Suspend:Async",
+        "Text:Fallback render",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "Text:Fallback create layout",
+        "Text:Fallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2689,21 +2691,21 @@ describe('ReactSuspenseEffectsSemantics', () => {
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'RefCheckerOuter render',
-        'RefCheckerInner:refObject render',
-        'RefCheckerInner:refCallback render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "RefCheckerOuter render",
+        "RefCheckerInner:refObject render",
+        "RefCheckerInner:refCallback render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(
         <>
@@ -2717,18 +2719,18 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'AsyncText:Async destroy layout',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'AsyncText:Async destroy passive',
+        "AsyncText:Async destroy layout",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "AsyncText:Async destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
 
     // @gate enableLegacyCache
-    it('should be cleared and reset for class components', async () => {
+    it("should be cleared and reset for class components", async () => {
       class ClassComponent extends React.Component {
         render() {
           Scheduler.log(`ClassComponent:${this.props.prop} render`);
@@ -2736,7 +2738,7 @@ describe('ReactSuspenseEffectsSemantics', () => {
         }
       }
 
-      function App({children}) {
+      function App({ children }) {
         Scheduler.log(`App render`);
         return (
           <Suspense fallback={<Text text="Fallback" />}>
@@ -2751,16 +2753,16 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'RefCheckerOuter render',
-        'ClassComponent:refObject render',
-        'RefCheckerInner:refObject render',
-        'ClassComponent:refCallback render',
-        'RefCheckerInner:refCallback render',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
+        "App render",
+        "RefCheckerOuter render",
+        "ClassComponent:refObject render",
+        "RefCheckerInner:refObject render",
+        "ClassComponent:refCallback render",
+        "RefCheckerInner:refCallback render",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
 
@@ -2772,37 +2774,37 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'App render',
-        'Suspend:Async',
-        'Text:Fallback render',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'Text:Fallback create layout',
-        'Text:Fallback create passive',
+        "App render",
+        "Suspend:Async",
+        "Text:Fallback render",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "Text:Fallback create layout",
+        "Text:Fallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Fallback" />);
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'RefCheckerOuter render',
-        'ClassComponent:refObject render',
-        'RefCheckerInner:refObject render',
-        'ClassComponent:refCallback render',
-        'RefCheckerInner:refCallback render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "RefCheckerOuter render",
+        "ClassComponent:refObject render",
+        "RefCheckerInner:refObject render",
+        "ClassComponent:refCallback render",
+        "RefCheckerInner:refCallback render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Async" />);
 
@@ -2810,20 +2812,20 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'AsyncText:Async destroy layout',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'AsyncText:Async destroy passive',
+        "AsyncText:Async destroy layout",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "AsyncText:Async destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
 
     // @gate enableLegacyCache
-    it('should be cleared and reset for function components with useImperativeHandle', async () => {
+    it("should be cleared and reset for function components with useImperativeHandle", async () => {
       const FunctionComponent = React.forwardRef((props, ref) => {
-        Scheduler.log('FunctionComponent render');
+        Scheduler.log("FunctionComponent render");
         React.useImperativeHandle(
           ref,
           () => ({
@@ -2833,9 +2835,9 @@ describe('ReactSuspenseEffectsSemantics', () => {
         );
         return props.children;
       });
-      FunctionComponent.displayName = 'FunctionComponent';
+      FunctionComponent.displayName = "FunctionComponent";
 
-      function App({children}) {
+      function App({ children }) {
         Scheduler.log(`App render`);
         return (
           <Suspense fallback={<Text text="Fallback" />}>
@@ -2850,16 +2852,16 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'RefCheckerOuter render',
-        'FunctionComponent render',
-        'RefCheckerInner:refObject render',
-        'FunctionComponent render',
-        'RefCheckerInner:refCallback render',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
+        "App render",
+        "RefCheckerOuter render",
+        "FunctionComponent render",
+        "RefCheckerInner:refObject render",
+        "FunctionComponent render",
+        "RefCheckerInner:refCallback render",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
 
@@ -2871,37 +2873,37 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'App render',
-        'Suspend:Async',
-        'Text:Fallback render',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'Text:Fallback create layout',
-        'Text:Fallback create passive',
+        "App render",
+        "Suspend:Async",
+        "Text:Fallback render",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "Text:Fallback create layout",
+        "Text:Fallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Fallback" />);
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'RefCheckerOuter render',
-        'FunctionComponent render',
-        'RefCheckerInner:refObject render',
-        'FunctionComponent render',
-        'RefCheckerInner:refCallback render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'RefCheckerInner:refObject create layout ref? false',
-        'RefCheckerInner:refCallback create layout ref? false',
-        'RefCheckerOuter refCallback value? true',
-        'RefCheckerOuter create layout refObject? true refCallback? true',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "RefCheckerOuter render",
+        "FunctionComponent render",
+        "RefCheckerInner:refObject render",
+        "FunctionComponent render",
+        "RefCheckerInner:refCallback render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "RefCheckerInner:refObject create layout ref? false",
+        "RefCheckerInner:refCallback create layout ref? false",
+        "RefCheckerOuter refCallback value? true",
+        "RefCheckerOuter create layout refObject? true refCallback? true",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Async" />);
 
@@ -2909,28 +2911,28 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'AsyncText:Async destroy layout',
-        'RefCheckerOuter destroy layout refObject? true refCallback? true',
-        'RefCheckerInner:refObject destroy layout ref? false',
-        'RefCheckerOuter refCallback value? false',
-        'RefCheckerInner:refCallback destroy layout ref? false',
-        'AsyncText:Async destroy passive',
+        "AsyncText:Async destroy layout",
+        "RefCheckerOuter destroy layout refObject? true refCallback? true",
+        "RefCheckerInner:refObject destroy layout ref? false",
+        "RefCheckerOuter refCallback value? false",
+        "RefCheckerInner:refCallback destroy layout ref? false",
+        "AsyncText:Async destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
 
     // @gate enableLegacyCache
-    it('should not reset for user-managed values', async () => {
-      function RefChecker({forwardedRef}) {
+    it("should not reset for user-managed values", async () => {
+      function RefChecker({ forwardedRef }) {
         Scheduler.log(`RefChecker render`);
         React.useLayoutEffect(() => {
           Scheduler.log(
-            `RefChecker create layout ref? ${forwardedRef.current === 'test'}`,
+            `RefChecker create layout ref? ${forwardedRef.current === "test"}`,
           );
           return () => {
             Scheduler.log(
               `RefChecker destroy layout ref? ${
-                forwardedRef.current === 'test'
+                forwardedRef.current === "test"
               }`,
             );
           };
@@ -2938,13 +2940,13 @@ describe('ReactSuspenseEffectsSemantics', () => {
         return null;
       }
 
-      function App({children = null}) {
-        const ref = React.useRef('test');
+      function App({ children = null }) {
+        const ref = React.useRef("test");
         Scheduler.log(`App render`);
         React.useLayoutEffect(() => {
-          Scheduler.log(`App create layout ref? ${ref.current === 'test'}`);
+          Scheduler.log(`App create layout ref? ${ref.current === "test"}`);
           return () => {
-            Scheduler.log(`App destroy layout ref? ${ref.current === 'test'}`);
+            Scheduler.log(`App destroy layout ref? ${ref.current === "test"}`);
           };
         }, []);
         return (
@@ -2960,10 +2962,10 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(<App />);
       });
       assertLog([
-        'App render',
-        'RefChecker render',
-        'RefChecker create layout ref? true',
-        'App create layout ref? true',
+        "App render",
+        "RefChecker render",
+        "RefChecker create layout ref? true",
+        "App create layout ref? true",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
 
@@ -2975,27 +2977,27 @@ describe('ReactSuspenseEffectsSemantics', () => {
       });
       await advanceTimers(1000);
       assertLog([
-        'App render',
-        'Suspend:Async',
-        'Text:Fallback render',
-        'RefChecker destroy layout ref? true',
-        'Text:Fallback create layout',
-        'Text:Fallback create passive',
+        "App render",
+        "Suspend:Async",
+        "Text:Fallback render",
+        "RefChecker destroy layout ref? true",
+        "Text:Fallback create layout",
+        "Text:Fallback create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Fallback" />);
 
       // Resolving the suspended resource should re-create inner layout effects.
       await act(async () => {
-        await resolveText('Async');
+        await resolveText("Async");
       });
       assertLog([
-        'AsyncText:Async render',
-        'RefChecker render',
-        'Text:Fallback destroy layout',
-        'AsyncText:Async create layout',
-        'RefChecker create layout ref? true',
-        'Text:Fallback destroy passive',
-        'AsyncText:Async create passive',
+        "AsyncText:Async render",
+        "RefChecker render",
+        "Text:Fallback destroy layout",
+        "AsyncText:Async create layout",
+        "RefChecker create layout ref? true",
+        "Text:Fallback destroy passive",
+        "AsyncText:Async create passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Async" />);
 
@@ -3003,37 +3005,37 @@ describe('ReactSuspenseEffectsSemantics', () => {
         ReactNoop.render(null);
       });
       assertLog([
-        'App destroy layout ref? true',
-        'AsyncText:Async destroy layout',
-        'RefChecker destroy layout ref? true',
-        'AsyncText:Async destroy passive',
+        "App destroy layout ref? true",
+        "AsyncText:Async destroy layout",
+        "RefChecker destroy layout ref? true",
+        "AsyncText:Async destroy passive",
       ]);
       expect(ReactNoop).toMatchRenderedOutput(null);
     });
 
-    describe('that throw errors', () => {
+    describe("that throw errors", () => {
       // @gate enableLegacyCache
       // @gate replayFailedUnitOfWorkWithInvokeGuardedCallback
-      it('are properly handled in ref callbacks', async () => {
+      it("are properly handled in ref callbacks", async () => {
         let useRefCallbackShouldThrow = false;
 
         function ThrowsInRefCallback() {
-          Scheduler.log('ThrowsInRefCallback render');
-          const refCallback = React.useCallback(value => {
-            Scheduler.log('ThrowsInRefCallback refCallback ref? ' + !!value);
+          Scheduler.log("ThrowsInRefCallback render");
+          const refCallback = React.useCallback((value) => {
+            Scheduler.log("ThrowsInRefCallback refCallback ref? " + !!value);
             if (useRefCallbackShouldThrow) {
-              throw Error('expected');
+              throw Error("expected");
             }
           }, []);
           return <span ref={refCallback} prop="ThrowsInRefCallback" />;
         }
 
-        function App({children = null}) {
-          Scheduler.log('App render');
+        function App({ children = null }) {
+          Scheduler.log("App render");
           React.useLayoutEffect(() => {
-            Scheduler.log('App create layout');
+            Scheduler.log("App create layout");
             return () => {
-              Scheduler.log('App destroy layout');
+              Scheduler.log("App destroy layout");
             };
           }, []);
           return (
@@ -3056,17 +3058,17 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'ThrowsInRefCallback render',
-          'Text:Inside render',
-          'Text:Outside render',
-          'ThrowsInRefCallback refCallback ref? true',
-          'Text:Inside create layout',
-          'Text:Outside create layout',
-          'App create layout',
-          'Text:Inside create passive',
-          'Text:Outside create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "ThrowsInRefCallback render",
+          "Text:Inside render",
+          "Text:Outside render",
+          "ThrowsInRefCallback refCallback ref? true",
+          "Text:Inside create layout",
+          "Text:Outside create layout",
+          "App create layout",
+          "Text:Inside create passive",
+          "Text:Outside create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -3087,15 +3089,15 @@ describe('ReactSuspenseEffectsSemantics', () => {
           );
         });
         assertLog([
-          'ErrorBoundary render: try',
-          'App render',
-          'Suspend:Async',
-          'Text:Fallback render',
-          'Text:Outside render',
-          'ThrowsInRefCallback refCallback ref? false',
-          'Text:Inside destroy layout',
-          'Text:Fallback create layout',
-          'Text:Fallback create passive',
+          "ErrorBoundary render: try",
+          "App render",
+          "Suspend:Async",
+          "Text:Fallback render",
+          "Text:Outside render",
+          "ThrowsInRefCallback refCallback ref? false",
+          "Text:Inside destroy layout",
+          "Text:Fallback create layout",
+          "Text:Fallback create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -3109,39 +3111,39 @@ describe('ReactSuspenseEffectsSemantics', () => {
         // Resolve the pending suspense and throw
         useRefCallbackShouldThrow = true;
         await act(async () => {
-          await resolveText('Async');
+          await resolveText("Async");
         });
         assertLog([
-          'AsyncText:Async render',
-          'ThrowsInRefCallback render',
-          'Text:Inside render',
+          "AsyncText:Async render",
+          "ThrowsInRefCallback render",
+          "Text:Inside render",
 
           // Even though an error was thrown in refCallback,
           // subsequent layout effects should still be created.
-          'Text:Fallback destroy layout',
-          'AsyncText:Async create layout',
-          'ThrowsInRefCallback refCallback ref? true',
-          'Text:Inside create layout',
+          "Text:Fallback destroy layout",
+          "AsyncText:Async create layout",
+          "ThrowsInRefCallback refCallback ref? true",
+          "Text:Inside create layout",
 
           // Finish the in-progress commit
-          'Text:Fallback destroy passive',
-          'AsyncText:Async create passive',
+          "Text:Fallback destroy passive",
+          "AsyncText:Async create passive",
 
           // Destroy layout and passive effects in the errored tree.
-          'App destroy layout',
-          'AsyncText:Async destroy layout',
-          'ThrowsInRefCallback refCallback ref? false',
-          'Text:Inside destroy layout',
-          'Text:Outside destroy layout',
-          'AsyncText:Async destroy passive',
-          'Text:Inside destroy passive',
-          'Text:Outside destroy passive',
+          "App destroy layout",
+          "AsyncText:Async destroy layout",
+          "ThrowsInRefCallback refCallback ref? false",
+          "Text:Inside destroy layout",
+          "Text:Outside destroy layout",
+          "AsyncText:Async destroy passive",
+          "Text:Inside destroy passive",
+          "Text:Outside destroy passive",
 
           // Render fallback
-          'ErrorBoundary render: catch',
-          'Text:Error render',
-          'Text:Error create layout',
-          'Text:Error create passive',
+          "ErrorBoundary render: catch",
+          "Text:Error render",
+          "Text:Error create layout",
+          "Text:Error create passive",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Error" />);
       });

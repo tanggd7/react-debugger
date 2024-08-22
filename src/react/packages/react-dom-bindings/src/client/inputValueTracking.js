@@ -4,46 +4,37 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import {checkFormFieldValueStringCoercion} from 'shared/CheckStringCoercion';
+import { checkFormFieldValueStringCoercion } from "shared/CheckStringCoercion";
 
-                     
-                     
-                                
-                       
-  
-                                                            
-                                
- 
-
-function isCheckable(elem                  ) {
+function isCheckable(elem) {
   const type = elem.type;
   const nodeName = elem.nodeName;
   return (
     nodeName &&
-    nodeName.toLowerCase() === 'input' &&
-    (type === 'checkbox' || type === 'radio')
+    nodeName.toLowerCase() === "input" &&
+    (type === "checkbox" || type === "radio")
   );
 }
 
-function getTracker(node                         ) {
+function getTracker(node) {
   return node._valueTracker;
 }
 
-function detachTracker(node                         ) {
+function detachTracker(node) {
   node._valueTracker = null;
 }
 
-function getValueFromNode(node                  )         {
-  let value = '';
+function getValueFromNode(node) {
+  let value = "";
   if (!node) {
     return value;
   }
 
   if (isCheckable(node)) {
-    value = node.checked ? 'true' : 'false';
+    value = node.checked ? "true" : "false";
   } else {
     value = node.value;
   }
@@ -51,8 +42,8 @@ function getValueFromNode(node                  )         {
   return value;
 }
 
-function trackValueOnNode(node     )                {
-  const valueField = isCheckable(node) ? 'checked' : 'value';
+function trackValueOnNode(node) {
+  const valueField = isCheckable(node) ? "checked" : "value";
   const descriptor = Object.getOwnPropertyDescriptor(
     node.constructor.prototype,
     valueField,
@@ -61,7 +52,7 @@ function trackValueOnNode(node     )                {
   if (__DEV__) {
     checkFormFieldValueStringCoercion(node[valueField]);
   }
-  let currentValue = '' + node[valueField];
+  let currentValue = "" + node[valueField];
 
   // if someone has already defined a value or Safari, then bail
   // and don't track value will cause over reporting of changes,
@@ -69,13 +60,13 @@ function trackValueOnNode(node     )                {
   // (needed for certain tests that spyOn input values and Safari)
   if (
     node.hasOwnProperty(valueField) ||
-    typeof descriptor === 'undefined' ||
-    typeof descriptor.get !== 'function' ||
-    typeof descriptor.set !== 'function'
+    typeof descriptor === "undefined" ||
+    typeof descriptor.get !== "function" ||
+    typeof descriptor.set !== "function"
   ) {
     return;
   }
-  const {get, set} = descriptor;
+  const { get, set } = descriptor;
   Object.defineProperty(node, valueField, {
     configurable: true,
     // $FlowFixMe[missing-this-annot]
@@ -88,7 +79,7 @@ function trackValueOnNode(node     )                {
       if (__DEV__) {
         checkFormFieldValueStringCoercion(value);
       }
-      currentValue = '' + value;
+      currentValue = "" + value;
       set.call(this, value);
     },
   });
@@ -104,11 +95,11 @@ function trackValueOnNode(node     )                {
     getValue() {
       return currentValue;
     },
-    setValue(value        ) {
+    setValue(value) {
       if (__DEV__) {
         checkFormFieldValueStringCoercion(value);
       }
-      currentValue = '' + value;
+      currentValue = "" + value;
     },
     stopTracking() {
       detachTracker(node);
@@ -118,7 +109,7 @@ function trackValueOnNode(node     )                {
   return tracker;
 }
 
-export function track(node                         ) {
+export function track(node) {
   if (getTracker(node)) {
     return;
   }
@@ -126,7 +117,7 @@ export function track(node                         ) {
   node._valueTracker = trackValueOnNode(node);
 }
 
-export function updateValueIfChanged(node                         )          {
+export function updateValueIfChanged(node) {
   if (!node) {
     return false;
   }
@@ -147,7 +138,7 @@ export function updateValueIfChanged(node                         )          {
   return false;
 }
 
-export function stopTracking(node                         ) {
+export function stopTracking(node) {
   const tracker = getTracker(node);
   if (tracker) {
     tracker.stopTracking();

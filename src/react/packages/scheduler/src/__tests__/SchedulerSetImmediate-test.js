@@ -10,7 +10,7 @@
 
 /* eslint-disable no-for-of-loops/no-for-of-loops */
 
-'use strict';
+"use strict";
 
 let Scheduler;
 let runtime;
@@ -30,14 +30,14 @@ let UserBlockingPriority;
 //
 // This test suite mocks all browser methods used in our implementation. It
 // assumes as little as possible about the order and timing of events.
-describe('SchedulerDOMSetImmediate', () => {
+describe("SchedulerDOMSetImmediate", () => {
   beforeEach(() => {
     jest.resetModules();
     runtime = installMockBrowserRuntime();
-    jest.unmock('scheduler');
+    jest.unmock("scheduler");
 
     performance = global.performance;
-    Scheduler = require('scheduler');
+    Scheduler = require("scheduler");
     cancelCallback = Scheduler.unstable_cancelCallback;
     scheduleCallback = Scheduler.unstable_scheduleCallback;
     NormalPriority = Scheduler.unstable_NormalPriority;
@@ -48,7 +48,7 @@ describe('SchedulerDOMSetImmediate', () => {
     delete global.performance;
 
     if (!runtime.isLogEmpty()) {
-      throw Error('Test exited without clearing log.');
+      throw Error("Test exited without clearing log.");
     }
   });
 
@@ -71,7 +71,7 @@ describe('SchedulerDOMSetImmediate', () => {
       log(`Set Timer`);
       return id;
     };
-    global.clearTimeout = id => {
+    global.clearTimeout = (id) => {
       // TODO
     };
 
@@ -81,7 +81,7 @@ describe('SchedulerDOMSetImmediate', () => {
         port1: {},
         port2: {
           postMessage() {
-            throw Error('Should be unused');
+            throw Error("Should be unused");
           },
         },
       };
@@ -90,15 +90,15 @@ describe('SchedulerDOMSetImmediate', () => {
     let pendingSetImmediateCallback = null;
     global.setImmediate = function (cb) {
       if (pendingSetImmediateCallback) {
-        throw Error('Message event already scheduled');
+        throw Error("Message event already scheduled");
       }
-      log('Set Immediate');
+      log("Set Immediate");
       pendingSetImmediateCallback = cb;
     };
 
     function ensureLogIsEmpty() {
       if (eventLog.length !== 0) {
-        throw Error('Log is not empty. Call assertLog before continuing.');
+        throw Error("Log is not empty. Call assertLog before continuing.");
       }
     }
     function advanceTime(ms) {
@@ -107,11 +107,11 @@ describe('SchedulerDOMSetImmediate', () => {
     function fireSetImmediate() {
       ensureLogIsEmpty();
       if (!pendingSetImmediateCallback) {
-        throw Error('No setImmediate was scheduled');
+        throw Error("No setImmediate was scheduled");
       }
       const cb = pendingSetImmediateCallback;
       pendingSetImmediateCallback = null;
-      log('setImmediate Callback');
+      log("setImmediate Callback");
       cb();
     }
     function log(val) {
@@ -134,168 +134,168 @@ describe('SchedulerDOMSetImmediate', () => {
     };
   }
 
-  it('does not use setImmediate override', () => {
+  it("does not use setImmediate override", () => {
     global.setImmediate = () => {
-      throw new Error('Should not throw');
+      throw new Error("Should not throw");
     };
 
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'Task']);
+    runtime.assertLog(["setImmediate Callback", "Task"]);
   });
 
-  it('task that finishes before deadline', () => {
+  it("task that finishes before deadline", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'Task']);
+    runtime.assertLog(["setImmediate Callback", "Task"]);
   });
 
-  it('task with continuation', () => {
+  it("task with continuation", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
       while (!Scheduler.unstable_shouldYield()) {
         runtime.advanceTime(1);
       }
       runtime.log(`Yield at ${performance.now()}ms`);
       return () => {
-        runtime.log('Continuation');
+        runtime.log("Continuation");
       };
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
 
     runtime.fireSetImmediate();
     runtime.assertLog([
-      'setImmediate Callback',
-      'Task',
-      'Yield at 5ms',
-      'Set Immediate',
+      "setImmediate Callback",
+      "Task",
+      "Yield at 5ms",
+      "Set Immediate",
     ]);
 
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'Continuation']);
+    runtime.assertLog(["setImmediate Callback", "Continuation"]);
   });
 
-  it('multiple tasks', () => {
+  it("multiple tasks", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'A', 'B']);
+    runtime.assertLog(["setImmediate Callback", "A", "B"]);
   });
 
-  it('multiple tasks at different priority', () => {
+  it("multiple tasks at different priority", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
     scheduleCallback(UserBlockingPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'B', 'A']);
+    runtime.assertLog(["setImmediate Callback", "B", "A"]);
   });
 
-  it('multiple tasks with a yield in between', () => {
+  it("multiple tasks with a yield in between", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
       runtime.advanceTime(4999);
     });
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
     runtime.assertLog([
-      'setImmediate Callback',
-      'A',
+      "setImmediate Callback",
+      "A",
       // Ran out of time. Post a continuation event.
-      'Set Immediate',
+      "Set Immediate",
     ]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'B']);
+    runtime.assertLog(["setImmediate Callback", "B"]);
   });
 
-  it('cancels tasks', () => {
+  it("cancels tasks", () => {
     const task = scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     cancelCallback(task);
     runtime.assertLog([]);
   });
 
-  it('throws when a task errors then continues in a new event', () => {
+  it("throws when a task errors then continues in a new event", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Oops!');
-      throw Error('Oops!');
+      runtime.log("Oops!");
+      throw Error("Oops!");
     });
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Yay');
+      runtime.log("Yay");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
 
-    expect(() => runtime.fireSetImmediate()).toThrow('Oops!');
-    runtime.assertLog(['setImmediate Callback', 'Oops!', 'Set Immediate']);
+    expect(() => runtime.fireSetImmediate()).toThrow("Oops!");
+    runtime.assertLog(["setImmediate Callback", "Oops!", "Set Immediate"]);
 
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'Yay']);
+    runtime.assertLog(["setImmediate Callback", "Yay"]);
   });
 
-  it('schedule new task after queue has emptied', () => {
+  it("schedule new task after queue has emptied", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
 
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'A']);
+    runtime.assertLog(["setImmediate Callback", "A"]);
 
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'B']);
+    runtime.assertLog(["setImmediate Callback", "B"]);
   });
 
-  it('schedule new task after a cancellation', () => {
+  it("schedule new task after a cancellation", () => {
     const handle = scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
 
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     cancelCallback(handle);
 
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback']);
+    runtime.assertLog(["setImmediate Callback"]);
 
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Set Immediate']);
+    runtime.assertLog(["Set Immediate"]);
     runtime.fireSetImmediate();
-    runtime.assertLog(['setImmediate Callback', 'B']);
+    runtime.assertLog(["setImmediate Callback", "B"]);
   });
 });
 
-it('does not crash if setImmediate is undefined', () => {
+it("does not crash if setImmediate is undefined", () => {
   jest.resetModules();
   const originalSetImmediate = global.setImmediate;
   try {
     delete global.setImmediate;
-    jest.unmock('scheduler');
+    jest.unmock("scheduler");
     expect(() => {
-      require('scheduler');
+      require("scheduler");
     }).not.toThrow();
   } finally {
     global.setImmediate = originalSetImmediate;

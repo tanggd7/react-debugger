@@ -7,30 +7,30 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('ReactCompositeComponentNestedState-state', () => {
+describe("ReactCompositeComponentNestedState-state", () => {
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
   });
 
-  it('should provide up to date values for props', () => {
+  it("should provide up to date values for props", () => {
     class ParentComponent extends React.Component {
-      state = {color: 'blue'};
+      state = { color: "blue" };
 
-      handleColor = color => {
-        this.props.logger('parent-handleColor', this.state.color);
-        this.setState({color: color}, function () {
-          this.props.logger('parent-after-setState', this.state.color);
+      handleColor = (color) => {
+        this.props.logger("parent-handleColor", this.state.color);
+        this.setState({ color: color }, function () {
+          this.props.logger("parent-after-setState", this.state.color);
         });
       };
 
       render() {
-        this.props.logger('parent-render', this.state.color);
+        this.props.logger("parent-render", this.state.color);
         return (
           <ChildComponent
             logger={this.props.logger}
@@ -44,26 +44,26 @@ describe('ReactCompositeComponentNestedState-state', () => {
     class ChildComponent extends React.Component {
       constructor(props) {
         super(props);
-        props.logger('getInitialState', props.color);
-        this.state = {hue: 'dark ' + props.color};
+        props.logger("getInitialState", props.color);
+        this.state = { hue: "dark " + props.color };
       }
 
       handleHue = (shade, color) => {
-        this.props.logger('handleHue', this.state.hue, this.props.color);
+        this.props.logger("handleHue", this.state.hue, this.props.color);
         this.props.onSelectColor(color);
         this.setState(
           function (state, props) {
             this.props.logger(
-              'setState-this',
+              "setState-this",
               this.state.hue,
               this.props.color,
             );
-            this.props.logger('setState-args', state.hue, props.color);
-            return {hue: shade + ' ' + props.color};
+            this.props.logger("setState-args", state.hue, props.color);
+            return { hue: shade + " " + props.color };
           },
           function () {
             this.props.logger(
-              'after-setState',
+              "after-setState",
               this.state.hue,
               this.props.color,
             );
@@ -72,19 +72,19 @@ describe('ReactCompositeComponentNestedState-state', () => {
       };
 
       render() {
-        this.props.logger('render', this.state.hue, this.props.color);
+        this.props.logger("render", this.state.hue, this.props.color);
         return (
           <div>
-            <button onClick={this.handleHue.bind(this, 'dark', 'blue')}>
+            <button onClick={this.handleHue.bind(this, "dark", "blue")}>
               Dark Blue
             </button>
-            <button onClick={this.handleHue.bind(this, 'light', 'blue')}>
+            <button onClick={this.handleHue.bind(this, "light", "blue")}>
               Light Blue
             </button>
-            <button onClick={this.handleHue.bind(this, 'dark', 'green')}>
+            <button onClick={this.handleHue.bind(this, "dark", "green")}>
               Dark Green
             </button>
-            <button onClick={this.handleHue.bind(this, 'light', 'green')}>
+            <button onClick={this.handleHue.bind(this, "light", "green")}>
               Light Green
             </button>
           </div>
@@ -92,7 +92,7 @@ describe('ReactCompositeComponentNestedState-state', () => {
       }
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     const logger = jest.fn();
@@ -103,17 +103,17 @@ describe('ReactCompositeComponentNestedState-state', () => {
     container.childNodes[0].childNodes[3].click();
 
     expect(logger.mock.calls).toEqual([
-      ['parent-render', 'blue'],
-      ['getInitialState', 'blue'],
-      ['render', 'dark blue', 'blue'],
-      ['handleHue', 'dark blue', 'blue'],
-      ['parent-handleColor', 'blue'],
-      ['parent-render', 'green'],
-      ['setState-this', 'dark blue', 'blue'],
-      ['setState-args', 'dark blue', 'green'],
-      ['render', 'light green', 'green'],
-      ['after-setState', 'light green', 'green'],
-      ['parent-after-setState', 'green'],
+      ["parent-render", "blue"],
+      ["getInitialState", "blue"],
+      ["render", "dark blue", "blue"],
+      ["handleHue", "dark blue", "blue"],
+      ["parent-handleColor", "blue"],
+      ["parent-render", "green"],
+      ["setState-this", "dark blue", "blue"],
+      ["setState-args", "dark blue", "green"],
+      ["render", "light green", "green"],
+      ["after-setState", "light green", "green"],
+      ["parent-after-setState", "green"],
     ]);
   });
 });

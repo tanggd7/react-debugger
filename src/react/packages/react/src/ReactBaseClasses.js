@@ -5,8 +5,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import ReactNoopUpdateQueue from './ReactNoopUpdateQueue';
-import assign from 'shared/assign';
+import ReactNoopUpdateQueue from "./ReactNoopUpdateQueue";
+import assign from "shared/assign";
 
 const emptyObject = {};
 if (__DEV__) {
@@ -55,17 +55,17 @@ Component.prototype.isReactComponent = {};
  */
 Component.prototype.setState = function (partialState, callback) {
   if (
-    typeof partialState !== 'object' &&
-    typeof partialState !== 'function' &&
+    typeof partialState !== "object" &&
+    typeof partialState !== "function" &&
     partialState != null
   ) {
     throw new Error(
-      'setState(...): takes an object of state variables to update or a ' +
-        'function which returns an object of state variables.',
+      "setState(...): takes an object of state variables to update or a " +
+        "function which returns an object of state variables.",
     );
   }
 
-  this.updater.enqueueSetState(this, partialState, callback, 'setState');
+  this.updater.enqueueSetState(this, partialState, callback, "setState");
 };
 
 /**
@@ -83,7 +83,7 @@ Component.prototype.setState = function (partialState, callback) {
  * @protected
  */
 Component.prototype.forceUpdate = function (callback) {
-  this.updater.enqueueForceUpdate(this, callback, 'forceUpdate');
+  this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
 };
 
 /**
@@ -94,21 +94,21 @@ Component.prototype.forceUpdate = function (callback) {
 if (__DEV__) {
   const deprecatedAPIs = {
     isMounted: [
-      'isMounted',
-      'Instead, make sure to clean up subscriptions and pending requests in ' +
-        'componentWillUnmount to prevent memory leaks.',
+      "isMounted",
+      "Instead, make sure to clean up subscriptions and pending requests in " +
+        "componentWillUnmount to prevent memory leaks.",
     ],
     replaceState: [
-      'replaceState',
-      'Refactor your code to use setState instead (see ' +
-        'https://github.com/facebook/react/issues/3236).',
+      "replaceState",
+      "Refactor your code to use setState instead (see " +
+        "https://github.com/facebook/react/issues/3236).",
     ],
   };
   const defineDeprecationWarning = function (methodName, info) {
     Object.defineProperty(Component.prototype, methodName, {
       get: function () {
         console.warn(
-          '%s(...) is deprecated in plain JavaScript React classes. %s',
+          "%s(...) is deprecated in plain JavaScript React classes. %s",
           info[0],
           info[1],
         );
@@ -143,4 +143,4 @@ pureComponentPrototype.constructor = PureComponent;
 assign(pureComponentPrototype, Component.prototype);
 pureComponentPrototype.isPureReactComponent = true;
 
-export {Component, PureComponent};
+export { Component, PureComponent };

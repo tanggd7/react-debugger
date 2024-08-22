@@ -4,52 +4,46 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-                                                           
-                                            
-                                                   
-                                                                        
-                                                                   
 
-import {enableCache, enableTransitionTracing} from 'shared/ReactFeatureFlags';
-import {isPrimaryRenderer} from './ReactFiberConfig';
-import {createCursor, push, pop} from './ReactFiberStack';
+import { enableCache, enableTransitionTracing } from "shared/ReactFeatureFlags";
+import { isPrimaryRenderer } from "./ReactFiberConfig";
+import { createCursor, push, pop } from "./ReactFiberStack";
 import {
   getWorkInProgressRoot,
   getWorkInProgressTransitions,
-} from './ReactFiberWorkLoop';
+} from "./ReactFiberWorkLoop";
 import {
   createCache,
   retainCache,
   CacheContext,
-} from './ReactFiberCacheComponent';
+} from "./ReactFiberCacheComponent";
 
-import ReactSharedInternals from 'shared/ReactSharedInternals';
+import ReactSharedInternals from "shared/ReactSharedInternals";
 
-const {ReactCurrentBatchConfig} = ReactSharedInternals;
+const { ReactCurrentBatchConfig } = ReactSharedInternals;
 
 export const NoTransition = null;
 
-export function requestCurrentTransition()                    {
+export function requestCurrentTransition() {
   return ReactCurrentBatchConfig.transition;
 }
 
 // When retrying a Suspense/Offscreen boundary, we restore the cache that was
 // used during the previous render by placing it here, on the stack.
-const resumedCache                            = createCursor(null);
+const resumedCache = createCursor(null);
 
 // During the render/synchronous commit phase, we don't actually process the
 // transitions. Therefore, we want to lazily combine transitions. Instead of
 // comparing the arrays of transitions when we combine them and storing them
 // and filtering out the duplicates, we will instead store the unprocessed transitions
 // in an array and actually filter them in the passive phase.
-const transitionStack                                        =
-  createCursor(null);
+const transitionStack = createCursor(null);
 
-function peekCacheFromPool()               {
+function peekCacheFromPool() {
   if (!enableCache) {
-    return (null     );
+    return null;
   }
 
   // Check if the cache pool already has a cache we can use.
@@ -63,13 +57,13 @@ function peekCacheFromPool()               {
   }
 
   // Otherwise, check the root's cache pool.
-  const root = (getWorkInProgressRoot()     );
+  const root = getWorkInProgressRoot();
   const cacheFromRootCachePool = root.pooledCache;
 
   return cacheFromRootCachePool;
 }
 
-export function requestCacheFromPool(renderLanes       )        {
+export function requestCacheFromPool(renderLanes) {
   // Similar to previous function, except if there's not already a cache in the
   // pool, we allocate a new one.
   const cacheFromPool = peekCacheFromPool();
@@ -87,7 +81,7 @@ export function requestCacheFromPool(renderLanes       )        {
   // - One of several fiber types: host root, cache boundary, suspense
   //   component. These retain and release in the commit phase.
 
-  const root = (getWorkInProgressRoot()     );
+  const root = getWorkInProgressRoot();
   const freshCache = createCache();
   root.pooledCache = freshCache;
   retainCache(freshCache);
@@ -97,32 +91,24 @@ export function requestCacheFromPool(renderLanes       )        {
   return freshCache;
 }
 
-export function pushRootTransition(
-  workInProgress       ,
-  root           ,
-  renderLanes       ,
-) {
+export function pushRootTransition(workInProgress, root, renderLanes) {
   if (enableTransitionTracing) {
     const rootTransitions = getWorkInProgressTransitions();
     push(transitionStack, rootTransitions, workInProgress);
   }
 }
 
-export function popRootTransition(
-  workInProgress       ,
-  root           ,
-  renderLanes       ,
-) {
+export function popRootTransition(workInProgress, root, renderLanes) {
   if (enableTransitionTracing) {
     pop(transitionStack, workInProgress);
   }
 }
 
 export function pushTransition(
-  offscreenWorkInProgress       ,
-  prevCachePool                         ,
-  newTransitions                          ,
-)       {
+  offscreenWorkInProgress,
+  prevCachePool,
+  newTransitions,
+) {
   if (enableCache) {
     if (prevCachePool === null) {
       push(resumedCache, resumedCache.current, offscreenWorkInProgress);
@@ -146,7 +132,7 @@ export function pushTransition(
   }
 }
 
-export function popTransition(workInProgress       , current              ) {
+export function popTransition(workInProgress, current) {
   if (current !== null) {
     if (enableTransitionTracing) {
       pop(transitionStack, workInProgress);
@@ -158,7 +144,7 @@ export function popTransition(workInProgress       , current              ) {
   }
 }
 
-export function getPendingTransitions()                           {
+export function getPendingTransitions() {
   if (!enableTransitionTracing) {
     return null;
   }
@@ -166,7 +152,7 @@ export function getPendingTransitions()                           {
   return transitionStack.current;
 }
 
-export function getSuspendedCache()                          {
+export function getSuspendedCache() {
   if (!enableCache) {
     return null;
   }
@@ -189,7 +175,7 @@ export function getSuspendedCache()                          {
   };
 }
 
-export function getOffscreenDeferredCache()                          {
+export function getOffscreenDeferredCache() {
   if (!enableCache) {
     return null;
   }

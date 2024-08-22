@@ -4,25 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                     
-
-import {version, renderToStringImpl} from './ReactDOMLegacyServerImpl';
+import { version, renderToStringImpl } from "./ReactDOMLegacyServerImpl";
 import {
   renderToNodeStream,
   renderToStaticNodeStream,
-} from './ReactDOMLegacyServerNodeStream';
+} from "./ReactDOMLegacyServerNodeStream";
 
-                      
-                            
-  
-
-function renderToString(
-  children               ,
-  options                ,
-)         {
+function renderToString(children, options) {
   return renderToStringImpl(
     children,
     options,
@@ -31,10 +22,7 @@ function renderToString(
   );
 }
 
-function renderToStaticMarkup(
-  children               ,
-  options                ,
-)         {
+function renderToStaticMarkup(children, options) {
   return renderToStringImpl(
     children,
     options,

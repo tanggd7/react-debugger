@@ -4,28 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-let fakeNode          = (null     );
+let fakeNode = null;
 if (__DEV__) {
   if (
-    typeof window !== 'undefined' &&
-    typeof window.dispatchEvent === 'function' &&
-    typeof document !== 'undefined' &&
+    typeof window !== "undefined" &&
+    typeof window.dispatchEvent === "function" &&
+    typeof document !== "undefined" &&
     // $FlowFixMe[method-unbinding]
-    typeof document.createEvent === 'function'
+    typeof document.createEvent === "function"
   ) {
-    fakeNode = document.createElement('react');
+    fakeNode = document.createElement("react");
   }
 }
 
-export default function invokeGuardedCallbackImpl                             (
-                                          
-  name               ,
-  func                    ,
-  context         ,
-)       {
+export default function invokeGuardedCallbackImpl(name, func, context) {
   if (__DEV__) {
     // In DEV mode, we use a special version
     // that plays more nicely with the browser's DevTools. The idea is to preserve
@@ -47,7 +42,7 @@ export default function invokeGuardedCallbackImpl                             (
 
     // fakeNode signifies we are in an environment with a document and window object
     if (fakeNode) {
-      const evt = document.createEvent('Event');
+      const evt = document.createEvent("Event");
 
       let didCall = false;
       // Keeps track of whether the user-provided callback threw an error. We
@@ -67,7 +62,7 @@ export default function invokeGuardedCallbackImpl                             (
       // dispatching: https://github.com/facebook/react/issues/13688
       const windowEventDescriptor = Object.getOwnPropertyDescriptor(
         window,
-        'event',
+        "event",
       );
 
       const restoreAfterDispatch = () => {
@@ -82,8 +77,8 @@ export default function invokeGuardedCallbackImpl                             (
         // "Member not found" in strict mode, and in Firefox which does not
         // support window.event.
         if (
-          typeof window.event !== 'undefined' &&
-          window.hasOwnProperty('event')
+          typeof window.event !== "undefined" &&
+          window.hasOwnProperty("event")
         ) {
           window.event = windowEvent;
         }
@@ -118,7 +113,7 @@ export default function invokeGuardedCallbackImpl                             (
       let didSetError = false;
       let isCrossOriginError = false;
 
-      const handleWindowError = (event            ) => {
+      const handleWindowError = (event) => {
         error = event.error;
         didSetError = true;
         if (error === null && event.colno === 0 && event.lineno === 0) {
@@ -128,7 +123,7 @@ export default function invokeGuardedCallbackImpl                             (
           // Some other error handler has prevented default.
           // Browsers silence the error report if this happens.
           // We'll remember this to later decide whether to log it or not.
-          if (error != null && typeof error === 'object') {
+          if (error != null && typeof error === "object") {
             try {
               error._suppressLogging = true;
             } catch (inner) {
@@ -139,10 +134,10 @@ export default function invokeGuardedCallbackImpl                             (
       };
 
       // Create a fake event type.
-      const evtType = `react-${name ? name : 'invokeguardedcallback'}`;
+      const evtType = `react-${name ? name : "invokeguardedcallback"}`;
 
       // Attach our event handlers
-      window.addEventListener('error', handleWindowError);
+      window.addEventListener("error", handleWindowError);
       fakeNode.addEventListener(evtType, callCallback, false);
 
       // Synchronously dispatch our fake event. If the user-provided function
@@ -150,7 +145,7 @@ export default function invokeGuardedCallbackImpl                             (
       evt.initEvent(evtType, false, false);
       fakeNode.dispatchEvent(evt);
       if (windowEventDescriptor) {
-        Object.defineProperty(window, 'event', windowEventDescriptor);
+        Object.defineProperty(window, "event", windowEventDescriptor);
       }
 
       if (didCall && didError) {
@@ -158,28 +153,28 @@ export default function invokeGuardedCallbackImpl                             (
           // The callback errored, but the error event never fired.
           // eslint-disable-next-line react-internal/prod-error-codes
           error = new Error(
-            'An error was thrown inside one of your components, but React ' +
+            "An error was thrown inside one of your components, but React " +
               "doesn't know what it was. This is likely due to browser " +
               'flakiness. React does its best to preserve the "Pause on ' +
               'exceptions" behavior of the DevTools, which requires some ' +
               "DEV-mode only tricks. It's possible that these don't work in " +
-              'your browser. Try triggering the error in production mode, ' +
-              'or switching to a modern browser. If you suspect that this is ' +
-              'actually an issue with React, please file an issue.',
+              "your browser. Try triggering the error in production mode, " +
+              "or switching to a modern browser. If you suspect that this is " +
+              "actually an issue with React, please file an issue.",
           );
         } else if (isCrossOriginError) {
           // eslint-disable-next-line react-internal/prod-error-codes
           error = new Error(
             "A cross-origin error was thrown. React doesn't have access to " +
-              'the actual error object in development. ' +
-              'See https://reactjs.org/link/crossorigin-error for more information.',
+              "the actual error object in development. " +
+              "See https://reactjs.org/link/crossorigin-error for more information.",
           );
         }
         this.onError(error);
       }
 
       // Remove our event listeners
-      window.removeEventListener('error', handleWindowError);
+      window.removeEventListener("error", handleWindowError);
 
       if (didCall) {
         return;

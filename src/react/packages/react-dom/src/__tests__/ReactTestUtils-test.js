@@ -7,33 +7,33 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import * as ReactDOMServer from 'react-dom/server';
-import * as ReactTestUtils from 'react-dom/test-utils';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import * as ReactDOMServer from "react-dom/server";
+import * as ReactTestUtils from "react-dom/test-utils";
 
 function getTestDocument(markup) {
-  const doc = document.implementation.createHTMLDocument('');
+  const doc = document.implementation.createHTMLDocument("");
   doc.open();
   doc.write(
     markup ||
-      '<!doctype html><html><meta charset=utf-8><title>test doc</title>',
+      "<!doctype html><html><meta charset=utf-8><title>test doc</title>",
   );
   doc.close();
   return doc;
 }
 
-describe('ReactTestUtils', () => {
-  it('Simulate should have locally attached media events', () => {
+describe("ReactTestUtils", () => {
+  it("Simulate should have locally attached media events", () => {
     expect(Object.keys(ReactTestUtils.Simulate).sort()).toMatchSnapshot();
   });
 
-  it('gives Jest mocks a passthrough implementation with mockComponent()', () => {
+  it("gives Jest mocks a passthrough implementation with mockComponent()", () => {
     class MockedComponent extends React.Component {
       render() {
-        throw new Error('Should not get here.');
+        throw new Error("Should not get here.");
       }
     }
     // This is close enough to what a Jest mock would give us.
@@ -41,21 +41,21 @@ describe('ReactTestUtils', () => {
 
     // Patch it up so it returns its children.
     expect(() => ReactTestUtils.mockComponent(MockedComponent)).toWarnDev(
-      'ReactTestUtils.mockComponent() is deprecated. ' +
-        'Use shallow rendering or jest.mock() instead.\n\n' +
-        'See https://reactjs.org/link/test-utils-mock-component for more information.',
-      {withoutStack: true},
+      "ReactTestUtils.mockComponent() is deprecated. " +
+        "Use shallow rendering or jest.mock() instead.\n\n" +
+        "See https://reactjs.org/link/test-utils-mock-component for more information.",
+      { withoutStack: true },
     );
 
     // De-duplication check
     ReactTestUtils.mockComponent(MockedComponent);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     ReactDOM.render(<MockedComponent>Hello</MockedComponent>, container);
-    expect(container.textContent).toBe('Hello');
+    expect(container.textContent).toBe("Hello");
   });
 
-  it('can scryRenderedComponentsWithType', () => {
+  it("can scryRenderedComponentsWithType", () => {
     class Child extends React.Component {
       render() {
         return null;
@@ -78,7 +78,7 @@ describe('ReactTestUtils', () => {
     expect(scryResults.length).toBe(1);
   });
 
-  it('can scryRenderedDOMComponentsWithClass with TextComponent', () => {
+  it("can scryRenderedDOMComponentsWithClass with TextComponent", () => {
     class Wrapper extends React.Component {
       render() {
         return (
@@ -92,17 +92,17 @@ describe('ReactTestUtils', () => {
     const renderedComponent = ReactTestUtils.renderIntoDocument(<Wrapper />);
     const scryResults = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      'NonExistentClass',
+      "NonExistentClass",
     );
     expect(scryResults.length).toBe(0);
   });
 
-  it('can scryRenderedDOMComponentsWithClass with className contains \\n', () => {
+  it("can scryRenderedDOMComponentsWithClass with className contains \\n", () => {
     class Wrapper extends React.Component {
       render() {
         return (
           <div>
-            Hello <span className={'x\ny'}>Jim</span>
+            Hello <span className={"x\ny"}>Jim</span>
           </div>
         );
       }
@@ -111,17 +111,17 @@ describe('ReactTestUtils', () => {
     const renderedComponent = ReactTestUtils.renderIntoDocument(<Wrapper />);
     const scryResults = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      'x',
+      "x",
     );
     expect(scryResults.length).toBe(1);
   });
 
-  it('can scryRenderedDOMComponentsWithClass with multiple classes', () => {
+  it("can scryRenderedDOMComponentsWithClass with multiple classes", () => {
     class Wrapper extends React.Component {
       render() {
         return (
           <div>
-            Hello <span className={'x y z'}>Jim</span>
+            Hello <span className={"x y z"}>Jim</span>
           </div>
         );
       }
@@ -130,19 +130,19 @@ describe('ReactTestUtils', () => {
     const renderedComponent = ReactTestUtils.renderIntoDocument(<Wrapper />);
     const scryResults1 = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      'x y',
+      "x y",
     );
     expect(scryResults1.length).toBe(1);
 
     const scryResults2 = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      'x z',
+      "x z",
     );
     expect(scryResults2.length).toBe(1);
 
     const scryResults3 = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      ['x', 'y'],
+      ["x", "y"],
     );
     expect(scryResults3.length).toBe(1);
 
@@ -151,25 +151,25 @@ describe('ReactTestUtils', () => {
 
     const scryResults4 = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      ['x', 'a'],
+      ["x", "a"],
     );
     expect(scryResults4.length).toBe(0);
 
     const scryResults5 = ReactTestUtils.scryRenderedDOMComponentsWithClass(
       renderedComponent,
-      ['x a'],
+      ["x a"],
     );
     expect(scryResults5.length).toBe(0);
   });
 
-  it('traverses children in the correct order', () => {
+  it("traverses children in the correct order", () => {
     class Wrapper extends React.Component {
       render() {
         return <div>{this.props.children}</div>;
       }
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     ReactDOM.render(
       <Wrapper>
         {null}
@@ -193,19 +193,19 @@ describe('ReactTestUtils', () => {
     });
 
     // Should be document order, not mount order (which would be purple, orange)
-    expect(log).toEqual(['orangepurple', 'orange', 'purple']);
+    expect(log).toEqual(["orangepurple", "orange", "purple"]);
   });
 
-  it('should support injected wrapper components as DOM components', () => {
+  it("should support injected wrapper components as DOM components", () => {
     const injectedDOMComponents = [
-      'button',
-      'form',
-      'iframe',
-      'img',
-      'input',
-      'option',
-      'select',
-      'textarea',
+      "button",
+      "form",
+      "iframe",
+      "img",
+      "input",
+      "option",
+      "select",
+      "textarea",
     ];
 
     injectedDOMComponents.forEach(function (type) {
@@ -239,15 +239,15 @@ describe('ReactTestUtils', () => {
     const testDocument = getTestDocument(markup);
     const component = ReactDOM.hydrate(<Root />, testDocument);
 
-    expect(component.htmlRef.current.tagName).toBe('HTML');
-    expect(component.headRef.current.tagName).toBe('HEAD');
-    expect(component.bodyRef.current.tagName).toBe('BODY');
+    expect(component.htmlRef.current.tagName).toBe("HTML");
+    expect(component.headRef.current.tagName).toBe("HEAD");
+    expect(component.bodyRef.current.tagName).toBe("BODY");
     expect(ReactTestUtils.isDOMComponent(component.htmlRef.current)).toBe(true);
     expect(ReactTestUtils.isDOMComponent(component.headRef.current)).toBe(true);
     expect(ReactTestUtils.isDOMComponent(component.bodyRef.current)).toBe(true);
   });
 
-  it('can scry with stateless components involved', () => {
+  it("can scry with stateless components involved", () => {
     const Function = () => (
       <div>
         <hr />
@@ -266,89 +266,89 @@ describe('ReactTestUtils', () => {
     }
 
     const inst = ReactTestUtils.renderIntoDocument(<SomeComponent />);
-    const hrs = ReactTestUtils.scryRenderedDOMComponentsWithTag(inst, 'hr');
+    const hrs = ReactTestUtils.scryRenderedDOMComponentsWithTag(inst, "hr");
     expect(hrs.length).toBe(2);
   });
 
-  it('provides a clear error when passing invalid objects to scry', () => {
+  it("provides a clear error when passing invalid objects to scry", () => {
     // This is probably too relaxed but it's existing behavior.
-    ReactTestUtils.findAllInRenderedTree(null, 'span');
-    ReactTestUtils.findAllInRenderedTree(undefined, 'span');
-    ReactTestUtils.findAllInRenderedTree('', 'span');
-    ReactTestUtils.findAllInRenderedTree(0, 'span');
-    ReactTestUtils.findAllInRenderedTree(false, 'span');
+    ReactTestUtils.findAllInRenderedTree(null, "span");
+    ReactTestUtils.findAllInRenderedTree(undefined, "span");
+    ReactTestUtils.findAllInRenderedTree("", "span");
+    ReactTestUtils.findAllInRenderedTree(0, "span");
+    ReactTestUtils.findAllInRenderedTree(false, "span");
 
     expect(() => {
-      ReactTestUtils.findAllInRenderedTree([], 'span');
+      ReactTestUtils.findAllInRenderedTree([], "span");
     }).toThrow(
-      'findAllInRenderedTree(...): the first argument must be a React class instance. ' +
-        'Instead received: an array.',
+      "findAllInRenderedTree(...): the first argument must be a React class instance. " +
+        "Instead received: an array.",
     );
     expect(() => {
-      ReactTestUtils.scryRenderedDOMComponentsWithClass(10, 'button');
+      ReactTestUtils.scryRenderedDOMComponentsWithClass(10, "button");
     }).toThrow(
-      'scryRenderedDOMComponentsWithClass(...): the first argument must be a React class instance. ' +
-        'Instead received: 10.',
+      "scryRenderedDOMComponentsWithClass(...): the first argument must be a React class instance. " +
+        "Instead received: 10.",
     );
     expect(() => {
-      ReactTestUtils.findRenderedDOMComponentWithClass('hello', 'button');
+      ReactTestUtils.findRenderedDOMComponentWithClass("hello", "button");
     }).toThrow(
-      'findRenderedDOMComponentWithClass(...): the first argument must be a React class instance. ' +
-        'Instead received: hello.',
+      "findRenderedDOMComponentWithClass(...): the first argument must be a React class instance. " +
+        "Instead received: hello.",
     );
     expect(() => {
       ReactTestUtils.scryRenderedDOMComponentsWithTag(
-        {x: true, y: false},
-        'span',
+        { x: true, y: false },
+        "span",
       );
     }).toThrow(
-      'scryRenderedDOMComponentsWithTag(...): the first argument must be a React class instance. ' +
-        'Instead received: object with keys {x, y}.',
+      "scryRenderedDOMComponentsWithTag(...): the first argument must be a React class instance. " +
+        "Instead received: object with keys {x, y}.",
     );
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     expect(() => {
-      ReactTestUtils.findRenderedDOMComponentWithTag(div, 'span');
+      ReactTestUtils.findRenderedDOMComponentWithTag(div, "span");
     }).toThrow(
-      'findRenderedDOMComponentWithTag(...): the first argument must be a React class instance. ' +
-        'Instead received: a DOM node.',
-    );
-    expect(() => {
-      ReactTestUtils.scryRenderedComponentsWithType(true, 'span');
-    }).toThrow(
-      'scryRenderedComponentsWithType(...): the first argument must be a React class instance. ' +
-        'Instead received: true.',
+      "findRenderedDOMComponentWithTag(...): the first argument must be a React class instance. " +
+        "Instead received: a DOM node.",
     );
     expect(() => {
-      ReactTestUtils.findRenderedComponentWithType(true, 'span');
+      ReactTestUtils.scryRenderedComponentsWithType(true, "span");
     }).toThrow(
-      'findRenderedComponentWithType(...): the first argument must be a React class instance. ' +
-        'Instead received: true.',
+      "scryRenderedComponentsWithType(...): the first argument must be a React class instance. " +
+        "Instead received: true.",
+    );
+    expect(() => {
+      ReactTestUtils.findRenderedComponentWithType(true, "span");
+    }).toThrow(
+      "findRenderedComponentWithType(...): the first argument must be a React class instance. " +
+        "Instead received: true.",
     );
   });
 
-  describe('Simulate', () => {
-    it('should change the value of an input field', () => {
+  describe("Simulate", () => {
+    it("should change the value of an input field", () => {
       const obj = {
         handler: function (e) {
           e.persist();
         },
       };
-      spyOnDevAndProd(obj, 'handler');
-      const container = document.createElement('div');
+      spyOnDevAndProd(obj, "handler");
+      const container = document.createElement("div");
       const node = ReactDOM.render(
         <input type="text" onChange={obj.handler} />,
         container,
       );
 
-      node.value = 'giraffe';
+      node.value = "giraffe";
       ReactTestUtils.Simulate.change(node);
 
       expect(obj.handler).toHaveBeenCalledWith(
-        expect.objectContaining({target: node}),
+        expect.objectContaining({ target: node }),
       );
     });
 
-    it('should change the value of an input field in a component', () => {
+    it("should change the value of an input field in a component", () => {
       class SomeComponent extends React.Component {
         inputRef = React.createRef();
         render() {
@@ -369,27 +369,27 @@ describe('ReactTestUtils', () => {
           e.persist();
         },
       };
-      spyOnDevAndProd(obj, 'handler');
-      const container = document.createElement('div');
+      spyOnDevAndProd(obj, "handler");
+      const container = document.createElement("div");
       const instance = ReactDOM.render(
         <SomeComponent handleChange={obj.handler} />,
         container,
       );
 
       const node = instance.inputRef.current;
-      node.value = 'zebra';
+      node.value = "zebra";
       ReactTestUtils.Simulate.change(node);
 
       expect(obj.handler).toHaveBeenCalledWith(
-        expect.objectContaining({target: node}),
+        expect.objectContaining({ target: node }),
       );
     });
 
-    it('should not warn when used with extra properties', () => {
+    it("should not warn when used with extra properties", () => {
       const CLIENT_X = 100;
 
       class Component extends React.Component {
-        handleClick = e => {
+        handleClick = (e) => {
           expect(e.clientX).toBe(CLIENT_X);
         };
 
@@ -398,31 +398,31 @@ describe('ReactTestUtils', () => {
         }
       }
 
-      const element = document.createElement('div');
+      const element = document.createElement("div");
       const instance = ReactDOM.render(<Component />, element);
       ReactTestUtils.Simulate.click(ReactDOM.findDOMNode(instance), {
         clientX: CLIENT_X,
       });
     });
 
-    it('should set the type of the event', () => {
+    it("should set the type of the event", () => {
       let event;
-      const stub = jest.fn().mockImplementation(e => {
+      const stub = jest.fn().mockImplementation((e) => {
         e.persist();
         event = e;
       });
 
-      const container = document.createElement('div');
+      const container = document.createElement("div");
       const instance = ReactDOM.render(<div onKeyDown={stub} />, container);
       const node = ReactDOM.findDOMNode(instance);
 
       ReactTestUtils.Simulate.keyDown(node);
 
-      expect(event.type).toBe('keydown');
-      expect(event.nativeEvent.type).toBe('keydown');
+      expect(event.type).toBe("keydown");
+      expect(event.nativeEvent.type).toBe("keydown");
     });
 
-    it('should work with renderIntoDocument', () => {
+    it("should work with renderIntoDocument", () => {
       const onChange = jest.fn();
 
       class MyComponent extends React.Component {
@@ -438,18 +438,18 @@ describe('ReactTestUtils', () => {
       const instance = ReactTestUtils.renderIntoDocument(<MyComponent />);
       const input = ReactTestUtils.findRenderedDOMComponentWithTag(
         instance,
-        'input',
+        "input",
       );
-      input.value = 'giraffe';
+      input.value = "giraffe";
       ReactTestUtils.Simulate.change(input);
 
       expect(onChange).toHaveBeenCalledWith(
-        expect.objectContaining({target: input}),
+        expect.objectContaining({ target: input }),
       );
     });
   });
 
-  it('should call setState callback with no arguments', () => {
+  it("should call setState callback with no arguments", () => {
     let mockArgs;
     class Component extends React.Component {
       componentDidMount() {
@@ -463,7 +463,7 @@ describe('ReactTestUtils', () => {
     ReactTestUtils.renderIntoDocument(<Component />);
     expect(mockArgs.length).toEqual(0);
   });
-  it('should find rendered component with type in document', () => {
+  it("should find rendered component with type in document", () => {
     class MyComponent extends React.Component {
       render() {
         return true;

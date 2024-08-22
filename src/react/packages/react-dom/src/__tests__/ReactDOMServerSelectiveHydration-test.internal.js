@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-import {createEventTarget} from 'dom-event-testing-library';
+import { createEventTarget } from "dom-event-testing-library";
 
 let React;
 let ReactDOM;
@@ -35,9 +35,9 @@ function dispatchMouseHoverEvent(to, from) {
     from = null;
   }
   if (from) {
-    const mouseOutEvent = document.createEvent('MouseEvents');
+    const mouseOutEvent = document.createEvent("MouseEvents");
     mouseOutEvent.initMouseEvent(
-      'mouseout',
+      "mouseout",
       true,
       true,
       window,
@@ -56,9 +56,9 @@ function dispatchMouseHoverEvent(to, from) {
     from.dispatchEvent(mouseOutEvent);
   }
   if (to) {
-    const mouseOverEvent = document.createEvent('MouseEvents');
+    const mouseOverEvent = document.createEvent("MouseEvents");
     mouseOverEvent.initMouseEvent(
-      'mouseover',
+      "mouseover",
       true,
       true,
       window,
@@ -79,9 +79,9 @@ function dispatchMouseHoverEvent(to, from) {
 }
 
 function dispatchClickEvent(target) {
-  const mouseOutEvent = document.createEvent('MouseEvents');
+  const mouseOutEvent = document.createEvent("MouseEvents");
   mouseOutEvent.initMouseEvent(
-    'click',
+    "click",
     true,
     true,
     window,
@@ -106,7 +106,7 @@ function dispatchClickEvent(target) {
 function TODO_scheduleIdleDOMSchedulerTask(fn) {
   ReactDOM.unstable_runWithPriority(IdleEventPriority, () => {
     const prevEvent = window.event;
-    window.event = {type: 'message'};
+    window.event = { type: "message" };
     try {
       fn();
     } finally {
@@ -118,7 +118,7 @@ function TODO_scheduleIdleDOMSchedulerTask(fn) {
 function TODO_scheduleContinuousSchedulerTask(fn) {
   ReactDOM.unstable_runWithPriority(ContinuousEventPriority, () => {
     const prevEvent = window.event;
-    window.event = {type: 'message'};
+    window.event = { type: "message" };
     try {
       fn();
     } finally {
@@ -127,47 +127,48 @@ function TODO_scheduleContinuousSchedulerTask(fn) {
   });
 }
 
-describe('ReactDOMServerSelectiveHydration', () => {
+describe("ReactDOMServerSelectiveHydration", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
     ReactFeatureFlags.enableCreateEventHandleAPI = true;
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMClient = require('react-dom/client');
-    ReactDOMServer = require('react-dom/server');
-    act = require('internal-test-utils').act;
-    Scheduler = require('scheduler');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMClient = require("react-dom/client");
+    ReactDOMServer = require("react-dom/server");
+    act = require("internal-test-utils").act;
+    Scheduler = require("scheduler");
     Suspense = React.Suspense;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
     waitForAll = InternalTestUtils.waitForAll;
     waitFor = InternalTestUtils.waitFor;
     waitForPaint = InternalTestUtils.waitForPaint;
 
-    IdleEventPriority = require('react-reconciler/constants').IdleEventPriority;
+    IdleEventPriority = require("react-reconciler/constants").IdleEventPriority;
     ContinuousEventPriority =
-      require('react-reconciler/constants').ContinuousEventPriority;
+      require("react-reconciler/constants").ContinuousEventPriority;
   });
 
-  it('hydrates the target boundary synchronously during a click', async () => {
-    function Child({text}) {
+  it("hydrates the target boundary synchronously during a click", async () => {
+    function Child({ text }) {
       Scheduler.log(text);
       return (
         <span
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
-            Scheduler.log('Clicked ' + text);
-          }}>
+            Scheduler.log("Clicked " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -182,15 +183,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B']);
+    assertLog(["App", "A", "B"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const span = container.getElementsByTagName('span')[1];
+    const span = container.getElementsByTagName("span")[1];
 
     ReactDOMClient.hydrateRoot(container, <App />);
 
@@ -205,37 +206,38 @@ describe('ReactDOMServerSelectiveHydration', () => {
     expect(result).toBe(false);
 
     // We rendered App, B and then invoked the event without rendering A.
-    assertLog(['App', 'B', 'Clicked B']);
+    assertLog(["App", "B", "Clicked B"]);
 
     // After continuing the scheduler, we finally hydrate A.
-    await waitForAll(['A']);
+    await waitForAll(["A"]);
 
     document.body.removeChild(container);
   });
 
-  it('hydrates at higher pri if sync did not work first time', async () => {
+  it("hydrates at higher pri if sync did not work first time", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
 
-    function Child({text}) {
-      if ((text === 'A' || text === 'D') && suspend) {
+    function Child({ text }) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
       return (
         <span
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
-            Scheduler.log('Clicked ' + text);
-          }}>
+            Scheduler.log("Clicked " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -256,15 +258,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C', 'D']);
+    assertLog(["App", "A", "B", "C", "D"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanD = container.getElementsByTagName('span')[3];
+    const spanD = container.getElementsByTagName("span")[3];
 
     suspend = true;
 
@@ -281,10 +283,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       expect(result).toBe(true);
     });
     assertLog([
-      'App',
+      "App",
       // Continuing rendering will render B next.
-      'B',
-      'C',
+      "B",
+      "C",
     ]);
 
     await act(async () => {
@@ -293,34 +295,35 @@ describe('ReactDOMServerSelectiveHydration', () => {
       await promise;
     });
 
-    assertLog(['D', 'A']);
+    assertLog(["D", "A"]);
 
     document.body.removeChild(container);
   });
 
-  it('hydrates at higher pri for secondary discrete events', async () => {
+  it("hydrates at higher pri for secondary discrete events", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
 
-    function Child({text}) {
-      if ((text === 'A' || text === 'D') && suspend) {
+    function Child({ text }) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
       return (
         <span
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
-            Scheduler.log('Clicked ' + text);
-          }}>
+            Scheduler.log("Clicked " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -341,17 +344,17 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C', 'D']);
+    assertLog(["App", "A", "B", "C", "D"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanA = container.getElementsByTagName('span')[0];
-    const spanC = container.getElementsByTagName('span')[2];
-    const spanD = container.getElementsByTagName('span')[3];
+    const spanA = container.getElementsByTagName("span")[0];
+    const spanC = container.getElementsByTagName("span")[2];
+    const spanD = container.getElementsByTagName("span")[3];
 
     suspend = true;
 
@@ -367,7 +370,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     dispatchClickEvent(spanC);
     dispatchClickEvent(spanD);
 
-    assertLog(['App', 'C', 'Clicked C']);
+    assertLog(["App", "C", "Clicked C"]);
 
     await act(async () => {
       suspend = false;
@@ -376,27 +379,27 @@ describe('ReactDOMServerSelectiveHydration', () => {
     });
 
     assertLog([
-      'A',
-      'D',
+      "A",
+      "D",
       // B should render last since it wasn't clicked.
-      'B',
+      "B",
     ]);
 
     document.body.removeChild(container);
   });
 
   // @gate www
-  it('hydrates the target boundary synchronously during a click (createEventHandle)', async () => {
-    const setClick = ReactDOM.unstable_createEventHandle('click');
+  it("hydrates the target boundary synchronously during a click (createEventHandle)", async () => {
+    const setClick = ReactDOM.unstable_createEventHandle("click");
     let isServerRendering = true;
 
-    function Child({text}) {
+    function Child({ text }) {
       const ref = React.useRef(null);
       Scheduler.log(text);
       if (!isServerRendering) {
         React.useLayoutEffect(() => {
           return setClick(ref.current, () => {
-            Scheduler.log('Clicked ' + text);
+            Scheduler.log("Clicked " + text);
           });
         });
       }
@@ -405,7 +408,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -420,9 +423,9 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B']);
+    assertLog(["App", "A", "B"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
@@ -435,7 +438,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     // Nothing has been hydrated so far.
     assertLog([]);
 
-    const span = container.getElementsByTagName('span')[1];
+    const span = container.getElementsByTagName("span")[1];
 
     const target = createEventTarget(span);
 
@@ -444,25 +447,25 @@ describe('ReactDOMServerSelectiveHydration', () => {
     target.virtualclick();
 
     // We rendered App, B and then invoked the event without rendering A.
-    assertLog(['App', 'B', 'Clicked B']);
+    assertLog(["App", "B", "Clicked B"]);
 
     // After continuing the scheduler, we finally hydrate A.
-    await waitForAll(['A']);
+    await waitForAll(["A"]);
 
     document.body.removeChild(container);
   });
 
   // @gate www
-  it('hydrates at higher pri if sync did not work first time (createEventHandle)', async () => {
+  it("hydrates at higher pri if sync did not work first time (createEventHandle)", async () => {
     let suspend = false;
     let isServerRendering = true;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
-    const setClick = ReactDOM.unstable_createEventHandle('click');
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
+    const setClick = ReactDOM.unstable_createEventHandle("click");
 
-    function Child({text}) {
+    function Child({ text }) {
       const ref = React.useRef(null);
-      if ((text === 'A' || text === 'D') && suspend) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
@@ -470,7 +473,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       if (!isServerRendering) {
         React.useLayoutEffect(() => {
           return setClick(ref.current, () => {
-            Scheduler.log('Clicked ' + text);
+            Scheduler.log("Clicked " + text);
           });
         });
       }
@@ -479,7 +482,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -500,15 +503,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C', 'D']);
+    assertLog(["App", "A", "B", "C", "D"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanD = container.getElementsByTagName('span')[3];
+    const spanD = container.getElementsByTagName("span")[3];
 
     suspend = true;
     isServerRendering = false;
@@ -525,7 +528,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       const target = createEventTarget(spanD);
       target.virtualclick();
     });
-    assertLog(['App', 'B', 'C']);
+    assertLog(["App", "B", "C"]);
 
     // After the click, we should prioritize D and the Click first,
     // and only after that render A and C.
@@ -536,22 +539,22 @@ describe('ReactDOMServerSelectiveHydration', () => {
     });
 
     // no replay
-    assertLog(['D', 'A']);
+    assertLog(["D", "A"]);
 
     document.body.removeChild(container);
   });
 
   // @gate www
-  it('hydrates at higher pri for secondary discrete events (createEventHandle)', async () => {
-    const setClick = ReactDOM.unstable_createEventHandle('click');
+  it("hydrates at higher pri for secondary discrete events (createEventHandle)", async () => {
+    const setClick = ReactDOM.unstable_createEventHandle("click");
     let suspend = false;
     let isServerRendering = true;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
 
-    function Child({text}) {
+    function Child({ text }) {
       const ref = React.useRef(null);
-      if ((text === 'A' || text === 'D') && suspend) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
@@ -559,7 +562,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       if (!isServerRendering) {
         React.useLayoutEffect(() => {
           return setClick(ref.current, () => {
-            Scheduler.log('Clicked ' + text);
+            Scheduler.log("Clicked " + text);
           });
         });
       }
@@ -567,7 +570,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -588,17 +591,17 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C', 'D']);
+    assertLog(["App", "A", "B", "C", "D"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanA = container.getElementsByTagName('span')[0];
-    const spanC = container.getElementsByTagName('span')[2];
-    const spanD = container.getElementsByTagName('span')[3];
+    const spanA = container.getElementsByTagName("span")[0];
+    const spanC = container.getElementsByTagName("span")[2];
+    const spanD = container.getElementsByTagName("span")[3];
 
     suspend = true;
     isServerRendering = false;
@@ -615,7 +618,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     createEventTarget(spanC).virtualclick();
     createEventTarget(spanD).virtualclick();
 
-    assertLog(['App', 'C', 'Clicked C']);
+    assertLog(["App", "C", "Clicked C"]);
 
     await act(async () => {
       suspend = false;
@@ -624,41 +627,42 @@ describe('ReactDOMServerSelectiveHydration', () => {
     });
 
     assertLog([
-      'A',
-      'D',
+      "A",
+      "D",
       // B should render last since it wasn't clicked.
-      'B',
+      "B",
     ]);
 
     document.body.removeChild(container);
   });
 
-  it('hydrates the hovered targets as higher priority for continuous events', async () => {
+  it("hydrates the hovered targets as higher priority for continuous events", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
-    function Child({text}) {
-      if ((text === 'A' || text === 'D') && suspend) {
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
+    function Child({ text }) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
       return (
         <span
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
-            Scheduler.log('Clicked ' + text);
+            Scheduler.log("Clicked " + text);
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             e.preventDefault();
-            Scheduler.log('Hover ' + text);
-          }}>
+            Scheduler.log("Hover " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -677,16 +681,16 @@ describe('ReactDOMServerSelectiveHydration', () => {
       );
     }
     const finalHTML = ReactDOMServer.renderToString(<App />);
-    assertLog(['App', 'A', 'B', 'C', 'D']);
-    const container = document.createElement('div');
+    assertLog(["App", "A", "B", "C", "D"]);
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanB = container.getElementsByTagName('span')[1];
-    const spanC = container.getElementsByTagName('span')[2];
-    const spanD = container.getElementsByTagName('span')[3];
+    const spanB = container.getElementsByTagName("span")[1];
+    const spanC = container.getElementsByTagName("span")[2];
+    const spanD = container.getElementsByTagName("span")[3];
 
     suspend = true;
 
@@ -706,7 +710,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       dispatchMouseHoverEvent(spanB, spanD);
       dispatchMouseHoverEvent(spanC, spanB);
 
-      assertLog(['App']);
+      assertLog(["App"]);
 
       suspend = false;
       resolve();
@@ -715,64 +719,66 @@ describe('ReactDOMServerSelectiveHydration', () => {
     // We should prioritize hydrating D first because we clicked it.
     // but event isnt replayed
     assertLog([
-      'D',
-      'B', // Ideally this should be later.
-      'C',
-      'Hover C',
-      'A',
+      "D",
+      "B", // Ideally this should be later.
+      "C",
+      "Hover C",
+      "A",
     ]);
 
     document.body.removeChild(container);
   });
 
-  it('replays capture phase for continuous events and respects stopPropagation', async () => {
+  it("replays capture phase for continuous events and respects stopPropagation", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
 
-    function Child({text}) {
-      if ((text === 'A' || text === 'D') && suspend) {
+    function Child({ text }) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
       return (
         <span
           id={text}
-          onClickCapture={e => {
+          onClickCapture={(e) => {
             e.preventDefault();
-            Scheduler.log('Capture Clicked ' + text);
+            Scheduler.log("Capture Clicked " + text);
           }}
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
-            Scheduler.log('Clicked ' + text);
+            Scheduler.log("Clicked " + text);
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             e.preventDefault();
-            Scheduler.log('Mouse Enter ' + text);
+            Scheduler.log("Mouse Enter " + text);
           }}
-          onMouseOut={e => {
+          onMouseOut={(e) => {
             e.preventDefault();
-            Scheduler.log('Mouse Out ' + text);
+            Scheduler.log("Mouse Out " + text);
           }}
-          onMouseOutCapture={e => {
+          onMouseOutCapture={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            Scheduler.log('Mouse Out Capture ' + text);
+            Scheduler.log("Mouse Out Capture " + text);
           }}
-          onMouseOverCapture={e => {
+          onMouseOverCapture={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            Scheduler.log('Mouse Over Capture ' + text);
+            Scheduler.log("Mouse Over Capture " + text);
           }}
-          onMouseOver={e => {
+          onMouseOver={(e) => {
             e.preventDefault();
-            Scheduler.log('Mouse Over ' + text);
-          }}>
+            Scheduler.log("Mouse Over " + text);
+          }}
+        >
           <div
-            onMouseOverCapture={e => {
+            onMouseOverCapture={(e) => {
               e.preventDefault();
-              Scheduler.log('Mouse Over Capture Inner ' + text);
-            }}>
+              Scheduler.log("Mouse Over Capture Inner " + text);
+            }}
+          >
             {text}
           </div>
         </span>
@@ -780,16 +786,17 @@ describe('ReactDOMServerSelectiveHydration', () => {
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div
-          onClickCapture={e => {
+          onClickCapture={(e) => {
             e.preventDefault();
-            Scheduler.log('Capture Clicked Parent');
+            Scheduler.log("Capture Clicked Parent");
           }}
-          onMouseOverCapture={e => {
-            Scheduler.log('Mouse Over Capture Parent');
-          }}>
+          onMouseOverCapture={(e) => {
+            Scheduler.log("Mouse Over Capture Parent");
+          }}
+        >
           <Suspense fallback="Loading...">
             <Child text="A" />
           </Suspense>
@@ -808,17 +815,17 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C', 'D']);
+    assertLog(["App", "A", "B", "C", "D"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanB = document.getElementById('B').firstChild;
-    const spanC = document.getElementById('C').firstChild;
-    const spanD = document.getElementById('D').firstChild;
+    const spanB = document.getElementById("B").firstChild;
+    const spanC = document.getElementById("C").firstChild;
+    const spanD = document.getElementById("D").firstChild;
 
     suspend = true;
 
@@ -837,7 +844,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       dispatchMouseHoverEvent(spanB, spanD);
       dispatchMouseHoverEvent(spanC, spanB);
 
-      assertLog(['App']);
+      assertLog(["App"]);
 
       suspend = false;
       resolve();
@@ -846,30 +853,30 @@ describe('ReactDOMServerSelectiveHydration', () => {
     // We should prioritize hydrating D first because we clicked it.
     // but event isnt replayed
     assertLog([
-      'D',
-      'B', // Ideally this should be later.
-      'C',
+      "D",
+      "B", // Ideally this should be later.
+      "C",
       // Mouse out events aren't replayed
       // 'Mouse Out Capture B',
       // 'Mouse Out B',
-      'Mouse Over Capture Parent',
-      'Mouse Over Capture C',
+      "Mouse Over Capture Parent",
+      "Mouse Over Capture C",
       // Stop propagation stops these
       // 'Mouse Over Capture Inner C',
       // 'Mouse Over C',
-      'A',
+      "A",
     ]);
 
     // This test shows existing quirk where stopPropagation on mouseout
     // prevents mouseEnter from firing
     dispatchMouseHoverEvent(spanC, spanB);
     assertLog([
-      'Mouse Out Capture B',
+      "Mouse Out Capture B",
       // stopPropagation stops these
       // 'Mouse Out B',
       // 'Mouse Enter C',
-      'Mouse Over Capture Parent',
-      'Mouse Over Capture C',
+      "Mouse Over Capture Parent",
+      "Mouse Over Capture C",
       // Stop propagation stops these
       // 'Mouse Over Capture Inner C',
       // 'Mouse Over C',
@@ -878,7 +885,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
     document.body.removeChild(container);
   });
 
-  describe('can handle replaying events as part of multiple instances of React', () => {
+  describe("can handle replaying events as part of multiple instances of React", () => {
     let resolveInner;
     let resolveOuter;
     let innerPromise;
@@ -891,30 +898,30 @@ describe('ReactDOMServerSelectiveHydration', () => {
     let InnerTestUtils;
 
     beforeEach(async () => {
-      document.body.innerHTML = '';
+      document.body.innerHTML = "";
       jest.resetModules();
       let OuterReactDOMClient;
       let InnerReactDOMClient;
 
       jest.isolateModules(() => {
-        OuterReactDOMClient = require('react-dom/client');
-        OuterScheduler = require('scheduler');
-        OuterTestUtils = require('internal-test-utils');
+        OuterReactDOMClient = require("react-dom/client");
+        OuterScheduler = require("scheduler");
+        OuterTestUtils = require("internal-test-utils");
       });
       jest.isolateModules(() => {
-        InnerReactDOMClient = require('react-dom/client');
-        InnerScheduler = require('scheduler');
-        InnerTestUtils = require('internal-test-utils');
+        InnerReactDOMClient = require("react-dom/client");
+        InnerScheduler = require("scheduler");
+        InnerTestUtils = require("internal-test-utils");
       });
 
       expect(OuterReactDOMClient).not.toBe(InnerReactDOMClient);
       expect(OuterScheduler).not.toBe(InnerScheduler);
 
-      const outerContainer = document.createElement('div');
-      const innerContainer = document.createElement('div');
+      const outerContainer = document.createElement("div");
+      const innerContainer = document.createElement("div");
 
       let suspendOuter = false;
-      outerPromise = new Promise(res => {
+      outerPromise = new Promise((res) => {
         resolveOuter = () => {
           suspendOuter = false;
           res();
@@ -923,19 +930,19 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
       function Outer() {
         if (suspendOuter) {
-          OuterScheduler.log('Suspend Outer');
+          OuterScheduler.log("Suspend Outer");
           throw outerPromise;
         }
-        OuterScheduler.log('Outer');
-        const innerRoot = outerContainer.querySelector('#inner-root');
+        OuterScheduler.log("Outer");
+        const innerRoot = outerContainer.querySelector("#inner-root");
         return (
           <div
             id="inner-root"
             onMouseEnter={() => {
-              Scheduler.log('Outer Mouse Enter');
+              Scheduler.log("Outer Mouse Enter");
             }}
             dangerouslySetInnerHTML={{
-              __html: innerRoot ? innerRoot.innerHTML : '',
+              __html: innerRoot ? innerRoot.innerHTML : "",
             }}
           />
         );
@@ -949,7 +956,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       };
 
       let suspendInner = false;
-      innerPromise = new Promise(res => {
+      innerPromise = new Promise((res) => {
         resolveInner = () => {
           suspendInner = false;
           res();
@@ -957,15 +964,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
       });
       function Inner() {
         if (suspendInner) {
-          InnerScheduler.log('Suspend Inner');
+          InnerScheduler.log("Suspend Inner");
           throw innerPromise;
         }
-        InnerScheduler.log('Inner');
+        InnerScheduler.log("Inner");
         return (
           <div
             id="inner"
             onMouseEnter={() => {
-              Scheduler.log('Inner Mouse Enter');
+              Scheduler.log("Inner Mouse Enter");
             }}
           />
         );
@@ -982,13 +989,13 @@ describe('ReactDOMServerSelectiveHydration', () => {
       const outerHTML = ReactDOMServer.renderToString(<OuterApp />);
       outerContainer.innerHTML = outerHTML;
 
-      const innerWrapper = document.querySelector('#inner-root');
+      const innerWrapper = document.querySelector("#inner-root");
       innerWrapper.appendChild(innerContainer);
       const innerHTML = ReactDOMServer.renderToString(<InnerApp />);
       innerContainer.innerHTML = innerHTML;
 
-      OuterTestUtils.assertLog(['Outer']);
-      InnerTestUtils.assertLog(['Inner']);
+      OuterTestUtils.assertLog(["Outer"]);
+      InnerTestUtils.assertLog(["Inner"]);
 
       suspendOuter = true;
       suspendInner = true;
@@ -1000,10 +1007,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
         InnerReactDOMClient.hydrateRoot(innerContainer, <InnerApp />),
       );
 
-      OuterTestUtils.assertLog(['Suspend Outer']);
-      InnerTestUtils.assertLog(['Suspend Inner']);
+      OuterTestUtils.assertLog(["Suspend Outer"]);
+      InnerTestUtils.assertLog(["Suspend Inner"]);
 
-      innerDiv = document.querySelector('#inner');
+      innerDiv = document.querySelector("#inner");
 
       dispatchClickEvent(innerDiv);
 
@@ -1014,7 +1021,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
         InnerScheduler.unstable_flushAllWithoutAsserting();
       });
 
-      OuterTestUtils.assertLog(['Suspend Outer']);
+      OuterTestUtils.assertLog(["Suspend Outer"]);
 
       // InnerApp doesn't see the event because OuterApp calls stopPropagation in
       // capture phase since the event is blocked on suspended component
@@ -1023,10 +1030,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       assertLog([]);
     });
     afterEach(async () => {
-      document.body.innerHTML = '';
+      document.body.innerHTML = "";
     });
 
-    it('Inner hydrates first then Outer', async () => {
+    it("Inner hydrates first then Outer", async () => {
       dispatchMouseHoverEvent(innerDiv);
 
       await InnerTestUtils.act(async () => {
@@ -1035,9 +1042,9 @@ describe('ReactDOMServerSelectiveHydration', () => {
         });
       });
 
-      OuterTestUtils.assertLog(['Suspend Outer']);
+      OuterTestUtils.assertLog(["Suspend Outer"]);
       // Inner App renders because it is unblocked
-      InnerTestUtils.assertLog(['Inner']);
+      InnerTestUtils.assertLog(["Inner"]);
       // No event is replayed yet
       assertLog([]);
 
@@ -1055,7 +1062,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
           // Its blocked on the outer app replaying the event
           InnerTestUtils.assertLog([]);
           // Outer hydrates and schedules Replay
-          OuterTestUtils.waitFor(['Outer']);
+          OuterTestUtils.waitFor(["Outer"]);
           // No event is replayed yet
           assertLog([]);
         });
@@ -1064,10 +1071,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       // fire scheduled Replay
 
       // First Inner Mouse Enter fires then Outer Mouse Enter
-      assertLog(['Inner Mouse Enter', 'Outer Mouse Enter']);
+      assertLog(["Inner Mouse Enter", "Outer Mouse Enter"]);
     });
 
-    it('Outer hydrates first then Inner', async () => {
+    it("Outer hydrates first then Inner", async () => {
       dispatchMouseHoverEvent(innerDiv);
 
       await act(async () => {
@@ -1079,7 +1086,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       });
 
       // Outer resolves and scheduled replay
-      OuterTestUtils.assertLog(['Outer']);
+      OuterTestUtils.assertLog(["Outer"]);
       // Inner App is still blocked
       InnerTestUtils.assertLog([]);
 
@@ -1094,7 +1101,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       // inner ends up caling stopPropagation
       assertLog([]);
       OuterTestUtils.assertLog([]);
-      InnerTestUtils.assertLog(['Suspend Inner']);
+      InnerTestUtils.assertLog(["Suspend Inner"]);
 
       dispatchMouseHoverEvent(innerDiv);
       OuterTestUtils.assertLog([]);
@@ -1110,7 +1117,7 @@ describe('ReactDOMServerSelectiveHydration', () => {
       });
 
       // Inner hydrates
-      InnerTestUtils.assertLog(['Inner']);
+      InnerTestUtils.assertLog(["Inner"]);
       // Outer was hydrated earlier
       OuterTestUtils.assertLog([]);
 
@@ -1121,14 +1128,14 @@ describe('ReactDOMServerSelectiveHydration', () => {
       });
 
       // First Inner Mouse Enter fires then Outer Mouse Enter
-      assertLog(['Inner Mouse Enter', 'Outer Mouse Enter']);
+      assertLog(["Inner Mouse Enter", "Outer Mouse Enter"]);
     });
   });
 
-  it('replays event with null target when tree is dismounted', async () => {
+  it("replays event with null target when tree is dismounted", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => {
+    const promise = new Promise((resolvePromise) => {
       resolve = () => {
         suspend = false;
         resolvePromise();
@@ -1139,12 +1146,13 @@ describe('ReactDOMServerSelectiveHydration', () => {
       if (suspend) {
         throw promise;
       }
-      Scheduler.log('Child');
+      Scheduler.log("Child");
       return (
         <div
           onMouseOver={() => {
-            Scheduler.log('on mouse over');
-          }}>
+            Scheduler.log("on mouse over");
+          }}
+        >
           Child
         </div>
       );
@@ -1159,9 +1167,9 @@ describe('ReactDOMServerSelectiveHydration', () => {
     }
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
-    assertLog(['Child']);
+    assertLog(["Child"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
 
     document.body.appendChild(container);
     container.innerHTML = finalHTML;
@@ -1178,14 +1186,14 @@ describe('ReactDOMServerSelectiveHydration', () => {
       assertLog([]);
 
       resolve();
-      await waitFor(['Child']);
+      await waitFor(["Child"]);
 
       ReactDOM.flushSync(() => {
         container.removeChild(childDiv);
 
-        const container2 = document.createElement('div');
-        container2.addEventListener('mouseover', () => {
-          Scheduler.log('container2 mouse over');
+        const container2 = document.createElement("div");
+        container2.addEventListener("mouseover", () => {
+          Scheduler.log("container2 mouse over");
         });
         container2.appendChild(childDiv);
       });
@@ -1193,34 +1201,35 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     // Even though the tree is remove the event is still dispatched with native event handler
     // on the container firing.
-    assertLog(['container2 mouse over']);
+    assertLog(["container2 mouse over"]);
 
     document.body.removeChild(container);
   });
 
-  it('hydrates the last target path first for continuous events', async () => {
+  it("hydrates the last target path first for continuous events", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
 
-    function Child({text}) {
-      if ((text === 'A' || text === 'D') && suspend) {
+    function Child({ text }) {
+      if ((text === "A" || text === "D") && suspend) {
         throw promise;
       }
       Scheduler.log(text);
       return (
         <span
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             e.preventDefault();
-            Scheduler.log('Hover ' + text);
-          }}>
+            Scheduler.log("Hover " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -1243,17 +1252,17 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C', 'D']);
+    assertLog(["App", "A", "B", "C", "D"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const spanB = container.getElementsByTagName('span')[1];
-    const spanC = container.getElementsByTagName('span')[2];
-    const spanD = container.getElementsByTagName('span')[3];
+    const spanB = container.getElementsByTagName("span")[1];
+    const spanC = container.getElementsByTagName("span")[2];
+    const spanD = container.getElementsByTagName("span")[3];
 
     suspend = true;
 
@@ -1279,19 +1288,19 @@ describe('ReactDOMServerSelectiveHydration', () => {
     // Next it doesn't matter if we hydrate A or B first but as an
     // implementation detail we're currently hydrating B first since
     // we at one point hovered over it and we never deprioritized it.
-    assertLog(['App', 'C', 'Hover C', 'A', 'B', 'D']);
+    assertLog(["App", "C", "Hover C", "A", "B", "D"]);
 
     document.body.removeChild(container);
   });
 
-  it('hydrates the last explicitly hydrated target at higher priority', async () => {
-    function Child({text}) {
+  it("hydrates the last explicitly hydrated target at higher priority", async () => {
+    function Child({ text }) {
       Scheduler.log(text);
       return <span>{text}</span>;
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -1309,13 +1318,13 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B', 'C']);
+    assertLog(["App", "A", "B", "C"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = finalHTML;
 
-    const spanB = container.getElementsByTagName('span')[1];
-    const spanC = container.getElementsByTagName('span')[2];
+    const spanB = container.getElementsByTagName("span")[1];
+    const spanC = container.getElementsByTagName("span")[2];
 
     const root = ReactDOMClient.hydrateRoot(container, <App />);
 
@@ -1328,16 +1337,16 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     // We should prioritize hydrating C first because the last added
     // gets highest priority followed by the next added.
-    await waitForAll(['App', 'C', 'B', 'A']);
+    await waitForAll(["App", "C", "B", "A"]);
   });
 
   // @gate experimental || www
-  it('hydrates before an update even if hydration moves away from it', async () => {
-    function Child({text}) {
+  it("hydrates before an update even if hydration moves away from it", async () => {
+    function Child({ text }) {
       Scheduler.log(text);
       return <span>{text}</span>;
     }
-    const ChildWithBoundary = React.memo(function ({text}) {
+    const ChildWithBoundary = React.memo(function ({ text }) {
       return (
         <Suspense fallback="Loading...">
           <Child text={text} />
@@ -1346,10 +1355,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       );
     });
 
-    function App({a}) {
-      Scheduler.log('App');
+    function App({ a }) {
+      Scheduler.log("App");
       React.useEffect(() => {
-        Scheduler.log('Commit');
+        Scheduler.log("Commit");
       });
       return (
         <div>
@@ -1362,22 +1371,22 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App a="A" />);
 
-    assertLog(['App', 'A', 'a', 'B', 'b', 'C', 'c']);
+    assertLog(["App", "A", "a", "B", "b", "C", "c"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = finalHTML;
 
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
-    const spanA = container.getElementsByTagName('span')[0];
-    const spanB = container.getElementsByTagName('span')[2];
-    const spanC = container.getElementsByTagName('span')[4];
+    const spanA = container.getElementsByTagName("span")[0];
+    const spanB = container.getElementsByTagName("span")[2];
+    const spanC = container.getElementsByTagName("span")[4];
 
     await act(async () => {
       const root = ReactDOMClient.hydrateRoot(container, <App a="A" />);
       // Hydrate the shell.
-      await waitFor(['App', 'Commit']);
+      await waitFor(["App", "Commit"]);
 
       // Render an update at Idle priority that needs to update A.
 
@@ -1388,10 +1397,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       // Start rendering. This will force the first boundary to hydrate
       // by scheduling it at one higher pri than Idle.
       await waitFor([
-        'App',
+        "App",
 
         // Start hydrating A
-        'A',
+        "A",
       ]);
 
       // Hover over A which (could) schedule at one higher pri than Idle.
@@ -1411,37 +1420,37 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
       assertLog([
         // Hydrate C first since we clicked it.
-        'C',
-        'c',
+        "C",
+        "c",
       ]);
 
       await waitForAll([
         // Finish hydration of A since we forced it to hydrate.
-        'A',
-        'a',
+        "A",
+        "a",
         // Also, hydrate B since we hovered over it.
         // It's not important which one comes first. A or B.
         // As long as they both happen before the Idle update.
-        'B',
-        'b',
+        "B",
+        "b",
         // Begin the Idle update again.
-        'App',
-        'AA',
-        'aa',
-        'Commit',
+        "App",
+        "AA",
+        "aa",
+        "Commit",
       ]);
     });
 
-    const spanA2 = container.getElementsByTagName('span')[0];
+    const spanA2 = container.getElementsByTagName("span")[0];
     // This is supposed to have been hydrated, not replaced.
     expect(spanA).toBe(spanA2);
 
     document.body.removeChild(container);
   });
 
-  it('fires capture event handlers and native events if content is hydratable during discrete event', async () => {
-    spyOnDev(console, 'error');
-    function Child({text}) {
+  it("fires capture event handlers and native events if content is hydratable during discrete event", async () => {
+    spyOnDev(console, "error");
+    function Child({ text }) {
       Scheduler.log(text);
       const ref = React.useRef();
       React.useLayoutEffect(() => {
@@ -1449,25 +1458,26 @@ describe('ReactDOMServerSelectiveHydration', () => {
           return;
         }
         ref.current.onclick = () => {
-          Scheduler.log('Native Click ' + text);
+          Scheduler.log("Native Click " + text);
         };
       }, [text]);
       return (
         <span
           ref={ref}
           onClickCapture={() => {
-            Scheduler.log('Capture Clicked ' + text);
+            Scheduler.log("Capture Clicked " + text);
           }}
-          onClick={e => {
-            Scheduler.log('Clicked ' + text);
-          }}>
+          onClick={(e) => {
+            Scheduler.log("Clicked " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Suspense fallback="Loading...">
@@ -1482,15 +1492,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A', 'B']);
+    assertLog(["App", "A", "B"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const span = container.getElementsByTagName('span')[1];
+    const span = container.getElementsByTagName("span")[1];
 
     ReactDOMClient.hydrateRoot(container, <App />);
 
@@ -1502,15 +1512,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
     dispatchClickEvent(span);
 
     // We rendered App, B and then invoked the event without rendering A.
-    assertLog(['App', 'B', 'Capture Clicked B', 'Native Click B', 'Clicked B']);
+    assertLog(["App", "B", "Capture Clicked B", "Native Click B", "Clicked B"]);
 
     // After continuing the scheduler, we finally hydrate A.
-    await waitForAll(['A']);
+    await waitForAll(["A"]);
 
     document.body.removeChild(container);
   });
 
-  it('does not propagate discrete event if it cannot be synchronously hydrated', async () => {
+  it("does not propagate discrete event if it cannot be synchronously hydrated", async () => {
     let triggeredParent = false;
     let triggeredChild = false;
     let suspend = false;
@@ -1519,13 +1529,14 @@ describe('ReactDOMServerSelectiveHydration', () => {
       if (suspend) {
         throw promise;
       }
-      Scheduler.log('Child');
+      Scheduler.log("Child");
       return (
         <span
-          onClickCapture={e => {
+          onClickCapture={(e) => {
             e.stopPropagation();
             triggeredChild = true;
-          }}>
+          }}
+        >
           Click me
         </span>
       );
@@ -1534,13 +1545,14 @@ describe('ReactDOMServerSelectiveHydration', () => {
       const onClick = () => {
         triggeredParent = true;
       };
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div
-          ref={n => {
+          ref={(n) => {
             if (n) n.onclick = onClick;
           }}
-          onClick={onClick}>
+          onClick={onClick}
+        >
           <Suspense fallback={null}>
             <Child />
           </Suspense>
@@ -1549,9 +1561,9 @@ describe('ReactDOMServerSelectiveHydration', () => {
     }
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'Child']);
+    assertLog(["App", "Child"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
     container.innerHTML = finalHTML;
 
@@ -1561,10 +1573,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
     // Nothing has been hydrated so far.
     assertLog([]);
 
-    const span = container.getElementsByTagName('span')[0];
+    const span = container.getElementsByTagName("span")[0];
     dispatchClickEvent(span);
 
-    assertLog(['App']);
+    assertLog(["App"]);
 
     dispatchClickEvent(span);
 
@@ -1572,28 +1584,29 @@ describe('ReactDOMServerSelectiveHydration', () => {
     expect(triggeredChild).toBe(false);
   });
 
-  it('can attempt sync hydration if suspended root is still concurrently rendering', async () => {
+  it("can attempt sync hydration if suspended root is still concurrently rendering", async () => {
     let suspend = false;
     let resolve;
-    const promise = new Promise(resolvePromise => (resolve = resolvePromise));
-    function Child({text}) {
+    const promise = new Promise((resolvePromise) => (resolve = resolvePromise));
+    function Child({ text }) {
       if (suspend) {
         throw promise;
       }
       Scheduler.log(text);
       return (
         <span
-          onClick={e => {
+          onClick={(e) => {
             e.preventDefault();
-            Scheduler.log('Clicked ' + text);
-          }}>
+            Scheduler.log("Clicked " + text);
+          }}
+        >
           {text}
         </span>
       );
     }
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return (
         <div>
           <Child text="A" />
@@ -1603,15 +1616,15 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     const finalHTML = ReactDOMServer.renderToString(<App />);
 
-    assertLog(['App', 'A']);
+    assertLog(["App", "A"]);
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     // We need this to be in the document since we'll dispatch events on it.
     document.body.appendChild(container);
 
     container.innerHTML = finalHTML;
 
-    const span = container.getElementsByTagName('span')[0];
+    const span = container.getElementsByTagName("span")[0];
 
     // We suspend on the client.
     suspend = true;
@@ -1619,12 +1632,12 @@ describe('ReactDOMServerSelectiveHydration', () => {
     React.startTransition(() => {
       ReactDOMClient.hydrateRoot(container, <App />);
     });
-    await waitFor(['App']);
+    await waitFor(["App"]);
 
     // This should attempt to synchronously hydrate the root, then pause
     // because it still suspended
     const result = dispatchClickEvent(span);
-    assertLog(['App']);
+    assertLog(["App"]);
     // The event should not have been cancelled because we didn't hydrate.
     expect(result).toBe(true);
 
@@ -1635,17 +1648,17 @@ describe('ReactDOMServerSelectiveHydration', () => {
     });
 
     // The app should have successfully hydrated and rendered
-    assertLog(['App', 'A']);
+    assertLog(["App", "A"]);
 
     document.body.removeChild(container);
   });
 
-  it('can force hydration in response to sync update', async () => {
-    function Child({text}) {
+  it("can force hydration in response to sync update", async () => {
+    function Child({ text }) {
       Scheduler.log(`Child ${text}`);
-      return <span ref={ref => (spanRef = ref)}>{text}</span>;
+      return <span ref={(ref) => (spanRef = ref)}>{text}</span>;
     }
-    function App({text}) {
+    function App({ text }) {
       Scheduler.log(`App ${text}`);
       return (
         <div>
@@ -1658,30 +1671,30 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     let spanRef;
     const finalHTML = ReactDOMServer.renderToString(<App text="A" />);
-    assertLog(['App A', 'Child A']);
-    const container = document.createElement('div');
+    assertLog(["App A", "Child A"]);
+    const container = document.createElement("div");
     document.body.appendChild(container);
     container.innerHTML = finalHTML;
-    const initialSpan = container.getElementsByTagName('span')[0];
+    const initialSpan = container.getElementsByTagName("span")[0];
     const root = ReactDOMClient.hydrateRoot(container, <App text="A" />);
-    await waitForPaint(['App A']);
+    await waitForPaint(["App A"]);
 
     await act(() => {
       ReactDOM.flushSync(() => {
         root.render(<App text="B" />);
       });
     });
-    assertLog(['App B', 'Child A', 'App B', 'Child B']);
+    assertLog(["App B", "Child A", "App B", "Child B"]);
     expect(initialSpan).toBe(spanRef);
   });
 
   // @gate experimental || www
-  it('can force hydration in response to continuous update', async () => {
-    function Child({text}) {
+  it("can force hydration in response to continuous update", async () => {
+    function Child({ text }) {
       Scheduler.log(`Child ${text}`);
-      return <span ref={ref => (spanRef = ref)}>{text}</span>;
+      return <span ref={(ref) => (spanRef = ref)}>{text}</span>;
     }
-    function App({text}) {
+    function App({ text }) {
       Scheduler.log(`App ${text}`);
       return (
         <div>
@@ -1694,13 +1707,13 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     let spanRef;
     const finalHTML = ReactDOMServer.renderToString(<App text="A" />);
-    assertLog(['App A', 'Child A']);
-    const container = document.createElement('div');
+    assertLog(["App A", "Child A"]);
+    const container = document.createElement("div");
     document.body.appendChild(container);
     container.innerHTML = finalHTML;
-    const initialSpan = container.getElementsByTagName('span')[0];
+    const initialSpan = container.getElementsByTagName("span")[0];
     const root = ReactDOMClient.hydrateRoot(container, <App text="A" />);
-    await waitForPaint(['App A']);
+    await waitForPaint(["App A"]);
 
     await act(() => {
       TODO_scheduleContinuousSchedulerTask(() => {
@@ -1708,16 +1721,16 @@ describe('ReactDOMServerSelectiveHydration', () => {
       });
     });
 
-    assertLog(['App B', 'Child A', 'App B', 'Child B']);
+    assertLog(["App B", "Child A", "App B", "Child B"]);
     expect(initialSpan).toBe(spanRef);
   });
 
-  it('can force hydration in response to default update', async () => {
-    function Child({text}) {
+  it("can force hydration in response to default update", async () => {
+    function Child({ text }) {
       Scheduler.log(`Child ${text}`);
-      return <span ref={ref => (spanRef = ref)}>{text}</span>;
+      return <span ref={(ref) => (spanRef = ref)}>{text}</span>;
     }
-    function App({text}) {
+    function App({ text }) {
       Scheduler.log(`App ${text}`);
       return (
         <div>
@@ -1730,23 +1743,23 @@ describe('ReactDOMServerSelectiveHydration', () => {
 
     let spanRef;
     const finalHTML = ReactDOMServer.renderToString(<App text="A" />);
-    assertLog(['App A', 'Child A']);
-    const container = document.createElement('div');
+    assertLog(["App A", "Child A"]);
+    const container = document.createElement("div");
     document.body.appendChild(container);
     container.innerHTML = finalHTML;
-    const initialSpan = container.getElementsByTagName('span')[0];
+    const initialSpan = container.getElementsByTagName("span")[0];
     const root = ReactDOMClient.hydrateRoot(container, <App text="A" />);
-    await waitForPaint(['App A']);
+    await waitForPaint(["App A"]);
     await act(() => {
       root.render(<App text="B" />);
     });
-    assertLog(['App B', 'Child A', 'App B', 'Child B']);
+    assertLog(["App B", "Child A", "App B", "Child B"]);
     expect(initialSpan).toBe(spanRef);
   });
 
   // @gate experimental || www
-  it('regression test: can unwind context on selective hydration interruption', async () => {
-    const Context = React.createContext('DefaultContext');
+  it("regression test: can unwind context on selective hydration interruption", async () => {
+    const Context = React.createContext("DefaultContext");
 
     function ContextReader(props) {
       const value = React.useContext(Context);
@@ -1754,11 +1767,11 @@ describe('ReactDOMServerSelectiveHydration', () => {
       return null;
     }
 
-    function Child({text}) {
+    function Child({ text }) {
       Scheduler.log(text);
       return <span>{text}</span>;
     }
-    const ChildWithBoundary = React.memo(function ({text}) {
+    const ChildWithBoundary = React.memo(function ({ text }) {
       return (
         <Suspense fallback="Loading...">
           <Child text={text} />
@@ -1766,10 +1779,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       );
     });
 
-    function App({a}) {
-      Scheduler.log('App');
+    function App({ a }) {
+      Scheduler.log("App");
       React.useEffect(() => {
-        Scheduler.log('Commit');
+        Scheduler.log("Commit");
       });
       return (
         <>
@@ -1781,30 +1794,30 @@ describe('ReactDOMServerSelectiveHydration', () => {
       );
     }
     const finalHTML = ReactDOMServer.renderToString(<App a="A" />);
-    assertLog(['App', 'A', 'DefaultContext']);
-    const container = document.createElement('div');
+    assertLog(["App", "A", "DefaultContext"]);
+    const container = document.createElement("div");
     container.innerHTML = finalHTML;
     document.body.appendChild(container);
 
-    const spanA = container.getElementsByTagName('span')[0];
+    const spanA = container.getElementsByTagName("span")[0];
 
     await act(async () => {
       const root = ReactDOMClient.hydrateRoot(container, <App a="A" />);
-      await waitFor(['App', 'DefaultContext', 'Commit']);
+      await waitFor(["App", "DefaultContext", "Commit"]);
 
       TODO_scheduleIdleDOMSchedulerTask(() => {
         root.render(<App a="AA" />);
       });
-      await waitFor(['App', 'A']);
+      await waitFor(["App", "A"]);
 
       dispatchClickEvent(spanA);
-      assertLog(['A']);
-      await waitForAll(['App', 'AA', 'DefaultContext', 'Commit']);
+      assertLog(["A"]);
+      await waitForAll(["App", "AA", "DefaultContext", "Commit"]);
     });
   });
 
-  it('regression test: can unwind context on selective hydration interruption for sync updates', async () => {
-    const Context = React.createContext('DefaultContext');
+  it("regression test: can unwind context on selective hydration interruption for sync updates", async () => {
+    const Context = React.createContext("DefaultContext");
 
     function ContextReader(props) {
       const value = React.useContext(Context);
@@ -1812,11 +1825,11 @@ describe('ReactDOMServerSelectiveHydration', () => {
       return null;
     }
 
-    function Child({text}) {
+    function Child({ text }) {
       Scheduler.log(text);
       return <span>{text}</span>;
     }
-    const ChildWithBoundary = React.memo(function ({text}) {
+    const ChildWithBoundary = React.memo(function ({ text }) {
       return (
         <Suspense fallback="Loading...">
           <Child text={text} />
@@ -1824,10 +1837,10 @@ describe('ReactDOMServerSelectiveHydration', () => {
       );
     });
 
-    function App({a}) {
-      Scheduler.log('App');
+    function App({ a }) {
+      Scheduler.log("App");
       React.useEffect(() => {
-        Scheduler.log('Commit');
+        Scheduler.log("Commit");
       });
       return (
         <>
@@ -1839,18 +1852,18 @@ describe('ReactDOMServerSelectiveHydration', () => {
       );
     }
     const finalHTML = ReactDOMServer.renderToString(<App a="A" />);
-    assertLog(['App', 'A', 'DefaultContext']);
-    const container = document.createElement('div');
+    assertLog(["App", "A", "DefaultContext"]);
+    const container = document.createElement("div");
     container.innerHTML = finalHTML;
 
     await act(async () => {
       const root = ReactDOMClient.hydrateRoot(container, <App a="A" />);
-      await waitFor(['App', 'DefaultContext', 'Commit']);
+      await waitFor(["App", "DefaultContext", "Commit"]);
 
       ReactDOM.flushSync(() => {
         root.render(<App a="AA" />);
       });
-      assertLog(['App', 'A', 'App', 'AA', 'DefaultContext', 'Commit']);
+      assertLog(["App", "A", "App", "AA", "DefaultContext", "Commit"]);
     });
   });
 });

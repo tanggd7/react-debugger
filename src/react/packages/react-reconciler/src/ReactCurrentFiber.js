@@ -4,43 +4,41 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
-
-import ReactSharedInternals from 'shared/ReactSharedInternals';
-import {getStackByFiberInDevAndProd} from './ReactFiberComponentStack';
-import getComponentNameFromFiber from 'react-reconciler/src/getComponentNameFromFiber';
+import ReactSharedInternals from "shared/ReactSharedInternals";
+import { getStackByFiberInDevAndProd } from "./ReactFiberComponentStack";
+import getComponentNameFromFiber from "react-reconciler/src/getComponentNameFromFiber";
 
 const ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
 
-export let current               = null;
-export let isRendering          = false;
+export let current = null;
+export let isRendering = false;
 
-export function getCurrentFiberOwnerNameInDevOrNull()                {
+export function getCurrentFiberOwnerNameInDevOrNull() {
   if (__DEV__) {
     if (current === null) {
       return null;
     }
     const owner = current._debugOwner;
-    if (owner !== null && typeof owner !== 'undefined') {
+    if (owner !== null && typeof owner !== "undefined") {
       return getComponentNameFromFiber(owner);
     }
   }
   return null;
 }
 
-function getCurrentFiberStackInDev()         {
+function getCurrentFiberStackInDev() {
   if (__DEV__) {
     if (current === null) {
-      return '';
+      return "";
     }
     // Safe because if current fiber exists, we are reconciling,
     // and it is guaranteed to be the work-in-progress version.
     return getStackByFiberInDevAndProd(current);
   }
-  return '';
+  return "";
 }
 
 export function resetCurrentFiber() {
@@ -51,7 +49,7 @@ export function resetCurrentFiber() {
   }
 }
 
-export function setCurrentFiber(fiber              ) {
+export function setCurrentFiber(fiber) {
   if (__DEV__) {
     ReactDebugCurrentFrame.getCurrentStack =
       fiber === null ? null : getCurrentFiberStackInDev;
@@ -60,20 +58,20 @@ export function setCurrentFiber(fiber              ) {
   }
 }
 
-export function getCurrentFiber()               {
+export function getCurrentFiber() {
   if (__DEV__) {
     return current;
   }
   return null;
 }
 
-export function setIsRendering(rendering         ) {
+export function setIsRendering(rendering) {
   if (__DEV__) {
     isRendering = rendering;
   }
 }
 
-export function getIsRendering()                 {
+export function getIsRendering() {
   if (__DEV__) {
     return isRendering;
   }

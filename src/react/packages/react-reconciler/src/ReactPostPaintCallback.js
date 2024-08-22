@@ -4,18 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-import {requestPostPaintCallback} from './ReactFiberConfig';
+import { requestPostPaintCallback } from "./ReactFiberConfig";
 
 let postPaintCallbackScheduled = false;
-let callbacks                                           = [];
+let callbacks = [];
 
-export function schedulePostPaintCallback(callback                           ) {
+export function schedulePostPaintCallback(callback) {
   callbacks.push(callback);
   if (!postPaintCallbackScheduled) {
     postPaintCallbackScheduled = true;
-    requestPostPaintCallback(endTime => {
+    requestPostPaintCallback((endTime) => {
       for (let i = 0; i < callbacks.length; i++) {
         callbacks[i](endTime);
       }

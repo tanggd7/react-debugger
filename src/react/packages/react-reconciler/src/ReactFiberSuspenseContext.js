@@ -4,23 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
-                                                   
-                                                                                
-                                                                   
-
-import {enableSuspenseAvoidThisFallback} from 'shared/ReactFeatureFlags';
-import {createCursor, push, pop} from './ReactFiberStack';
-import {isCurrentTreeHidden} from './ReactFiberHiddenContext';
-import {OffscreenComponent} from './ReactWorkTags';
+import { enableSuspenseAvoidThisFallback } from "shared/ReactFeatureFlags";
+import { createCursor, push, pop } from "./ReactFiberStack";
+import { isCurrentTreeHidden } from "./ReactFiberHiddenContext";
+import { OffscreenComponent } from "./ReactWorkTags";
 
 // The Suspense handler is the boundary that should capture if something
 // suspends, i.e. it's the nearest `catch` block on the stack.
-const suspenseHandlerStackCursor                            =
-  createCursor(null);
+const suspenseHandlerStackCursor = createCursor(null);
 
 // Represents the outermost boundary that is not visible in the current tree.
 // Everything above this is the "shell". When this is null, it means we're
@@ -34,16 +28,16 @@ const suspenseHandlerStackCursor                            =
 // show the stale content, rather than switch to a fallback. But showing a
 // fallback in a new tree is fine, because there's no stale content to
 // prefer instead.
-let shellBoundary               = null;
+let shellBoundary = null;
 
-export function getShellBoundary()               {
+export function getShellBoundary() {
   return shellBoundary;
 }
 
-export function pushPrimaryTreeSuspenseHandler(handler       )       {
+export function pushPrimaryTreeSuspenseHandler(handler) {
   // TODO: Pass as argument
   const current = handler.alternate;
-  const props                = handler.pendingProps;
+  const props = handler.pendingProps;
 
   // Shallow Suspense context fields, like ForceSuspenseFallback, should only be
   // propagated a single level. For example, when ForceSuspenseFallback is set,
@@ -90,7 +84,7 @@ export function pushPrimaryTreeSuspenseHandler(handler       )       {
       // This boundary is not visible in the current UI.
       shellBoundary = handler;
     } else {
-      const prevState                = current.memoizedState;
+      const prevState = current.memoizedState;
       if (prevState !== null) {
         // This boundary is showing a fallback in the current UI.
         shellBoundary = handler;
@@ -99,14 +93,14 @@ export function pushPrimaryTreeSuspenseHandler(handler       )       {
   }
 }
 
-export function pushFallbackTreeSuspenseHandler(fiber       )       {
+export function pushFallbackTreeSuspenseHandler(fiber) {
   // We're about to render the fallback. If something in the fallback suspends,
   // it's akin to throwing inside of a `catch` block. This boundary should not
   // capture. Reuse the existing handler on the stack.
   reuseSuspenseHandlerOnStack(fiber);
 }
 
-export function pushOffscreenSuspenseHandler(fiber       )       {
+export function pushOffscreenSuspenseHandler(fiber) {
   if (fiber.tag === OffscreenComponent) {
     // A SuspenseList context is only pushed here to avoid a push/pop mismatch.
     // Reuse the current value on the stack.
@@ -120,7 +114,7 @@ export function pushOffscreenSuspenseHandler(fiber       )       {
     } else {
       const current = fiber.alternate;
       if (current !== null) {
-        const prevState                 = current.memoizedState;
+        const prevState = current.memoizedState;
         if (prevState !== null) {
           // This is the first boundary in the stack that's already showing
           // a fallback. So everything outside is considered the shell.
@@ -134,16 +128,16 @@ export function pushOffscreenSuspenseHandler(fiber       )       {
   }
 }
 
-export function reuseSuspenseHandlerOnStack(fiber       ) {
+export function reuseSuspenseHandlerOnStack(fiber) {
   pushSuspenseListContext(fiber, suspenseStackCursor.current);
   push(suspenseHandlerStackCursor, getSuspenseHandler(), fiber);
 }
 
-export function getSuspenseHandler()               {
+export function getSuspenseHandler() {
   return suspenseHandlerStackCursor.current;
 }
 
-export function popSuspenseHandler(fiber       )       {
+export function popSuspenseHandler(fiber) {
   pop(suspenseHandlerStackCursor, fiber);
   if (shellBoundary === fiber) {
     // Popping back into the shell.
@@ -155,49 +149,33 @@ export function popSuspenseHandler(fiber       )       {
 // SuspenseList context
 // TODO: Move to a separate module? We may change the SuspenseList
 // implementation to hide/show in the commit phase, anyway.
-                                            
-                                                                    
-                                                                    
 
-const DefaultSuspenseContext                  = 0b00;
+const DefaultSuspenseContext = 0b00;
 
-const SubtreeSuspenseContextMask                  = 0b01;
+const SubtreeSuspenseContextMask = 0b01;
 
 // ForceSuspenseFallback can be used by SuspenseList to force newly added
 // items into their fallback state during one of the render passes.
-export const ForceSuspenseFallback                         = 0b10;
+export const ForceSuspenseFallback = 0b10;
 
-export const suspenseStackCursor                               = createCursor(
-  DefaultSuspenseContext,
-);
+export const suspenseStackCursor = createCursor(DefaultSuspenseContext);
 
-export function hasSuspenseListContext(
-  parentContext                 ,
-  flag                 ,
-)          {
+export function hasSuspenseListContext(parentContext, flag) {
   return (parentContext & flag) !== 0;
 }
 
-export function setDefaultShallowSuspenseListContext(
-  parentContext                 ,
-)                  {
+export function setDefaultShallowSuspenseListContext(parentContext) {
   return parentContext & SubtreeSuspenseContextMask;
 }
 
-export function setShallowSuspenseListContext(
-  parentContext                 ,
-  shallowContext                        ,
-)                  {
+export function setShallowSuspenseListContext(parentContext, shallowContext) {
   return (parentContext & SubtreeSuspenseContextMask) | shallowContext;
 }
 
-export function pushSuspenseListContext(
-  fiber       ,
-  newContext                 ,
-)       {
+export function pushSuspenseListContext(fiber, newContext) {
   push(suspenseStackCursor, newContext, fiber);
 }
 
-export function popSuspenseListContext(fiber       )       {
+export function popSuspenseListContext(fiber) {
   pop(suspenseStackCursor, fiber);
 }

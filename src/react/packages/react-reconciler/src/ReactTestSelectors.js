@@ -4,19 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                                   
-                                                 
 
 import {
   HostComponent,
   HostHoistable,
   HostSingleton,
   HostText,
-} from 'react-reconciler/src/ReactWorkTags';
-import getComponentNameFromType from 'shared/getComponentNameFromType';
+} from "react-reconciler/src/ReactWorkTags";
+import getComponentNameFromType from "shared/getComponentNameFromType";
 import {
   findFiberRoot,
   getBoundingRect,
@@ -27,122 +24,84 @@ import {
   setFocusIfFocusable,
   setupIntersectionObserver,
   supportsTestSelectors,
-} from './ReactFiberConfig';
+} from "./ReactFiberConfig";
 
-let COMPONENT_TYPE                  = 0b000;
-let HAS_PSEUDO_CLASS_TYPE                  = 0b001;
-let ROLE_TYPE                  = 0b010;
-let TEST_NAME_TYPE                  = 0b011;
-let TEXT_TYPE                  = 0b100;
+let COMPONENT_TYPE = 0b000;
+let HAS_PSEUDO_CLASS_TYPE = 0b001;
+let ROLE_TYPE = 0b010;
+let TEST_NAME_TYPE = 0b011;
+let TEXT_TYPE = 0b100;
 
-if (typeof Symbol === 'function' && Symbol.for) {
+if (typeof Symbol === "function" && Symbol.for) {
   const symbolFor = Symbol.for;
-  COMPONENT_TYPE = symbolFor('selector.component');
-  HAS_PSEUDO_CLASS_TYPE = symbolFor('selector.has_pseudo_class');
-  ROLE_TYPE = symbolFor('selector.role');
-  TEST_NAME_TYPE = symbolFor('selector.test_id');
-  TEXT_TYPE = symbolFor('selector.text');
+  COMPONENT_TYPE = symbolFor("selector.component");
+  HAS_PSEUDO_CLASS_TYPE = symbolFor("selector.has_pseudo_class");
+  ROLE_TYPE = symbolFor("selector.role");
+  TEST_NAME_TYPE = symbolFor("selector.test_id");
+  TEXT_TYPE = symbolFor("selector.text");
 }
 
-                            
-
-                          
-                 
-                                               
-  
-
-                               
-                 
-                         
-  
-
-                     
-                 
-                
-  
-
-                     
-                 
-                
-  
-
-                         
-                 
-                
-  
-
-               
-                     
-                          
-                
-                
-                     
-
-export function createComponentSelector(
-  component                                       ,
-)                    {
+export function createComponentSelector(component) {
   return {
     $$typeof: COMPONENT_TYPE,
     value: component,
   };
 }
 
-export function createHasPseudoClassSelector(
-  selectors                 ,
-)                         {
+export function createHasPseudoClassSelector(selectors) {
   return {
     $$typeof: HAS_PSEUDO_CLASS_TYPE,
     value: selectors,
   };
 }
 
-export function createRoleSelector(role        )               {
+export function createRoleSelector(role) {
   return {
     $$typeof: ROLE_TYPE,
     value: role,
   };
 }
 
-export function createTextSelector(text        )               {
+export function createTextSelector(text) {
   return {
     $$typeof: TEXT_TYPE,
     value: text,
   };
 }
 
-export function createTestNameSelector(id        )                   {
+export function createTestNameSelector(id) {
   return {
     $$typeof: TEST_NAME_TYPE,
     value: id,
   };
 }
 
-function findFiberRootForHostRoot(hostRoot          )        {
-  const maybeFiber = getInstanceFromNode((hostRoot     ));
+function findFiberRootForHostRoot(hostRoot) {
+  const maybeFiber = getInstanceFromNode(hostRoot);
   if (maybeFiber != null) {
-    if (typeof maybeFiber.memoizedProps['data-testname'] !== 'string') {
+    if (typeof maybeFiber.memoizedProps["data-testname"] !== "string") {
       throw new Error(
-        'Invalid host root specified. Should be either a React container or a node with a testname attribute.',
+        "Invalid host root specified. Should be either a React container or a node with a testname attribute.",
       );
     }
 
-    return ((maybeFiber     )       );
+    return maybeFiber;
   } else {
     const fiberRoot = findFiberRoot(hostRoot);
 
     if (fiberRoot === null) {
       throw new Error(
-        'Could not find React container within specified host subtree.',
+        "Could not find React container within specified host subtree.",
       );
     }
 
     // The Flow type for FiberRoot is a little funky.
     // createFiberRoot() cheats this by treating the root as :any and adding stateNode lazily.
-    return ((fiberRoot     ).stateNode.current       );
+    return fiberRoot.stateNode.current;
   }
 }
 
-function matchSelector(fiber       , selector          )          {
+function matchSelector(fiber, selector) {
   const tag = fiber.tag;
   switch (selector.$$typeof) {
     case COMPONENT_TYPE:
@@ -151,10 +110,7 @@ function matchSelector(fiber       , selector          )          {
       }
       break;
     case HAS_PSEUDO_CLASS_TYPE:
-      return hasMatchingPaths(
-        fiber,
-        ((selector     )                        ).value,
-      );
+      return hasMatchingPaths(fiber, selector.value);
     case ROLE_TYPE:
       if (
         tag === HostComponent ||
@@ -162,9 +118,7 @@ function matchSelector(fiber       , selector          )          {
         tag === HostSingleton
       ) {
         const node = fiber.stateNode;
-        if (
-          matchAccessibilityRole(node, ((selector     )              ).value)
-        ) {
+        if (matchAccessibilityRole(node, selector.value)) {
           return true;
         }
       }
@@ -177,10 +131,7 @@ function matchSelector(fiber       , selector          )          {
         tag === HostSingleton
       ) {
         const textContent = getTextContent(fiber);
-        if (
-          textContent !== null &&
-          textContent.indexOf(((selector     )              ).value) >= 0
-        ) {
+        if (textContent !== null && textContent.indexOf(selector.value) >= 0) {
           return true;
         }
       }
@@ -191,50 +142,49 @@ function matchSelector(fiber       , selector          )          {
         tag === HostHoistable ||
         tag === HostSingleton
       ) {
-        const dataTestID = fiber.memoizedProps['data-testname'];
+        const dataTestID = fiber.memoizedProps["data-testname"];
         if (
-          typeof dataTestID === 'string' &&
-          dataTestID.toLowerCase() ===
-            ((selector     )                  ).value.toLowerCase()
+          typeof dataTestID === "string" &&
+          dataTestID.toLowerCase() === selector.value.toLowerCase()
         ) {
           return true;
         }
       }
       break;
     default:
-      throw new Error('Invalid selector type specified.');
+      throw new Error("Invalid selector type specified.");
   }
 
   return false;
 }
 
-function selectorToString(selector          )                {
+function selectorToString(selector) {
   switch (selector.$$typeof) {
     case COMPONENT_TYPE:
-      const displayName = getComponentNameFromType(selector.value) || 'Unknown';
+      const displayName = getComponentNameFromType(selector.value) || "Unknown";
       return `<${displayName}>`;
     case HAS_PSEUDO_CLASS_TYPE:
-      return `:has(${selectorToString(selector) || ''})`;
+      return `:has(${selectorToString(selector) || ""})`;
     case ROLE_TYPE:
-      return `[role="${((selector     )              ).value}"]`;
+      return `[role="${selector.value}"]`;
     case TEXT_TYPE:
-      return `"${((selector     )              ).value}"`;
+      return `"${selector.value}"`;
     case TEST_NAME_TYPE:
-      return `[data-testname="${((selector     )                  ).value}"]`;
+      return `[data-testname="${selector.value}"]`;
     default:
-      throw new Error('Invalid selector type specified.');
+      throw new Error("Invalid selector type specified.");
   }
 }
 
-function findPaths(root       , selectors                 )               {
-  const matchingFibers               = [];
+function findPaths(root, selectors) {
+  const matchingFibers = [];
 
   const stack = [root, 0];
   let index = 0;
   while (index < stack.length) {
-    const fiber = ((stack[index++]     )       );
+    const fiber = stack[index++];
     const tag = fiber.tag;
-    let selectorIndex = ((stack[index++]     )        );
+    let selectorIndex = stack[index++];
     let selector = selectors[selectorIndex];
 
     if (
@@ -266,13 +216,13 @@ function findPaths(root       , selectors                 )               {
 }
 
 // Same as findPaths but with eager bailout on first match
-function hasMatchingPaths(root       , selectors                 )          {
+function hasMatchingPaths(root, selectors) {
   const stack = [root, 0];
   let index = 0;
   while (index < stack.length) {
-    const fiber = ((stack[index++]     )       );
+    const fiber = stack[index++];
     const tag = fiber.tag;
-    let selectorIndex = ((stack[index++]     )        );
+    let selectorIndex = stack[index++];
     let selector = selectors[selectorIndex];
 
     if (
@@ -303,23 +253,20 @@ function hasMatchingPaths(root       , selectors                 )          {
   return false;
 }
 
-export function findAllNodes(
-  hostRoot          ,
-  selectors                 ,
-)                  {
+export function findAllNodes(hostRoot, selectors) {
   if (!supportsTestSelectors) {
-    throw new Error('Test selector API is not supported by this renderer.');
+    throw new Error("Test selector API is not supported by this renderer.");
   }
 
   const root = findFiberRootForHostRoot(hostRoot);
   const matchingFibers = findPaths(root, selectors);
 
-  const instanceRoots                  = [];
+  const instanceRoots = [];
 
   const stack = Array.from(matchingFibers);
   let index = 0;
   while (index < stack.length) {
-    const node = ((stack[index++]     )       );
+    const node = stack[index++];
     const tag = node.tag;
     if (
       tag === HostComponent ||
@@ -342,26 +289,23 @@ export function findAllNodes(
   return instanceRoots;
 }
 
-export function getFindAllNodesFailureDescription(
-  hostRoot          ,
-  selectors                 ,
-)                {
+export function getFindAllNodesFailureDescription(hostRoot, selectors) {
   if (!supportsTestSelectors) {
-    throw new Error('Test selector API is not supported by this renderer.');
+    throw new Error("Test selector API is not supported by this renderer.");
   }
 
   const root = findFiberRootForHostRoot(hostRoot);
 
-  let maxSelectorIndex         = 0;
+  let maxSelectorIndex = 0;
   const matchedNames = [];
 
   // The logic of this loop should be kept in sync with findPaths()
   const stack = [root, 0];
   let index = 0;
   while (index < stack.length) {
-    const fiber = ((stack[index++]     )       );
+    const fiber = stack[index++];
     const tag = fiber.tag;
-    let selectorIndex = ((stack[index++]     )        );
+    let selectorIndex = stack[index++];
     const selector = selectors[selectorIndex];
 
     if (
@@ -396,34 +340,24 @@ export function getFindAllNodesFailureDescription(
     }
 
     return (
-      'findAllNodes was able to match part of the selector:\n' +
-      `  ${matchedNames.join(' > ')}\n\n` +
-      'No matching component was found for:\n' +
-      `  ${unmatchedNames.join(' > ')}`
+      "findAllNodes was able to match part of the selector:\n" +
+      `  ${matchedNames.join(" > ")}\n\n` +
+      "No matching component was found for:\n" +
+      `  ${unmatchedNames.join(" > ")}`
     );
   }
 
   return null;
 }
 
-                            
-            
-            
-                
-                 
-  
-
-export function findBoundingRects(
-  hostRoot          ,
-  selectors                 ,
-)                      {
+export function findBoundingRects(hostRoot, selectors) {
   if (!supportsTestSelectors) {
-    throw new Error('Test selector API is not supported by this renderer.');
+    throw new Error("Test selector API is not supported by this renderer.");
   }
 
   const instanceRoots = findAllNodes(hostRoot, selectors);
 
-  const boundingRects                      = [];
+  const boundingRects = [];
   for (let i = 0; i < instanceRoots.length; i++) {
     boundingRects.push(getBoundingRect(instanceRoots[i]));
   }
@@ -503,12 +437,9 @@ export function findBoundingRects(
   return boundingRects;
 }
 
-export function focusWithin(
-  hostRoot          ,
-  selectors                 ,
-)          {
+export function focusWithin(hostRoot, selectors) {
   if (!supportsTestSelectors) {
-    throw new Error('Test selector API is not supported by this renderer.');
+    throw new Error("Test selector API is not supported by this renderer.");
   }
 
   const root = findFiberRootForHostRoot(hostRoot);
@@ -517,7 +448,7 @@ export function focusWithin(
   const stack = Array.from(matchingFibers);
   let index = 0;
   while (index < stack.length) {
-    const fiber = ((stack[index++]     )       );
+    const fiber = stack[index++];
     const tag = fiber.tag;
     if (isHiddenSubtree(fiber)) {
       continue;
@@ -542,33 +473,22 @@ export function focusWithin(
   return false;
 }
 
-const commitHooks                  = [];
+const commitHooks = [];
 
-export function onCommitRoot()       {
+export function onCommitRoot() {
   if (supportsTestSelectors) {
-    commitHooks.forEach(commitHook => commitHook());
+    commitHooks.forEach((commitHook) => commitHook());
   }
 }
 
-                                                 
-
-                                           
-                                                            
-          
-
-export function observeVisibleRects(
-  hostRoot          ,
-  selectors                 ,
-  callback                                                                     ,
-  options                              ,
-)                           {
+export function observeVisibleRects(hostRoot, selectors, callback, options) {
   if (!supportsTestSelectors) {
-    throw new Error('Test selector API is not supported by this renderer.');
+    throw new Error("Test selector API is not supported by this renderer.");
   }
 
   const instanceRoots = findAllNodes(hostRoot, selectors);
 
-  const {disconnect, observe, unobserve} = setupIntersectionObserver(
+  const { disconnect, observe, unobserve } = setupIntersectionObserver(
     instanceRoots,
     callback,
     options,
@@ -578,13 +498,13 @@ export function observeVisibleRects(
   const commitHook = () => {
     const nextInstanceRoots = findAllNodes(hostRoot, selectors);
 
-    instanceRoots.forEach(target => {
+    instanceRoots.forEach((target) => {
       if (nextInstanceRoots.indexOf(target) < 0) {
         unobserve(target);
       }
     });
 
-    nextInstanceRoots.forEach(target => {
+    nextInstanceRoots.forEach((target) => {
       if (instanceRoots.indexOf(target) < 0) {
         observe(target);
       }

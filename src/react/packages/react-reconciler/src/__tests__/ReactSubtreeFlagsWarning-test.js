@@ -10,20 +10,20 @@ let caches;
 let seededCache;
 let assertLog;
 
-describe('ReactSuspenseWithNoopRenderer', () => {
+describe("ReactSuspenseWithNoopRenderer", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     Suspense = React.Suspense;
     useEffect = React.useEffect;
 
     getCacheForType = React.unstable_getCacheForType;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
 
     caches = [];
@@ -49,30 +49,30 @@ describe('ReactSuspenseWithNoopRenderer', () => {
         const record = data.get(text);
         if (record === undefined) {
           const newRecord = {
-            status: 'resolved',
+            status: "resolved",
             value: text,
           };
           data.set(text, newRecord);
-        } else if (record.status === 'pending') {
+        } else if (record.status === "pending") {
           const thenable = record.value;
-          record.status = 'resolved';
+          record.status = "resolved";
           record.value = text;
-          thenable.pings.forEach(t => t());
+          thenable.pings.forEach((t) => t());
         }
       },
       reject(text, error) {
         const record = data.get(text);
         if (record === undefined) {
           const newRecord = {
-            status: 'rejected',
+            status: "rejected",
             value: error,
           };
           data.set(text, newRecord);
-        } else if (record.status === 'pending') {
+        } else if (record.status === "pending") {
           const thenable = record.value;
-          record.status = 'rejected';
+          record.status = "rejected";
           record.value = error;
-          thenable.pings.forEach(t => t());
+          thenable.pings.forEach((t) => t());
         }
       },
     };
@@ -85,13 +85,13 @@ describe('ReactSuspenseWithNoopRenderer', () => {
     const record = textCache.data.get(text);
     if (record !== undefined) {
       switch (record.status) {
-        case 'pending':
+        case "pending":
           Scheduler.log(`Suspend! [${text}]`);
           throw record.value;
-        case 'rejected':
+        case "rejected":
           Scheduler.log(`Error! [${text}]`);
           throw record.value;
-        case 'resolved':
+        case "resolved":
           return textCache.version;
       }
     } else {
@@ -100,7 +100,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       const thenable = {
         pings: [],
         then(resolve) {
-          if (newRecord.status === 'pending') {
+          if (newRecord.status === "pending") {
             thenable.pings.push(resolve);
           } else {
             Promise.resolve().then(() => resolve(newRecord.value));
@@ -109,7 +109,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       };
 
       const newRecord = {
-        status: 'pending',
+        status: "pending",
         value: thenable,
       };
       textCache.data.set(text, newRecord);
@@ -120,7 +120,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
 
   function resolveMostRecentTextCache(text) {
     if (caches.length === 0) {
-      throw Error('Cache does not exist.');
+      throw Error("Cache does not exist.");
     } else {
       // Resolve the most recently created cache. An older cache can by
       // resolved with `caches[index].resolve(text)`.
@@ -131,18 +131,18 @@ describe('ReactSuspenseWithNoopRenderer', () => {
   const resolveText = resolveMostRecentTextCache;
 
   // @gate experimental || www
-  it('regression: false positive for legacy suspense', async () => {
+  it("regression: false positive for legacy suspense", async () => {
     // Wrapping in memo because regular function components go through the
     // mountIndeterminateComponent path, which acts like there's no `current`
     // fiber even though there is. `memo` is not indeterminate, so it goes
     // through the update path.
-    const Child = React.memo(({text}) => {
+    const Child = React.memo(({ text }) => {
       // If text hasn't resolved, this will throw and exit before the passive
       // static effect flag is added by the useEffect call below.
       readText(text);
 
       useEffect(() => {
-        Scheduler.log('Effect');
+        Scheduler.log("Effect");
       }, []);
 
       Scheduler.log(text);
@@ -164,16 +164,16 @@ describe('ReactSuspenseWithNoopRenderer', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['Suspend! [Async]']);
-    expect(root).toMatchRenderedOutput('Loading...');
+    assertLog(["Suspend! [Async]"]);
+    expect(root).toMatchRenderedOutput("Loading...");
 
     // When the promise resolves, a passive static effect flag is added. In the
     // regression, the "missing expected static flag" would fire, because the
     // previous fiber did not have one.
     await act(() => {
-      resolveText('Async');
+      resolveText("Async");
     });
-    assertLog(['Async', 'Effect']);
-    expect(root).toMatchRenderedOutput('Async');
+    assertLog(["Async", "Effect"]);
+    expect(root).toMatchRenderedOutput("Async");
   });
 });

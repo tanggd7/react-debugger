@@ -4,48 +4,33 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                          
-                                                          
-             
-                      
-                              
-                                    
-
-import {allNativeEvents} from '../events/EventRegistry';
+import { allNativeEvents } from "../events/EventRegistry";
 import {
   getEventHandlerListeners,
   setEventHandlerListeners,
   doesTargetHaveEventHandle,
   addEventHandleToTarget,
-} from './ReactDOMComponentTree';
-import {ELEMENT_NODE} from './HTMLNodeType';
-import {listenToNativeEventForNonManagedEventTarget} from '../events/DOMPluginEventSystem';
+} from "./ReactDOMComponentTree";
+import { ELEMENT_NODE } from "./HTMLNodeType";
+import { listenToNativeEventForNonManagedEventTarget } from "../events/DOMPluginEventSystem";
 
 import {
   enableScopeAPI,
   enableCreateEventHandleAPI,
-} from 'shared/ReactFeatureFlags';
+} from "shared/ReactFeatureFlags";
 
-                           
-                    
-  
-
-function isValidEventTarget(target                                  )          {
-  return typeof (target        ).addEventListener === 'function';
+function isValidEventTarget(target) {
+  return typeof target.addEventListener === "function";
 }
 
-function isReactScope(target                                  )          {
-  return typeof (target        ).getChildContextValues === 'function';
+function isReactScope(target) {
+  return typeof target.getChildContextValues === "function";
 }
 
-function createEventHandleListener(
-  type              ,
-  isCapturePhaseListener         ,
-  callback                                       ,
-)                              {
+function createEventHandleListener(type, isCapturePhaseListener, callback) {
   return {
     callback,
     capture: isCapturePhaseListener,
@@ -53,17 +38,13 @@ function createEventHandleListener(
   };
 }
 
-function registerReactDOMEvent(
-  target                                  ,
-  domEventName              ,
-  isCapturePhaseListener         ,
-)       {
-  if ((target     ).nodeType === ELEMENT_NODE) {
+function registerReactDOMEvent(target, domEventName, isCapturePhaseListener) {
+  if (target.nodeType === ELEMENT_NODE) {
     // Do nothing. We already attached all root listeners.
   } else if (enableScopeAPI && isReactScope(target)) {
     // Do nothing. We already attached all root listeners.
   } else if (isValidEventTarget(target)) {
-    const eventTarget = ((target     )             );
+    const eventTarget = target;
     // These are valid event targets, but they are also
     // non-managed React nodes.
     listenToNativeEventForNonManagedEventTarget(
@@ -73,18 +54,15 @@ function registerReactDOMEvent(
     );
   } else {
     throw new Error(
-      'ReactDOM.createEventHandle: setter called on an invalid ' +
-        'target. Provide a valid EventTarget or an element managed by React.',
+      "ReactDOM.createEventHandle: setter called on an invalid " +
+        "target. Provide a valid EventTarget or an element managed by React.",
     );
   }
 }
 
-export function createEventHandle(
-  type        ,
-  options                     ,
-)                      {
+export function createEventHandle(type, options) {
   if (enableCreateEventHandleAPI) {
-    const domEventName = ((type     )              );
+    const domEventName = type;
 
     // We cannot support arbitrary native events with eager root listeners
     // because the eager strategy relies on knowing the whole list ahead of time.
@@ -104,19 +82,16 @@ export function createEventHandle(
     let isCapturePhaseListener = false;
     if (options != null) {
       const optionsCapture = options.capture;
-      if (typeof optionsCapture === 'boolean') {
+      if (typeof optionsCapture === "boolean") {
         isCapturePhaseListener = optionsCapture;
       }
     }
 
-    const eventHandle                      = (
-      target                                  ,
-      callback                                       ,
-    ) => {
-      if (typeof callback !== 'function') {
+    const eventHandle = (target, callback) => {
+      if (typeof callback !== "function") {
         throw new Error(
-          'ReactDOM.createEventHandle: setter called with an invalid ' +
-            'callback. The callback must be a function.',
+          "ReactDOM.createEventHandle: setter called with an invalid " +
+            "callback. The callback must be a function.",
         );
       }
 
@@ -136,13 +111,11 @@ export function createEventHandle(
       }
       targetListeners.add(listener);
       return () => {
-        ((targetListeners     )                                  ).delete(
-          listener,
-        );
+        targetListeners.delete(listener);
       };
     };
 
     return eventHandle;
   }
-  return (null     );
+  return null;
 }

@@ -29,7 +29,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
- *      
+ *
  */
 
 // code copied and modified from escape-html
@@ -38,7 +38,7 @@
  * @private
  */
 
-import {checkHtmlStringCoercion} from 'shared/CheckStringCoercion';
+import { checkHtmlStringCoercion } from "shared/CheckStringCoercion";
 
 const matchHtmlRegExp = /["'&<>]/;
 
@@ -50,11 +50,11 @@ const matchHtmlRegExp = /["'&<>]/;
  * @public
  */
 
-function escapeHtml(string        ) {
+function escapeHtml(string) {
   if (__DEV__) {
     checkHtmlStringCoercion(string);
   }
-  const str = '' + string;
+  const str = "" + string;
   const match = matchHtmlRegExp.exec(str);
 
   if (!match) {
@@ -62,26 +62,26 @@ function escapeHtml(string        ) {
   }
 
   let escape;
-  let html = '';
+  let html = "";
   let index;
   let lastIndex = 0;
 
   for (index = match.index; index < str.length; index++) {
     switch (str.charCodeAt(index)) {
       case 34: // "
-        escape = '&quot;';
+        escape = "&quot;";
         break;
       case 38: // &
-        escape = '&amp;';
+        escape = "&amp;";
         break;
       case 39: // '
-        escape = '&#x27;'; // modified from escape-html; used to be '&#39'
+        escape = "&#x27;"; // modified from escape-html; used to be '&#39'
         break;
       case 60: // <
-        escape = '&lt;';
+        escape = "&lt;";
         break;
       case 62: // >
-        escape = '&gt;';
+        escape = "&gt;";
         break;
       default:
         continue;
@@ -105,12 +105,12 @@ function escapeHtml(string        ) {
  * @param {*} text Text value to escape.
  * @return {string} An escaped string.
  */
-function escapeTextForBrowser(text                           )         {
-  if (typeof text === 'boolean' || typeof text === 'number') {
+function escapeTextForBrowser(text) {
+  if (typeof text === "boolean" || typeof text === "number") {
     // this shortcircuit helps perf for types that we know will never have
     // special characters, especially given that this function is used often
     // for numeric dom ids.
-    return '' + (text     );
+    return "" + text;
   }
   return escapeHtml(text);
 }

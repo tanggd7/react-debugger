@@ -5,10 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getActiveElement from './getActiveElement';
+import getActiveElement from "./getActiveElement";
 
-import {getOffsets, setOffsets} from './ReactDOMSelection';
-import {ELEMENT_NODE, TEXT_NODE} from './HTMLNodeType';
+import { getOffsets, setOffsets } from "./ReactDOMSelection";
+import { ELEMENT_NODE, TEXT_NODE } from "./HTMLNodeType";
 
 function isTextNode(node) {
   return node && node.nodeType === TEXT_NODE;
@@ -23,7 +23,7 @@ function containsNode(outerNode, innerNode) {
     return false;
   } else if (isTextNode(innerNode)) {
     return containsNode(outerNode, innerNode.parentNode);
-  } else if ('contains' in outerNode) {
+  } else if ("contains" in outerNode) {
     return outerNode.contains(innerNode);
   } else if (outerNode.compareDocumentPosition) {
     return !!(outerNode.compareDocumentPosition(innerNode) & 16);
@@ -50,7 +50,7 @@ function isSameOriginFrame(iframe) {
     // Which might result in "SecurityError" DOM Exception and it is compatible to Safari.
     // https://html.spec.whatwg.org/multipage/browsers.html#integration-with-idl
 
-    return typeof iframe.contentWindow.location.href === 'string';
+    return typeof iframe.contentWindow.location.href === "string";
   } catch (err) {
     return false;
   }
@@ -86,14 +86,14 @@ export function hasSelectionCapabilities(elem) {
   const nodeName = elem && elem.nodeName && elem.nodeName.toLowerCase();
   return (
     nodeName &&
-    ((nodeName === 'input' &&
-      (elem.type === 'text' ||
-        elem.type === 'search' ||
-        elem.type === 'tel' ||
-        elem.type === 'url' ||
-        elem.type === 'password')) ||
-      nodeName === 'textarea' ||
-      elem.contentEditable === 'true')
+    ((nodeName === "input" &&
+      (elem.type === "text" ||
+        elem.type === "search" ||
+        elem.type === "tel" ||
+        elem.type === "url" ||
+        elem.type === "password")) ||
+      nodeName === "textarea" ||
+      elem.contentEditable === "true")
   );
 }
 
@@ -137,7 +137,7 @@ export function restoreSelection(priorSelectionInformation) {
       }
     }
 
-    if (typeof priorFocusedElem.focus === 'function') {
+    if (typeof priorFocusedElem.focus === "function") {
       priorFocusedElem.focus();
     }
 
@@ -158,7 +158,7 @@ export function restoreSelection(priorSelectionInformation) {
 export function getSelection(input) {
   let selection;
 
-  if ('selectionStart' in input) {
+  if ("selectionStart" in input) {
     // Modern browser with input or textarea.
     selection = {
       start: input.selectionStart,
@@ -169,7 +169,7 @@ export function getSelection(input) {
     selection = getOffsets(input);
   }
 
-  return selection || {start: 0, end: 0};
+  return selection || { start: 0, end: 0 };
 }
 
 /**
@@ -185,7 +185,7 @@ export function setSelection(input, offsets) {
     end = start;
   }
 
-  if ('selectionStart' in input) {
+  if ("selectionStart" in input) {
     input.selectionStart = start;
     input.selectionEnd = Math.min(end, input.value.length);
   } else {

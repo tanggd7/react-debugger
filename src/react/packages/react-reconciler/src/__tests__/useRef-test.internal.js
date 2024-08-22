@@ -10,9 +10,9 @@
 
 /* eslint-disable no-func-assign */
 
-'use strict';
+"use strict";
 
-describe('useRef', () => {
+describe("useRef", () => {
   let React;
   let ReactNoop;
   let Scheduler;
@@ -26,21 +26,21 @@ describe('useRef', () => {
   let assertLog;
 
   beforeEach(() => {
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
 
-    const ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    const ReactFeatureFlags = require("shared/ReactFeatureFlags");
     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;
 
-    act = require('internal-test-utils').act;
+    act = require("internal-test-utils").act;
     useCallback = React.useCallback;
     useEffect = React.useEffect;
     useLayoutEffect = React.useLayoutEffect;
     useRef = React.useRef;
     useState = React.useState;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     assertLog = InternalTestUtils.assertLog;
   });
@@ -50,7 +50,7 @@ describe('useRef', () => {
     return <span prop={props.text} />;
   }
 
-  it('creates a ref object initialized with the provided value', async () => {
+  it("creates a ref object initialized with the provided value", async () => {
     jest.useFakeTimers();
 
     function useDebouncedCallback(callback, ms, inputs) {
@@ -73,8 +73,8 @@ describe('useRef', () => {
     let ping;
     function App() {
       ping = useDebouncedCallback(
-        value => {
-          Scheduler.log('ping: ' + value);
+        (value) => {
+          Scheduler.log("ping: " + value);
         },
         100,
         [],
@@ -95,7 +95,7 @@ describe('useRef', () => {
 
     jest.advanceTimersByTime(100);
 
-    assertLog(['ping: 3']);
+    assertLog(["ping: 3"]);
 
     ping(4);
     jest.advanceTimersByTime(20);
@@ -106,17 +106,17 @@ describe('useRef', () => {
     assertLog([]);
 
     jest.advanceTimersByTime(20);
-    assertLog(['ping: 6']);
+    assertLog(["ping: 6"]);
   });
 
-  it('should return the same ref during re-renders', async () => {
+  it("should return the same ref during re-renders", async () => {
     function Counter() {
-      const ref = useRef('val');
+      const ref = useRef("val");
       const [count, setCount] = useState(0);
       const [firstRef] = useState(ref);
 
       if (firstRef !== ref) {
-        throw new Error('should never change');
+        throw new Error("should never change");
       }
 
       if (count < 3) {
@@ -134,14 +134,14 @@ describe('useRef', () => {
   });
 
   if (__DEV__) {
-    it('should never warn when attaching to children', async () => {
+    it("should never warn when attaching to children", async () => {
       class Component extends React.Component {
         render() {
           return null;
         }
       }
 
-      function Example({phase}) {
+      function Example({ phase }) {
         const hostRef = useRef();
         const classRef = useRef();
         return (
@@ -161,14 +161,14 @@ describe('useRef', () => {
     });
 
     // @gate enableUseRefAccessWarning
-    it('should warn about reads during render', async () => {
+    it("should warn about reads during render", async () => {
       function Example() {
         const ref = useRef(123);
         let value;
         expect(() => {
           value = ref.current;
         }).toWarnDev([
-          'Example: Unsafe read of a mutable value during render.',
+          "Example: Unsafe read of a mutable value during render.",
         ]);
         return value;
       }
@@ -178,7 +178,7 @@ describe('useRef', () => {
       });
     });
 
-    it('should not warn about lazy init during render', async () => {
+    it("should not warn about lazy init during render", async () => {
       function Example() {
         const ref1 = useRef(null);
         const ref2 = useRef(undefined);
@@ -202,7 +202,7 @@ describe('useRef', () => {
       });
     });
 
-    it('should not warn about lazy init outside of render', async () => {
+    it("should not warn about lazy init outside of render", async () => {
       function Example() {
         // eslint-disable-next-line no-unused-vars
         const [didMount, setDidMount] = useState(false);
@@ -222,7 +222,7 @@ describe('useRef', () => {
     });
 
     // @gate enableUseRefAccessWarning
-    it('should warn about unconditional lazy init during render', async () => {
+    it("should warn about unconditional lazy init during render", async () => {
       function Example() {
         const ref1 = useRef(null);
         const ref2 = useRef(undefined);
@@ -231,12 +231,12 @@ describe('useRef', () => {
           expect(() => {
             ref1.current = 123;
           }).toWarnDev([
-            'Example: Unsafe write of a mutable value during render',
+            "Example: Unsafe write of a mutable value during render",
           ]);
           expect(() => {
             ref2.current = 123;
           }).toWarnDev([
-            'Example: Unsafe write of a mutable value during render',
+            "Example: Unsafe write of a mutable value during render",
           ]);
         } else {
           ref1.current = 123;
@@ -263,7 +263,7 @@ describe('useRef', () => {
     });
 
     // @gate enableUseRefAccessWarning
-    it('should warn about reads to ref after lazy init pattern', async () => {
+    it("should warn about reads to ref after lazy init pattern", async () => {
       function Example() {
         const ref1 = useRef(null);
         const ref2 = useRef(undefined);
@@ -279,10 +279,10 @@ describe('useRef', () => {
         let value;
         expect(() => {
           value = ref1.current;
-        }).toWarnDev(['Example: Unsafe read of a mutable value during render']);
+        }).toWarnDev(["Example: Unsafe read of a mutable value during render"]);
         expect(() => {
           value = ref2.current;
-        }).toWarnDev(['Example: Unsafe read of a mutable value during render']);
+        }).toWarnDev(["Example: Unsafe read of a mutable value during render"]);
 
         // But it should only warn once.
         value = ref1.current;
@@ -297,7 +297,7 @@ describe('useRef', () => {
     });
 
     // @gate enableUseRefAccessWarning
-    it('should warn about writes to ref after lazy init pattern', async () => {
+    it("should warn about writes to ref after lazy init pattern", async () => {
       function Example() {
         const ref1 = useRef(null);
         const ref2 = useRef(undefined);
@@ -312,12 +312,12 @@ describe('useRef', () => {
         expect(() => {
           ref1.current = 456;
         }).toWarnDev([
-          'Example: Unsafe write of a mutable value during render',
+          "Example: Unsafe write of a mutable value during render",
         ]);
         expect(() => {
           ref2.current = 456;
         }).toWarnDev([
-          'Example: Unsafe write of a mutable value during render',
+          "Example: Unsafe write of a mutable value during render",
         ]);
 
         return null;
@@ -328,7 +328,7 @@ describe('useRef', () => {
       });
     });
 
-    it('should not warn about reads or writes within effect', async () => {
+    it("should not warn about reads or writes within effect", async () => {
       function Example() {
         const ref = useRef(123);
         useLayoutEffect(() => {
@@ -351,7 +351,7 @@ describe('useRef', () => {
       ReactNoop.flushPassiveEffects();
     });
 
-    it('should not warn about reads or writes outside of render phase (e.g. event handler)', async () => {
+    it("should not warn about reads or writes outside of render phase (e.g. event handler)", async () => {
       let ref;
       function Example() {
         ref = useRef(123);

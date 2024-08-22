@@ -8,9 +8,9 @@ import {
   clientRenderBoundary,
   completeBoundary,
   completeSegment,
-} from './ReactDOMFizzInstructionSetShared';
+} from "./ReactDOMFizzInstructionSetShared";
 
-export {clientRenderBoundary, completeBoundary, completeSegment};
+export { clientRenderBoundary, completeBoundary, completeSegment };
 
 // This function is almost identical to the version used by the external
 // runtime (ReactDOMFizzInstructionSetExternalRuntime), with the exception of
@@ -20,8 +20,8 @@ export function completeBoundaryWithStyles(
   contentID,
   stylesheetDescriptors,
 ) {
-  const completeBoundaryImpl = window['$RC'];
-  const resourceMap = window['$RM'];
+  const completeBoundaryImpl = window["$RC"];
+  const resourceMap = window["$RM"];
 
   const precedences = new Map();
   const thisDocument = document;
@@ -29,17 +29,17 @@ export function completeBoundaryWithStyles(
 
   // Seed the precedence list with existing resources and collect hoistable style tags
   const nodes = thisDocument.querySelectorAll(
-    'link[data-precedence],style[data-precedence]',
+    "link[data-precedence],style[data-precedence]",
   );
   const styleTagsToHoist = [];
   for (let i = 0; (node = nodes[i++]); ) {
-    if (node.getAttribute('media') === 'not all') {
+    if (node.getAttribute("media") === "not all") {
       styleTagsToHoist.push(node);
     } else {
-      if (node.tagName === 'LINK') {
-        resourceMap.set(node.getAttribute('href'), node);
+      if (node.tagName === "LINK") {
+        resourceMap.set(node.getAttribute("href"), node);
       }
-      precedences.set(node.dataset['precedence'], (lastResource = node));
+      precedences.set(node.dataset["precedence"], (lastResource = node));
     }
   }
 
@@ -67,32 +67,32 @@ export function completeBoundaryWithStyles(
 
       if ((resourceEl = resourceMap.get(href))) {
         // We have an already inserted stylesheet.
-        loadingState = resourceEl['_p'];
+        loadingState = resourceEl["_p"];
         avoidInsert = true;
       } else {
         // We haven't already processed this href so we need to construct a stylesheet and hoist it
         // We construct it here and attach a loadingState. We also check whether it matches
         // media before we include it in the dependency array.
-        resourceEl = thisDocument.createElement('link');
+        resourceEl = thisDocument.createElement("link");
         resourceEl.href = href;
-        resourceEl.rel = 'stylesheet';
-        resourceEl.dataset['precedence'] = precedence =
+        resourceEl.rel = "stylesheet";
+        resourceEl.dataset["precedence"] = precedence =
           stylesheetDescriptor[j++];
         while ((attr = stylesheetDescriptor[j++])) {
           resourceEl.setAttribute(attr, stylesheetDescriptor[j++]);
         }
-        loadingState = resourceEl['_p'] = new Promise((resolve, reject) => {
+        loadingState = resourceEl["_p"] = new Promise((resolve, reject) => {
           resourceEl.onload = resolve;
           resourceEl.onerror = reject;
         });
         // Save this resource element so we can bailout if it is used again
         resourceMap.set(href, resourceEl);
       }
-      media = resourceEl.getAttribute('media');
+      media = resourceEl.getAttribute("media");
       if (
         loadingState &&
-        loadingState['s'] !== 'l' &&
-        (!media || window['matchMedia'](media).matches)
+        loadingState["s"] !== "l" &&
+        (!media || window["matchMedia"](media).matches)
       ) {
         dependencies.push(loadingState);
       }
@@ -108,8 +108,8 @@ export function completeBoundaryWithStyles(
         break;
       }
 
-      precedence = resourceEl.getAttribute('data-precedence');
-      resourceEl.removeAttribute('media');
+      precedence = resourceEl.getAttribute("data-precedence");
+      resourceEl.removeAttribute("media");
     }
 
     // resourceEl is either a newly constructed <link rel="stylesheet" ...> or a <style> tag requiring hoisting
@@ -130,12 +130,12 @@ export function completeBoundaryWithStyles(
   }
 
   Promise.all(dependencies).then(
-    completeBoundaryImpl.bind(null, suspenseBoundaryID, contentID, ''),
+    completeBoundaryImpl.bind(null, suspenseBoundaryID, contentID, ""),
     completeBoundaryImpl.bind(
       null,
       suspenseBoundaryID,
       contentID,
-      'Resource failed to load',
+      "Resource failed to load",
     ),
   );
 }

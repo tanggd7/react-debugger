@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('ReactDOMTestSelectors', () => {
+describe("ReactDOMTestSelectors", () => {
   let React;
 
   let act;
@@ -30,11 +30,11 @@ describe('ReactDOMTestSelectors', () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
+    React = require("react");
     act = React.unstable_act;
 
     if (__EXPERIMENTAL__ || global.__WWW__) {
-      const ReactDOM = require('react-dom/unstable_testing');
+      const ReactDOM = require("react-dom/unstable_testing");
       createComponentSelector = ReactDOM.createComponentSelector;
       createHasPseudoClassSelector = ReactDOM.createHasPseudoClassSelector;
       createRoleSelector = ReactDOM.createRoleSelector;
@@ -49,7 +49,7 @@ describe('ReactDOMTestSelectors', () => {
       render = ReactDOM.render;
     }
 
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -57,9 +57,9 @@ describe('ReactDOMTestSelectors', () => {
     document.body.removeChild(container);
   });
 
-  describe('findAllNodes', () => {
+  describe("findAllNodes", () => {
     // @gate www || experimental
-    it('should support searching from the document root', () => {
+    it("should support searching from the document root", () => {
       function Example() {
         return (
           <div>
@@ -72,14 +72,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should support searching from the container', () => {
+    it("should support searching from the container", () => {
       function Example() {
         return (
           <div>
@@ -92,14 +92,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(container, [
         createComponentSelector(Example),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should support searching from a previous match if the match had a data-testname', () => {
+    it("should support searching from a previous match if the match had a data-testname", () => {
       function Outer() {
         return (
           <div data-testname="outer" id="outer">
@@ -116,21 +116,21 @@ describe('ReactDOMTestSelectors', () => {
 
       let matches = findAllNodes(container, [
         createComponentSelector(Outer),
-        createTestNameSelector('outer'),
+        createTestNameSelector("outer"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('outer');
+      expect(matches[0].id).toBe("outer");
 
       matches = findAllNodes(matches[0], [
         createComponentSelector(Inner),
-        createTestNameSelector('inner'),
+        createTestNameSelector("inner"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('inner');
+      expect(matches[0].id).toBe("inner");
     });
 
     // @gate www || experimental
-    it('should not support searching from a previous match if the match did not have a data-testname', () => {
+    it("should not support searching from a previous match if the match did not have a data-testname", () => {
       function Outer() {
         return (
           <div id="outer">
@@ -147,20 +147,20 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(container, [createComponentSelector(Outer)]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('outer');
+      expect(matches[0].id).toBe("outer");
 
       expect(() => {
         findAllNodes(matches[0], [
           createComponentSelector(Inner),
-          createTestNameSelector('inner'),
+          createTestNameSelector("inner"),
         ]);
       }).toThrow(
-        'Invalid host root specified. Should be either a React container or a node with a testname attribute.',
+        "Invalid host root specified. Should be either a React container or a node with a testname attribute.",
       );
     });
 
     // @gate www || experimental
-    it('should support an multiple component types in the selector array', () => {
+    it("should support an multiple component types in the selector array", () => {
       function Outer() {
         return (
           <>
@@ -190,31 +190,31 @@ describe('ReactDOMTestSelectors', () => {
       let matches = findAllNodes(document.body, [
         createComponentSelector(Outer),
         createComponentSelector(Middle),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(2);
-      expect(matches.map(m => m.id).sort()).toEqual(['match2', 'match3']);
+      expect(matches.map((m) => m.id).sort()).toEqual(["match2", "match3"]);
 
       matches = findAllNodes(document.body, [
         createComponentSelector(Outer),
         createComponentSelector(Middle),
         createComponentSelector(Inner),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match3');
+      expect(matches[0].id).toBe("match3");
 
       matches = findAllNodes(document.body, [
         createComponentSelector(Outer),
         createComponentSelector(Inner),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match3');
+      expect(matches[0].id).toBe("match3");
     });
 
     // @gate www || experimental
-    it('should find multiple matches', () => {
+    it("should find multiple matches", () => {
       function Example1() {
         return (
           <div>
@@ -241,18 +241,18 @@ describe('ReactDOMTestSelectors', () => {
       );
 
       const matches = findAllNodes(document.body, [
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(3);
-      expect(matches.map(m => m.id).sort()).toEqual([
-        'match1',
-        'match2',
-        'match3',
+      expect(matches.map((m) => m.id).sort()).toEqual([
+        "match1",
+        "match2",
+        "match3",
       ]);
     });
 
     // @gate www || experimental
-    it('should ignore nested matches', () => {
+    it("should ignore nested matches", () => {
       function Example() {
         return (
           <div data-testname="match" id="match1">
@@ -265,14 +265,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toEqual('match1');
+      expect(matches[0].id).toEqual("match1");
     });
 
     // @gate www || experimental
-    it('should enforce the specific order of selectors', () => {
+    it("should enforce the specific order of selectors", () => {
       function Outer() {
         return (
           <>
@@ -291,13 +291,13 @@ describe('ReactDOMTestSelectors', () => {
         findAllNodes(document.body, [
           createComponentSelector(Inner),
           createComponentSelector(Outer),
-          createTestNameSelector('match'),
+          createTestNameSelector("match"),
         ]),
       ).toHaveLength(0);
     });
 
     // @gate www || experimental
-    it('should not search within hidden subtrees', () => {
+    it("should not search within hidden subtrees", () => {
       const ref1 = React.createRef(null);
       const ref2 = React.createRef(null);
 
@@ -319,7 +319,7 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Outer),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
 
       expect(matches).toHaveLength(1);
@@ -327,7 +327,7 @@ describe('ReactDOMTestSelectors', () => {
     });
 
     // @gate www || experimental
-    it('should support filtering by display text', () => {
+    it("should support filtering by display text", () => {
       function Example() {
         return (
           <div>
@@ -343,14 +343,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createTextSelector('bar'),
+        createTextSelector("bar"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should support filtering by explicit accessibiliy role', () => {
+    it("should support filtering by explicit accessibiliy role", () => {
       function Example() {
         return (
           <div>
@@ -368,14 +368,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createRoleSelector('button'),
+        createRoleSelector("button"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should support filtering by explicit secondary accessibiliy role', () => {
+    it("should support filtering by explicit secondary accessibiliy role", () => {
       const ref = React.createRef();
 
       function Example() {
@@ -393,14 +393,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createRoleSelector('progressbar'),
+        createRoleSelector("progressbar"),
       ]);
       expect(matches).toHaveLength(1);
       expect(matches[0]).toBe(ref.current);
     });
 
     // @gate www || experimental
-    it('should support filtering by implicit accessibiliy role', () => {
+    it("should support filtering by implicit accessibiliy role", () => {
       function Example() {
         return (
           <div>
@@ -416,14 +416,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createRoleSelector('button'),
+        createRoleSelector("button"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should support filtering by implicit accessibiliy role with attributes qualifications', () => {
+    it("should support filtering by implicit accessibiliy role with attributes qualifications", () => {
       function Example() {
         return (
           <div>
@@ -439,14 +439,14 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createRoleSelector('checkbox'),
+        createRoleSelector("checkbox"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should support searching ahead with the has() selector', () => {
+    it("should support searching ahead with the has() selector", () => {
       function Example() {
         return (
           <div>
@@ -470,26 +470,26 @@ describe('ReactDOMTestSelectors', () => {
 
       const matches = findAllNodes(document.body, [
         createComponentSelector(Example),
-        createRoleSelector('article'),
+        createRoleSelector("article"),
         createHasPseudoClassSelector([
-          createRoleSelector('heading'),
-          createTextSelector('Should match'),
+          createRoleSelector("heading"),
+          createTextSelector("Should match"),
         ]),
-        createRoleSelector('button'),
+        createRoleSelector("button"),
       ]);
       expect(matches).toHaveLength(1);
-      expect(matches[0].id).toBe('match');
+      expect(matches[0].id).toBe("match");
     });
 
     // @gate www || experimental
-    it('should throw if no container can be found', () => {
+    it("should throw if no container can be found", () => {
       expect(() => findAllNodes(document.body, [])).toThrow(
-        'Could not find React container within specified host subtree.',
+        "Could not find React container within specified host subtree.",
       );
     });
 
     // @gate www || experimental
-    it('should throw if an invalid host root is specified', () => {
+    it("should throw if an invalid host root is specified", () => {
       const ref = React.createRef();
       function Example() {
         return <div ref={ref} />;
@@ -498,14 +498,14 @@ describe('ReactDOMTestSelectors', () => {
       render(<Example />, container);
 
       expect(() => findAllNodes(ref.current, [])).toThrow(
-        'Invalid host root specified. Should be either a React container or a node with a testname attribute.',
+        "Invalid host root specified. Should be either a React container or a node with a testname attribute.",
       );
     });
   });
 
-  describe('getFindAllNodesFailureDescription', () => {
+  describe("getFindAllNodesFailureDescription", () => {
     // @gate www || experimental
-    it('should describe findAllNodes failures caused by the component type selector', () => {
+    it("should describe findAllNodes failures caused by the component type selector", () => {
       function Outer() {
         return <Middle />;
       }
@@ -522,7 +522,7 @@ describe('ReactDOMTestSelectors', () => {
         createComponentSelector(Outer),
         createComponentSelector(Middle),
         createComponentSelector(NotRendered),
-        createTestNameSelector('match'),
+        createTestNameSelector("match"),
       ]);
 
       expect(description).toEqual(
@@ -535,7 +535,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should return null if findAllNodes was able to find a match', () => {
+    it("should return null if findAllNodes was able to find a match", () => {
       function Example() {
         return (
           <div>
@@ -554,10 +554,10 @@ No matching component was found for:
     });
   });
 
-  describe('findBoundingRects', () => {
+  describe("findBoundingRects", () => {
     // Stub out getBoundingClientRect for the specified target.
     // This API is required by the test selectors but it isn't implemented by jsdom.
-    function setBoundingClientRect(target, {x, y, width, height}) {
+    function setBoundingClientRect(target, { x, y, width, height }) {
       target.getBoundingClientRect = function () {
         return {
           width,
@@ -571,7 +571,7 @@ No matching component was found for:
     }
 
     // @gate www || experimental
-    it('should return a single rect for a component that returns a single root host element', () => {
+    it("should return a single rect for a component that returns a single root host element", () => {
       const ref = React.createRef();
 
       function Example() {
@@ -605,7 +605,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should return a multiple rects for multiple matches', () => {
+    it("should return a multiple rects for multiple matches", () => {
       const outerRef = React.createRef();
       const innerRef = React.createRef();
 
@@ -655,7 +655,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should return a multiple rects for single match that returns a fragment', () => {
+    it("should return a multiple rects for single match that returns a fragment", () => {
       const refA = React.createRef();
       const refB = React.createRef();
 
@@ -705,7 +705,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should merge overlapping rects', () => {
+    it("should merge overlapping rects", () => {
       const refA = React.createRef();
       const refB = React.createRef();
       const refC = React.createRef();
@@ -760,7 +760,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should merge some types of adjacent rects (if they are the same in one dimension)', () => {
+    it("should merge some types of adjacent rects (if they are the same in one dimension)", () => {
       const refA = React.createRef();
       const refB = React.createRef();
       const refC = React.createRef();
@@ -860,7 +860,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should not search within hidden subtrees', () => {
+    it("should not search within hidden subtrees", () => {
       const refA = React.createRef();
       const refB = React.createRef();
       const refC = React.createRef();
@@ -915,9 +915,9 @@ No matching component was found for:
     });
   });
 
-  describe('focusWithin', () => {
+  describe("focusWithin", () => {
     // @gate www || experimental
-    it('should return false if the specified component path has no matches', () => {
+    it("should return false if the specified component path has no matches", () => {
       function Example() {
         return <Child />;
       }
@@ -938,12 +938,12 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should return false if there are no focusable elements within the matched subtree', () => {
+    it("should return false if there are no focusable elements within the matched subtree", () => {
       function Example() {
         return <Child />;
       }
       function Child() {
-        return 'not focusable';
+        return "not focusable";
       }
 
       render(<Example />, container);
@@ -956,10 +956,10 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should return false if the only focusable elements are disabled', () => {
+    it("should return false if the only focusable elements are disabled", () => {
       function Example() {
         return (
-          <button disabled={true} style={{width: 10, height: 10}}>
+          <button disabled={true} style={{ width: 10, height: 10 }}>
             not clickable
           </button>
         );
@@ -974,7 +974,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should return false if the only focusable elements are hidden', () => {
+    it("should return false if the only focusable elements are hidden", () => {
       function Example() {
         return <button hidden={true}>not clickable</button>;
       }
@@ -988,7 +988,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should successfully focus the first focusable element within the tree', () => {
+    it("should successfully focus the first focusable element within the tree", () => {
       const secondRef = React.createRef(null);
 
       const handleFirstFocus = jest.fn();
@@ -1015,15 +1015,16 @@ No matching component was found for:
         return (
           <button
             ref={secondRef}
-            style={{width: 10, height: 10}}
-            onFocus={handleSecondFocus}>
+            style={{ width: 10, height: 10 }}
+            onFocus={handleSecondFocus}
+          >
             clickable
           </button>
         );
       }
       function ThirdChild() {
         return (
-          <button style={{width: 10, height: 10}} onFocus={handleThirdFocus}>
+          <button style={{ width: 10, height: 10 }} onFocus={handleThirdFocus}>
             clickable
           </button>
         );
@@ -1043,10 +1044,10 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should successfully focus the first focusable element even if application logic interferes', () => {
+    it("should successfully focus the first focusable element even if application logic interferes", () => {
       const ref = React.createRef(null);
 
-      const handleFocus = jest.fn(event => {
+      const handleFocus = jest.fn((event) => {
         event.target.blur();
       });
 
@@ -1054,8 +1055,9 @@ No matching component was found for:
         return (
           <button
             ref={ref}
-            style={{width: 10, height: 10}}
-            onFocus={handleFocus}>
+            style={{ width: 10, height: 10 }}
+            onFocus={handleFocus}
+          >
             clickable
           </button>
         );
@@ -1073,7 +1075,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should not focus within hidden subtrees', () => {
+    it("should not focus within hidden subtrees", () => {
       const secondRef = React.createRef(null);
 
       const handleFirstFocus = jest.fn();
@@ -1092,7 +1094,10 @@ No matching component was found for:
       function FirstChild() {
         return (
           <div hidden={true}>
-            <button style={{width: 10, height: 10}} onFocus={handleFirstFocus}>
+            <button
+              style={{ width: 10, height: 10 }}
+              onFocus={handleFirstFocus}
+            >
               hidden
             </button>
           </div>
@@ -1102,15 +1107,16 @@ No matching component was found for:
         return (
           <button
             ref={secondRef}
-            style={{width: 10, height: 10}}
-            onFocus={handleSecondFocus}>
+            style={{ width: 10, height: 10 }}
+            onFocus={handleSecondFocus}
+          >
             clickable
           </button>
         );
       }
       function ThirdChild() {
         return (
-          <button style={{width: 10, height: 10}} onFocus={handleThirdFocus}>
+          <button style={{ width: 10, height: 10 }} onFocus={handleThirdFocus}>
             clickable
           </button>
         );
@@ -1130,10 +1136,10 @@ No matching component was found for:
     });
   });
 
-  describe('observeVisibleRects', () => {
+  describe("observeVisibleRects", () => {
     // Stub out getBoundingClientRect for the specified target.
     // This API is required by the test selectors but it isn't implemented by jsdom.
-    function setBoundingClientRect(target, {x, y, width, height}) {
+    function setBoundingClientRect(target, { x, y, width, height }) {
       target.getBoundingClientRect = function () {
         return {
           width,
@@ -1197,7 +1203,7 @@ No matching component was found for:
     });
 
     // @gate www || experimental
-    it('should notify a listener when the underlying instance intersection changes', () => {
+    it("should notify a listener when the underlying instance intersection changes", () => {
       const ref = React.createRef(null);
 
       function Example() {
@@ -1230,11 +1236,13 @@ No matching component was found for:
       simulateIntersection([ref.current, rect, 0.5]);
 
       expect(handleVisibilityChange).toHaveBeenCalledTimes(1);
-      expect(handleVisibilityChange).toHaveBeenCalledWith([{rect, ratio: 0.5}]);
+      expect(handleVisibilityChange).toHaveBeenCalledWith([
+        { rect, ratio: 0.5 },
+      ]);
     });
 
     // @gate www || experimental
-    it('should notify a listener of multiple targets when the underlying instance intersection changes', () => {
+    it("should notify a listener of multiple targets when the underlying instance intersection changes", () => {
       const ref1 = React.createRef(null);
       const ref2 = React.createRef(null);
 
@@ -1283,8 +1291,8 @@ No matching component was found for:
       // the test selector should describe the current state of both.
       expect(handleVisibilityChange).toHaveBeenCalledTimes(1);
       expect(handleVisibilityChange).toHaveBeenCalledWith([
-        {rect: rect1, ratio: 0.5},
-        {rect: rect2, ratio: 0},
+        { rect: rect1, ratio: 0.5 },
+        { rect: rect2, ratio: 0 },
       ]);
 
       handleVisibilityChange.mockClear();
@@ -1305,13 +1313,13 @@ No matching component was found for:
       // The newly changed display rect should also be provided for the second target.
       expect(handleVisibilityChange).toHaveBeenCalledTimes(1);
       expect(handleVisibilityChange).toHaveBeenCalledWith([
-        {rect: rect1, ratio: 1},
-        {rect: rect2, ratio: 0.25},
+        { rect: rect1, ratio: 1 },
+        { rect: rect2, ratio: 0.25 },
       ]);
     });
 
     // @gate www || experimental
-    it('should stop listening when its disconnected', () => {
+    it("should stop listening when its disconnected", () => {
       const ref = React.createRef(null);
 
       function Example() {
@@ -1330,7 +1338,7 @@ No matching component was found for:
       setBoundingClientRect(ref.current, rect);
 
       const handleVisibilityChange = jest.fn();
-      const {disconnect} = observeVisibleRects(
+      const { disconnect } = observeVisibleRects(
         document.body,
         [createComponentSelector(Example)],
         handleVisibilityChange,
@@ -1346,7 +1354,7 @@ No matching component was found for:
 
     // This test reuires gating because it relies on the __DEV__ only commit hook to work.
     // @gate www || experimental && __DEV__
-    it('should update which targets its listening to after a commit', () => {
+    it("should update which targets its listening to after a commit", () => {
       const ref1 = React.createRef(null);
       const ref2 = React.createRef(null);
 
@@ -1386,7 +1394,7 @@ No matching component was found for:
 
       expect(handleVisibilityChange).toHaveBeenCalledTimes(1);
       expect(handleVisibilityChange).toHaveBeenCalledWith([
-        {rect: rect1, ratio: 1},
+        { rect: rect1, ratio: 1 },
       ]);
 
       act(() => increment());
@@ -1408,8 +1416,8 @@ No matching component was found for:
 
       expect(handleVisibilityChange).toHaveBeenCalledTimes(1);
       expect(handleVisibilityChange).toHaveBeenCalledWith([
-        {rect: rect1, ratio: 0.5},
-        {rect: rect2, ratio: 0.25},
+        { rect: rect1, ratio: 0.5 },
+        { rect: rect2, ratio: 0.25 },
       ]);
 
       act(() => increment());
@@ -1420,12 +1428,12 @@ No matching component was found for:
 
       expect(handleVisibilityChange).toHaveBeenCalledTimes(1);
       expect(handleVisibilityChange).toHaveBeenCalledWith([
-        {rect: rect2, ratio: 0.75},
+        { rect: rect2, ratio: 0.75 },
       ]);
     });
 
     // @gate www || experimental
-    it('should not observe components within hidden subtrees', () => {
+    it("should not observe components within hidden subtrees", () => {
       const ref1 = React.createRef(null);
       const ref2 = React.createRef(null);
 

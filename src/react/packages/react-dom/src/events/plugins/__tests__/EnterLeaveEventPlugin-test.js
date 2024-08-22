@@ -7,22 +7,22 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('EnterLeaveEventPlugin', () => {
+describe("EnterLeaveEventPlugin", () => {
   let container;
 
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
 
     // The container has to be attached for events to fire.
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -31,28 +31,28 @@ describe('EnterLeaveEventPlugin', () => {
     container = null;
   });
 
-  it('should set onMouseLeave relatedTarget properly in iframe', () => {
-    const iframe = document.createElement('iframe');
+  it("should set onMouseLeave relatedTarget properly in iframe", () => {
+    const iframe = document.createElement("iframe");
     container.appendChild(iframe);
     const iframeDocument = iframe.contentDocument;
     iframeDocument.write(
-      '<!DOCTYPE html><html><head></head><body><div></div></body></html>',
+      "<!DOCTYPE html><html><head></head><body><div></div></body></html>",
     );
     iframeDocument.close();
 
     const leaveEvents = [];
     const node = ReactDOM.render(
       <div
-        onMouseLeave={e => {
+        onMouseLeave={(e) => {
           e.persist();
           leaveEvents.push(e);
         }}
       />,
-      iframeDocument.body.getElementsByTagName('div')[0],
+      iframeDocument.body.getElementsByTagName("div")[0],
     );
 
     node.dispatchEvent(
-      new MouseEvent('mouseout', {
+      new MouseEvent("mouseout", {
         bubbles: true,
         cancelable: true,
         relatedTarget: iframe.contentWindow,
@@ -64,28 +64,28 @@ describe('EnterLeaveEventPlugin', () => {
     expect(leaveEvents[0].relatedTarget).toBe(iframe.contentWindow);
   });
 
-  it('should set onMouseEnter relatedTarget properly in iframe', () => {
-    const iframe = document.createElement('iframe');
+  it("should set onMouseEnter relatedTarget properly in iframe", () => {
+    const iframe = document.createElement("iframe");
     container.appendChild(iframe);
     const iframeDocument = iframe.contentDocument;
     iframeDocument.write(
-      '<!DOCTYPE html><html><head></head><body><div></div></body></html>',
+      "<!DOCTYPE html><html><head></head><body><div></div></body></html>",
     );
     iframeDocument.close();
 
     const enterEvents = [];
     const node = ReactDOM.render(
       <div
-        onMouseEnter={e => {
+        onMouseEnter={(e) => {
           e.persist();
           enterEvents.push(e);
         }}
       />,
-      iframeDocument.body.getElementsByTagName('div')[0],
+      iframeDocument.body.getElementsByTagName("div")[0],
     );
 
     node.dispatchEvent(
-      new MouseEvent('mouseover', {
+      new MouseEvent("mouseover", {
         bubbles: true,
         cancelable: true,
         relatedTarget: null,
@@ -98,7 +98,7 @@ describe('EnterLeaveEventPlugin', () => {
   });
 
   // Regression test for https://github.com/facebook/react/issues/10906.
-  it('should find the common parent after updates', () => {
+  it("should find the common parent after updates", () => {
     let parentEnterCalls = 0;
     let childEnterCalls = 0;
     let parent = null;
@@ -108,7 +108,8 @@ describe('EnterLeaveEventPlugin', () => {
         return (
           <div
             onMouseEnter={() => parentEnterCalls++}
-            ref={node => (parent = node)}>
+            ref={(node) => (parent = node)}
+          >
             {this.props.showChild && (
               <div onMouseEnter={() => childEnterCalls++} />
             )}
@@ -123,7 +124,7 @@ describe('EnterLeaveEventPlugin', () => {
 
     // Enter from parent into the child.
     parent.dispatchEvent(
-      new MouseEvent('mouseout', {
+      new MouseEvent("mouseout", {
         bubbles: true,
         cancelable: true,
         relatedTarget: parent.firstChild,
@@ -136,7 +137,7 @@ describe('EnterLeaveEventPlugin', () => {
   });
 
   // Test for https://github.com/facebook/react/issues/16763.
-  it('should call mouseEnter once from sibling rendered inside a rendered component', done => {
+  it("should call mouseEnter once from sibling rendered inside a rendered component", (done) => {
     const mockFn = jest.fn();
 
     class Parent extends React.Component {
@@ -163,7 +164,7 @@ describe('EnterLeaveEventPlugin', () => {
 
       componentDidMount() {
         this.siblingEl.current.dispatchEvent(
-          new MouseEvent('mouseout', {
+          new MouseEvent("mouseout", {
             bubbles: true,
             cancelable: true,
             relatedTarget: this.firstEl.current,
@@ -186,7 +187,7 @@ describe('EnterLeaveEventPlugin', () => {
     ReactDOM.render(<Parent />, container);
   });
 
-  it('should call mouseEnter when pressing a non tracked React node', done => {
+  it("should call mouseEnter when pressing a non tracked React node", (done) => {
     const mockFn = jest.fn();
 
     class Parent extends React.Component {
@@ -212,10 +213,10 @@ describe('EnterLeaveEventPlugin', () => {
       }
 
       componentDidMount() {
-        const attachedNode = document.createElement('div');
+        const attachedNode = document.createElement("div");
         this.divRef.current.appendChild(attachedNode);
         attachedNode.dispatchEvent(
-          new MouseEvent('mouseout', {
+          new MouseEvent("mouseout", {
             bubbles: true,
             cancelable: true,
             relatedTarget: this.siblingEl.current,
@@ -237,7 +238,7 @@ describe('EnterLeaveEventPlugin', () => {
     ReactDOM.render(<Parent />, container);
   });
 
-  it('should work with portals outside of the root that has onMouseLeave', () => {
+  it("should work with portals outside of the root that has onMouseLeave", () => {
     const divRef = React.createRef();
     const onMouseLeave = jest.fn();
 
@@ -253,7 +254,7 @@ describe('EnterLeaveEventPlugin', () => {
 
     // Leave from the portal div
     divRef.current.dispatchEvent(
-      new MouseEvent('mouseout', {
+      new MouseEvent("mouseout", {
         bubbles: true,
         cancelable: true,
         relatedTarget: document.body,
@@ -263,7 +264,7 @@ describe('EnterLeaveEventPlugin', () => {
     expect(onMouseLeave).toHaveBeenCalledTimes(1);
   });
 
-  it('should work with portals that have onMouseEnter outside of the root ', () => {
+  it("should work with portals that have onMouseEnter outside of the root ", () => {
     const divRef = React.createRef();
     const otherDivRef = React.createRef();
     const onMouseEnter = jest.fn();
@@ -283,7 +284,7 @@ describe('EnterLeaveEventPlugin', () => {
 
     // Leave from the portal div
     divRef.current.dispatchEvent(
-      new MouseEvent('mouseout', {
+      new MouseEvent("mouseout", {
         bubbles: true,
         cancelable: true,
         relatedTarget: otherDivRef.current,

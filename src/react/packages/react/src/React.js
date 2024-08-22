@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import ReactVersion from 'shared/ReactVersion';
+import ReactVersion from "shared/ReactVersion";
 import {
   REACT_FRAGMENT_TYPE,
   REACT_DEBUG_TRACING_MODE_TYPE,
@@ -20,22 +20,22 @@ import {
   REACT_SCOPE_TYPE,
   REACT_CACHE_TYPE,
   REACT_TRACING_MARKER_TYPE,
-} from 'shared/ReactSymbols';
+} from "shared/ReactSymbols";
 
-import {Component, PureComponent} from './ReactBaseClasses';
-import {createRef} from './ReactCreateRef';
-import {forEach, map, count, toArray, only} from './ReactChildren';
+import { Component, PureComponent } from "./ReactBaseClasses";
+import { createRef } from "./ReactCreateRef";
+import { forEach, map, count, toArray, only } from "./ReactChildren";
 import {
   createElement as createElementProd,
   createFactory as createFactoryProd,
   cloneElement as cloneElementProd,
   isValidElement,
-} from './ReactElement';
-import {createContext} from './ReactContext';
-import {lazy} from './ReactLazy';
-import {forwardRef} from './ReactForwardRef';
-import {memo} from './ReactMemo';
-import {cache} from './ReactCache';
+} from "./ReactElement";
+import { createContext } from "./ReactContext";
+import { lazy } from "./ReactLazy";
+import { forwardRef } from "./ReactForwardRef";
+import { memo } from "./ReactMemo";
+import { cache } from "./ReactCache";
 import {
   getCacheSignal,
   getCacheForType,
@@ -59,27 +59,21 @@ import {
   use,
   useMemoCache,
   useOptimistic,
-} from './ReactHooks';
+} from "./ReactHooks";
 import {
   createElementWithValidation,
   createFactoryWithValidation,
   cloneElementWithValidation,
-} from './ReactElementValidator';
-import {createServerContext} from './ReactServerContext';
-import ReactSharedInternals from './ReactSharedInternals';
-import {startTransition} from './ReactStartTransition';
-import {act} from './ReactAct';
+} from "./ReactElementValidator";
+import { createServerContext } from "./ReactServerContext";
+import ReactSharedInternals from "./ReactSharedInternals";
+import { startTransition } from "./ReactStartTransition";
+import { act } from "./ReactAct";
 
 // TODO: Move this branching into the other module instead and just re-export.
-const createElement      = __DEV__
-  ? createElementWithValidation
-  : createElementProd;
-const cloneElement      = __DEV__
-  ? cloneElementWithValidation
-  : cloneElementProd;
-const createFactory      = __DEV__
-  ? createFactoryWithValidation
-  : createFactoryProd;
+const createElement = __DEV__ ? createElementWithValidation : createElementProd;
+const cloneElement = __DEV__ ? cloneElementWithValidation : cloneElementProd;
+const createFactory = __DEV__ ? createFactoryWithValidation : createFactoryProd;
 
 const Children = {
   map,

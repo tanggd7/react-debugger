@@ -8,44 +8,44 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let Stream;
 let React;
 let ReactDOMFizzServer;
 let Suspense;
 
-describe('ReactDOMFizzServerNode', () => {
+describe("ReactDOMFizzServerNode", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOMFizzServer = require('react-dom/server');
-    Stream = require('stream');
+    React = require("react");
+    ReactDOMFizzServer = require("react-dom/server");
+    Stream = require("stream");
     Suspense = React.Suspense;
   });
 
   function getTestWritable() {
     const writable = new Stream.PassThrough();
-    writable.setEncoding('utf8');
-    const output = {result: '', error: undefined};
-    writable.on('data', chunk => {
+    writable.setEncoding("utf8");
+    const output = { result: "", error: undefined };
+    writable.on("data", (chunk) => {
       output.result += chunk;
     });
-    writable.on('error', error => {
+    writable.on("error", (error) => {
       output.error = error;
     });
-    const completed = new Promise(resolve => {
-      writable.on('finish', () => {
+    const completed = new Promise((resolve) => {
+      writable.on("finish", () => {
         resolve();
       });
-      writable.on('error', () => {
+      writable.on("error", () => {
         resolve();
       });
     });
-    return {writable, completed, output};
+    return { writable, completed, output };
   }
 
-  const theError = new Error('This is an error');
+  const theError = new Error("This is an error");
   function Throw() {
     throw theError;
   }
@@ -54,9 +54,9 @@ describe('ReactDOMFizzServerNode', () => {
     throw theInfinitePromise;
   }
 
-  it('should call renderToPipeableStream', () => {
-    const {writable, output} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+  it("should call renderToPipeableStream", () => {
+    const { writable, output } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>hello world</div>,
     );
     pipe(writable);
@@ -64,16 +64,16 @@ describe('ReactDOMFizzServerNode', () => {
     expect(output.result).toMatchInlineSnapshot(`"<div>hello world</div>"`);
   });
 
-  it('should emit DOCTYPE at the root of the document', () => {
-    const {writable, output} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+  it("should emit DOCTYPE at the root of the document", () => {
+    const { writable, output } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <html>
         <body>hello world</body>
       </html>,
     );
     pipe(writable);
     jest.runAllTimers();
-    if (gate(flags => flags.enableFloat)) {
+    if (gate((flags) => flags.enableFloat)) {
       // with Float, we emit empty heads if they are elided when rendering <html>
       expect(output.result).toMatchInlineSnapshot(
         `"<!DOCTYPE html><html><head></head><body>hello world</body></html>"`,
@@ -85,14 +85,14 @@ describe('ReactDOMFizzServerNode', () => {
     }
   });
 
-  it('should emit bootstrap script src at the end', () => {
-    const {writable, output} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+  it("should emit bootstrap script src at the end", () => {
+    const { writable, output } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>hello world</div>,
       {
-        bootstrapScriptContent: 'INIT();',
-        bootstrapScripts: ['init.js'],
-        bootstrapModules: ['init.mjs'],
+        bootstrapScriptContent: "INIT();",
+        bootstrapScripts: ["init.js"],
+        bootstrapModules: ["init.mjs"],
       },
     );
     pipe(writable);
@@ -102,15 +102,15 @@ describe('ReactDOMFizzServerNode', () => {
     );
   });
 
-  it('should start writing after pipe', () => {
-    const {writable, output} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+  it("should start writing after pipe", () => {
+    const { writable, output } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>hello world</div>,
     );
     jest.runAllTimers();
     // First we write our header.
     output.result +=
-      '<!doctype html><html><head><title>test</title><head><body>';
+      "<!doctype html><html><head><title>test</title><head><body>";
     // Then React starts writing.
     pipe(writable);
     expect(output.result).toMatchInlineSnapshot(
@@ -118,19 +118,19 @@ describe('ReactDOMFizzServerNode', () => {
     );
   });
 
-  it('emits all HTML as one unit if we wait until the end to start', async () => {
+  it("emits all HTML as one unit if we wait until the end to start", async () => {
     let hasLoaded = false;
     let resolve;
-    const promise = new Promise(r => (resolve = r));
+    const promise = new Promise((r) => (resolve = r));
     function Wait() {
       if (!hasLoaded) {
         throw promise;
       }
-      return 'Done';
+      return "Done";
     }
     let isCompleteCalls = 0;
-    const {writable, output} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback="Loading">
           <Wait />
@@ -144,7 +144,7 @@ describe('ReactDOMFizzServerNode', () => {
       },
     );
     await jest.runAllTimers();
-    expect(output.result).toBe('');
+    expect(output.result).toBe("");
     expect(isCompleteCalls).toBe(0);
     // Resolve the loading.
     hasLoaded = true;
@@ -152,12 +152,12 @@ describe('ReactDOMFizzServerNode', () => {
 
     await jest.runAllTimers();
 
-    expect(output.result).toBe('');
+    expect(output.result).toBe("");
     expect(isCompleteCalls).toBe(1);
 
     // First we write our header.
     output.result +=
-      '<!doctype html><html><head><title>test</title><head><body>';
+      "<!doctype html><html><head><title>test</title><head><body>";
     // Then React starts writing.
     pipe(writable);
     expect(output.result).toMatchInlineSnapshot(
@@ -165,11 +165,11 @@ describe('ReactDOMFizzServerNode', () => {
     );
   });
 
-  it('should error the stream when an error is thrown at the root', async () => {
+  it("should error the stream when an error is thrown at the root", async () => {
     const reportedErrors = [];
     const reportedShellErrors = [];
-    const {writable, output, completed} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output, completed } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Throw />
       </div>,
@@ -189,17 +189,17 @@ describe('ReactDOMFizzServerNode', () => {
     await completed;
 
     expect(output.error).toBe(theError);
-    expect(output.result).toBe('');
+    expect(output.result).toBe("");
     // This type of error is reported to the error callback too.
     expect(reportedErrors).toEqual([theError]);
     expect(reportedShellErrors).toEqual([theError]);
   });
 
-  it('should error the stream when an error is thrown inside a fallback', async () => {
+  it("should error the stream when an error is thrown inside a fallback", async () => {
     const reportedErrors = [];
     const reportedShellErrors = [];
-    const {writable, output, completed} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output, completed } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback={<Throw />}>
           <InfiniteSuspend />
@@ -220,19 +220,19 @@ describe('ReactDOMFizzServerNode', () => {
     await completed;
 
     expect(output.error).toBe(theError);
-    expect(output.result).toBe('');
+    expect(output.result).toBe("");
     expect(reportedErrors).toEqual([
       theError.message,
-      'The destination stream errored while writing data.',
+      "The destination stream errored while writing data.",
     ]);
     expect(reportedShellErrors).toEqual([theError]);
   });
 
-  it('should not error the stream when an error is thrown inside suspense boundary', async () => {
+  it("should not error the stream when an error is thrown inside suspense boundary", async () => {
     const reportedErrors = [];
     const reportedShellErrors = [];
-    const {writable, output, completed} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output, completed } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback={<div>Loading</div>}>
           <Throw />
@@ -252,24 +252,24 @@ describe('ReactDOMFizzServerNode', () => {
     await completed;
 
     expect(output.error).toBe(undefined);
-    expect(output.result).toContain('Loading');
+    expect(output.result).toContain("Loading");
     // While no error is reported to the stream, the error is reported to the callback.
     expect(reportedErrors).toEqual([theError]);
     expect(reportedShellErrors).toEqual([]);
   });
 
-  it('should not attempt to render the fallback if the main content completes first', async () => {
-    const {writable, output, completed} = getTestWritable();
+  it("should not attempt to render the fallback if the main content completes first", async () => {
+    const { writable, output, completed } = getTestWritable();
 
     let renderedFallback = false;
     function Fallback() {
       renderedFallback = true;
-      return 'Loading...';
+      return "Loading...";
     }
     function Content() {
-      return 'Hi';
+      return "Hi";
     }
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <Suspense fallback={<Fallback />}>
         <Content />
       </Suspense>,
@@ -278,16 +278,16 @@ describe('ReactDOMFizzServerNode', () => {
 
     await completed;
 
-    expect(output.result).toContain('Hi');
-    expect(output.result).not.toContain('Loading');
+    expect(output.result).toContain("Hi");
+    expect(output.result).not.toContain("Loading");
     expect(renderedFallback).toBe(false);
   });
 
-  it('should be able to complete by aborting even if the promise never resolves', async () => {
+  it("should be able to complete by aborting even if the promise never resolves", async () => {
     let isCompleteCalls = 0;
     const errors = [];
-    const {writable, output, completed} = getTestWritable();
-    const {pipe, abort} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output, completed } = getTestWritable();
+    const { pipe, abort } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback={<div>Loading</div>}>
           <InfiniteSuspend />
@@ -306,25 +306,25 @@ describe('ReactDOMFizzServerNode', () => {
 
     jest.runAllTimers();
 
-    expect(output.result).toContain('Loading');
+    expect(output.result).toContain("Loading");
     expect(isCompleteCalls).toBe(0);
 
-    abort(new Error('uh oh'));
+    abort(new Error("uh oh"));
 
     await completed;
 
-    expect(errors).toEqual(['uh oh']);
+    expect(errors).toEqual(["uh oh"]);
     expect(output.error).toBe(undefined);
-    expect(output.result).toContain('Loading');
+    expect(output.result).toContain("Loading");
     expect(isCompleteCalls).toBe(1);
   });
 
-  it('should fail the shell if you abort before work has begun', async () => {
+  it("should fail the shell if you abort before work has begun", async () => {
     let isCompleteCalls = 0;
     const errors = [];
     const shellErrors = [];
-    const {writable, output, completed} = getTestWritable();
-    const {pipe, abort} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output, completed } = getTestWritable();
+    const { pipe, abort } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback={<div>Loading</div>}>
           <InfiniteSuspend />
@@ -348,25 +348,25 @@ describe('ReactDOMFizzServerNode', () => {
     // work as well.
 
     // Abort before running the timers that perform the work
-    const theReason = new Error('uh oh');
+    const theReason = new Error("uh oh");
     abort(theReason);
 
     jest.runAllTimers();
 
     await completed;
 
-    expect(errors).toEqual(['uh oh']);
-    expect(shellErrors).toEqual(['uh oh']);
+    expect(errors).toEqual(["uh oh"]);
+    expect(shellErrors).toEqual(["uh oh"]);
     expect(output.error).toBe(theReason);
-    expect(output.result).toBe('');
+    expect(output.result).toBe("");
     expect(isCompleteCalls).toBe(0);
   });
 
-  it('should be able to complete by abort when the fallback is also suspended', async () => {
+  it("should be able to complete by abort when the fallback is also suspended", async () => {
     let isCompleteCalls = 0;
     const errors = [];
-    const {writable, output, completed} = getTestWritable();
-    const {pipe, abort} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, output, completed } = getTestWritable();
+    const { pipe, abort } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback="Loading">
           <Suspense fallback={<InfiniteSuspend />}>
@@ -387,7 +387,7 @@ describe('ReactDOMFizzServerNode', () => {
 
     jest.runAllTimers();
 
-    expect(output.result).toContain('Loading');
+    expect(output.result).toContain("Loading");
     expect(isCompleteCalls).toBe(0);
 
     abort();
@@ -396,23 +396,23 @@ describe('ReactDOMFizzServerNode', () => {
 
     expect(errors).toEqual([
       // There are two boundaries that abort
-      'The render was aborted by the server without a reason.',
-      'The render was aborted by the server without a reason.',
+      "The render was aborted by the server without a reason.",
+      "The render was aborted by the server without a reason.",
     ]);
     expect(output.error).toBe(undefined);
-    expect(output.result).toContain('Loading');
+    expect(output.result).toContain("Loading");
     expect(isCompleteCalls).toBe(1);
   });
 
-  it('should be able to get context value when promise resolves', async () => {
+  it("should be able to get context value when promise resolves", async () => {
     class DelayClient {
       get() {
         if (this.resolved) return this.resolved;
         if (this.pending) return this.pending;
-        return (this.pending = new Promise(resolve => {
+        return (this.pending = new Promise((resolve) => {
           setTimeout(() => {
             delete this.pending;
-            this.resolved = 'OK';
+            this.resolved = "OK";
             resolve();
           }, 500);
         }));
@@ -423,17 +423,17 @@ describe('ReactDOMFizzServerNode', () => {
     const Component = () => {
       const client = React.useContext(DelayContext);
       if (!client) {
-        return 'context not found.';
+        return "context not found.";
       }
       const result = client.get();
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         return result;
       }
       throw result;
     };
 
     const client = new DelayClient();
-    const {writable, output, completed} = getTestWritable();
+    const { writable, output, completed } = getTestWritable();
     ReactDOMFizzServer.renderToPipeableStream(
       <DelayContext.Provider value={client}>
         <Suspense fallback="loading">
@@ -445,24 +445,24 @@ describe('ReactDOMFizzServerNode', () => {
     jest.runAllTimers();
 
     expect(output.error).toBe(undefined);
-    expect(output.result).toContain('loading');
+    expect(output.result).toContain("loading");
 
     await completed;
 
     expect(output.error).toBe(undefined);
-    expect(output.result).not.toContain('context never found');
-    expect(output.result).toContain('OK');
+    expect(output.result).not.toContain("context never found");
+    expect(output.result).toContain("OK");
   });
 
-  it('should be able to get context value when calls renderToPipeableStream twice at the same time', async () => {
+  it("should be able to get context value when calls renderToPipeableStream twice at the same time", async () => {
     class DelayClient {
       get() {
         if (this.resolved) return this.resolved;
         if (this.pending) return this.pending;
-        return (this.pending = new Promise(resolve => {
+        return (this.pending = new Promise((resolve) => {
           setTimeout(() => {
             delete this.pending;
-            this.resolved = 'OK';
+            this.resolved = "OK";
             resolve();
           }, 500);
         }));
@@ -472,10 +472,10 @@ describe('ReactDOMFizzServerNode', () => {
     const Component = () => {
       const client = React.useContext(DelayContext);
       if (!client) {
-        return 'context never found';
+        return "context never found";
       }
       const result = client.get();
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         return result;
       }
       throw result;
@@ -512,31 +512,31 @@ describe('ReactDOMFizzServerNode', () => {
     jest.runAllTimers();
 
     expect(output0.error).toBe(undefined);
-    expect(output0.result).toContain('loading');
+    expect(output0.result).toContain("loading");
 
     expect(output1.error).toBe(undefined);
-    expect(output1.result).toContain('loading');
+    expect(output1.result).toContain("loading");
 
     await Promise.all([completed0, completed1]);
 
     expect(output0.error).toBe(undefined);
-    expect(output0.result).not.toContain('context never found');
-    expect(output0.result).toContain('OK');
+    expect(output0.result).not.toContain("context never found");
+    expect(output0.result).toContain("OK");
 
     expect(output1.error).toBe(undefined);
-    expect(output1.result).not.toContain('context never found');
-    expect(output1.result).toContain('OK');
+    expect(output1.result).not.toContain("context never found");
+    expect(output1.result).toContain("OK");
   });
 
-  it('should be able to pop context after suspending', async () => {
+  it("should be able to pop context after suspending", async () => {
     class DelayClient {
       get() {
         if (this.resolved) return this.resolved;
         if (this.pending) return this.pending;
-        return (this.pending = new Promise(resolve => {
+        return (this.pending = new Promise((resolve) => {
           setTimeout(() => {
             delete this.pending;
-            this.resolved = 'OK';
+            this.resolved = "OK";
             resolve();
           }, 500);
         }));
@@ -547,17 +547,17 @@ describe('ReactDOMFizzServerNode', () => {
     const Component = () => {
       const client = React.useContext(DelayContext);
       if (!client) {
-        return 'context not found.';
+        return "context not found.";
       }
       const result = client.get();
-      if (typeof result === 'string') {
+      if (typeof result === "string") {
         return result;
       }
       throw result;
     };
 
     const client = new DelayClient();
-    const {writable, output, completed} = getTestWritable();
+    const { writable, output, completed } = getTestWritable();
     ReactDOMFizzServer.renderToPipeableStream(
       <>
         <DelayContext.Provider value={client}>
@@ -576,31 +576,31 @@ describe('ReactDOMFizzServerNode', () => {
     jest.runAllTimers();
 
     expect(output.error).toBe(undefined);
-    expect(output.result).toContain('loading');
+    expect(output.result).toContain("loading");
 
     await completed;
 
     expect(output.error).toBe(undefined);
-    expect(output.result).not.toContain('context never found');
-    expect(output.result).toContain('OK');
+    expect(output.result).not.toContain("context never found");
+    expect(output.result).toContain("OK");
   });
 
-  it('should not continue rendering after the writable ends unexpectedly', async () => {
+  it("should not continue rendering after the writable ends unexpectedly", async () => {
     let hasLoaded = false;
     let resolve;
     let isComplete = false;
     let rendered = false;
-    const promise = new Promise(r => (resolve = r));
+    const promise = new Promise((r) => (resolve = r));
     function Wait() {
       if (!hasLoaded) {
         throw promise;
       }
       rendered = true;
-      return 'Done';
+      return "Done";
     }
     const errors = [];
-    const {writable, completed} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
+    const { writable, completed } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
       <div>
         <Suspense fallback={<div>Loading</div>}>
           <Wait />
@@ -630,22 +630,22 @@ describe('ReactDOMFizzServerNode', () => {
     await completed;
 
     expect(errors).toEqual([
-      'The destination stream errored while writing data.',
+      "The destination stream errored while writing data.",
     ]);
     expect(rendered).toBe(false);
     expect(isComplete).toBe(true);
   });
 
-  it('should encode multibyte characters correctly without nulls (#24985)', () => {
-    const {writable, output} = getTestWritable();
-    const {pipe} = ReactDOMFizzServer.renderToPipeableStream(
-      <div>{Array(700).fill('ののの')}</div>,
+  it("should encode multibyte characters correctly without nulls (#24985)", () => {
+    const { writable, output } = getTestWritable();
+    const { pipe } = ReactDOMFizzServer.renderToPipeableStream(
+      <div>{Array(700).fill("ののの")}</div>,
     );
     pipe(writable);
     jest.runAllTimers();
-    expect(output.result.indexOf('\u0000')).toBe(-1);
+    expect(output.result.indexOf("\u0000")).toBe(-1);
     expect(output.result).toEqual(
-      '<div>' + Array(700).fill('ののの').join('<!-- -->') + '</div>',
+      "<div>" + Array(700).fill("ののの").join("<!-- -->") + "</div>",
     );
   });
 });

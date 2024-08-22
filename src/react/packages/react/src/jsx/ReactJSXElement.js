@@ -5,11 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getComponentNameFromType from 'shared/getComponentNameFromType';
-import ReactSharedInternals from 'shared/ReactSharedInternals';
-import hasOwnProperty from 'shared/hasOwnProperty';
-import {REACT_ELEMENT_TYPE} from 'shared/ReactSymbols';
-import {checkKeyStringCoercion} from 'shared/CheckStringCoercion';
+import getComponentNameFromType from "shared/getComponentNameFromType";
+import ReactSharedInternals from "shared/ReactSharedInternals";
+import hasOwnProperty from "shared/hasOwnProperty";
+import { REACT_ELEMENT_TYPE } from "shared/ReactSymbols";
+import { checkKeyStringCoercion } from "shared/CheckStringCoercion";
 
 const ReactCurrentOwner = ReactSharedInternals.ReactCurrentOwner;
 
@@ -30,8 +30,8 @@ if (__DEV__) {
 
 function hasValidRef(config) {
   if (__DEV__) {
-    if (hasOwnProperty.call(config, 'ref')) {
-      const getter = Object.getOwnPropertyDescriptor(config, 'ref').get;
+    if (hasOwnProperty.call(config, "ref")) {
+      const getter = Object.getOwnPropertyDescriptor(config, "ref").get;
       if (getter && getter.isReactWarning) {
         return false;
       }
@@ -42,8 +42,8 @@ function hasValidRef(config) {
 
 function hasValidKey(config) {
   if (__DEV__) {
-    if (hasOwnProperty.call(config, 'key')) {
-      const getter = Object.getOwnPropertyDescriptor(config, 'key').get;
+    if (hasOwnProperty.call(config, "key")) {
+      const getter = Object.getOwnPropertyDescriptor(config, "key").get;
       if (getter && getter.isReactWarning) {
         return false;
       }
@@ -55,7 +55,7 @@ function hasValidKey(config) {
 function warnIfStringRefCannotBeAutoConverted(config, self) {
   if (__DEV__) {
     if (
-      typeof config.ref === 'string' &&
+      typeof config.ref === "string" &&
       ReactCurrentOwner.current &&
       self &&
       ReactCurrentOwner.current.stateNode !== self
@@ -67,11 +67,11 @@ function warnIfStringRefCannotBeAutoConverted(config, self) {
       if (!didWarnAboutStringRefs[componentName]) {
         console.error(
           'Component "%s" contains the string ref "%s". ' +
-            'Support for string refs will be removed in a future major release. ' +
-            'This case cannot be automatically converted to an arrow function. ' +
-            'We ask you to manually fix this case by using useRef() or createRef() instead. ' +
-            'Learn more about using refs safely here: ' +
-            'https://reactjs.org/link/strict-mode-string-ref',
+            "Support for string refs will be removed in a future major release. " +
+            "This case cannot be automatically converted to an arrow function. " +
+            "We ask you to manually fix this case by using useRef() or createRef() instead. " +
+            "Learn more about using refs safely here: " +
+            "https://reactjs.org/link/strict-mode-string-ref",
           getComponentNameFromType(ReactCurrentOwner.current.type),
           config.ref,
         );
@@ -87,16 +87,16 @@ function defineKeyPropWarningGetter(props, displayName) {
       if (!specialPropKeyWarningShown) {
         specialPropKeyWarningShown = true;
         console.error(
-          '%s: `key` is not a prop. Trying to access it will result ' +
-            'in `undefined` being returned. If you need to access the same ' +
-            'value within the child component, you should pass it as a different ' +
-            'prop. (https://reactjs.org/link/special-props)',
+          "%s: `key` is not a prop. Trying to access it will result " +
+            "in `undefined` being returned. If you need to access the same " +
+            "value within the child component, you should pass it as a different " +
+            "prop. (https://reactjs.org/link/special-props)",
           displayName,
         );
       }
     };
     warnAboutAccessingKey.isReactWarning = true;
-    Object.defineProperty(props, 'key', {
+    Object.defineProperty(props, "key", {
       get: warnAboutAccessingKey,
       configurable: true,
     });
@@ -109,16 +109,16 @@ function defineRefPropWarningGetter(props, displayName) {
       if (!specialPropRefWarningShown) {
         specialPropRefWarningShown = true;
         console.error(
-          '%s: `ref` is not a prop. Trying to access it will result ' +
-            'in `undefined` being returned. If you need to access the same ' +
-            'value within the child component, you should pass it as a different ' +
-            'prop. (https://reactjs.org/link/special-props)',
+          "%s: `ref` is not a prop. Trying to access it will result " +
+            "in `undefined` being returned. If you need to access the same " +
+            "value within the child component, you should pass it as a different " +
+            "prop. (https://reactjs.org/link/special-props)",
           displayName,
         );
       }
     };
     warnAboutAccessingRef.isReactWarning = true;
-    Object.defineProperty(props, 'ref', {
+    Object.defineProperty(props, "ref", {
       get: warnAboutAccessingRef,
       configurable: true,
     });
@@ -171,14 +171,14 @@ function ReactElement(type, key, ref, self, source, owner, props) {
     // the validation flag non-enumerable (where possible, which should
     // include every environment we run tests in), so the test framework
     // ignores it.
-    Object.defineProperty(element._store, 'validated', {
+    Object.defineProperty(element._store, "validated", {
       configurable: false,
       enumerable: false,
       writable: true,
       value: false,
     });
     // self and source are DEV only properties.
-    Object.defineProperty(element, '_self', {
+    Object.defineProperty(element, "_self", {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -186,7 +186,7 @@ function ReactElement(type, key, ref, self, source, owner, props) {
     });
     // Two elements created in two different places should be considered
     // equal for testing purposes and therefore we hide it from enumeration.
-    Object.defineProperty(element, '_source', {
+    Object.defineProperty(element, "_source", {
       configurable: false,
       enumerable: false,
       writable: false,
@@ -226,14 +226,14 @@ export function jsx(type, config, maybeKey) {
     if (__DEV__) {
       checkKeyStringCoercion(maybeKey);
     }
-    key = '' + maybeKey;
+    key = "" + maybeKey;
   }
 
   if (hasValidKey(config)) {
     if (__DEV__) {
       checkKeyStringCoercion(config.key);
     }
-    key = '' + config.key;
+    key = "" + config.key;
   }
 
   if (hasValidRef(config)) {
@@ -297,14 +297,14 @@ export function jsxDEV(type, config, maybeKey, source, self) {
       if (__DEV__) {
         checkKeyStringCoercion(maybeKey);
       }
-      key = '' + maybeKey;
+      key = "" + maybeKey;
     }
 
     if (hasValidKey(config)) {
       if (__DEV__) {
         checkKeyStringCoercion(config.key);
       }
-      key = '' + config.key;
+      key = "" + config.key;
     }
 
     if (hasValidRef(config)) {
@@ -334,8 +334,8 @@ export function jsxDEV(type, config, maybeKey, source, self) {
 
     if (key || ref) {
       const displayName =
-        typeof type === 'function'
-          ? type.displayName || type.name || 'Unknown'
+        typeof type === "function"
+          ? type.displayName || type.name || "Unknown"
           : type;
       if (key) {
         defineKeyPropWarningGetter(props, displayName);

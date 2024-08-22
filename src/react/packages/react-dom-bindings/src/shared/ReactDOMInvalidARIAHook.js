@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {ATTRIBUTE_NAME_CHAR} from './isAttributeNameSafe';
-import validAriaProperties from './validAriaProperties';
-import hasOwnProperty from 'shared/hasOwnProperty';
+import { ATTRIBUTE_NAME_CHAR } from "./isAttributeNameSafe";
+import validAriaProperties from "./validAriaProperties";
+import hasOwnProperty from "shared/hasOwnProperty";
 
 const warnedProperties = {};
-const rARIA = new RegExp('^(aria)-[' + ATTRIBUTE_NAME_CHAR + ']*$');
-const rARIACamel = new RegExp('^(aria)[A-Z][' + ATTRIBUTE_NAME_CHAR + ']*$');
+const rARIA = new RegExp("^(aria)-[" + ATTRIBUTE_NAME_CHAR + "]*$");
+const rARIACamel = new RegExp("^(aria)[A-Z][" + ATTRIBUTE_NAME_CHAR + "]*$");
 
 function validateProperty(tagName, name) {
   if (__DEV__) {
@@ -20,7 +20,7 @@ function validateProperty(tagName, name) {
     }
 
     if (rARIACamel.test(name)) {
-      const ariaName = 'aria-' + name.slice(4).toLowerCase();
+      const ariaName = "aria-" + name.slice(4).toLowerCase();
       const correctName = validAriaProperties.hasOwnProperty(ariaName)
         ? ariaName
         : null;
@@ -29,7 +29,7 @@ function validateProperty(tagName, name) {
       // DOM properties, then it is an invalid aria-* attribute.
       if (correctName == null) {
         console.error(
-          'Invalid ARIA attribute `%s`. ARIA attributes follow the pattern aria-* and must be lowercase.',
+          "Invalid ARIA attribute `%s`. ARIA attributes follow the pattern aria-* and must be lowercase.",
           name,
         );
         warnedProperties[name] = true;
@@ -38,7 +38,7 @@ function validateProperty(tagName, name) {
       // aria-* attributes should be lowercase; suggest the lowercase version.
       if (name !== correctName) {
         console.error(
-          'Invalid ARIA attribute `%s`. Did you mean `%s`?',
+          "Invalid ARIA attribute `%s`. Did you mean `%s`?",
           name,
           correctName,
         );
@@ -62,7 +62,7 @@ function validateProperty(tagName, name) {
       // aria-* attributes should be lowercase; suggest the lowercase version.
       if (name !== standardName) {
         console.error(
-          'Unknown ARIA attribute `%s`. Did you mean `%s`?',
+          "Unknown ARIA attribute `%s`. Did you mean `%s`?",
           name,
           standardName,
         );
@@ -87,20 +87,20 @@ export function validateProperties(type, props) {
     }
 
     const unknownPropString = invalidProps
-      .map(prop => '`' + prop + '`')
-      .join(', ');
+      .map((prop) => "`" + prop + "`")
+      .join(", ");
 
     if (invalidProps.length === 1) {
       console.error(
-        'Invalid aria prop %s on <%s> tag. ' +
-          'For details, see https://reactjs.org/link/invalid-aria-props',
+        "Invalid aria prop %s on <%s> tag. " +
+          "For details, see https://reactjs.org/link/invalid-aria-props",
         unknownPropString,
         type,
       );
     } else if (invalidProps.length > 1) {
       console.error(
-        'Invalid aria props %s on <%s> tag. ' +
-          'For details, see https://reactjs.org/link/invalid-aria-props',
+        "Invalid aria props %s on <%s> tag. " +
+          "For details, see https://reactjs.org/link/invalid-aria-props",
         unknownPropString,
         type,
       );

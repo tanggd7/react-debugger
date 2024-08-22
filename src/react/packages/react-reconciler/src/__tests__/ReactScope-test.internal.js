@@ -7,34 +7,34 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactFeatureFlags;
 let ReactDOMServer;
 let act;
 
-describe('ReactScope', () => {
+describe("ReactScope", () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
     ReactFeatureFlags.enableScopeAPI = true;
-    React = require('react');
+    React = require("react");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     act = InternalTestUtils.act;
   });
 
-  describe('ReactDOM', () => {
+  describe("ReactDOM", () => {
     let ReactDOM;
     let ReactDOMClient;
     let container;
 
     beforeEach(() => {
-      ReactDOM = require('react-dom');
-      ReactDOMClient = require('react-dom/client');
-      ReactDOMServer = require('react-dom/server');
-      container = document.createElement('div');
+      ReactDOM = require("react-dom");
+      ReactDOMClient = require("react-dom/client");
+      ReactDOMServer = require("react-dom/server");
+      container = document.createElement("div");
       document.body.appendChild(container);
     });
 
@@ -44,7 +44,7 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('DO_NOT_USE_queryAllNodes() works as intended', () => {
+    it("DO_NOT_USE_queryAllNodes() works as intended", () => {
       const testScopeQuery = (type, props) => true;
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
@@ -52,7 +52,7 @@ describe('ReactScope', () => {
       const spanRef = React.createRef();
       const aRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <TestScope ref={scopeRef}>
             <div ref={divRef}>DIV</div>
@@ -79,15 +79,15 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('DO_NOT_USE_queryAllNodes() provides the correct host instance', () => {
-      const testScopeQuery = (type, props) => type === 'div';
+    it("DO_NOT_USE_queryAllNodes() provides the correct host instance", () => {
+      const testScopeQuery = (type, props) => type === "div";
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
       const divRef = React.createRef();
       const spanRef = React.createRef();
       const aRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <TestScope ref={scopeRef}>
             <div ref={divRef}>DIV</div>
@@ -126,7 +126,7 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('DO_NOT_USE_queryFirstNode() works as intended', () => {
+    it("DO_NOT_USE_queryFirstNode() works as intended", () => {
       const testScopeQuery = (type, props) => true;
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
@@ -134,7 +134,7 @@ describe('ReactScope', () => {
       const spanRef = React.createRef();
       const aRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <TestScope ref={scopeRef}>
             <div ref={divRef}>DIV</div>
@@ -161,7 +161,7 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('containsNode() works as intended', () => {
+    it("containsNode() works as intended", () => {
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
       const divRef = React.createRef();
@@ -170,7 +170,7 @@ describe('ReactScope', () => {
       const outerSpan = React.createRef();
       const emRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <div>
             <span ref={outerSpan}>SPAN</span>
@@ -211,14 +211,14 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('scopes support server-side rendering and hydration', () => {
+    it("scopes support server-side rendering and hydration", () => {
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
       const divRef = React.createRef();
       const spanRef = React.createRef();
       const aRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return (
           <div>
             <TestScope ref={scopeRef}>
@@ -232,7 +232,7 @@ describe('ReactScope', () => {
       }
       const html = ReactDOMServer.renderToString(<Test />);
       expect(html).toBe(
-        '<div><div>DIV</div><span>SPAN</span><a>A</a><div>Outside content!</div></div>',
+        "<div><div>DIV</div><span>SPAN</span><a>A</a><div>Outside content!</div></div>",
       );
       container.innerHTML = html;
       ReactDOM.hydrate(<Test />, container);
@@ -242,12 +242,12 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('getChildContextValues() works as intended', () => {
+    it("getChildContextValues() works as intended", () => {
       const TestContext = React.createContext();
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <TestScope ref={scopeRef}>
             <TestContext.Provider value={1} />
@@ -271,10 +271,12 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('correctly works with suspended boundaries that are hydrated', async () => {
+    it("correctly works with suspended boundaries that are hydrated", async () => {
       let suspend = false;
       let resolve;
-      const promise = new Promise(resolvePromise => (resolve = resolvePromise));
+      const promise = new Promise(
+        (resolvePromise) => (resolve = resolvePromise),
+      );
       const ref = React.createRef();
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
@@ -284,7 +286,7 @@ describe('ReactScope', () => {
         if (suspend) {
           throw promise;
         } else {
-          return 'Hello';
+          return "Hello";
         }
       }
 
@@ -308,10 +310,10 @@ describe('ReactScope', () => {
       suspend = false;
       const finalHTML = ReactDOMServer.renderToString(<App />);
 
-      const container2 = document.createElement('div');
+      const container2 = document.createElement("div");
       container2.innerHTML = finalHTML;
 
-      const span = container2.getElementsByTagName('span')[0];
+      const span = container2.getElementsByTagName("span")[0];
 
       // On the client we don't have all data yet but we want to start
       // hydrating anyway.
@@ -335,15 +337,15 @@ describe('ReactScope', () => {
     });
   });
 
-  describe('ReactTestRenderer', () => {
+  describe("ReactTestRenderer", () => {
     let ReactTestRenderer;
 
     beforeEach(() => {
-      ReactTestRenderer = require('react-test-renderer');
+      ReactTestRenderer = require("react-test-renderer");
     });
 
     // @gate www
-    it('DO_NOT_USE_queryAllNodes() works as intended', () => {
+    it("DO_NOT_USE_queryAllNodes() works as intended", () => {
       const testScopeQuery = (type, props) => true;
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
@@ -351,7 +353,7 @@ describe('ReactScope', () => {
       const spanRef = React.createRef();
       const aRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <TestScope ref={scopeRef}>
             <div ref={divRef}>DIV</div>
@@ -368,7 +370,7 @@ describe('ReactScope', () => {
       }
 
       const renderer = ReactTestRenderer.create(<Test toggle={true} />, {
-        createNodeMock: element => {
+        createNodeMock: (element) => {
           return element;
         },
       });
@@ -380,7 +382,7 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('DO_NOT_USE_queryFirstNode() works as intended', () => {
+    it("DO_NOT_USE_queryFirstNode() works as intended", () => {
       const testScopeQuery = (type, props) => true;
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
@@ -388,7 +390,7 @@ describe('ReactScope', () => {
       const spanRef = React.createRef();
       const aRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <TestScope ref={scopeRef}>
             <div ref={divRef}>DIV</div>
@@ -405,7 +407,7 @@ describe('ReactScope', () => {
       }
 
       const renderer = ReactTestRenderer.create(<Test toggle={true} />, {
-        createNodeMock: element => {
+        createNodeMock: (element) => {
           return element;
         },
       });
@@ -417,7 +419,7 @@ describe('ReactScope', () => {
     });
 
     // @gate www
-    it('containsNode() works as intended', () => {
+    it("containsNode() works as intended", () => {
       const TestScope = React.unstable_Scope;
       const scopeRef = React.createRef();
       const divRef = React.createRef();
@@ -426,7 +428,7 @@ describe('ReactScope', () => {
       const outerSpan = React.createRef();
       const emRef = React.createRef();
 
-      function Test({toggle}) {
+      function Test({ toggle }) {
         return toggle ? (
           <div>
             <span ref={outerSpan}>SPAN</span>
@@ -451,7 +453,7 @@ describe('ReactScope', () => {
       }
 
       const renderer = ReactTestRenderer.create(<Test toggle={true} />, {
-        createNodeMock: element => {
+        createNodeMock: (element) => {
           return element;
         },
       });

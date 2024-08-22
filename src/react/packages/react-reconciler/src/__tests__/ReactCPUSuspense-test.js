@@ -13,39 +13,39 @@ let resolveText;
 let assertLog;
 let waitForPaint;
 
-describe('ReactSuspenseWithNoopRenderer', () => {
+describe("ReactSuspenseWithNoopRenderer", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     Suspense = React.Suspense;
     useState = React.useState;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
     waitForPaint = InternalTestUtils.waitForPaint;
 
     textCache = new Map();
 
-    readText = text => {
+    readText = (text) => {
       const record = textCache.get(text);
       if (record !== undefined) {
         switch (record.status) {
-          case 'pending':
+          case "pending":
             throw record.promise;
-          case 'rejected':
-            throw Error('Failed to load: ' + text);
-          case 'resolved':
+          case "rejected":
+            throw Error("Failed to load: " + text);
+          case "resolved":
             return text;
         }
       } else {
         let ping;
-        const promise = new Promise(resolve => (ping = resolve));
+        const promise = new Promise((resolve) => (ping = resolve));
         const newRecord = {
-          status: 'pending',
+          status: "pending",
           ping: ping,
           promise,
         };
@@ -54,19 +54,19 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       }
     };
 
-    resolveText = text => {
+    resolveText = (text) => {
       const record = textCache.get(text);
       if (record !== undefined) {
-        if (record.status === 'pending') {
+        if (record.status === "pending") {
           record.ping();
           record.ping = null;
-          record.status = 'resolved';
+          record.status = "resolved";
           record.promise = null;
         }
       } else {
         const newRecord = {
           ping: null,
-          status: 'resolved',
+          status: "resolved",
           promise: null,
         };
         textCache.set(text, newRecord);
@@ -106,7 +106,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       Scheduler.log(text);
       return text;
     } catch (promise) {
-      if (typeof promise.then === 'function') {
+      if (typeof promise.then === "function") {
         Scheduler.log(`Suspend! [${text}]`);
       } else {
         Scheduler.log(`Error! [${text}]`);
@@ -116,7 +116,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
   }
 
   // @gate enableCPUSuspense
-  it('skips CPU-bound trees on initial mount', async () => {
+  it("skips CPU-bound trees on initial mount", async () => {
     function App() {
       return (
         <>
@@ -124,7 +124,8 @@ describe('ReactSuspenseWithNoopRenderer', () => {
           <div>
             <Suspense
               unstable_expectedLoadTime={2000}
-              fallback={<Text text="Loading..." />}>
+              fallback={<Text text="Loading..." />}
+            >
               <Text text="Inner" />
             </Suspense>
           </div>
@@ -135,7 +136,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
     const root = ReactNoop.createRoot();
     await act(async () => {
       root.render(<App />);
-      await waitForPaint(['Outer', 'Loading...']);
+      await waitForPaint(["Outer", "Loading..."]);
       expect(root).toMatchRenderedOutput(
         <>
           Outer
@@ -144,7 +145,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       );
     });
     // Inner contents finish in separate commit from outer
-    assertLog(['Inner']);
+    assertLog(["Inner"]);
     expect(root).toMatchRenderedOutput(
       <>
         Outer
@@ -154,7 +155,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
   });
 
   // @gate enableCPUSuspense
-  it('does not skip CPU-bound trees during updates', async () => {
+  it("does not skip CPU-bound trees during updates", async () => {
     let setCount;
 
     function App() {
@@ -166,7 +167,8 @@ describe('ReactSuspenseWithNoopRenderer', () => {
           <div>
             <Suspense
               unstable_expectedLoadTime={2000}
-              fallback={<Text text="Loading..." />}>
+              fallback={<Text text="Loading..." />}
+            >
               <Text text={`Inner [${count}]`} />
             </Suspense>
           </div>
@@ -180,7 +182,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       root.render(<App />);
     });
     // Inner contents finish in separate commit from outer
-    assertLog(['Outer', 'Loading...', 'Inner [0]']);
+    assertLog(["Outer", "Loading...", "Inner [0]"]);
     expect(root).toMatchRenderedOutput(
       <>
         Outer
@@ -193,7 +195,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       setCount(1);
     });
     // Entire update finishes in a single commit
-    assertLog(['Outer', 'Inner [1]']);
+    assertLog(["Outer", "Inner [1]"]);
     expect(root).toMatchRenderedOutput(
       <>
         Outer
@@ -203,7 +205,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
   });
 
   // @gate enableCPUSuspense
-  it('suspend inside CPU-bound tree', async () => {
+  it("suspend inside CPU-bound tree", async () => {
     function App() {
       return (
         <>
@@ -211,7 +213,8 @@ describe('ReactSuspenseWithNoopRenderer', () => {
           <div>
             <Suspense
               unstable_expectedLoadTime={2000}
-              fallback={<Text text="Loading..." />}>
+              fallback={<Text text="Loading..." />}
+            >
               <AsyncText text="Inner" />
             </Suspense>
           </div>
@@ -222,7 +225,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
     const root = ReactNoop.createRoot();
     await act(async () => {
       root.render(<App />);
-      await waitForPaint(['Outer', 'Loading...']);
+      await waitForPaint(["Outer", "Loading..."]);
       expect(root).toMatchRenderedOutput(
         <>
           Outer
@@ -231,7 +234,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       );
     });
     // Inner contents suspended, so we continue showing a fallback.
-    assertLog(['Suspend! [Inner]']);
+    assertLog(["Suspend! [Inner]"]);
     expect(root).toMatchRenderedOutput(
       <>
         Outer
@@ -241,9 +244,9 @@ describe('ReactSuspenseWithNoopRenderer', () => {
 
     // Resolve the data and finish rendering
     await act(async () => {
-      await resolveText('Inner');
+      await resolveText("Inner");
     });
-    assertLog(['Inner']);
+    assertLog(["Inner"]);
     expect(root).toMatchRenderedOutput(
       <>
         Outer
@@ -253,7 +256,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
   });
 
   // @gate enableCPUSuspense
-  it('nested CPU-bound trees', async () => {
+  it("nested CPU-bound trees", async () => {
     function App() {
       return (
         <>
@@ -261,12 +264,14 @@ describe('ReactSuspenseWithNoopRenderer', () => {
           <div>
             <Suspense
               unstable_expectedLoadTime={2000}
-              fallback={<Text text="Loading B..." />}>
+              fallback={<Text text="Loading B..." />}
+            >
               <Text text="B" />
               <div>
                 <Suspense
                   unstable_expectedLoadTime={2000}
-                  fallback={<Text text="Loading C..." />}>
+                  fallback={<Text text="Loading C..." />}
+                >
                   <Text text="C" />
                 </Suspense>
               </div>
@@ -281,7 +286,7 @@ describe('ReactSuspenseWithNoopRenderer', () => {
       root.render(<App />);
     });
     // Each level commits separately
-    assertLog(['A', 'Loading B...', 'B', 'Loading C...', 'C']);
+    assertLog(["A", "Loading B...", "B", "Loading C...", "C"]);
     expect(root).toMatchRenderedOutput(
       <>
         A

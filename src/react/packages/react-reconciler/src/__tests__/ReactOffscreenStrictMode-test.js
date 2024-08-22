@@ -4,18 +4,18 @@ let ReactNoop;
 let act;
 let log;
 
-describe('ReactOffscreenStrictMode', () => {
+describe("ReactOffscreenStrictMode", () => {
   beforeEach(() => {
     jest.resetModules();
     log = [];
 
-    React = require('react');
+    React = require("react");
     Offscreen = React.unstable_Offscreen;
-    ReactNoop = require('react-noop-renderer');
-    act = require('internal-test-utils').act;
+    ReactNoop = require("react-noop-renderer");
+    act = require("internal-test-utils").act;
   });
 
-  function Component({label}) {
+  function Component({ label }) {
     React.useEffect(() => {
       log.push(`${label}: useEffect mount`);
       return () => log.push(`${label}: useEffect unmount`);
@@ -32,7 +32,7 @@ describe('ReactOffscreenStrictMode', () => {
   }
 
   // @gate __DEV__ && enableOffscreen
-  it('should trigger strict effects when offscreen is visible', async () => {
+  it("should trigger strict effects when offscreen is visible", async () => {
     await act(() => {
       ReactNoop.render(
         <React.StrictMode>
@@ -44,19 +44,19 @@ describe('ReactOffscreenStrictMode', () => {
     });
 
     expect(log).toEqual([
-      'A: render',
-      'A: render',
-      'A: useLayoutEffect mount',
-      'A: useEffect mount',
-      'A: useLayoutEffect unmount',
-      'A: useEffect unmount',
-      'A: useLayoutEffect mount',
-      'A: useEffect mount',
+      "A: render",
+      "A: render",
+      "A: useLayoutEffect mount",
+      "A: useEffect mount",
+      "A: useLayoutEffect unmount",
+      "A: useEffect unmount",
+      "A: useLayoutEffect mount",
+      "A: useEffect mount",
     ]);
   });
 
   // @gate __DEV__ && enableOffscreen && enableDO_NOT_USE_disableStrictPassiveEffect
-  it('does not trigger strict effects when disableStrictPassiveEffect is presented on StrictMode', async () => {
+  it("does not trigger strict effects when disableStrictPassiveEffect is presented on StrictMode", async () => {
     await act(() => {
       ReactNoop.render(
         <React.StrictMode DO_NOT_USE_disableStrictPassiveEffect={true}>
@@ -68,17 +68,17 @@ describe('ReactOffscreenStrictMode', () => {
     });
 
     expect(log).toEqual([
-      'A: render',
-      'A: render',
-      'A: useLayoutEffect mount',
-      'A: useEffect mount',
-      'A: useLayoutEffect unmount',
-      'A: useLayoutEffect mount',
+      "A: render",
+      "A: render",
+      "A: useLayoutEffect mount",
+      "A: useEffect mount",
+      "A: useLayoutEffect unmount",
+      "A: useLayoutEffect mount",
     ]);
   });
 
   // @gate __DEV__ && enableOffscreen && useModernStrictMode
-  it('should not trigger strict effects when offscreen is hidden', async () => {
+  it("should not trigger strict effects when offscreen is hidden", async () => {
     await act(() => {
       ReactNoop.render(
         <React.StrictMode>
@@ -89,7 +89,7 @@ describe('ReactOffscreenStrictMode', () => {
       );
     });
 
-    expect(log).toEqual(['A: render', 'A: render']);
+    expect(log).toEqual(["A: render", "A: render"]);
 
     log = [];
 
@@ -104,7 +104,7 @@ describe('ReactOffscreenStrictMode', () => {
       );
     });
 
-    expect(log).toEqual(['A: render', 'A: render', 'B: render', 'B: render']);
+    expect(log).toEqual(["A: render", "A: render", "B: render", "B: render"]);
 
     log = [];
 
@@ -119,14 +119,14 @@ describe('ReactOffscreenStrictMode', () => {
     });
 
     expect(log).toEqual([
-      'A: render',
-      'A: render',
-      'A: useLayoutEffect mount',
-      'A: useEffect mount',
-      'A: useLayoutEffect unmount',
-      'A: useEffect unmount',
-      'A: useLayoutEffect mount',
-      'A: useEffect mount',
+      "A: render",
+      "A: render",
+      "A: useLayoutEffect mount",
+      "A: useEffect mount",
+      "A: useLayoutEffect unmount",
+      "A: useEffect unmount",
+      "A: useLayoutEffect mount",
+      "A: useEffect mount",
     ]);
 
     log = [];
@@ -142,14 +142,14 @@ describe('ReactOffscreenStrictMode', () => {
     });
 
     expect(log).toEqual([
-      'A: useLayoutEffect unmount',
-      'A: useEffect unmount',
-      'A: render',
-      'A: render',
+      "A: useLayoutEffect unmount",
+      "A: useEffect unmount",
+      "A: render",
+      "A: render",
     ]);
   });
 
-  it('should not cause infinite render loop when StrictMode is used with Suspense and synchronous set states', async () => {
+  it("should not cause infinite render loop when StrictMode is used with Suspense and synchronous set states", async () => {
     // This is a regression test, see https://github.com/facebook/react/pull/25179 for more details.
     function App() {
       const [state, setState] = React.useState(false);
@@ -177,19 +177,19 @@ describe('ReactOffscreenStrictMode', () => {
   });
 
   // @gate __DEV__ && enableOffscreen
-  it('should double invoke effects on unsuspended child', async () => {
+  it("should double invoke effects on unsuspended child", async () => {
     let shouldSuspend = true;
     let resolve;
-    const suspensePromise = new Promise(_resolve => {
+    const suspensePromise = new Promise((_resolve) => {
       resolve = _resolve;
     });
 
     function Parent() {
-      log.push('Parent rendered');
+      log.push("Parent rendered");
       React.useEffect(() => {
-        log.push('Parent mount');
+        log.push("Parent mount");
         return () => {
-          log.push('Parent unmount');
+          log.push("Parent unmount");
         };
       });
 
@@ -201,15 +201,15 @@ describe('ReactOffscreenStrictMode', () => {
     }
 
     function Child() {
-      log.push('Child rendered');
+      log.push("Child rendered");
       React.useEffect(() => {
-        log.push('Child mount');
+        log.push("Child mount");
         return () => {
-          log.push('Child unmount');
+          log.push("Child unmount");
         };
       });
       if (shouldSuspend) {
-        log.push('Child suspended');
+        log.push("Child suspended");
         throw suspensePromise;
       }
       return null;
@@ -225,7 +225,7 @@ describe('ReactOffscreenStrictMode', () => {
       );
     });
 
-    log.push('------------------------------');
+    log.push("------------------------------");
 
     await act(() => {
       resolve();
@@ -233,19 +233,19 @@ describe('ReactOffscreenStrictMode', () => {
     });
 
     expect(log).toEqual([
-      'Parent rendered',
-      'Parent rendered',
-      'Child rendered',
-      'Child suspended',
-      'Parent mount',
-      'Parent unmount',
-      'Parent mount',
-      '------------------------------',
-      'Child rendered',
-      'Child rendered',
-      'Child mount',
-      'Child unmount',
-      'Child mount',
+      "Parent rendered",
+      "Parent rendered",
+      "Child rendered",
+      "Child suspended",
+      "Parent mount",
+      "Parent unmount",
+      "Parent mount",
+      "------------------------------",
+      "Child rendered",
+      "Child rendered",
+      "Child mount",
+      "Child unmount",
+      "Child mount",
     ]);
   });
 });

@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -20,10 +20,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -33,17 +33,17 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  describe('class contextType', function () {
+  describe("class contextType", function () {
     let PurpleContext, RedContext, Context;
     beforeEach(() => {
-      Context = React.createContext('none');
+      Context = React.createContext("none");
 
       class Parent extends React.Component {
         render() {
@@ -54,11 +54,13 @@ describe('ReactDOMServerIntegration', () => {
           );
         }
       }
-      PurpleContext = props => <Parent text="purple">{props.children}</Parent>;
-      RedContext = props => <Parent text="red">{props.children}</Parent>;
+      PurpleContext = (props) => (
+        <Parent text="purple">{props.children}</Parent>
+      );
+      RedContext = (props) => <Parent text="red">{props.children}</Parent>;
     });
 
-    itRenders('class child with context', async render => {
+    itRenders("class child with context", async (render) => {
       class ClassChildWithContext extends React.Component {
         static contextType = Context;
         render() {
@@ -72,15 +74,15 @@ describe('ReactDOMServerIntegration', () => {
           <ClassChildWithContext />
         </PurpleContext>,
       );
-      expect(e.textContent).toBe('purple');
+      expect(e.textContent).toBe("purple");
     });
 
-    itRenders('class child without context', async render => {
+    itRenders("class child without context", async (render) => {
       class ClassChildWithoutContext extends React.Component {
         render() {
           // this should render blank; context isn't passed to this component.
           return (
-            <div>{typeof this.context === 'string' ? this.context : ''}</div>
+            <div>{typeof this.context === "string" ? this.context : ""}</div>
           );
         }
       }
@@ -90,10 +92,10 @@ describe('ReactDOMServerIntegration', () => {
           <ClassChildWithoutContext />
         </PurpleContext>,
       );
-      expect(e.textContent).toBe('');
+      expect(e.textContent).toBe("");
     });
 
-    itRenders('class child with wrong context', async render => {
+    itRenders("class child with wrong context", async (render) => {
       class ClassChildWithWrongContext extends React.Component {
         static contextType = Context;
         render() {
@@ -107,10 +109,10 @@ describe('ReactDOMServerIntegration', () => {
           <ClassChildWithWrongContext />
         </PurpleContext>,
       );
-      expect(e.textContent).toBe('');
+      expect(e.textContent).toBe("");
     });
 
-    itRenders('with context passed through to a grandchild', async render => {
+    itRenders("with context passed through to a grandchild", async (render) => {
       class Grandchild extends React.Component {
         static contextType = Context;
         render() {
@@ -118,17 +120,17 @@ describe('ReactDOMServerIntegration', () => {
         }
       }
 
-      const Child = props => <Grandchild />;
+      const Child = (props) => <Grandchild />;
 
       const e = await render(
         <PurpleContext>
           <Child />
         </PurpleContext>,
       );
-      expect(e.textContent).toBe('purple');
+      expect(e.textContent).toBe("purple");
     });
 
-    itRenders('a child context overriding a parent context', async render => {
+    itRenders("a child context overriding a parent context", async (render) => {
       class Grandchild extends React.Component {
         static contextType = Context;
         render() {
@@ -143,12 +145,12 @@ describe('ReactDOMServerIntegration', () => {
           </RedContext>
         </PurpleContext>,
       );
-      expect(e.textContent).toBe('red');
+      expect(e.textContent).toBe("red");
     });
 
-    itRenders('multiple contexts', async render => {
-      const Theme = React.createContext('dark');
-      const Language = React.createContext('french');
+    itRenders("multiple contexts", async (render) => {
+      const Theme = React.createContext("dark");
+      const Language = React.createContext("french");
       class Parent extends React.Component {
         render() {
           return (
@@ -181,7 +183,7 @@ describe('ReactDOMServerIntegration', () => {
         }
       }
 
-      const Grandchild = props => {
+      const Grandchild = (props) => {
         return (
           <div>
             <ThemeComponent />
@@ -191,13 +193,13 @@ describe('ReactDOMServerIntegration', () => {
       };
 
       const e = await render(<Parent />);
-      expect(e.querySelector('#theme').textContent).toBe('light');
-      expect(e.querySelector('#language').textContent).toBe('english');
+      expect(e.querySelector("#theme").textContent).toBe("light");
+      expect(e.querySelector("#language").textContent).toBe("english");
     });
 
-    itRenders('nested context unwinding', async render => {
-      const Theme = React.createContext('dark');
-      const Language = React.createContext('french');
+    itRenders("nested context unwinding", async (render) => {
+      const Theme = React.createContext("dark");
+      const Language = React.createContext("french");
 
       class ThemeConsumer extends React.Component {
         static contextType = Theme;
@@ -219,11 +221,11 @@ describe('ReactDOMServerIntegration', () => {
             <Language.Provider value="english">
               <Theme.Provider value="dark">
                 <ThemeConsumer>
-                  {theme => <div id="theme1">{theme}</div>}
+                  {(theme) => <div id="theme1">{theme}</div>}
                 </ThemeConsumer>
               </Theme.Provider>
               <ThemeConsumer>
-                {theme => <div id="theme2">{theme}</div>}
+                {(theme) => <div id="theme2">{theme}</div>}
               </ThemeConsumer>
               <Language.Provider value="sanskrit">
                 <Theme.Provider value="blue">
@@ -233,17 +235,17 @@ describe('ReactDOMServerIntegration', () => {
                         <Language.Provider value="chinese">
                           <Language.Provider value="hungarian" />
                           <LanguageConsumer>
-                            {language => <div id="language1">{language}</div>}
+                            {(language) => <div id="language1">{language}</div>}
                           </LanguageConsumer>
                         </Language.Provider>
                       )}
                     </LanguageConsumer>
                   </Theme.Provider>
                   <LanguageConsumer>
-                    {language => (
+                    {(language) => (
                       <>
                         <ThemeConsumer>
-                          {theme => <div id="theme3">{theme}</div>}
+                          {(theme) => <div id="theme3">{theme}</div>}
                         </ThemeConsumer>
                         <div id="language2">{language}</div>
                       </>
@@ -254,17 +256,17 @@ describe('ReactDOMServerIntegration', () => {
             </Language.Provider>
           </Theme.Provider>
           <LanguageConsumer>
-            {language => <div id="language3">{language}</div>}
+            {(language) => <div id="language3">{language}</div>}
           </LanguageConsumer>
         </div>
       );
       const e = await render(<App />);
-      expect(e.querySelector('#theme1').textContent).toBe('dark');
-      expect(e.querySelector('#theme2').textContent).toBe('light');
-      expect(e.querySelector('#theme3').textContent).toBe('blue');
-      expect(e.querySelector('#language1').textContent).toBe('chinese');
-      expect(e.querySelector('#language2').textContent).toBe('sanskrit');
-      expect(e.querySelector('#language3').textContent).toBe('french');
+      expect(e.querySelector("#theme1").textContent).toBe("dark");
+      expect(e.querySelector("#theme2").textContent).toBe("light");
+      expect(e.querySelector("#theme3").textContent).toBe("blue");
+      expect(e.querySelector("#language1").textContent).toBe("chinese");
+      expect(e.querySelector("#language2").textContent).toBe("sanskrit");
+      expect(e.querySelector("#language3").textContent).toBe("french");
     });
   });
 });

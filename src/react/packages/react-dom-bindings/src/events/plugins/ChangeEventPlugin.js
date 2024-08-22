@@ -4,70 +4,63 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-                                                                             
-                                                        
-                                                   
-                                                           
-                                                          
-                                                                   
-                                                                    
 
-import {registerTwoPhaseEvent} from '../EventRegistry';
-import {SyntheticEvent} from '../SyntheticEvent';
-import isTextInputElement from '../isTextInputElement';
-import {canUseDOM} from 'shared/ExecutionEnvironment';
+import { registerTwoPhaseEvent } from "../EventRegistry";
+import { SyntheticEvent } from "../SyntheticEvent";
+import isTextInputElement from "../isTextInputElement";
+import { canUseDOM } from "shared/ExecutionEnvironment";
 
-import getEventTarget from '../getEventTarget';
-import isEventSupported from '../isEventSupported';
-import {getNodeFromInstance} from '../../client/ReactDOMComponentTree';
-import {updateValueIfChanged} from '../../client/inputValueTracking';
-import {setDefaultValue} from '../../client/ReactDOMInput';
-import {enqueueStateRestore} from '../ReactDOMControlledComponent';
+import getEventTarget from "../getEventTarget";
+import isEventSupported from "../isEventSupported";
+import { getNodeFromInstance } from "../../client/ReactDOMComponentTree";
+import { updateValueIfChanged } from "../../client/inputValueTracking";
+import { setDefaultValue } from "../../client/ReactDOMInput";
+import { enqueueStateRestore } from "../ReactDOMControlledComponent";
 
 import {
   disableInputAttributeSyncing,
   enableCustomElementPropertySupport,
-} from 'shared/ReactFeatureFlags';
-import {batchedUpdates} from '../ReactDOMUpdateBatching';
+} from "shared/ReactFeatureFlags";
+import { batchedUpdates } from "../ReactDOMUpdateBatching";
 import {
   processDispatchQueue,
   accumulateTwoPhaseListeners,
-} from '../DOMPluginEventSystem';
-import isCustomElement from '../../shared/isCustomElement';
+} from "../DOMPluginEventSystem";
+import isCustomElement from "../../shared/isCustomElement";
 
 function registerEvents() {
-  registerTwoPhaseEvent('onChange', [
-    'change',
-    'click',
-    'focusin',
-    'focusout',
-    'input',
-    'keydown',
-    'keyup',
-    'selectionchange',
+  registerTwoPhaseEvent("onChange", [
+    "change",
+    "click",
+    "focusin",
+    "focusout",
+    "input",
+    "keydown",
+    "keyup",
+    "selectionchange",
   ]);
 }
 
 function createAndAccumulateChangeEvent(
-  dispatchQueue               ,
-  inst              ,
-  nativeEvent                ,
-  target                    ,
+  dispatchQueue,
+  inst,
+  nativeEvent,
+  target,
 ) {
   // Flag this event loop as needing state restore.
-  enqueueStateRestore(((target     )      ));
-  const listeners = accumulateTwoPhaseListeners(inst, 'onChange');
+  enqueueStateRestore(target);
+  const listeners = accumulateTwoPhaseListeners(inst, "onChange");
   if (listeners.length > 0) {
-    const event                      = new SyntheticEvent(
-      'onChange',
-      'change',
+    const event = new SyntheticEvent(
+      "onChange",
+      "change",
       null,
       nativeEvent,
       target,
     );
-    dispatchQueue.push({event, listeners});
+    dispatchQueue.push({ event, listeners });
   }
 }
 /**
@@ -79,16 +72,15 @@ let activeElementInst = null;
 /**
  * SECTION: handle `change` event
  */
-function shouldUseChangeEvent(elem                         ) {
+function shouldUseChangeEvent(elem) {
   const nodeName = elem.nodeName && elem.nodeName.toLowerCase();
   return (
-    nodeName === 'select' ||
-    (nodeName === 'input' && (elem     ).type === 'file')
+    nodeName === "select" || (nodeName === "input" && elem.type === "file")
   );
 }
 
-function manualDispatchChangeEvent(nativeEvent                ) {
-  const dispatchQueue                = [];
+function manualDispatchChangeEvent(nativeEvent) {
+  const dispatchQueue = [];
   createAndAccumulateChangeEvent(
     dispatchQueue,
     activeElementInst,
@@ -110,22 +102,19 @@ function manualDispatchChangeEvent(nativeEvent                ) {
   batchedUpdates(runEventInBatch, dispatchQueue);
 }
 
-function runEventInBatch(dispatchQueue               ) {
+function runEventInBatch(dispatchQueue) {
   processDispatchQueue(dispatchQueue, 0);
 }
 
-function getInstIfValueChanged(targetInst        ) {
+function getInstIfValueChanged(targetInst) {
   const targetNode = getNodeFromInstance(targetInst);
-  if (updateValueIfChanged(((targetNode     )                  ))) {
+  if (updateValueIfChanged(targetNode)) {
     return targetInst;
   }
 }
 
-function getTargetInstForChangeEvent(
-  domEventName              ,
-  targetInst              ,
-) {
-  if (domEventName === 'change') {
+function getTargetInstForChangeEvent(domEventName, targetInst) {
+  if (domEventName === "change") {
     return targetInst;
   }
 }
@@ -138,7 +127,7 @@ if (canUseDOM) {
   // IE9 claims to support the input event but fails to trigger it when
   // deleting text, so we ignore its input events.
   isInputEventSupported =
-    isEventSupported('input') &&
+    isEventSupported("input") &&
     (!document.documentMode || document.documentMode > 9);
 }
 
@@ -147,13 +136,10 @@ if (canUseDOM) {
  * and override the value property so that we can distinguish user events from
  * value changes in JS.
  */
-function startWatchingForValueChange(
-  target                         ,
-  targetInst              ,
-) {
+function startWatchingForValueChange(target, targetInst) {
   activeElement = target;
   activeElementInst = targetInst;
-  (activeElement     ).attachEvent('onpropertychange', handlePropertyChange);
+  activeElement.attachEvent("onpropertychange", handlePropertyChange);
 }
 
 /**
@@ -164,7 +150,7 @@ function stopWatchingForValueChange() {
   if (!activeElement) {
     return;
   }
-  (activeElement     ).detachEvent('onpropertychange', handlePropertyChange);
+  activeElement.detachEvent("onpropertychange", handlePropertyChange);
   activeElement = null;
   activeElementInst = null;
 }
@@ -175,7 +161,7 @@ function stopWatchingForValueChange() {
  */
 // $FlowFixMe[missing-local-annot]
 function handlePropertyChange(nativeEvent) {
-  if (nativeEvent.propertyName !== 'value') {
+  if (nativeEvent.propertyName !== "value") {
     return;
   }
   if (getInstIfValueChanged(activeElementInst)) {
@@ -183,12 +169,8 @@ function handlePropertyChange(nativeEvent) {
   }
 }
 
-function handleEventsForInputEventPolyfill(
-  domEventName              ,
-  target                         ,
-  targetInst              ,
-) {
-  if (domEventName === 'focusin') {
+function handleEventsForInputEventPolyfill(domEventName, target, targetInst) {
+  if (domEventName === "focusin") {
     // In IE9, propertychange fires for most input events but is buggy and
     // doesn't fire when text is deleted, but conveniently, selectionchange
     // appears to fire in all of the remaining cases so we catch those and
@@ -201,20 +183,17 @@ function handleEventsForInputEventPolyfill(
     // missed a blur event somehow.
     stopWatchingForValueChange();
     startWatchingForValueChange(target, targetInst);
-  } else if (domEventName === 'focusout') {
+  } else if (domEventName === "focusout") {
     stopWatchingForValueChange();
   }
 }
 
 // For IE8 and IE9.
-function getTargetInstForInputEventPolyfill(
-  domEventName              ,
-  targetInst              ,
-) {
+function getTargetInstForInputEventPolyfill(domEventName, targetInst) {
   if (
-    domEventName === 'selectionchange' ||
-    domEventName === 'keyup' ||
-    domEventName === 'keydown'
+    domEventName === "selectionchange" ||
+    domEventName === "keyup" ||
+    domEventName === "keydown"
   ) {
     // On the selectionchange event, the target is just document which isn't
     // helpful for us so just check activeElement instead.
@@ -233,38 +212,32 @@ function getTargetInstForInputEventPolyfill(
 /**
  * SECTION: handle `click` event
  */
-function shouldUseClickEvent(elem     ) {
+function shouldUseClickEvent(elem) {
   // Use the `click` event to detect changes to checkbox and radio inputs.
   // This approach works across all browsers, whereas `change` does not fire
   // until `blur` in IE8.
   const nodeName = elem.nodeName;
   return (
     nodeName &&
-    nodeName.toLowerCase() === 'input' &&
-    (elem.type === 'checkbox' || elem.type === 'radio')
+    nodeName.toLowerCase() === "input" &&
+    (elem.type === "checkbox" || elem.type === "radio")
   );
 }
 
-function getTargetInstForClickEvent(
-  domEventName              ,
-  targetInst              ,
-) {
-  if (domEventName === 'click') {
+function getTargetInstForClickEvent(domEventName, targetInst) {
+  if (domEventName === "click") {
     return getInstIfValueChanged(targetInst);
   }
 }
 
-function getTargetInstForInputOrChangeEvent(
-  domEventName              ,
-  targetInst              ,
-) {
-  if (domEventName === 'input' || domEventName === 'change') {
+function getTargetInstForInputOrChangeEvent(domEventName, targetInst) {
+  if (domEventName === "input" || domEventName === "change") {
     return getInstIfValueChanged(targetInst);
   }
 }
 
-function handleControlledInputBlur(node                  , props     ) {
-  if (node.type !== 'number') {
+function handleControlledInputBlur(node, props) {
+  if (node.type !== "number") {
     return;
   }
 
@@ -272,7 +245,7 @@ function handleControlledInputBlur(node                  , props     ) {
     const isControlled = props.value != null;
     if (isControlled) {
       // If controlled, assign the value attribute to the current value on blur
-      setDefaultValue((node     ), 'number', (node     ).value);
+      setDefaultValue(node, "number", node.value);
     }
   }
 }
@@ -288,20 +261,20 @@ function handleControlledInputBlur(node                  , props     ) {
  * - select
  */
 function extractEvents(
-  dispatchQueue               ,
-  domEventName              ,
-  targetInst              ,
-  nativeEvent                ,
-  nativeEventTarget                    ,
-  eventSystemFlags                  ,
-  targetContainer                    ,
+  dispatchQueue,
+  domEventName,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget,
+  eventSystemFlags,
+  targetContainer,
 ) {
   const targetNode = targetInst ? getNodeFromInstance(targetInst) : window;
 
   let getTargetInstFunc, handleEventFunc;
   if (shouldUseChangeEvent(targetNode)) {
     getTargetInstFunc = getTargetInstForChangeEvent;
-  } else if (isTextInputElement(((targetNode     )             ))) {
+  } else if (isTextInputElement(targetNode)) {
     if (isInputEventSupported) {
       getTargetInstFunc = getTargetInstForInputOrChangeEvent;
     } else {
@@ -336,13 +309,13 @@ function extractEvents(
   }
 
   // When blurring, set the value attribute for number inputs
-  if (domEventName === 'focusout' && targetInst) {
+  if (domEventName === "focusout" && targetInst) {
     // These props aren't necessarily the most current but we warn for changing
     // between controlled and uncontrolled, so it doesn't matter and the previous
     // code was also broken for changes.
     const props = targetInst.memoizedProps;
-    handleControlledInputBlur(((targetNode     )                  ), props);
+    handleControlledInputBlur(targetNode, props);
   }
 }
 
-export {registerEvents, extractEvents};
+export { registerEvents, extractEvents };

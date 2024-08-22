@@ -4,23 +4,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 import {
   enableCache,
   enableFetchInstrumentation,
-} from 'shared/ReactFeatureFlags';
+} from "shared/ReactFeatureFlags";
 
-import ReactCurrentCache from './ReactCurrentCache';
+import ReactCurrentCache from "./ReactCurrentCache";
 
-function createFetchCache()                          {
+function createFetchCache() {
   return new Map();
 }
 
 const simpleCacheKey = '["GET",[],null,"follow",null,null,null,null]'; // generateCacheKey(new Request('https://blank'));
 
-function generateCacheKey(request         )         {
+function generateCacheKey(request) {
   // We pick the fields that goes into the key used to dedupe requests.
   // We don't include the `cache` field, because we end up using whatever
   // caching resulted from the first request.
@@ -40,12 +40,9 @@ function generateCacheKey(request         )         {
 }
 
 if (enableCache && enableFetchInstrumentation) {
-  if (typeof fetch === 'function') {
+  if (typeof fetch === "function") {
     const originalFetch = fetch;
-    const cachedFetch = function fetch(
-      resource                   ,
-      options                 ,
-    ) {
+    const cachedFetch = function fetch(resource, options) {
       const dispatcher = ReactCurrentCache.current;
       if (!dispatcher) {
         // We're outside a cached scope.
@@ -66,9 +63,9 @@ if (enableCache && enableFetchInstrumentation) {
         return originalFetch(resource, options);
       }
       // Normalize the Request
-      let url        ;
-      let cacheKey        ;
-      if (typeof resource === 'string' && !options) {
+      let url;
+      let cacheKey;
+      if (typeof resource === "string" && !options) {
         // Fast path.
         cacheKey = simpleCacheKey;
         url = resource;
@@ -78,11 +75,11 @@ if (enableCache && enableFetchInstrumentation) {
         // then do not instantiate a new Request but instead
         // reuse the request as to not disturb the body in the event it's a ReadableStream.
         const request =
-          typeof resource === 'string' || resource instanceof URL
+          typeof resource === "string" || resource instanceof URL
             ? new Request(resource, options)
             : resource;
         if (
-          (request.method !== 'GET' && request.method !== 'HEAD') ||
+          (request.method !== "GET" && request.method !== "HEAD") ||
           // $FlowFixMe[prop-missing]: keepalive is real
           request.keepalive
         ) {
@@ -112,7 +109,7 @@ if (enableCache && enableFetchInstrumentation) {
           if (key === cacheKey) {
             match = value;
             // I would've preferred a labelled break but lint says no.
-            return match.then(response => response.clone());
+            return match.then((response) => response.clone());
           }
         }
         match = originalFetch(resource, options);
@@ -120,7 +117,7 @@ if (enableCache && enableFetchInstrumentation) {
       }
       // We clone the response so that each time you call this you get a new read
       // of the body so that it can be read multiple times.
-      return match.then(response => response.clone());
+      return match.then((response) => response.clone());
     };
     // We don't expect to see any extra properties on fetch but if there are any,
     // copy them over. Useful for extended fetch environments or mocks.
@@ -136,8 +133,8 @@ if (enableCache && enableFetchInstrumentation) {
         // Log even in production just to make sure this is seen if only prod is frozen.
         // eslint-disable-next-line react-internal/no-production-logging
         console.warn(
-          'React was unable to patch the fetch() function in this environment. ' +
-            'Suspensey APIs might not work correctly as a result.',
+          "React was unable to patch the fetch() function in this environment. " +
+            "Suspensey APIs might not work correctly as a result.",
         );
       }
     }

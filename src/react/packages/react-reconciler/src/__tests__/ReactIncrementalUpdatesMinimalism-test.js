@@ -8,22 +8,22 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
 let act;
 
-describe('ReactIncrementalUpdatesMinimalism', () => {
+describe("ReactIncrementalUpdatesMinimalism", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
 
-    act = require('internal-test-utils').act;
+    act = require("internal-test-utils").act;
   });
 
-  it('should render a simple component', async () => {
+  it("should render a simple component", async () => {
     function Child() {
       return <div>Hello World</div>;
     }
@@ -45,7 +45,7 @@ describe('ReactIncrementalUpdatesMinimalism', () => {
     });
   });
 
-  it('should not diff referentially equal host elements', async () => {
+  it("should not diff referentially equal host elements", async () => {
     function Leaf(props) {
       return (
         <span>
@@ -83,7 +83,7 @@ describe('ReactIncrementalUpdatesMinimalism', () => {
     });
   });
 
-  it('should not diff parents of setState targets', async () => {
+  it("should not diff parents of setState targets", async () => {
     let childInst;
 
     function Leaf(props) {
@@ -97,7 +97,7 @@ describe('ReactIncrementalUpdatesMinimalism', () => {
     }
 
     class Child extends React.Component {
-      state = {name: 'Batman'};
+      state = { name: "Batman" };
       render() {
         childInst = this;
         return (
@@ -128,7 +128,7 @@ describe('ReactIncrementalUpdatesMinimalism', () => {
     });
 
     ReactNoop.startTrackingHostCounters();
-    await act(() => childInst.setState({name: 'Robin'}));
+    await act(() => childInst.setState({ name: "Robin" }));
     expect(ReactNoop.stopTrackingHostCounters()).toEqual({
       // Child > div
       // Child > Leaf > span

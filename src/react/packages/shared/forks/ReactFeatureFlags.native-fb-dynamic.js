@@ -7,9 +7,6 @@
  *       strict
  */
 
-                                                                            
-                                                                           
-
 // In xplat, these flags are controlled by GKs. Because most GKs have some
 // population running in either mode, we should run our tests that way, too,
 //
@@ -25,4 +22,4 @@ export const enableDeferRootSchedulingToMicrotask = __VARIANT__;
 export const alwaysThrottleRetries = __VARIANT__;
 
 // Flow magic to verify the exports of this file match the original version.
-((((null     )             )                  )             );
+null;

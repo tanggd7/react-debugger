@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -21,12 +21,12 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
-  ReactFeatureFlags = require('shared/ReactFeatureFlags');
+  ReactFeatureFlags = require("shared/ReactFeatureFlags");
   ReactFeatureFlags.disableLegacyContext = true;
 
   // Make them available to the helpers.
@@ -37,33 +37,33 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
 function formatValue(val) {
   if (val === null) {
-    return 'null';
+    return "null";
   }
   if (val === undefined) {
-    return 'undefined';
+    return "undefined";
   }
-  if (typeof val === 'string') {
+  if (typeof val === "string") {
     return val;
   }
   return JSON.stringify(val);
 }
 
-describe('ReactDOMServerIntegrationLegacyContextDisabled', () => {
+describe("ReactDOMServerIntegrationLegacyContextDisabled", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  itRenders('undefined legacy context with warning', async render => {
+  itRenders("undefined legacy context with warning", async (render) => {
     class LegacyProvider extends React.Component {
       static childContextTypes = {
         foo() {},
       };
       getChildContext() {
-        return {foo: 10};
+        return { foo: 10 };
       }
       render() {
         return this.props.children;
@@ -93,7 +93,7 @@ describe('ReactDOMServerIntegrationLegacyContextDisabled', () => {
     function LegacyFnConsumer(props, context) {
       return formatValue(context);
     }
-    LegacyFnConsumer.contextTypes = {foo() {}};
+    LegacyFnConsumer.contextTypes = { foo() {} };
 
     function RegularFn(props, context) {
       return formatValue(context);
@@ -109,11 +109,11 @@ describe('ReactDOMServerIntegrationLegacyContextDisabled', () => {
       </LegacyProvider>,
       3,
     );
-    expect(e.textContent).toBe('{}undefinedundefined');
+    expect(e.textContent).toBe("{}undefinedundefined");
     expect(lifecycleContextLog).toEqual([]);
   });
 
-  itRenders('modern context', async render => {
+  itRenders("modern context", async (render) => {
     const Ctx = React.createContext();
 
     class Provider extends React.Component {
@@ -128,7 +128,7 @@ describe('ReactDOMServerIntegrationLegacyContextDisabled', () => {
 
     class RenderPropConsumer extends React.Component {
       render() {
-        return <Ctx.Consumer>{value => formatValue(value)}</Ctx.Consumer>;
+        return <Ctx.Consumer>{(value) => formatValue(value)}</Ctx.Consumer>;
       }
     }
 
@@ -163,7 +163,7 @@ describe('ReactDOMServerIntegrationLegacyContextDisabled', () => {
         </span>
       </Provider>,
     );
-    expect(e.textContent).toBe('aaa');
+    expect(e.textContent).toBe("aaa");
     expect(lifecycleContextLog).toEqual([]);
   });
 });

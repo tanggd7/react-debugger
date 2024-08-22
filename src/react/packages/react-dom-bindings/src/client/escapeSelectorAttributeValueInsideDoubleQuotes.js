@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 // When passing user input into querySelector(All) the embedded string must not alter
@@ -13,11 +13,9 @@
 // Do not use it anywhere else
 // we escape double quotes and backslashes
 const escapeSelectorAttributeValueInsideDoubleQuotesRegex = /[\n\"\\]/g;
-export default function escapeSelectorAttributeValueInsideDoubleQuotes(
-  value        ,
-)         {
+export default function escapeSelectorAttributeValueInsideDoubleQuotes(value) {
   return value.replace(
     escapeSelectorAttributeValueInsideDoubleQuotesRegex,
-    ch => '\\' + ch.charCodeAt(0).toString(16) + ' ',
+    (ch) => "\\" + ch.charCodeAt(0).toString(16) + " ",
   );
 }

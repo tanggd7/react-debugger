@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -15,13 +15,13 @@ let ReactDOMSelection;
 
 let getModernOffsetsFromPoints;
 
-describe('ReactDOMSelection', () => {
+describe("ReactDOMSelection", () => {
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMSelection = require('react-dom-bindings/src/client/ReactDOMSelection');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMSelection = require("react-dom-bindings/src/client/ReactDOMSelection");
 
-    ({getModernOffsetsFromPoints} = ReactDOMSelection);
+    ({ getModernOffsetsFromPoints } = ReactDOMSelection);
   });
 
   // Simple implementation to compare correctness. React's old implementation of
@@ -67,9 +67,9 @@ describe('ReactDOMSelection', () => {
     traverse(outerNode);
 
     if (start === null || end === null) {
-      throw new Error('Provided anchor/focus nodes were outside of root.');
+      throw new Error("Provided anchor/focus nodes were outside of root.");
     }
-    return {start, end};
+    return { start, end };
   }
 
   // Complicated example derived from a real-world DOM tree. Has a bit of
@@ -110,7 +110,7 @@ describe('ReactDOMSelection', () => {
           <div>
             <div>
               <div>
-                <div>{['x', 'x', 'xxx']}</div>
+                <div>{["x", "x", "xxx"]}</div>
               </div>
             </div>
           </div>
@@ -119,12 +119,12 @@ describe('ReactDOMSelection', () => {
           <div>xxxxxx</div>
         </div>
       </div>,
-      document.createElement('div'),
+      document.createElement("div"),
     );
   }
 
-  it('returns correctly for base case', () => {
-    const node = document.createElement('div');
+  it("returns correctly for base case", () => {
+    const node = document.createElement("div");
     expect(getModernOffsetsFromPoints(node, node, 0, node, 0)).toEqual({
       start: 0,
       end: 0,
@@ -135,16 +135,16 @@ describe('ReactDOMSelection', () => {
     });
   });
 
-  it('returns correctly for fuzz test', () => {
+  it("returns correctly for fuzz test", () => {
     const fixtureRoot = getFixture();
     const allNodes = [fixtureRoot].concat(
-      Array.from(fixtureRoot.querySelectorAll('*')),
+      Array.from(fixtureRoot.querySelectorAll("*")),
     );
     expect(allNodes.length).toBe(27);
-    allNodes.slice().forEach(element => {
+    allNodes.slice().forEach((element) => {
       // Add text nodes.
       allNodes.push(
-        ...Array.from(element.childNodes).filter(n => n.nodeType === 3),
+        ...Array.from(element.childNodes).filter((n) => n.nodeType === 3),
       );
     });
     expect(allNodes.length).toBe(41);
@@ -184,15 +184,15 @@ describe('ReactDOMSelection', () => {
       if (JSON.stringify(offsets1) !== JSON.stringify(offsets2)) {
         throw new Error(
           JSON.stringify(offsets1) +
-            ' does not match ' +
+            " does not match " +
             JSON.stringify(offsets2) +
-            ' for anchorNode=allNodes[' +
+            " for anchorNode=allNodes[" +
             allNodes.indexOf(anchorNode) +
-            '], anchorOffset=' +
+            "], anchorOffset=" +
             anchorOffset +
-            ', focusNode=allNodes[' +
+            ", focusNode=allNodes[" +
             allNodes.indexOf(focusNode) +
-            '], focusOffset=' +
+            "], focusOffset=" +
             focusOffset,
         );
       }

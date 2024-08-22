@@ -10,7 +10,7 @@
 
 /* eslint-disable no-for-of-loops/no-for-of-loops */
 
-'use strict';
+"use strict";
 
 let Scheduler;
 let runtime;
@@ -31,14 +31,14 @@ let NormalPriority;
 //
 // This test suite mocks all browser methods used in our implementation. It
 // assumes as little as possible about the order and timing of events.
-describe('SchedulerBrowser', () => {
+describe("SchedulerBrowser", () => {
   beforeEach(() => {
     jest.resetModules();
     runtime = installMockBrowserRuntime();
-    jest.unmock('scheduler');
+    jest.unmock("scheduler");
 
     performance = global.performance;
-    Scheduler = require('scheduler');
+    Scheduler = require("scheduler");
     cancelCallback = Scheduler.unstable_cancelCallback;
     scheduleCallback = Scheduler.unstable_scheduleCallback;
     NormalPriority = Scheduler.unstable_NormalPriority;
@@ -50,7 +50,7 @@ describe('SchedulerBrowser', () => {
     delete global.performance;
 
     if (!runtime.isLogEmpty()) {
-      throw Error('Test exited without clearing log.');
+      throw Error("Test exited without clearing log.");
     }
   });
 
@@ -82,7 +82,7 @@ describe('SchedulerBrowser', () => {
       // TODO
       return id;
     };
-    global.clearTimeout = id => {
+    global.clearTimeout = (id) => {
       // TODO
     };
 
@@ -90,9 +90,9 @@ describe('SchedulerBrowser', () => {
     const port2 = {
       postMessage() {
         if (hasPendingMessageEvent) {
-          throw Error('Message event already scheduled');
+          throw Error("Message event already scheduled");
         }
-        log('Post Message');
+        log("Post Message");
         hasPendingMessageEvent = true;
       },
     };
@@ -105,7 +105,7 @@ describe('SchedulerBrowser', () => {
       isInputPending(options) {
         if (this !== scheduling) {
           throw new Error(
-            'isInputPending called with incorrect `this` context',
+            "isInputPending called with incorrect `this` context",
           );
         }
 
@@ -116,11 +116,11 @@ describe('SchedulerBrowser', () => {
       },
     };
 
-    global.navigator = {scheduling};
+    global.navigator = { scheduling };
 
     function ensureLogIsEmpty() {
       if (eventLog.length !== 0) {
-        throw Error('Log is not empty. Call assertLog before continuing.');
+        throw Error("Log is not empty. Call assertLog before continuing.");
       }
     }
     function advanceTime(ms) {
@@ -132,11 +132,11 @@ describe('SchedulerBrowser', () => {
     function fireMessageEvent() {
       ensureLogIsEmpty();
       if (!hasPendingMessageEvent) {
-        throw Error('No message event was scheduled');
+        throw Error("No message event was scheduled");
       }
       hasPendingMessageEvent = false;
       const onMessage = port1.onmessage;
-      log('Message Event');
+      log("Message Event");
 
       isFiringMessageEvent = true;
       try {
@@ -144,11 +144,11 @@ describe('SchedulerBrowser', () => {
       } finally {
         isFiringMessageEvent = false;
         if (hasPendingDiscreteEvent) {
-          log('Discrete Event');
+          log("Discrete Event");
           hasPendingDiscreteEvent = false;
         }
         if (hasPendingContinuousEvent) {
-          log('Continuous Event');
+          log("Continuous Event");
           hasPendingContinuousEvent = false;
         }
       }
@@ -157,14 +157,14 @@ describe('SchedulerBrowser', () => {
       if (isFiringMessageEvent) {
         hasPendingDiscreteEvent = true;
       } else {
-        log('Discrete Event');
+        log("Discrete Event");
       }
     }
     function scheduleContinuousEvent() {
       if (isFiringMessageEvent) {
         hasPendingContinuousEvent = true;
       } else {
-        log('Continuous Event');
+        log("Continuous Event");
       }
     }
     function log(val) {
@@ -190,18 +190,18 @@ describe('SchedulerBrowser', () => {
     };
   }
 
-  it('task that finishes before deadline', () => {
+  it("task that finishes before deadline", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'Task']);
+    runtime.assertLog(["Message Event", "Task"]);
   });
 
-  it('task with continuation', () => {
+  it("task with continuation", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
       // Request paint so that we yield at the end of the frame interval
       requestPaint();
       while (!Scheduler.unstable_shouldYield()) {
@@ -209,118 +209,118 @@ describe('SchedulerBrowser', () => {
       }
       runtime.log(`Yield at ${performance.now()}ms`);
       return () => {
-        runtime.log('Continuation');
+        runtime.log("Continuation");
       };
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'Task',
-      'Yield at 5ms',
-      'Post Message',
+      "Message Event",
+      "Task",
+      "Yield at 5ms",
+      "Post Message",
     ]);
 
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'Continuation']);
+    runtime.assertLog(["Message Event", "Continuation"]);
   });
 
-  it('multiple tasks', () => {
+  it("multiple tasks", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'A', 'B']);
+    runtime.assertLog(["Message Event", "A", "B"]);
   });
 
-  it('multiple tasks with a yield in between', () => {
+  it("multiple tasks with a yield in between", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
       runtime.advanceTime(4999);
     });
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'A',
+      "Message Event",
+      "A",
       // Ran out of time. Post a continuation event.
-      'Post Message',
+      "Post Message",
     ]);
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'B']);
+    runtime.assertLog(["Message Event", "B"]);
   });
 
-  it('cancels tasks', () => {
+  it("cancels tasks", () => {
     const task = scheduleCallback(NormalPriority, () => {
-      runtime.log('Task');
+      runtime.log("Task");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     cancelCallback(task);
     runtime.assertLog([]);
   });
 
-  it('throws when a task errors then continues in a new event', () => {
+  it("throws when a task errors then continues in a new event", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Oops!');
-      throw Error('Oops!');
+      runtime.log("Oops!");
+      throw Error("Oops!");
     });
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Yay');
+      runtime.log("Yay");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
-    expect(() => runtime.fireMessageEvent()).toThrow('Oops!');
-    runtime.assertLog(['Message Event', 'Oops!', 'Post Message']);
+    expect(() => runtime.fireMessageEvent()).toThrow("Oops!");
+    runtime.assertLog(["Message Event", "Oops!", "Post Message"]);
 
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'Yay']);
+    runtime.assertLog(["Message Event", "Yay"]);
   });
 
-  it('schedule new task after queue has emptied', () => {
+  it("schedule new task after queue has emptied", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
 
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'A']);
+    runtime.assertLog(["Message Event", "A"]);
 
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'B']);
+    runtime.assertLog(["Message Event", "B"]);
   });
 
-  it('schedule new task after a cancellation', () => {
+  it("schedule new task after a cancellation", () => {
     const handle = scheduleCallback(NormalPriority, () => {
-      runtime.log('A');
+      runtime.log("A");
     });
 
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     cancelCallback(handle);
 
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event']);
+    runtime.assertLog(["Message Event"]);
 
     scheduleCallback(NormalPriority, () => {
-      runtime.log('B');
+      runtime.log("B");
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'B']);
+    runtime.assertLog(["Message Event", "B"]);
   });
 
-  it('when isInputPending is available, we can wait longer before yielding', () => {
+  it("when isInputPending is available, we can wait longer before yielding", () => {
     function blockUntilSchedulerAsksToYield() {
       while (!Scheduler.unstable_shouldYield()) {
         runtime.advanceTime(1);
@@ -330,23 +330,23 @@ describe('SchedulerBrowser', () => {
 
     // First show what happens when we don't request a paint
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task with no pending input');
+      runtime.log("Task with no pending input");
       blockUntilSchedulerAsksToYield();
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'Task with no pending input',
+      "Message Event",
+      "Task with no pending input",
       // Even though there's no input, eventually Scheduler will yield
       // regardless in case there's a pending main thread task we don't know
       // about, like a network event.
-      gate(flags =>
+      gate((flags) =>
         flags.enableIsInputPending
-          ? 'Yield at 10ms'
+          ? "Yield at 10ms"
           : // When isInputPending is disabled, we always yield quickly
-            'Yield at 5ms',
+            "Yield at 5ms",
       ),
     ]);
 
@@ -355,25 +355,25 @@ describe('SchedulerBrowser', () => {
     // Now do the same thing, but while the task is running, simulate an
     // input event.
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task with pending input');
+      runtime.log("Task with pending input");
       runtime.scheduleDiscreteEvent();
       blockUntilSchedulerAsksToYield();
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'Task with pending input',
+      "Message Event",
+      "Task with pending input",
       // This time we yielded quickly to unblock the discrete event.
-      'Yield at 5ms',
-      'Discrete Event',
+      "Yield at 5ms",
+      "Discrete Event",
     ]);
   });
 
   it(
-    'isInputPending will also check for continuous inputs, but after a ' +
-      'slightly larger threshold',
+    "isInputPending will also check for continuous inputs, but after a " +
+      "slightly larger threshold",
     () => {
       function blockUntilSchedulerAsksToYield() {
         while (!Scheduler.unstable_shouldYield()) {
@@ -384,23 +384,23 @@ describe('SchedulerBrowser', () => {
 
       // First show what happens when we don't request a paint
       scheduleCallback(NormalPriority, () => {
-        runtime.log('Task with no pending input');
+        runtime.log("Task with no pending input");
         blockUntilSchedulerAsksToYield();
       });
-      runtime.assertLog(['Post Message']);
+      runtime.assertLog(["Post Message"]);
 
       runtime.fireMessageEvent();
       runtime.assertLog([
-        'Message Event',
-        'Task with no pending input',
+        "Message Event",
+        "Task with no pending input",
         // Even though there's no input, eventually Scheduler will yield
         // regardless in case there's a pending main thread task we don't know
         // about, like a network event.
-        gate(flags =>
+        gate((flags) =>
           flags.enableIsInputPending
-            ? 'Yield at 10ms'
+            ? "Yield at 10ms"
             : // When isInputPending is disabled, we always yield quickly
-              'Yield at 5ms',
+              "Yield at 5ms",
         ),
       ]);
 
@@ -409,30 +409,30 @@ describe('SchedulerBrowser', () => {
       // Now do the same thing, but while the task is running, simulate a
       // continuous input event.
       scheduleCallback(NormalPriority, () => {
-        runtime.log('Task with continuous input');
+        runtime.log("Task with continuous input");
         runtime.scheduleContinuousEvent();
         blockUntilSchedulerAsksToYield();
       });
-      runtime.assertLog(['Post Message']);
+      runtime.assertLog(["Post Message"]);
 
       runtime.fireMessageEvent();
       runtime.assertLog([
-        'Message Event',
-        'Task with continuous input',
+        "Message Event",
+        "Task with continuous input",
         // This time we yielded quickly to unblock the continuous event. But not
         // as quickly as for a discrete event.
-        gate(flags =>
+        gate((flags) =>
           flags.enableIsInputPending
-            ? 'Yield at 10ms'
+            ? "Yield at 10ms"
             : // When isInputPending is disabled, we always yield quickly
-              'Yield at 5ms',
+              "Yield at 5ms",
         ),
-        'Continuous Event',
+        "Continuous Event",
       ]);
     },
   );
 
-  it('requestPaint forces a yield at the end of the next frame interval', () => {
+  it("requestPaint forces a yield at the end of the next frame interval", () => {
     function blockUntilSchedulerAsksToYield() {
       while (!Scheduler.unstable_shouldYield()) {
         runtime.advanceTime(1);
@@ -442,20 +442,20 @@ describe('SchedulerBrowser', () => {
 
     // First show what happens when we don't request a paint
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task with no paint');
+      runtime.log("Task with no paint");
       blockUntilSchedulerAsksToYield();
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'Task with no paint',
-      gate(flags =>
+      "Message Event",
+      "Task with no paint",
+      gate((flags) =>
         flags.enableIsInputPending
-          ? 'Yield at 10ms'
+          ? "Yield at 10ms"
           : // When isInputPending is disabled, we always yield quickly
-            'Yield at 5ms',
+            "Yield at 5ms",
       ),
     ]);
 
@@ -463,50 +463,50 @@ describe('SchedulerBrowser', () => {
 
     // Now do the same thing, but call requestPaint inside the task
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Task with paint');
+      runtime.log("Task with paint");
       requestPaint();
       blockUntilSchedulerAsksToYield();
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'Task with paint',
+      "Message Event",
+      "Task with paint",
       // This time we yielded quickly (5ms) because we requested a paint.
-      'Yield at 5ms',
+      "Yield at 5ms",
     ]);
   });
 
-  it('yielding continues in a new task regardless of how much time is remaining', () => {
+  it("yielding continues in a new task regardless of how much time is remaining", () => {
     scheduleCallback(NormalPriority, () => {
-      runtime.log('Original Task');
-      runtime.log('shouldYield: ' + shouldYield());
-      runtime.log('Return a continuation');
+      runtime.log("Original Task");
+      runtime.log("shouldYield: " + shouldYield());
+      runtime.log("Return a continuation");
       return () => {
-        runtime.log('Continuation Task');
+        runtime.log("Continuation Task");
       };
     });
-    runtime.assertLog(['Post Message']);
+    runtime.assertLog(["Post Message"]);
 
     runtime.fireMessageEvent();
     runtime.assertLog([
-      'Message Event',
-      'Original Task',
+      "Message Event",
+      "Original Task",
       // Immediately before returning a continuation, `shouldYield` returns
       // false, which means there must be time remaining in the frame.
-      'shouldYield: false',
-      'Return a continuation',
+      "shouldYield: false",
+      "Return a continuation",
 
       // The continuation should be scheduled in a separate macrotask even
       // though there's time remaining.
-      'Post Message',
+      "Post Message",
     ]);
 
     // No time has elapsed
     expect(performance.now()).toBe(0);
 
     runtime.fireMessageEvent();
-    runtime.assertLog(['Message Event', 'Continuation Task']);
+    runtime.assertLog(["Message Event", "Continuation Task"]);
   });
 });

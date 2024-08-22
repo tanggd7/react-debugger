@@ -4,16 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-const {enableProfiling: enableProfilingFeatureFlag} =
+const { enableProfiling: enableProfilingFeatureFlag } =
   // $FlowFixMe[cannot-resolve-module]
-  require('SchedulerFeatureFlags');
+  require("SchedulerFeatureFlags");
 
 export const enableSchedulerDebugging = true;
-export const enableProfiling          =
-  __PROFILE__ && enableProfilingFeatureFlag;
+export const enableProfiling = __PROFILE__ && enableProfilingFeatureFlag;
 export const enableIsInputPending = true;
 export const enableIsInputPendingContinuous = true;
 export const frameYieldMs = 5;

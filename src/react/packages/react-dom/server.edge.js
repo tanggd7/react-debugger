@@ -8,39 +8,39 @@
 // This file is only used for tests.
 // It lazily loads the implementation so that we get the correct set of host configs.
 
-import ReactVersion from 'shared/ReactVersion';
-export {ReactVersion as version};
+import ReactVersion from "shared/ReactVersion";
+export { ReactVersion as version };
 
 export function renderToReadableStream() {
-  return require('./src/server/ReactDOMFizzServerEdge').renderToReadableStream.apply(
+  return require("./src/server/ReactDOMFizzServerEdge").renderToReadableStream.apply(
     this,
     arguments,
   );
 }
 
 export function renderToNodeStream() {
-  return require('./src/server/ReactDOMFizzServerEdge').renderToNodeStream.apply(
+  return require("./src/server/ReactDOMFizzServerEdge").renderToNodeStream.apply(
     this,
     arguments,
   );
 }
 
 export function renderToStaticNodeStream() {
-  return require('./src/server/ReactDOMFizzServerEdge').renderToStaticNodeStream.apply(
+  return require("./src/server/ReactDOMFizzServerEdge").renderToStaticNodeStream.apply(
     this,
     arguments,
   );
 }
 
 export function renderToString() {
-  return require('./src/server/ReactDOMLegacyServerBrowser').renderToString.apply(
+  return require("./src/server/ReactDOMLegacyServerBrowser").renderToString.apply(
     this,
     arguments,
   );
 }
 
 export function renderToStaticMarkup() {
-  return require('./src/server/ReactDOMLegacyServerBrowser').renderToStaticMarkup.apply(
+  return require("./src/server/ReactDOMLegacyServerBrowser").renderToStaticMarkup.apply(
     this,
     arguments,
   );

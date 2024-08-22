@@ -4,51 +4,17 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                          
-
-import {REACT_LAZY_TYPE} from 'shared/ReactSymbols';
+import { REACT_LAZY_TYPE } from "shared/ReactSymbols";
 
 const Uninitialized = -1;
 const Pending = 0;
 const Resolved = 1;
 const Rejected = 2;
 
-                                
-              
-                                             
-  
-
-                       
-             
-                    
-  
-
-                           
-             
-                             
-  
-
-                        
-             
-                 
-  
-
-                 
-                           
-                  
-                      
-                    
-
-                                   
-                            
-              
-                           
-  
-
-function lazyInitializer   (payload            )    {
+function lazyInitializer(payload) {
   if (payload._status === Uninitialized) {
     const ctor = payload._result;
     const thenable = ctor();
@@ -58,18 +24,18 @@ function lazyInitializer   (payload            )    {
     // happens if the ctor or any wrappers processing the ctor throws. This might
     // end up fixing it if the resolution was a concurrency bug.
     thenable.then(
-      moduleObject => {
+      (moduleObject) => {
         if (payload._status === Pending || payload._status === Uninitialized) {
           // Transition to the next state.
-          const resolved                     = (payload     );
+          const resolved = payload;
           resolved._status = Resolved;
           resolved._result = moduleObject;
         }
       },
-      error => {
+      (error) => {
         if (payload._status === Pending || payload._status === Uninitialized) {
           // Transition to the next state.
-          const rejected                  = (payload     );
+          const rejected = payload;
           rejected._status = Rejected;
           rejected._result = error;
         }
@@ -78,7 +44,7 @@ function lazyInitializer   (payload            )    {
     if (payload._status === Uninitialized) {
       // In case, we're still uninitialized, then we're waiting for the thenable
       // to resolve. Set it as pending in the meantime.
-      const pending                 = (payload     );
+      const pending = payload;
       pending._status = Pending;
       pending._result = thenable;
     }
@@ -88,25 +54,25 @@ function lazyInitializer   (payload            )    {
     if (__DEV__) {
       if (moduleObject === undefined) {
         console.error(
-          'lazy: Expected the result of a dynamic imp' +
-            'ort() call. ' +
-            'Instead received: %s\n\nYour code should look like: \n  ' +
+          "lazy: Expected the result of a dynamic imp" +
+            "ort() call. " +
+            "Instead received: %s\n\nYour code should look like: \n  " +
             // Break up imports to avoid accidentally parsing them as dependencies.
-            'const MyComponent = lazy(() => imp' +
+            "const MyComponent = lazy(() => imp" +
             "ort('./MyComponent'))\n\n" +
-            'Did you accidentally put curly braces around the import?',
+            "Did you accidentally put curly braces around the import?",
           moduleObject,
         );
       }
     }
     if (__DEV__) {
-      if (!('default' in moduleObject)) {
+      if (!("default" in moduleObject)) {
         console.error(
-          'lazy: Expected the result of a dynamic imp' +
-            'ort() call. ' +
-            'Instead received: %s\n\nYour code should look like: \n  ' +
+          "lazy: Expected the result of a dynamic imp" +
+            "ort() call. " +
+            "Instead received: %s\n\nYour code should look like: \n  " +
             // Break up imports to avoid accidentally parsing them as dependencies.
-            'const MyComponent = lazy(() => imp' +
+            "const MyComponent = lazy(() => imp" +
             "ort('./MyComponent'))",
           moduleObject,
         );
@@ -118,16 +84,14 @@ function lazyInitializer   (payload            )    {
   }
 }
 
-export function lazy   (
-  ctor                                   ,
-)                               {
-  const payload             = {
+export function lazy(ctor) {
+  const payload = {
     // We use these fields to store the result.
     _status: Uninitialized,
     _result: ctor,
   };
 
-  const lazyType                               = {
+  const lazyType = {
     $$typeof: REACT_LAZY_TYPE,
     _payload: payload,
     _init: lazyInitializer,
@@ -147,14 +111,14 @@ export function lazy   (
         // $FlowFixMe[missing-local-annot]
         set(newDefaultProps) {
           console.error(
-            'React.lazy(...): It is not supported to assign `defaultProps` to ' +
-              'a lazy component import. Either specify them where the component ' +
-              'is defined, or create a wrapping component around it.',
+            "React.lazy(...): It is not supported to assign `defaultProps` to " +
+              "a lazy component import. Either specify them where the component " +
+              "is defined, or create a wrapping component around it.",
           );
           defaultProps = newDefaultProps;
           // Match production behavior more closely:
           // $FlowFixMe[prop-missing]
-          Object.defineProperty(lazyType, 'defaultProps', {
+          Object.defineProperty(lazyType, "defaultProps", {
             enumerable: true,
           });
         },
@@ -167,14 +131,14 @@ export function lazy   (
         // $FlowFixMe[missing-local-annot]
         set(newPropTypes) {
           console.error(
-            'React.lazy(...): It is not supported to assign `propTypes` to ' +
-              'a lazy component import. Either specify them where the component ' +
-              'is defined, or create a wrapping component around it.',
+            "React.lazy(...): It is not supported to assign `propTypes` to " +
+              "a lazy component import. Either specify them where the component " +
+              "is defined, or create a wrapping component around it.",
           );
           propTypes = newPropTypes;
           // Match production behavior more closely:
           // $FlowFixMe[prop-missing]
-          Object.defineProperty(lazyType, 'propTypes', {
+          Object.defineProperty(lazyType, "propTypes", {
             enumerable: true,
           });
         },

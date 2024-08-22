@@ -4,22 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 import {
   getInstanceFromNode,
   getFiberCurrentPropsFromNode,
-} from '../client/ReactDOMComponentTree';
+} from "../client/ReactDOMComponentTree";
 
-import {restoreControlledState} from 'react-dom-bindings/src/client/ReactDOMComponent';
+import { restoreControlledState } from "react-dom-bindings/src/client/ReactDOMComponent";
 
 // Use to restore controlled state after a change event has fired.
 
 let restoreTarget = null;
 let restoreQueue = null;
 
-function restoreStateOfTarget(target      ) {
+function restoreStateOfTarget(target) {
   // We perform this translation at the end of the event loop so that we
   // always receive the correct fiber here
   const internalInstance = getInstanceFromNode(target);
@@ -40,7 +40,7 @@ function restoreStateOfTarget(target      ) {
   }
 }
 
-export function enqueueStateRestore(target      )       {
+export function enqueueStateRestore(target) {
   if (restoreTarget) {
     if (restoreQueue) {
       restoreQueue.push(target);
@@ -52,7 +52,7 @@ export function enqueueStateRestore(target      )       {
   }
 }
 
-export function needsStateRestore()          {
+export function needsStateRestore() {
   return restoreTarget !== null || restoreQueue !== null;
 }
 

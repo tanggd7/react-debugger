@@ -16,26 +16,26 @@ let useMemoCache;
 let MemoCacheSentinel;
 let ErrorBoundary;
 
-describe('useMemoCache()', () => {
+describe("useMemoCache()", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    act = require("internal-test-utils").act;
     useState = React.useState;
     useMemoCache = React.unstable_useMemoCache;
-    MemoCacheSentinel = Symbol.for('react.memo_cache_sentinel');
+    MemoCacheSentinel = Symbol.for("react.memo_cache_sentinel");
 
     class _ErrorBoundary extends React.Component {
       constructor(props) {
         super(props);
-        this.state = {hasError: false};
+        this.state = { hasError: false };
       }
 
       static getDerivedStateFromError(error) {
         // Update state so the next render will show the fallback UI.
-        return {hasError: true};
+        return { hasError: true };
       }
 
       componentDidCatch(error, errorInfo) {}
@@ -53,24 +53,24 @@ describe('useMemoCache()', () => {
   });
 
   // @gate enableUseMemoCacheHook
-  test('render component using cache', async () => {
+  test("render component using cache", async () => {
     function Component(props) {
       const cache = useMemoCache(1);
       expect(Array.isArray(cache)).toBe(true);
       expect(cache.length).toBe(1);
       expect(cache[0]).toBe(MemoCacheSentinel);
 
-      return 'Ok';
+      return "Ok";
     }
     const root = ReactNoop.createRoot();
     await act(() => {
       root.render(<Component />);
     });
-    expect(root).toMatchRenderedOutput('Ok');
+    expect(root).toMatchRenderedOutput("Ok");
   });
 
   // @gate enableUseMemoCacheHook
-  test('update component using cache', async () => {
+  test("update component using cache", async () => {
     let setX;
     let forceUpdate;
     function Component(props) {
@@ -82,12 +82,12 @@ describe('useMemoCache()', () => {
 
       // n is passed as-is to the child as a cache breaker
       const [n, setN] = useState(0);
-      forceUpdate = () => setN(a => a + 1);
+      forceUpdate = () => setN((a) => a + 1);
 
       const c_0 = x !== cache[0];
       let data;
       if (c_0) {
-        data = {text: `Count ${x}`};
+        data = { text: `Count ${x}` };
         cache[0] = x;
         cache[1] = data;
       } else {
@@ -116,7 +116,7 @@ describe('useMemoCache()', () => {
     await act(() => {
       root.render(<Component />);
     });
-    expect(root).toMatchRenderedOutput('Count 0');
+    expect(root).toMatchRenderedOutput("Count 0");
     expect(Text).toBeCalledTimes(1);
     const data0 = data;
 
@@ -124,7 +124,7 @@ describe('useMemoCache()', () => {
     await act(() => {
       setX(1);
     });
-    expect(root).toMatchRenderedOutput('Count 1');
+    expect(root).toMatchRenderedOutput("Count 1");
     expect(Text).toBeCalledTimes(2);
     expect(data).not.toBe(data0);
     const data1 = data;
@@ -134,13 +134,13 @@ describe('useMemoCache()', () => {
     await act(() => {
       forceUpdate();
     });
-    expect(root).toMatchRenderedOutput('Count 1');
+    expect(root).toMatchRenderedOutput("Count 1");
     expect(Text).toBeCalledTimes(3);
     expect(data).toBe(data1); // confirm that the cache persisted across renders
   });
 
   // @gate enableUseMemoCacheHook
-  test('update component using cache with setstate during render', async () => {
+  test("update component using cache with setstate during render", async () => {
     let setN;
     function Component(props) {
       const cache = useMemoCache(5);
@@ -151,7 +151,7 @@ describe('useMemoCache()', () => {
       const c_0 = x !== cache[0];
       let data;
       if (c_0) {
-        data = {text: `Count ${x}`};
+        data = { text: `Count ${x}` };
         cache[0] = x;
         cache[1] = data;
       } else {
@@ -190,7 +190,7 @@ describe('useMemoCache()', () => {
     await act(() => {
       root.render(<Component />);
     });
-    expect(root).toMatchRenderedOutput('Count 0 (n=0)');
+    expect(root).toMatchRenderedOutput("Count 0 (n=0)");
     expect(Text).toBeCalledTimes(1);
     const data0 = data;
 
@@ -199,13 +199,13 @@ describe('useMemoCache()', () => {
     await act(() => {
       setN(1);
     });
-    expect(root).toMatchRenderedOutput('Count 0 (n=2)');
+    expect(root).toMatchRenderedOutput("Count 0 (n=2)");
     expect(Text).toBeCalledTimes(2);
     expect(data).toBe(data0);
   });
 
   // @gate enableUseMemoCacheHook
-  test('update component using cache with throw during render', async () => {
+  test("update component using cache with throw during render", async () => {
     let setN;
     let shouldFail = true;
     function Component(props) {
@@ -217,7 +217,7 @@ describe('useMemoCache()', () => {
       const c_0 = x !== cache[0];
       let data;
       if (c_0) {
-        data = {text: `Count ${x}`};
+        data = { text: `Count ${x}` };
         cache[0] = x;
         cache[1] = data;
       } else {
@@ -231,7 +231,7 @@ describe('useMemoCache()', () => {
       if (n === 1) {
         if (shouldFail) {
           shouldFail = false;
-          throw new Error('failed');
+          throw new Error("failed");
         }
       }
 
@@ -254,7 +254,7 @@ describe('useMemoCache()', () => {
       return `${data.text} (n=${props.n})`;
     });
 
-    spyOnDev(console, 'error');
+    spyOnDev(console, "error");
 
     const root = ReactNoop.createRoot();
     await act(() => {
@@ -264,7 +264,7 @@ describe('useMemoCache()', () => {
         </ErrorBoundary>,
       );
     });
-    expect(root).toMatchRenderedOutput('Count 0 (n=0)');
+    expect(root).toMatchRenderedOutput("Count 0 (n=0)");
     expect(Text).toBeCalledTimes(1);
     const data0 = data;
 
@@ -272,7 +272,7 @@ describe('useMemoCache()', () => {
       // this triggers a throw.
       setN(1);
     });
-    expect(root).toMatchRenderedOutput('Count 0 (n=1)');
+    expect(root).toMatchRenderedOutput("Count 0 (n=1)");
     expect(Text).toBeCalledTimes(2);
     expect(data).toBe(data0);
     const data1 = data;
@@ -282,13 +282,13 @@ describe('useMemoCache()', () => {
     await act(() => {
       setN(2);
     });
-    expect(root).toMatchRenderedOutput('Count 0 (n=2)');
+    expect(root).toMatchRenderedOutput("Count 0 (n=2)");
     expect(Text).toBeCalledTimes(3);
     expect(data).toBe(data1); // confirm that the cache persisted across renders
   });
 
   // @gate enableUseMemoCacheHook
-  test('update component and custom hook with caches', async () => {
+  test("update component and custom hook with caches", async () => {
     let setX;
     let forceUpdate;
     function Component(props) {
@@ -302,13 +302,13 @@ describe('useMemoCache()', () => {
 
       // n is passed as-is to the child as a cache breaker
       const [n, setN] = useState(0);
-      forceUpdate = () => setN(a => a + 1);
+      forceUpdate = () => setN((a) => a + 1);
       const c_n = n !== cache[1];
       cache[1] = n;
 
       let _data;
       if (c_x) {
-        _data = cache[2] = {text: `Count ${x}`};
+        _data = cache[2] = { text: `Count ${x}` };
       } else {
         _data = cache[2];
       }
@@ -325,7 +325,7 @@ describe('useMemoCache()', () => {
       cache[0] = data;
       let nextData;
       if (c_data) {
-        nextData = cache[1] = {text: data.text.toLowerCase()};
+        nextData = cache[1] = { text: data.text.toLowerCase() };
       } else {
         nextData = cache[1];
       }
@@ -341,7 +341,7 @@ describe('useMemoCache()', () => {
     await act(() => {
       root.render(<Component />);
     });
-    expect(root).toMatchRenderedOutput('count 0');
+    expect(root).toMatchRenderedOutput("count 0");
     expect(Text).toBeCalledTimes(1);
     const data0 = data;
 
@@ -349,7 +349,7 @@ describe('useMemoCache()', () => {
     await act(() => {
       setX(1);
     });
-    expect(root).toMatchRenderedOutput('count 1');
+    expect(root).toMatchRenderedOutput("count 1");
     expect(Text).toBeCalledTimes(2);
     expect(data).not.toBe(data0);
     const data1 = data;
@@ -359,7 +359,7 @@ describe('useMemoCache()', () => {
     await act(() => {
       forceUpdate();
     });
-    expect(root).toMatchRenderedOutput('count 1');
+    expect(root).toMatchRenderedOutput("count 1");
     expect(Text).toBeCalledTimes(3);
     expect(data).toBe(data1); // confirm that the cache persisted across renders
   });

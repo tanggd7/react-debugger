@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 
@@ -16,7 +16,7 @@ let act;
 let assertLog;
 let Scheduler;
 
-describe('ReactDOMSafariMicrotaskBug-test', () => {
+describe("ReactDOMSafariMicrotaskBug-test", () => {
   let container;
   let overrideQueueMicrotask;
   let flushFakeMicrotasks;
@@ -29,7 +29,7 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
     const originalQueueMicrotask = queueMicrotask;
     overrideQueueMicrotask = false;
     const fakeMicrotaskQueue = [];
-    global.queueMicrotask = cb => {
+    global.queueMicrotask = (cb) => {
       if (overrideQueueMicrotask) {
         fakeMicrotaskQueue.push(cb);
       } else {
@@ -44,12 +44,12 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
     };
 
     jest.resetModules();
-    container = document.createElement('div');
-    React = require('react');
-    ReactDOMClient = require('react-dom/client');
-    act = require('internal-test-utils').act;
-    assertLog = require('internal-test-utils').assertLog;
-    Scheduler = require('scheduler');
+    container = document.createElement("div");
+    React = require("react");
+    ReactDOMClient = require("react-dom/client");
+    act = require("internal-test-utils").act;
+    assertLog = require("internal-test-utils").assertLog;
+    Scheduler = require("scheduler");
 
     document.body.appendChild(container);
   });
@@ -58,7 +58,7 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
     document.body.removeChild(container);
   });
 
-  it('should deal with premature microtask in commit phase', async () => {
+  it("should deal with premature microtask in commit phase", async () => {
     let ran = false;
     function Foo() {
       const [state, setState] = React.useState(0);
@@ -71,10 +71,11 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
               setState(1);
               flushFakeMicrotasks();
               Scheduler.log(
-                'Content at end of ref callback: ' + container.textContent,
+                "Content at end of ref callback: " + container.textContent,
               );
             }
-          }}>
+          }}
+        >
           {state}
         </div>
       );
@@ -83,11 +84,11 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
     await act(() => {
       root.render(<Foo />);
     });
-    assertLog(['Content at end of ref callback: 0']);
-    expect(container.textContent).toBe('1');
+    assertLog(["Content at end of ref callback: 0"]);
+    expect(container.textContent).toBe("1");
   });
 
-  it('should deal with premature microtask in event handler', async () => {
+  it("should deal with premature microtask in event handler", async () => {
     function Foo() {
       const [state, setState] = React.useState(0);
       return (
@@ -97,9 +98,10 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
             setState(1);
             flushFakeMicrotasks();
             Scheduler.log(
-              'Content at end of click handler: ' + container.textContent,
+              "Content at end of click handler: " + container.textContent,
             );
-          }}>
+          }}
+        >
           {state}
         </button>
       );
@@ -108,17 +110,17 @@ describe('ReactDOMSafariMicrotaskBug-test', () => {
     await act(() => {
       root.render(<Foo />);
     });
-    expect(container.textContent).toBe('0');
+    expect(container.textContent).toBe("0");
     await act(() => {
       container.firstChild.dispatchEvent(
-        new MouseEvent('click', {bubbles: true}),
+        new MouseEvent("click", { bubbles: true }),
       );
     });
     // This causes the update to flush earlier than usual. This isn't the ideal
     // behavior but we use this test to document it. The bug is Safari's, not
     // ours, so we just do our best to not crash even though the behavior isn't
     // completely correct.
-    assertLog(['Content at end of click handler: 1']);
-    expect(container.textContent).toBe('1');
+    assertLog(["Content at end of click handler: 1"]);
+    expect(container.textContent).toBe("1");
   });
 });

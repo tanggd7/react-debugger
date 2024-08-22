@@ -4,16 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
+const valueStack = [];
 
-                                          
-
-const valueStack             = [];
-
-let fiberStack                     ;
+let fiberStack;
 
 if (__DEV__) {
   fiberStack = [];
@@ -21,27 +17,27 @@ if (__DEV__) {
 
 let index = -1;
 
-function createCursor   (defaultValue   )                 {
+function createCursor(defaultValue) {
   return {
     current: defaultValue,
   };
 }
 
-function isEmpty()          {
+function isEmpty() {
   return index === -1;
 }
 
-function pop   (cursor                , fiber       )       {
+function pop(cursor, fiber) {
   if (index < 0) {
     if (__DEV__) {
-      console.error('Unexpected pop.');
+      console.error("Unexpected pop.");
     }
     return;
   }
 
   if (__DEV__) {
     if (fiber !== fiberStack[index]) {
-      console.error('Unexpected Fiber popped.');
+      console.error("Unexpected Fiber popped.");
     }
   }
 
@@ -56,7 +52,7 @@ function pop   (cursor                , fiber       )       {
   index--;
 }
 
-function push   (cursor                , value   , fiber       )       {
+function push(cursor, value, fiber) {
   index++;
 
   valueStack[index] = cursor.current;
@@ -72,7 +68,7 @@ function checkThatStackIsEmpty() {
   if (__DEV__) {
     if (index !== -1) {
       console.error(
-        'Expected an empty stack. Something was not reset properly.',
+        "Expected an empty stack. Something was not reset properly.",
       );
     }
   }

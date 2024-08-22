@@ -7,12 +7,12 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-const React = require('react');
-const ReactDOMClient = require('react-dom/client');
-const ReactTestUtils = require('react-dom/test-utils');
-const act = require('internal-test-utils').act;
+const React = require("react");
+const ReactDOMClient = require("react-dom/client");
+const ReactTestUtils = require("react-dom/test-utils");
+const act = require("internal-test-utils").act;
 
 // Helpers
 const testAllPermutations = async function (testCases) {
@@ -24,7 +24,7 @@ const testAllPermutations = async function (testCases) {
       const updateWithChildren = testCases[j];
       const expectedResultAfterUpdate = testCases[j + 1];
 
-      const container = document.createElement('div');
+      const container = document.createElement("div");
       const root = ReactDOMClient.createRoot(container);
       await act(() => root.render(<div>{renderWithChildren}</div>));
       expectChildren(container, expectedResultAfterRender);
@@ -38,10 +38,10 @@ const testAllPermutations = async function (testCases) {
 const expectChildren = function (container, children) {
   const outerNode = container.firstChild;
   let textNode;
-  if (typeof children === 'string') {
+  if (typeof children === "string") {
     textNode = outerNode.firstChild;
 
-    if (children === '') {
+    if (children === "") {
       expect(textNode != null).toBe(false);
     } else {
       expect(textNode != null).toBe(true);
@@ -54,8 +54,8 @@ const expectChildren = function (container, children) {
     for (let i = 0; i < children.length; i++) {
       const child = children[i];
 
-      if (typeof child === 'string') {
-        if (child === '') {
+      if (typeof child === "string") {
+        if (child === "") {
           continue;
         }
         textNode = outerNode.childNodes[mountIndex];
@@ -64,7 +64,7 @@ const expectChildren = function (container, children) {
         mountIndex++;
       } else {
         const elementDOMNode = outerNode.childNodes[mountIndex];
-        expect(elementDOMNode.tagName).toBe('DIV');
+        expect(elementDOMNode.tagName).toBe("DIV");
         mountIndex++;
       }
     }
@@ -76,10 +76,10 @@ const expectChildren = function (container, children) {
  * that single children that are strings are treated as "content" which is much
  * faster to render and update.
  */
-describe('ReactMultiChildText', () => {
+describe("ReactMultiChildText", () => {
   jest.setTimeout(20000);
 
-  it('should correctly handle all possible children for render and update', async () => {
+  it("should correctly handle all possible children for render and update", async () => {
     await expect(async () => {
       // prettier-ignore
       await testAllPermutations([
@@ -174,15 +174,15 @@ describe('ReactMultiChildText', () => {
     ]);
   });
 
-  it('should throw if rendering both HTML and children', () => {
+  it("should throw if rendering both HTML and children", () => {
     expect(function () {
       ReactTestUtils.renderIntoDocument(
-        <div dangerouslySetInnerHTML={{__html: 'abcdef'}}>ghjkl</div>,
+        <div dangerouslySetInnerHTML={{ __html: "abcdef" }}>ghjkl</div>,
       );
     }).toThrow();
   });
 
-  it('should render between nested components and inline children', () => {
+  it("should render between nested components and inline children", () => {
     ReactTestUtils.renderIntoDocument(
       <div>
         <h1>
@@ -203,7 +203,7 @@ describe('ReactMultiChildText', () => {
     expect(function () {
       ReactTestUtils.renderIntoDocument(
         <div>
-          <h1>{['A']}</h1>
+          <h1>{["A"]}</h1>
         </div>,
       );
     }).not.toThrow();
@@ -211,7 +211,7 @@ describe('ReactMultiChildText', () => {
     expect(function () {
       ReactTestUtils.renderIntoDocument(
         <div>
-          <h1>{['A', 'B']}</h1>
+          <h1>{["A", "B"]}</h1>
         </div>,
       );
     }).not.toThrow();

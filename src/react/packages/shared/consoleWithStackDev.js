@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import ReactSharedInternals from 'shared/ReactSharedInternals';
+import ReactSharedInternals from "shared/ReactSharedInternals";
 
 let suppressWarning = false;
 export function setSuppressWarning(newSuppressWarning) {
@@ -23,7 +23,7 @@ export function setSuppressWarning(newSuppressWarning) {
 export function warn(format, ...args) {
   if (__DEV__) {
     if (!suppressWarning) {
-      printWarning('warn', format, args);
+      printWarning("warn", format, args);
     }
   }
 }
@@ -31,7 +31,7 @@ export function warn(format, ...args) {
 export function error(format, ...args) {
   if (__DEV__) {
     if (!suppressWarning) {
-      printWarning('error', format, args);
+      printWarning("error", format, args);
     }
   }
 }
@@ -42,15 +42,15 @@ function printWarning(level, format, args) {
   if (__DEV__) {
     const ReactDebugCurrentFrame = ReactSharedInternals.ReactDebugCurrentFrame;
     const stack = ReactDebugCurrentFrame.getStackAddendum();
-    if (stack !== '') {
-      format += '%s';
+    if (stack !== "") {
+      format += "%s";
       args = args.concat([stack]);
     }
 
     // eslint-disable-next-line react-internal/safe-string-coercion
-    const argsWithFormat = args.map(item => String(item));
+    const argsWithFormat = args.map((item) => String(item));
     // Careful: RN currently depends on this prefix
-    argsWithFormat.unshift('Warning: ' + format);
+    argsWithFormat.unshift("Warning: " + format);
     // We intentionally don't use spread (or .apply) directly because it
     // breaks IE9: https://github.com/facebook/react/issues/13610
     // eslint-disable-next-line react-internal/no-production-logging

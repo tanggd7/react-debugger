@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -20,10 +20,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -33,18 +33,18 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegrationProgress', () => {
+describe("ReactDOMServerIntegrationProgress", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  itRenders('a progress in an indeterminate state', async render => {
+  itRenders("a progress in an indeterminate state", async (render) => {
     // Regression test for https://github.com/facebook/react/issues/6119
     const e = await render(<progress value={null} />);
-    expect(e.hasAttribute('value')).toBe(false);
+    expect(e.hasAttribute("value")).toBe(false);
     const e2 = await render(<progress value={50} />);
-    expect(e2.getAttribute('value')).toBe('50');
+    expect(e2.getAttribute("value")).toBe("50");
   });
 });

@@ -4,49 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                     
-                                                                                                
+import { Writable, Readable } from "stream";
 
-import {Writable, Readable} from 'stream';
-
-import ReactVersion from 'shared/ReactVersion';
+import ReactVersion from "shared/ReactVersion";
 
 import {
   createRequest,
   startWork,
   startFlowing,
   abort,
-} from 'react-server/src/ReactFizzServer';
+} from "react-server/src/ReactFizzServer";
 
 import {
   createResources,
   createResponseState,
   createRootFormatContext,
-} from 'react-dom-bindings/src/server/ReactFizzConfigDOM';
+} from "react-dom-bindings/src/server/ReactFizzConfigDOM";
 
-                
-                            
-                        
-                                  
-                                                               
-                                                               
-                                
-                       
-                                      
-                                                                   
-  
-
-                     
-                    
-  
-
-function createFakeWritable(readable     )           {
+function createFakeWritable(readable) {
   // The current host config expects a Writable so we create
   // a fake writable for now to push into the Readable.
-  return ({
+  return {
     write(chunk) {
       return readable.push(chunk);
     },
@@ -56,18 +37,15 @@ function createFakeWritable(readable     )           {
     destroy(error) {
       readable.destroy(error);
     },
-  }     );
+  };
 }
 
-function prerenderToNodeStreams(
-  children               ,
-  options          ,
-)                        {
+function prerenderToNodeStreams(children, options) {
   return new Promise((resolve, reject) => {
     const onFatalError = reject;
 
     function onAllReady() {
-      const readable           = new Readable({
+      const readable = new Readable({
         read() {
           startFlowing(request, writable);
         },
@@ -103,17 +81,17 @@ function prerenderToNodeStreams(
     if (options && options.signal) {
       const signal = options.signal;
       if (signal.aborted) {
-        abort(request, (signal     ).reason);
+        abort(request, signal.reason);
       } else {
         const listener = () => {
-          abort(request, (signal     ).reason);
-          signal.removeEventListener('abort', listener);
+          abort(request, signal.reason);
+          signal.removeEventListener("abort", listener);
         };
-        signal.addEventListener('abort', listener);
+        signal.addEventListener("abort", listener);
       }
     }
     startWork(request);
   });
 }
 
-export {prerenderToNodeStreams, ReactVersion as version};
+export { prerenderToNodeStreams, ReactVersion as version };

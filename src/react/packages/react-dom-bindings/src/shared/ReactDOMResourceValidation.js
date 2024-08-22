@@ -4,32 +4,32 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-export function validateLinkPropsForStyleResource(props     )          {
+export function validateLinkPropsForStyleResource(props) {
   if (__DEV__) {
     // This should only be called when we know we are opting into Resource semantics (i.e. precedence is not null)
-    const {href, onLoad, onError, disabled} = props;
+    const { href, onLoad, onError, disabled } = props;
     const includedProps = [];
-    if (onLoad) includedProps.push('`onLoad`');
-    if (onError) includedProps.push('`onError`');
-    if (disabled != null) includedProps.push('`disabled`');
+    if (onLoad) includedProps.push("`onLoad`");
+    if (onError) includedProps.push("`onError`");
+    if (disabled != null) includedProps.push("`disabled`");
 
-    let includedPropsPhrase = propNamesListJoin(includedProps, 'and');
-    includedPropsPhrase += includedProps.length === 1 ? ' prop' : ' props';
+    let includedPropsPhrase = propNamesListJoin(includedProps, "and");
+    includedPropsPhrase += includedProps.length === 1 ? " prop" : " props";
     const withArticlePhrase =
       includedProps.length === 1
-        ? 'an ' + includedPropsPhrase
-        : 'the ' + includedPropsPhrase;
+        ? "an " + includedPropsPhrase
+        : "the " + includedPropsPhrase;
 
     if (includedProps.length) {
       console.error(
         'React encountered a <link rel="stylesheet" href="%s" ... /> with a `precedence` prop that' +
-          ' also included %s. The presence of loading and error handlers indicates an intent to manage' +
-          ' the stylesheet loading state from your from your Component code and React will not hoist or' +
-          ' deduplicate this stylesheet. If your intent was to have React hoist and deduplciate this stylesheet' +
-          ' using the `precedence` prop remove the %s, otherwise remove the `precedence` prop.',
+          " also included %s. The presence of loading and error handlers indicates an intent to manage" +
+          " the stylesheet loading state from your from your Component code and React will not hoist or" +
+          " deduplicate this stylesheet. If your intent was to have React hoist and deduplciate this stylesheet" +
+          " using the `precedence` prop remove the %s, otherwise remove the `precedence` prop.",
         href,
         withArticlePhrase,
         includedPropsPhrase,
@@ -40,37 +40,34 @@ export function validateLinkPropsForStyleResource(props     )          {
   return false;
 }
 
-function propNamesListJoin(
-  list               ,
-  combinator              ,
-)         {
+function propNamesListJoin(list, combinator) {
   switch (list.length) {
     case 0:
-      return '';
+      return "";
     case 1:
       return list[0];
     case 2:
-      return list[0] + ' ' + combinator + ' ' + list[1];
+      return list[0] + " " + combinator + " " + list[1];
     default:
       return (
-        list.slice(0, -1).join(', ') +
-        ', ' +
+        list.slice(0, -1).join(", ") +
+        ", " +
         combinator +
-        ' ' +
+        " " +
         list[list.length - 1]
       );
   }
 }
 
-export function validatePreinitArguments(href       , options       ) {
+export function validatePreinitArguments(href, options) {
   if (__DEV__) {
-    if (!href || typeof href !== 'string') {
+    if (!href || typeof href !== "string") {
       const typeOfArg = getValueDescriptorExpectingObjectForWarning(href);
       console.error(
-        'ReactDOM.preinit() expected the first argument to be a string representing an href but found %s instead.',
+        "ReactDOM.preinit() expected the first argument to be a string representing an href but found %s instead.",
         typeOfArg,
       );
-    } else if (typeof options !== 'object' || options === null) {
+    } else if (typeof options !== "object" || options === null) {
       const typeOfArg = getValueDescriptorExpectingObjectForWarning(options);
       console.error(
         'ReactDOM.preinit() expected the second argument to be an options argument containing at least an "as" property' +
@@ -81,8 +78,8 @@ export function validatePreinitArguments(href       , options       ) {
     } else {
       const as = options.as;
       switch (as) {
-        case 'style':
-        case 'script': {
+        case "style":
+        case "script": {
           break;
         }
 
@@ -102,50 +99,31 @@ export function validatePreinitArguments(href       , options       ) {
   }
 }
 
-export function getValueDescriptorExpectingObjectForWarning(
-  thing     ,
-)         {
+export function getValueDescriptorExpectingObjectForWarning(thing) {
   return thing === null
-    ? '`null`'
+    ? "`null`"
     : thing === undefined
-    ? '`undefined`'
-    : thing === ''
-    ? 'an empty string'
-    : `something with type "${typeof thing}"`;
+      ? "`undefined`"
+      : thing === ""
+        ? "an empty string"
+        : `something with type "${typeof thing}"`;
 }
 
-export function getValueDescriptorExpectingEnumForWarning(thing     )         {
+export function getValueDescriptorExpectingEnumForWarning(thing) {
   return thing === null
-    ? '`null`'
+    ? "`null`"
     : thing === undefined
-    ? '`undefined`'
-    : thing === ''
-    ? 'an empty string'
-    : typeof thing === 'string'
-    ? JSON.stringify(thing)
-    : `something with type "${typeof thing}"`;
+      ? "`undefined`"
+      : thing === ""
+        ? "an empty string"
+        : typeof thing === "string"
+          ? JSON.stringify(thing)
+          : `something with type "${typeof thing}"`;
 }
 
-                        
-            
-                  
-    
-          
-                  
-    
-              
-               
-                    
-                  
-      
-    
-  
-function compareResourcePropsForWarning(
-  newProps     ,
-  currentProps     ,
-)                         {
+function compareResourcePropsForWarning(newProps, currentProps) {
   if (__DEV__) {
-    let propDiffs                         = null;
+    let propDiffs = null;
 
     const allProps = Array.from(
       new Set(Object.keys(currentProps).concat(Object.keys(newProps))),
@@ -161,29 +139,29 @@ function compareResourcePropsForWarning(
       ) {
         if (newValue == null) {
           if (propDiffs === null) {
-            propDiffs = ({
+            propDiffs = {
               missing: {},
               extra: {},
               different: {},
-            }                 );
+            };
           }
           propDiffs.missing[propName] = currentValue;
         } else if (currentValue == null) {
           if (propDiffs === null) {
-            propDiffs = ({
+            propDiffs = {
               missing: {},
               extra: {},
               different: {},
-            }                 );
+            };
           }
           propDiffs.extra[propName] = newValue;
         } else {
           if (propDiffs === null) {
-            propDiffs = ({
+            propDiffs = {
               missing: {},
               extra: {},
               different: {},
-            }                 );
+            };
           }
           propDiffs.different[propName] = {
             original: currentValue,
@@ -198,18 +176,15 @@ function compareResourcePropsForWarning(
   return null;
 }
 
-export function describeDifferencesForStylesheets(
-  newProps     ,
-  currentProps     ,
-)         {
+export function describeDifferencesForStylesheets(newProps, currentProps) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
 
   for (const propName in diff.missing) {
     const propValue = diff.missing[propName];
-    if (propName === 'media') {
+    if (propName === "media") {
       description += `\n  "${propName}" missing for props, original value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
       )}`;
@@ -234,20 +209,20 @@ export function describeDifferencesForStylesheets(
 }
 
 export function describeDifferencesForStylesheetOverPreinit(
-  newProps     ,
-  currentProps     ,
-)         {
+  newProps,
+  currentProps,
+) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
 
   for (const propName in diff.extra) {
     const propValue = diff.extra[propName];
     if (
-      propName === 'precedence' ||
-      propName === 'crossOrigin' ||
-      propName === 'integrity'
+      propName === "precedence" ||
+      propName === "crossOrigin" ||
+      propName === "integrity"
     ) {
       description += `\n  "${propName}" prop value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
@@ -261,7 +236,7 @@ export function describeDifferencesForStylesheetOverPreinit(
   for (const propName in diff.different) {
     const latestValue = diff.different[propName].latest;
     const originalValue = diff.different[propName].original;
-    if (propName === 'precedence' && originalValue === 'default') {
+    if (propName === "precedence" && originalValue === "default") {
       description += `\n  "${propName}" prop value: ${getValueDescriptorExpectingEnumForWarning(
         latestValue,
       )}, missing from options`;
@@ -277,16 +252,16 @@ export function describeDifferencesForStylesheetOverPreinit(
 }
 
 export function describeDifferencesForPreinitOverStylesheet(
-  newProps     ,
-  currentProps     ,
-)         {
+  newProps,
+  currentProps,
+) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
   for (const propName in diff.missing) {
     const propValue = diff.missing[propName];
-    if (propName === 'precedence' && propValue !== 'default') {
+    if (propName === "precedence" && propValue !== "default") {
       description += `\n  "${propName}" missing from options, prop value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
       )}`;
@@ -295,9 +270,9 @@ export function describeDifferencesForPreinitOverStylesheet(
   for (const propName in diff.extra) {
     const propValue = diff.extra[propName];
     if (
-      propName === 'precedence' ||
-      propName === 'crossOrigin' ||
-      propName === 'integrity'
+      propName === "precedence" ||
+      propName === "crossOrigin" ||
+      propName === "integrity"
     ) {
       description += `\n  "${propName}" option value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
@@ -316,17 +291,14 @@ export function describeDifferencesForPreinitOverStylesheet(
   return description;
 }
 
-export function describeDifferencesForPreinits(
-  newProps     ,
-  currentProps     ,
-)         {
+export function describeDifferencesForPreinits(newProps, currentProps) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
   for (const propName in diff.missing) {
     const propValue = diff.missing[propName];
-    if (propName === 'precedence' && propValue !== 'default') {
+    if (propName === "precedence" && propValue !== "default") {
       description += `\n  "${propName}" missing from options, original option value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
       )}`;
@@ -335,9 +307,9 @@ export function describeDifferencesForPreinits(
   for (const propName in diff.extra) {
     const propValue = diff.extra[propName];
     if (
-      (propName === 'precedence' && propValue !== 'default') ||
-      propName === 'crossOrigin' ||
-      propName === 'integrity'
+      (propName === "precedence" && propValue !== "default") ||
+      propName === "crossOrigin" ||
+      propName === "integrity"
     ) {
       description += `\n  "${propName}" option value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
@@ -356,16 +328,13 @@ export function describeDifferencesForPreinits(
   return description;
 }
 
-const preloadOptionsForComparison = ['as', 'crossOrigin', 'integrity', 'media'];
+const preloadOptionsForComparison = ["as", "crossOrigin", "integrity", "media"];
 
-export function describeDifferencesForPreloads(
-  newProps     ,
-  currentProps     ,
-)         {
+export function describeDifferencesForPreloads(newProps, currentProps) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
   for (const propName in diff.missing) {
     const propValue = diff.missing[propName];
     if (preloadOptionsForComparison.includes(propName)) {
@@ -397,13 +366,13 @@ export function describeDifferencesForPreloads(
 }
 
 export function describeDifferencesForPreloadOverImplicitPreload(
-  newProps     ,
-  currentProps     ,
-)         {
+  newProps,
+  currentProps,
+) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
   for (const propName in diff.missing) {
     const propValue = diff.missing[propName];
     if (preloadOptionsForComparison.includes(propName)) {
@@ -434,14 +403,11 @@ export function describeDifferencesForPreloadOverImplicitPreload(
   return description;
 }
 
-export function describeDifferencesForScripts(
-  newProps     ,
-  currentProps     ,
-)         {
+export function describeDifferencesForScripts(newProps, currentProps) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
 
   for (const propName in diff.missing) {
     const propValue = diff.missing[propName];
@@ -468,17 +434,17 @@ export function describeDifferencesForScripts(
 }
 
 export function describeDifferencesForScriptOverPreinit(
-  newProps     ,
-  currentProps     ,
-)         {
+  newProps,
+  currentProps,
+) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
 
   for (const propName in diff.extra) {
     const propValue = diff.extra[propName];
-    if (propName === 'crossOrigin' || propName === 'integrity') {
+    if (propName === "crossOrigin" || propName === "integrity") {
       description += `\n  "${propName}" prop value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
       )}, option missing`;
@@ -501,17 +467,17 @@ export function describeDifferencesForScriptOverPreinit(
 }
 
 export function describeDifferencesForPreinitOverScript(
-  newProps     ,
-  currentProps     ,
-)         {
+  newProps,
+  currentProps,
+) {
   const diff = compareResourcePropsForWarning(newProps, currentProps);
-  if (!diff) return '';
+  if (!diff) return "";
 
-  let description = '';
+  let description = "";
 
   for (const propName in diff.extra) {
     const propValue = diff.extra[propName];
-    if (propName === 'crossOrigin' || propName === 'integrity') {
+    if (propName === "crossOrigin" || propName === "integrity") {
       description += `\n  "${propName}" option value: ${getValueDescriptorExpectingEnumForWarning(
         propValue,
       )}, missing from props`;

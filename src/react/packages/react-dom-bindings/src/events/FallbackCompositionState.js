@@ -64,7 +64,7 @@ export function getData() {
 }
 
 export function getText() {
-  if ('value' in root) {
+  if ("value" in root) {
     return root.value;
   }
   return root.textContent;

@@ -7,23 +7,23 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let ReactErrorUtils;
 
-describe('ReactErrorUtils', () => {
+describe("ReactErrorUtils", () => {
   beforeEach(() => {
     // TODO: can we express this test with only public API?
-    ReactErrorUtils = require('shared/ReactErrorUtils');
+    ReactErrorUtils = require("shared/ReactErrorUtils");
   });
 
   it(`it should rethrow caught errors`, () => {
-    const err = new Error('foo');
+    const err = new Error("foo");
     const callback = function () {
       throw err;
     };
     ReactErrorUtils.invokeGuardedCallbackAndCatchFirstError(
-      'foo',
+      "foo",
       callback,
       null,
     );
@@ -34,19 +34,19 @@ describe('ReactErrorUtils', () => {
   it(`should call the callback the passed arguments`, () => {
     const callback = jest.fn();
     ReactErrorUtils.invokeGuardedCallback(
-      'foo',
+      "foo",
       callback,
       null,
-      'arg1',
-      'arg2',
+      "arg1",
+      "arg2",
     );
-    expect(callback).toBeCalledWith('arg1', 'arg2');
+    expect(callback).toBeCalledWith("arg1", "arg2");
   });
 
   it(`should call the callback with the provided context`, () => {
-    const context = {didCall: false};
+    const context = { didCall: false };
     ReactErrorUtils.invokeGuardedCallback(
-      'foo',
+      "foo",
       function () {
         this.didCall = true;
       },
@@ -58,13 +58,13 @@ describe('ReactErrorUtils', () => {
   it(`should catch errors`, () => {
     const error = new Error();
     const returnValue = ReactErrorUtils.invokeGuardedCallback(
-      'foo',
+      "foo",
       function () {
         throw error;
       },
       null,
-      'arg1',
-      'arg2',
+      "arg1",
+      "arg2",
     );
     expect(returnValue).toBe(undefined);
     expect(ReactErrorUtils.hasCaughtError()).toBe(true);
@@ -73,9 +73,9 @@ describe('ReactErrorUtils', () => {
 
   it(`should return false from clearCaughtError if no error was thrown`, () => {
     const callback = jest.fn();
-    ReactErrorUtils.invokeGuardedCallback('foo', callback, null);
+    ReactErrorUtils.invokeGuardedCallback("foo", callback, null);
     expect(ReactErrorUtils.hasCaughtError()).toBe(false);
-    expect(ReactErrorUtils.clearCaughtError).toThrow('no error was captured');
+    expect(ReactErrorUtils.clearCaughtError).toThrow("no error was captured");
   });
 
   it(`can nest with same debug name`, () => {
@@ -83,10 +83,10 @@ describe('ReactErrorUtils', () => {
     let err2;
     const err3 = new Error();
     ReactErrorUtils.invokeGuardedCallback(
-      'foo',
+      "foo",
       function () {
         ReactErrorUtils.invokeGuardedCallback(
-          'foo',
+          "foo",
           function () {
             throw err1;
           },
@@ -107,10 +107,10 @@ describe('ReactErrorUtils', () => {
     const err1 = new Error();
     let err2;
     ReactErrorUtils.invokeGuardedCallback(
-      'foo',
+      "foo",
       function () {
         ReactErrorUtils.invokeGuardedCallback(
-          'foo',
+          "foo",
           function () {
             throw err1;
           },
@@ -126,10 +126,10 @@ describe('ReactErrorUtils', () => {
     expect(err2).toBe(err1);
   });
 
-  it('handles nested errors in separate renderers', () => {
-    const ReactErrorUtils1 = require('shared/ReactErrorUtils');
+  it("handles nested errors in separate renderers", () => {
+    const ReactErrorUtils1 = require("shared/ReactErrorUtils");
     jest.resetModules();
-    const ReactErrorUtils2 = require('shared/ReactErrorUtils');
+    const ReactErrorUtils2 = require("shared/ReactErrorUtils");
     expect(ReactErrorUtils1).not.toEqual(ReactErrorUtils2);
 
     const ops = [];
@@ -140,7 +140,7 @@ describe('ReactErrorUtils', () => {
         ReactErrorUtils2.invokeGuardedCallback(
           null,
           () => {
-            throw new Error('nested error');
+            throw new Error("nested error");
           },
           null,
         );
@@ -154,13 +154,13 @@ describe('ReactErrorUtils', () => {
     // ReactErrorUtils1 should not catch the error
     ops.push(ReactErrorUtils1.hasCaughtError());
 
-    expect(ops).toEqual([true, 'nested error', false]);
+    expect(ops).toEqual([true, "nested error", false]);
   });
 
   if (!__DEV__) {
     // jsdom doesn't handle this properly, but Chrome and Firefox should. Test
     // this with a fixture.
-    it('catches null values', () => {
+    it("catches null values", () => {
       ReactErrorUtils.invokeGuardedCallback(
         null,
         function () {
@@ -177,7 +177,7 @@ describe('ReactErrorUtils', () => {
     const ops = [];
     jest.resetModules();
     jest.mock(
-      'shared/invokeGuardedCallbackImpl',
+      "shared/invokeGuardedCallbackImpl",
       () =>
         function invokeGuardedCallback(name, func, context, a) {
           ops.push(a);
@@ -188,23 +188,23 @@ describe('ReactErrorUtils', () => {
           }
         },
     );
-    ReactErrorUtils = require('shared/ReactErrorUtils');
+    ReactErrorUtils = require("shared/ReactErrorUtils");
 
     try {
-      const err = new Error('foo');
+      const err = new Error("foo");
       const callback = function () {
         throw err;
       };
       ReactErrorUtils.invokeGuardedCallbackAndCatchFirstError(
-        'foo',
+        "foo",
         callback,
         null,
-        'somearg',
+        "somearg",
       );
       expect(() => ReactErrorUtils.rethrowCaughtError()).toThrow(err);
-      expect(ops).toEqual(['somearg']);
+      expect(ops).toEqual(["somearg"]);
     } finally {
-      jest.unmock('shared/invokeGuardedCallbackImpl');
+      jest.unmock("shared/invokeGuardedCallbackImpl");
     }
   });
 });

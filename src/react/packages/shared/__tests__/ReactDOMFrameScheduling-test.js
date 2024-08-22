@@ -7,25 +7,25 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('ReactDOMFrameScheduling', () => {
+describe("ReactDOMFrameScheduling", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    jest.unmock('scheduler');
+    jest.unmock("scheduler");
   });
 
   // We're just testing importing, not using it.
   // It is important because even isomorphic components may import it.
-  it('can import findDOMNode in Node environment', () => {
+  it("can import findDOMNode in Node environment", () => {
     const prevWindow = global.window;
     try {
       // Simulate the Node environment:
       delete global.window;
       jest.resetModules();
       expect(() => {
-        require('react-dom');
+        require("react-dom");
       }).not.toThrow();
     } finally {
       global.window = prevWindow;

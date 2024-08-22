@@ -4,15 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                             
-                                                                   
-                                                                  
-                                                           
-                                                          
-                                                                    
 
 import {
   SyntheticEvent,
@@ -27,74 +20,74 @@ import {
   SyntheticWheelEvent,
   SyntheticClipboardEvent,
   SyntheticPointerEvent,
-} from '../../events/SyntheticEvent';
+} from "../../events/SyntheticEvent";
 
 import {
   ANIMATION_END,
   ANIMATION_ITERATION,
   ANIMATION_START,
   TRANSITION_END,
-} from '../DOMEventNames';
+} from "../DOMEventNames";
 import {
   topLevelEventsToReactNames,
   registerSimpleEvents,
-} from '../DOMEventProperties';
+} from "../DOMEventProperties";
 import {
   accumulateSinglePhaseListeners,
   accumulateEventHandleNonManagedNodeListeners,
-} from '../DOMPluginEventSystem';
+} from "../DOMPluginEventSystem";
 import {
   IS_EVENT_HANDLE_NON_MANAGED_NODE,
   IS_CAPTURE_PHASE,
-} from '../EventSystemFlags';
+} from "../EventSystemFlags";
 
-import getEventCharCode from '../getEventCharCode';
+import getEventCharCode from "../getEventCharCode";
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
+import { enableCreateEventHandleAPI } from "shared/ReactFeatureFlags";
 
 function extractEvents(
-  dispatchQueue               ,
-  domEventName              ,
-  targetInst              ,
-  nativeEvent                ,
-  nativeEventTarget                    ,
-  eventSystemFlags                  ,
-  targetContainer             ,
-)       {
+  dispatchQueue,
+  domEventName,
+  targetInst,
+  nativeEvent,
+  nativeEventTarget,
+  eventSystemFlags,
+  targetContainer,
+) {
   const reactName = topLevelEventsToReactNames.get(domEventName);
   if (reactName === undefined) {
     return;
   }
   let SyntheticEventCtor = SyntheticEvent;
-  let reactEventType         = domEventName;
+  let reactEventType = domEventName;
   switch (domEventName) {
-    case 'keypress':
+    case "keypress":
       // Firefox creates a keypress event for function keys too. This removes
       // the unwanted keypress events. Enter is however both printable and
       // non-printable. One would expect Tab to be as well (but it isn't).
       // TODO: Fixed in https://bugzilla.mozilla.org/show_bug.cgi?id=968056. Can
       // probably remove.
-      if (getEventCharCode(((nativeEvent     )               )) === 0) {
+      if (getEventCharCode(nativeEvent) === 0) {
         return;
       }
     /* falls through */
-    case 'keydown':
-    case 'keyup':
+    case "keydown":
+    case "keyup":
       SyntheticEventCtor = SyntheticKeyboardEvent;
       break;
-    case 'focusin':
-      reactEventType = 'focus';
+    case "focusin":
+      reactEventType = "focus";
       SyntheticEventCtor = SyntheticFocusEvent;
       break;
-    case 'focusout':
-      reactEventType = 'blur';
+    case "focusout":
+      reactEventType = "blur";
       SyntheticEventCtor = SyntheticFocusEvent;
       break;
-    case 'beforeblur':
-    case 'afterblur':
+    case "beforeblur":
+    case "afterblur":
       SyntheticEventCtor = SyntheticFocusEvent;
       break;
-    case 'click':
+    case "click":
       // Firefox creates a click event on right mouse clicks. This removes the
       // unwanted click events.
       // TODO: Fixed in https://phabricator.services.mozilla.com/D26793. Can
@@ -103,32 +96,32 @@ function extractEvents(
         return;
       }
     /* falls through */
-    case 'auxclick':
-    case 'dblclick':
-    case 'mousedown':
-    case 'mousemove':
-    case 'mouseup':
+    case "auxclick":
+    case "dblclick":
+    case "mousedown":
+    case "mousemove":
+    case "mouseup":
     // TODO: Disabled elements should not respond to mouse events
     /* falls through */
-    case 'mouseout':
-    case 'mouseover':
-    case 'contextmenu':
+    case "mouseout":
+    case "mouseover":
+    case "contextmenu":
       SyntheticEventCtor = SyntheticMouseEvent;
       break;
-    case 'drag':
-    case 'dragend':
-    case 'dragenter':
-    case 'dragexit':
-    case 'dragleave':
-    case 'dragover':
-    case 'dragstart':
-    case 'drop':
+    case "drag":
+    case "dragend":
+    case "dragenter":
+    case "dragexit":
+    case "dragleave":
+    case "dragover":
+    case "dragstart":
+    case "drop":
       SyntheticEventCtor = SyntheticDragEvent;
       break;
-    case 'touchcancel':
-    case 'touchend':
-    case 'touchmove':
-    case 'touchstart':
+    case "touchcancel":
+    case "touchend":
+    case "touchmove":
+    case "touchstart":
       SyntheticEventCtor = SyntheticTouchEvent;
       break;
     case ANIMATION_END:
@@ -139,25 +132,25 @@ function extractEvents(
     case TRANSITION_END:
       SyntheticEventCtor = SyntheticTransitionEvent;
       break;
-    case 'scroll':
+    case "scroll":
       SyntheticEventCtor = SyntheticUIEvent;
       break;
-    case 'wheel':
+    case "wheel":
       SyntheticEventCtor = SyntheticWheelEvent;
       break;
-    case 'copy':
-    case 'cut':
-    case 'paste':
+    case "copy":
+    case "cut":
+    case "paste":
       SyntheticEventCtor = SyntheticClipboardEvent;
       break;
-    case 'gotpointercapture':
-    case 'lostpointercapture':
-    case 'pointercancel':
-    case 'pointerdown':
-    case 'pointermove':
-    case 'pointerout':
-    case 'pointerover':
-    case 'pointerup':
+    case "gotpointercapture":
+    case "lostpointercapture":
+    case "pointercancel":
+    case "pointerdown":
+    case "pointermove":
+    case "pointerout":
+    case "pointerover":
+    case "pointerup":
       SyntheticEventCtor = SyntheticPointerEvent;
       break;
     default:
@@ -173,20 +166,20 @@ function extractEvents(
     const listeners = accumulateEventHandleNonManagedNodeListeners(
       // TODO: this cast may not make sense for events like
       // "focus" where React listens to e.g. "focusin".
-      ((reactEventType     )              ),
+      reactEventType,
       targetContainer,
       inCapturePhase,
     );
     if (listeners.length > 0) {
       // Intentionally create event lazily.
-      const event                      = new SyntheticEventCtor(
+      const event = new SyntheticEventCtor(
         reactName,
         reactEventType,
         null,
         nativeEvent,
         nativeEventTarget,
       );
-      dispatchQueue.push({event, listeners});
+      dispatchQueue.push({ event, listeners });
     }
   } else {
     // Some events don't bubble in the browser.
@@ -199,7 +192,7 @@ function extractEvents(
       // nonDelegatedEvents list in DOMPluginEventSystem.
       // Then we can remove this special list.
       // This is a breaking change that can wait until React 18.
-      domEventName === 'scroll';
+      domEventName === "scroll";
 
     const listeners = accumulateSinglePhaseListeners(
       targetInst,
@@ -211,16 +204,16 @@ function extractEvents(
     );
     if (listeners.length > 0) {
       // Intentionally create event lazily.
-      const event                      = new SyntheticEventCtor(
+      const event = new SyntheticEventCtor(
         reactName,
         reactEventType,
         null,
         nativeEvent,
         nativeEventTarget,
       );
-      dispatchQueue.push({event, listeners});
+      dispatchQueue.push({ event, listeners });
     }
   }
 }
 
-export {registerSimpleEvents as registerEvents, extractEvents};
+export { registerSimpleEvents as registerEvents, extractEvents };

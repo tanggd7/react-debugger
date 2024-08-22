@@ -7,19 +7,19 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('SyntheticEvent', () => {
+describe("SyntheticEvent", () => {
   let container;
 
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
 
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -28,10 +28,10 @@ describe('SyntheticEvent', () => {
     container = null;
   });
 
-  it('should be able to `preventDefault`', () => {
+  it("should be able to `preventDefault`", () => {
     let expectedCount = 0;
 
-    const eventHandler = syntheticEvent => {
+    const eventHandler = (syntheticEvent) => {
       expect(syntheticEvent.isDefaultPrevented()).toBe(false);
       syntheticEvent.preventDefault();
       expect(syntheticEvent.isDefaultPrevented()).toBe(true);
@@ -41,17 +41,17 @@ describe('SyntheticEvent', () => {
     };
     const node = ReactDOM.render(<div onClick={eventHandler} />, container);
 
-    const event = document.createEvent('Event');
-    event.initEvent('click', true, true);
+    const event = document.createEvent("Event");
+    event.initEvent("click", true, true);
     node.dispatchEvent(event);
 
     expect(expectedCount).toBe(1);
   });
 
-  it('should be prevented if nativeEvent is prevented', () => {
+  it("should be prevented if nativeEvent is prevented", () => {
     let expectedCount = 0;
 
-    const eventHandler = syntheticEvent => {
+    const eventHandler = (syntheticEvent) => {
       expect(syntheticEvent.isDefaultPrevented()).toBe(true);
 
       expectedCount++;
@@ -59,18 +59,18 @@ describe('SyntheticEvent', () => {
     const node = ReactDOM.render(<div onClick={eventHandler} />, container);
 
     let event;
-    event = document.createEvent('Event');
-    event.initEvent('click', true, true);
+    event = document.createEvent("Event");
+    event.initEvent("click", true, true);
     event.preventDefault();
     node.dispatchEvent(event);
 
-    event = document.createEvent('Event');
-    event.initEvent('click', true, true);
+    event = document.createEvent("Event");
+    event.initEvent("click", true, true);
     // Emulate IE8
-    Object.defineProperty(event, 'defaultPrevented', {
+    Object.defineProperty(event, "defaultPrevented", {
       get() {},
     });
-    Object.defineProperty(event, 'returnValue', {
+    Object.defineProperty(event, "returnValue", {
       get() {
         return false;
       },
@@ -80,10 +80,10 @@ describe('SyntheticEvent', () => {
     expect(expectedCount).toBe(2);
   });
 
-  it('should be able to `stopPropagation`', () => {
+  it("should be able to `stopPropagation`", () => {
     let expectedCount = 0;
 
-    const eventHandler = syntheticEvent => {
+    const eventHandler = (syntheticEvent) => {
       expect(syntheticEvent.isPropagationStopped()).toBe(false);
       syntheticEvent.stopPropagation();
       expect(syntheticEvent.isPropagationStopped()).toBe(true);
@@ -92,8 +92,8 @@ describe('SyntheticEvent', () => {
     };
     const node = ReactDOM.render(<div onClick={eventHandler} />, container);
 
-    const event = document.createEvent('Event');
-    event.initEvent('click', true, true);
+    const event = document.createEvent("Event");
+    event.initEvent("click", true, true);
     node.dispatchEvent(event);
 
     expect(expectedCount).toBe(1);

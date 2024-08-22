@@ -4,10 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                
 
 import {
   HostComponent,
@@ -21,15 +19,15 @@ import {
   ForwardRef,
   SimpleMemoComponent,
   ClassComponent,
-} from './ReactWorkTags';
+} from "./ReactWorkTags";
 import {
   describeBuiltInComponentFrame,
   describeFunctionComponentFrame,
   describeClassComponentFrame,
-} from 'shared/ReactComponentStackFrame';
+} from "shared/ReactComponentStackFrame";
 
-function describeFiber(fiber       )         {
-  const owner                  = __DEV__
+function describeFiber(fiber) {
+  const owner = __DEV__
     ? fiber._debugOwner
       ? fiber._debugOwner.type
       : null
@@ -41,11 +39,11 @@ function describeFiber(fiber       )         {
     case HostComponent:
       return describeBuiltInComponentFrame(fiber.type, source, owner);
     case LazyComponent:
-      return describeBuiltInComponentFrame('Lazy', source, owner);
+      return describeBuiltInComponentFrame("Lazy", source, owner);
     case SuspenseComponent:
-      return describeBuiltInComponentFrame('Suspense', source, owner);
+      return describeBuiltInComponentFrame("Suspense", source, owner);
     case SuspenseListComponent:
-      return describeBuiltInComponentFrame('SuspenseList', source, owner);
+      return describeBuiltInComponentFrame("SuspenseList", source, owner);
     case FunctionComponent:
     case IndeterminateComponent:
     case SimpleMemoComponent:
@@ -55,14 +53,14 @@ function describeFiber(fiber       )         {
     case ClassComponent:
       return describeClassComponentFrame(fiber.type, source, owner);
     default:
-      return '';
+      return "";
   }
 }
 
-export function getStackByFiberInDevAndProd(workInProgress       )         {
+export function getStackByFiberInDevAndProd(workInProgress) {
   try {
-    let info = '';
-    let node        = workInProgress;
+    let info = "";
+    let node = workInProgress;
     do {
       info += describeFiber(node);
       // $FlowFixMe[incompatible-type] we bail out when we get a null
@@ -70,6 +68,6 @@ export function getStackByFiberInDevAndProd(workInProgress       )         {
     } while (node);
     return info;
   } catch (x) {
-    return '\nError generating stack: ' + x.message + '\n' + x.stack;
+    return "\nError generating stack: " + x.message + "\n" + x.stack;
   }
 }

@@ -4,39 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                
-                                                   
-             
-            
-              
-                   
-                            
-                                            
-                                                    
 
 import {
   getChildHostContext,
   getRootHostContext,
   isPrimaryRenderer,
-} from './ReactFiberConfig';
-import {createCursor, push, pop} from './ReactFiberStack';
-import {REACT_CONTEXT_TYPE} from 'shared/ReactSymbols';
-import {enableAsyncActions, enableFormActions} from 'shared/ReactFeatureFlags';
+} from "./ReactFiberConfig";
+import { createCursor, push, pop } from "./ReactFiberStack";
+import { REACT_CONTEXT_TYPE } from "shared/ReactSymbols";
+import {
+  enableAsyncActions,
+  enableFormActions,
+} from "shared/ReactFeatureFlags";
 
-const contextStackCursor                                  = createCursor(null);
-const contextFiberStackCursor                            = createCursor(null);
-const rootInstanceStackCursor                                =
-  createCursor(null);
+const contextStackCursor = createCursor(null);
+const contextFiberStackCursor = createCursor(null);
+const rootInstanceStackCursor = createCursor(null);
 
 // Represents the nearest host transition provider (in React DOM, a <form />)
 // NOTE: Since forms cannot be nested, and this feature is only implemented by
 // React DOM, we don't technically need this to be a stack. It could be a single
 // module variable instead.
-const hostTransitionProviderCursor                            =
-  createCursor(null);
+const hostTransitionProviderCursor = createCursor(null);
 
 // TODO: This should initialize to NotPendingTransition, a constant
 // imported from the fiber config. However, because of a cycle in the module
@@ -44,43 +35,43 @@ const hostTransitionProviderCursor                            =
 // think of a way to work around this without moving that value out of the
 // fiber config. For now, the "no provider" case is handled when reading,
 // inside useHostTransitionStatus.
-export const HostTransitionContext                                        = {
+export const HostTransitionContext = {
   $$typeof: REACT_CONTEXT_TYPE,
   _currentValue: null,
   _currentValue2: null,
   _threadCount: 0,
-  Provider: (null     ),
-  Consumer: (null     ),
-  _defaultValue: (null     ),
-  _globalName: (null     ),
+  Provider: null,
+  Consumer: null,
+  _defaultValue: null,
+  _globalName: null,
 };
 
-function requiredContext       (c              )        {
+function requiredContext(c) {
   if (__DEV__) {
     if (c === null) {
       console.error(
-        'Expected host context to exist. This error is likely caused by a bug ' +
-          'in React. Please file an issue.',
+        "Expected host context to exist. This error is likely caused by a bug " +
+          "in React. Please file an issue.",
       );
     }
   }
-  return (c     );
+  return c;
 }
 
-function getCurrentRootHostContainer()                   {
+function getCurrentRootHostContainer() {
   return rootInstanceStackCursor.current;
 }
 
-function getRootHostContainer()            {
+function getRootHostContainer() {
   const rootInstance = requiredContext(rootInstanceStackCursor.current);
   return rootInstance;
 }
 
-export function getHostTransitionProvider()               {
+export function getHostTransitionProvider() {
   return hostTransitionProviderCursor.current;
 }
 
-function pushHostContainer(fiber       , nextRootInstance           )       {
+function pushHostContainer(fiber, nextRootInstance) {
   // Push current root instance onto the stack;
   // This allows us to reset root when portals are popped.
   push(rootInstanceStackCursor, nextRootInstance, fiber);
@@ -100,20 +91,20 @@ function pushHostContainer(fiber       , nextRootInstance           )       {
   push(contextStackCursor, nextRootContext, fiber);
 }
 
-function popHostContainer(fiber       ) {
+function popHostContainer(fiber) {
   pop(contextStackCursor, fiber);
   pop(contextFiberStackCursor, fiber);
   pop(rootInstanceStackCursor, fiber);
 }
 
-function getHostContext()              {
+function getHostContext() {
   const context = requiredContext(contextStackCursor.current);
   return context;
 }
 
-function pushHostContext(fiber       )       {
+function pushHostContext(fiber) {
   if (enableFormActions && enableAsyncActions) {
-    const stateHook              = fiber.memoizedState;
+    const stateHook = fiber.memoizedState;
     if (stateHook !== null) {
       // Only provide context if this fiber has been upgraded by a host
       // transition. We use the same optimization for regular host context below.
@@ -121,7 +112,7 @@ function pushHostContext(fiber       )       {
     }
   }
 
-  const context              = requiredContext(contextStackCursor.current);
+  const context = requiredContext(contextStackCursor.current);
   const nextContext = getChildHostContext(context, fiber.type);
 
   // Don't push this Fiber's context unless it's unique.
@@ -133,7 +124,7 @@ function pushHostContext(fiber       )       {
   }
 }
 
-function popHostContext(fiber       )       {
+function popHostContext(fiber) {
   if (contextFiberStackCursor.current === fiber) {
     // Do not pop unless this Fiber provided the current context.
     // pushHostContext() only pushes Fibers that provide unique contexts.

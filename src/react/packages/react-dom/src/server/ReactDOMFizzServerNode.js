@@ -4,62 +4,34 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                              
-                                                     
-                                     
-                                                                                                
-                                                                              
-
-import ReactVersion from 'shared/ReactVersion';
+import ReactVersion from "shared/ReactVersion";
 
 import {
   createRequest,
   startWork,
   startFlowing,
   abort,
-} from 'react-server/src/ReactFizzServer';
+} from "react-server/src/ReactFizzServer";
 
 import {
   createResources,
   createResponseState,
   createRootFormatContext,
-} from 'react-dom-bindings/src/server/ReactFizzConfigDOM';
+} from "react-dom-bindings/src/server/ReactFizzConfigDOM";
 
-function createDrainHandler(destination             , request         ) {
+function createDrainHandler(destination, request) {
   return () => startFlowing(request, destination);
 }
 
-function createAbortHandler(request         , reason        ) {
+function createAbortHandler(request, reason) {
   // eslint-disable-next-line react-internal/prod-error-codes
   return () => abort(request, new Error(reason));
 }
 
-                
-                            
-                        
-                 
-                                  
-                                                               
-                                                               
-                                
-                            
-                                        
-                          
-                                      
-                                                                   
-  
-
-                       
-                                                           
-                          
-                             
-                                       
-  
-
-function createRequestImpl(children               , options                ) {
+function createRequestImpl(children, options) {
   const resources = createResources();
   return createRequest(
     children,
@@ -83,40 +55,37 @@ function createRequestImpl(children               , options                ) {
   );
 }
 
-function renderToPipeableStream(
-  children               ,
-  options          ,
-)                 {
+function renderToPipeableStream(children, options) {
   const request = createRequestImpl(children, options);
   let hasStartedFlowing = false;
   startWork(request);
   return {
-    pipe             (destination   )    {
+    pipe(destination) {
       if (hasStartedFlowing) {
         throw new Error(
-          'React currently only supports piping to one writable stream.',
+          "React currently only supports piping to one writable stream.",
         );
       }
       hasStartedFlowing = true;
       startFlowing(request, destination);
-      destination.on('drain', createDrainHandler(destination, request));
+      destination.on("drain", createDrainHandler(destination, request));
       destination.on(
-        'error',
+        "error",
         createAbortHandler(
           request,
-          'The destination stream errored while writing data.',
+          "The destination stream errored while writing data.",
         ),
       );
       destination.on(
-        'close',
-        createAbortHandler(request, 'The destination stream closed early.'),
+        "close",
+        createAbortHandler(request, "The destination stream closed early."),
       );
       return destination;
     },
-    abort(reason       ) {
+    abort(reason) {
       abort(request, reason);
     },
   };
 }
 
-export {renderToPipeableStream, ReactVersion as version};
+export { renderToPipeableStream, ReactVersion as version };

@@ -7,16 +7,16 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 // Fix JSDOM. setAttribute is supposed to throw on things that can't be implicitly toStringed.
 const setAttribute = Element.prototype.setAttribute;
 Element.prototype.setAttribute = function (name, value) {
   // eslint-disable-next-line react-internal/safe-string-coercion
-  return setAttribute.call(this, name, '' + value);
+  return setAttribute.call(this, name, "" + value);
 };
 
-describe('ReactDOMSelect', () => {
+describe("ReactDOMSelect", () => {
   let React;
   let ReactDOM;
   let ReactDOMServer;
@@ -26,13 +26,13 @@ describe('ReactDOMSelect', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMServer = require('react-dom/server');
-    ReactTestUtils = require('react-dom/test-utils');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMServer = require("react-dom/server");
+    ReactTestUtils = require("react-dom/test-utils");
   });
 
-  it('should allow setting `defaultValue`', () => {
+  it("should allow setting `defaultValue`", () => {
     const stub = (
       <select defaultValue="giraffe">
         <option value="monkey">A monkey!</option>
@@ -41,20 +41,20 @@ describe('ReactDOMSelect', () => {
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
-    expect(node.value).toBe('giraffe');
+    expect(node.value).toBe("giraffe");
 
     // Changing `defaultValue` should do nothing.
     ReactDOM.render(
       <select defaultValue="gorilla">{options}</select>,
       container,
     );
-    expect(node.value).toEqual('giraffe');
+    expect(node.value).toEqual("giraffe");
   });
 
-  it('should not throw with `defaultValue` and without children', () => {
+  it("should not throw with `defaultValue` and without children", () => {
     const stub = <select defaultValue="dummy" />;
 
     expect(() => {
@@ -62,7 +62,7 @@ describe('ReactDOMSelect', () => {
     }).not.toThrow();
   });
 
-  it('should not control when using `defaultValue`', () => {
+  it("should not control when using `defaultValue`", () => {
     const el = (
       <select defaultValue="giraffe">
         <option value="monkey">A monkey!</option>
@@ -70,27 +70,27 @@ describe('ReactDOMSelect', () => {
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(el, container);
 
-    expect(node.value).toBe('giraffe');
+    expect(node.value).toBe("giraffe");
 
-    node.value = 'monkey';
+    node.value = "monkey";
     ReactDOM.render(el, container);
     // Uncontrolled selects shouldn't change the value after first mounting
-    expect(node.value).toEqual('monkey');
+    expect(node.value).toEqual("monkey");
   });
 
-  it('should allow setting `defaultValue` with multiple', () => {
+  it("should allow setting `defaultValue` with multiple", () => {
     const stub = (
-      <select multiple={true} defaultValue={['giraffe', 'gorilla']}>
+      <select multiple={true} defaultValue={["giraffe", "gorilla"]}>
         <option value="monkey">A monkey!</option>
         <option value="giraffe">A giraffe!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -99,7 +99,7 @@ describe('ReactDOMSelect', () => {
 
     // Changing `defaultValue` should do nothing.
     ReactDOM.render(
-      <select multiple={true} defaultValue={['monkey']}>
+      <select multiple={true} defaultValue={["monkey"]}>
         {options}
       </select>,
       container,
@@ -110,7 +110,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(true); // gorilla
   });
 
-  it('should allow setting `value`', () => {
+  it("should allow setting `value`", () => {
     const stub = (
       <select value="giraffe" onChange={noop}>
         <option value="monkey">A monkey!</option>
@@ -119,10 +119,10 @@ describe('ReactDOMSelect', () => {
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
-    expect(node.value).toBe('giraffe');
+    expect(node.value).toBe("giraffe");
 
     // Changing the `value` prop should change the selected option.
     ReactDOM.render(
@@ -131,10 +131,10 @@ describe('ReactDOMSelect', () => {
       </select>,
       container,
     );
-    expect(node.value).toEqual('gorilla');
+    expect(node.value).toEqual("gorilla");
   });
 
-  it('should default to the first non-disabled option', () => {
+  it("should default to the first non-disabled option", () => {
     const stub = (
       <select defaultValue="">
         <option disabled={true}>Disabled</option>
@@ -143,13 +143,13 @@ describe('ReactDOMSelect', () => {
         <option disabled={true}>Also Disabled</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
     expect(node.options[0].selected).toBe(false);
     expect(node.options[2].selected).toBe(true);
   });
 
-  it('should allow setting `value` to __proto__', () => {
+  it("should allow setting `value` to __proto__", () => {
     const stub = (
       <select value="__proto__" onChange={noop}>
         <option value="monkey">A monkey!</option>
@@ -158,10 +158,10 @@ describe('ReactDOMSelect', () => {
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
-    expect(node.value).toBe('__proto__');
+    expect(node.value).toBe("__proto__");
 
     // Changing the `value` prop should change the selected option.
     ReactDOM.render(
@@ -170,10 +170,10 @@ describe('ReactDOMSelect', () => {
       </select>,
       container,
     );
-    expect(node.value).toEqual('gorilla');
+    expect(node.value).toEqual("gorilla");
   });
 
-  it('should not throw with `value` and without children', () => {
+  it("should not throw with `value` and without children", () => {
     const stub = <select value="dummy" onChange={noop} />;
 
     expect(() => {
@@ -181,16 +181,16 @@ describe('ReactDOMSelect', () => {
     }).not.toThrow();
   });
 
-  it('should allow setting `value` with multiple', () => {
+  it("should allow setting `value` with multiple", () => {
     const stub = (
-      <select multiple={true} value={['giraffe', 'gorilla']} onChange={noop}>
+      <select multiple={true} value={["giraffe", "gorilla"]} onChange={noop}>
         <option value="monkey">A monkey!</option>
         <option value="giraffe">A giraffe!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -199,7 +199,7 @@ describe('ReactDOMSelect', () => {
 
     // Changing the `value` prop should change the selected options.
     ReactDOM.render(
-      <select multiple={true} value={['monkey']} onChange={noop}>
+      <select multiple={true} value={["monkey"]} onChange={noop}>
         {options}
       </select>,
       container,
@@ -210,16 +210,16 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
   });
 
-  it('should allow setting `value` to __proto__ with multiple', () => {
+  it("should allow setting `value` to __proto__ with multiple", () => {
     const stub = (
-      <select multiple={true} value={['__proto__', 'gorilla']} onChange={noop}>
+      <select multiple={true} value={["__proto__", "gorilla"]} onChange={noop}>
         <option value="monkey">A monkey!</option>
         <option value="__proto__">A __proto__!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -228,7 +228,7 @@ describe('ReactDOMSelect', () => {
 
     // Changing the `value` prop should change the selected options.
     ReactDOM.render(
-      <select multiple={true} value={['monkey']} onChange={noop}>
+      <select multiple={true} value={["monkey"]} onChange={noop}>
         {options}
       </select>,
       container,
@@ -239,9 +239,9 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
   });
 
-  it('should not select other options automatically', () => {
+  it("should not select other options automatically", () => {
     const stub = (
-      <select multiple={true} value={['12']} onChange={noop}>
+      <select multiple={true} value={["12"]} onChange={noop}>
         <option value="1">one</option>
         <option value="2">two</option>
         <option value="12">twelve</option>
@@ -254,13 +254,13 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(true); // twelve
   });
 
-  it('should reset child options selected when they are changed and `value` is set', () => {
-    const stub = <select multiple={true} value={['a', 'b']} onChange={noop} />;
-    const container = document.createElement('div');
+  it("should reset child options selected when they are changed and `value` is set", () => {
+    const stub = <select multiple={true} value={["a", "b"]} onChange={noop} />;
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     ReactDOM.render(
-      <select multiple={true} value={['a', 'b']} onChange={noop}>
+      <select multiple={true} value={["a", "b"]} onChange={noop}>
         <option value="a">a</option>
         <option value="b">b</option>
         <option value="c">c</option>
@@ -273,9 +273,9 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // c
   });
 
-  it('should allow setting `value` with `objectToString`', () => {
+  it("should allow setting `value` with `objectToString`", () => {
     const objectToString = {
-      animal: 'giraffe',
+      animal: "giraffe",
       toString: function () {
         return this.animal;
       },
@@ -288,7 +288,7 @@ describe('ReactDOMSelect', () => {
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(el, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -296,7 +296,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
 
     // Changing the `value` prop should change the selected options.
-    objectToString.animal = 'monkey';
+    objectToString.animal = "monkey";
 
     const el2 = (
       <select multiple={true} value={[objectToString]}>
@@ -312,7 +312,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
   });
 
-  it('should allow switching to multiple', () => {
+  it("should allow switching to multiple", () => {
     const stub = (
       <select defaultValue="giraffe">
         <option value="monkey">A monkey!</option>
@@ -321,7 +321,7 @@ describe('ReactDOMSelect', () => {
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -330,7 +330,7 @@ describe('ReactDOMSelect', () => {
 
     // When making it multiple, giraffe and gorilla should be selected
     ReactDOM.render(
-      <select multiple={true} defaultValue={['giraffe', 'gorilla']}>
+      <select multiple={true} defaultValue={["giraffe", "gorilla"]}>
         {options}
       </select>,
       container,
@@ -341,16 +341,16 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(true); // gorilla
   });
 
-  it('should allow switching from multiple', () => {
+  it("should allow switching from multiple", () => {
     const stub = (
-      <select multiple={true} defaultValue={['giraffe', 'gorilla']}>
+      <select multiple={true} defaultValue={["giraffe", "gorilla"]}>
         <option value="monkey">A monkey!</option>
         <option value="giraffe">A giraffe!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -369,7 +369,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(true); // gorilla
   });
 
-  it('does not select an item when size is initially set to greater than 1', () => {
+  it("does not select an item when size is initially set to greater than 1", () => {
     const stub = (
       <select size="2">
         <option value="monkey">A monkey!</option>
@@ -377,27 +377,27 @@ describe('ReactDOMSelect', () => {
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const select = ReactDOM.render(stub, container);
 
     expect(select.options[0].selected).toBe(false);
     expect(select.options[1].selected).toBe(false);
     expect(select.options[2].selected).toBe(false);
 
-    expect(select.value).toBe('');
+    expect(select.value).toBe("");
     expect(select.selectedIndex).toBe(-1);
   });
 
-  it('should remember value when switching to uncontrolled', () => {
+  it("should remember value when switching to uncontrolled", () => {
     const stub = (
-      <select value={'giraffe'} onChange={noop}>
+      <select value={"giraffe"} onChange={noop}>
         <option value="monkey">A monkey!</option>
         <option value="giraffe">A giraffe!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // monkey
@@ -411,16 +411,16 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
   });
 
-  it('should remember updated value when switching to uncontrolled', () => {
+  it("should remember updated value when switching to uncontrolled", () => {
     const stub = (
-      <select value={'giraffe'} onChange={noop}>
+      <select value={"giraffe"} onChange={noop}>
         <option value="monkey">A monkey!</option>
         <option value="giraffe">A giraffe!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
     const options = stub.props.children;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     ReactDOM.render(
@@ -441,7 +441,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(true); // gorilla
   });
 
-  it('should support server-side rendering', () => {
+  it("should support server-side rendering", () => {
     const stub = (
       <select value="giraffe" onChange={noop}>
         <option value="monkey">A monkey!</option>
@@ -449,18 +449,18 @@ describe('ReactDOMSelect', () => {
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = ReactDOMServer.renderToString(stub);
     const options = container.firstChild.options;
-    expect(options[0].value).toBe('monkey');
+    expect(options[0].value).toBe("monkey");
     expect(options[0].selected).toBe(false);
-    expect(options[1].value).toBe('giraffe');
+    expect(options[1].value).toBe("giraffe");
     expect(options[1].selected).toBe(true);
-    expect(options[2].value).toBe('gorilla');
+    expect(options[2].value).toBe("gorilla");
     expect(options[2].selected).toBe(false);
   });
 
-  it('should support server-side rendering with defaultValue', () => {
+  it("should support server-side rendering with defaultValue", () => {
     const stub = (
       <select defaultValue="giraffe">
         <option value="monkey">A monkey!</option>
@@ -468,77 +468,79 @@ describe('ReactDOMSelect', () => {
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = ReactDOMServer.renderToString(stub);
     const options = container.firstChild.options;
-    expect(options[0].value).toBe('monkey');
+    expect(options[0].value).toBe("monkey");
     expect(options[0].selected).toBe(false);
-    expect(options[1].value).toBe('giraffe');
+    expect(options[1].value).toBe("giraffe");
     expect(options[1].selected).toBe(true);
-    expect(options[2].value).toBe('gorilla');
+    expect(options[2].value).toBe("gorilla");
     expect(options[2].selected).toBe(false);
   });
 
-  it('should support server-side rendering with dangerouslySetInnerHTML', () => {
+  it("should support server-side rendering with dangerouslySetInnerHTML", () => {
     const stub = (
       <select defaultValue="giraffe">
         <option
           value="monkey"
           dangerouslySetInnerHTML={{
-            __html: 'A monkey!',
-          }}>
+            __html: "A monkey!",
+          }}
+        >
           {undefined}
         </option>
         <option
           value="giraffe"
           dangerouslySetInnerHTML={{
-            __html: 'A giraffe!',
-          }}>
+            __html: "A giraffe!",
+          }}
+        >
           {null}
         </option>
         <option
           value="gorilla"
           dangerouslySetInnerHTML={{
-            __html: 'A gorilla!',
+            __html: "A gorilla!",
           }}
         />
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = ReactDOMServer.renderToString(stub);
     const options = container.firstChild.options;
-    expect(options[0].value).toBe('monkey');
+    expect(options[0].value).toBe("monkey");
     expect(options[0].selected).toBe(false);
-    expect(options[1].value).toBe('giraffe');
+    expect(options[1].value).toBe("giraffe");
     expect(options[1].selected).toBe(true);
-    expect(options[2].value).toBe('gorilla');
+    expect(options[2].value).toBe("gorilla");
     expect(options[2].selected).toBe(false);
   });
 
-  it('should support server-side rendering with multiple', () => {
+  it("should support server-side rendering with multiple", () => {
     const stub = (
-      <select multiple={true} value={['giraffe', 'gorilla']} onChange={noop}>
+      <select multiple={true} value={["giraffe", "gorilla"]} onChange={noop}>
         <option value="monkey">A monkey!</option>
         <option value="giraffe">A giraffe!</option>
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     container.innerHTML = ReactDOMServer.renderToString(stub);
     const options = container.firstChild.options;
-    expect(options[0].value).toBe('monkey');
+    expect(options[0].value).toBe("monkey");
     expect(options[0].selected).toBe(false);
-    expect(options[1].value).toBe('giraffe');
+    expect(options[1].value).toBe("giraffe");
     expect(options[1].selected).toBe(true);
-    expect(options[2].value).toBe('gorilla');
+    expect(options[2].value).toBe("gorilla");
     expect(options[2].selected).toBe(true);
   });
 
-  it('should not control defaultValue if re-adding options', () => {
-    const container = document.createElement('div');
+  it("should not control defaultValue if re-adding options", () => {
+    const container = document.createElement("div");
 
     const node = ReactDOM.render(
-      <select multiple={true} defaultValue={['giraffe']}>
+      <select multiple={true} defaultValue={["giraffe"]}>
         <option key="monkey" value="monkey">
           A monkey!
         </option>
@@ -557,7 +559,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
 
     ReactDOM.render(
-      <select multiple={true} defaultValue={['giraffe']}>
+      <select multiple={true} defaultValue={["giraffe"]}>
         <option key="monkey" value="monkey">
           A monkey!
         </option>
@@ -572,7 +574,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[1].selected).toBe(false); // gorilla
 
     ReactDOM.render(
-      <select multiple={true} defaultValue={['giraffe']}>
+      <select multiple={true} defaultValue={["giraffe"]}>
         <option key="monkey" value="monkey">
           A monkey!
         </option>
@@ -591,22 +593,22 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
   });
 
-  it('should support options with dynamic children', () => {
-    const container = document.createElement('div');
+  it("should support options with dynamic children", () => {
+    const container = document.createElement("div");
 
     let node;
 
-    function App({value}) {
+    function App({ value }) {
       return (
-        <select value={value} ref={n => (node = n)} onChange={noop}>
+        <select value={value} ref={(n) => (node = n)} onChange={noop}>
           <option key="monkey" value="monkey">
-            A monkey {value === 'monkey' ? 'is chosen' : null}!
+            A monkey {value === "monkey" ? "is chosen" : null}!
           </option>
           <option key="giraffe" value="giraffe">
-            A giraffe {value === 'giraffe' && 'is chosen'}!
+            A giraffe {value === "giraffe" && "is chosen"}!
           </option>
           <option key="gorilla" value="gorilla">
-            A gorilla {value === 'gorilla' && 'is chosen'}!
+            A gorilla {value === "gorilla" && "is chosen"}!
           </option>
         </select>
       );
@@ -623,7 +625,7 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // gorilla
   });
 
-  it('should warn if value is null', () => {
+  it("should warn if value is null", () => {
     expect(() =>
       ReactTestUtils.renderIntoDocument(
         <select value={null}>
@@ -631,9 +633,9 @@ describe('ReactDOMSelect', () => {
         </select>,
       ),
     ).toErrorDev(
-      '`value` prop on `select` should not be null. ' +
-        'Consider using an empty string to clear the component or `undefined` ' +
-        'for uncontrolled components.',
+      "`value` prop on `select` should not be null. " +
+        "Consider using an empty string to clear the component or `undefined` " +
+        "for uncontrolled components.",
     );
 
     ReactTestUtils.renderIntoDocument(
@@ -643,7 +645,7 @@ describe('ReactDOMSelect', () => {
     );
   });
 
-  it('should warn if selected is set on <option>', () => {
+  it("should warn if selected is set on <option>", () => {
     function App() {
       return (
         <select>
@@ -654,14 +656,14 @@ describe('ReactDOMSelect', () => {
     }
 
     expect(() => ReactTestUtils.renderIntoDocument(<App />)).toErrorDev(
-      'Use the `defaultValue` or `value` props on <select> instead of ' +
-        'setting `selected` on <option>.',
+      "Use the `defaultValue` or `value` props on <select> instead of " +
+        "setting `selected` on <option>.",
     );
 
     ReactTestUtils.renderIntoDocument(<App />);
   });
 
-  it('should warn if value is null and multiple is true', () => {
+  it("should warn if value is null and multiple is true", () => {
     expect(() =>
       ReactTestUtils.renderIntoDocument(
         <select value={null} multiple={true}>
@@ -669,10 +671,10 @@ describe('ReactDOMSelect', () => {
         </select>,
       ),
     ).toErrorDev(
-      '`value` prop on `select` should not be null. ' +
-        'Consider using an empty array when `multiple` is ' +
-        'set to `true` to clear the component or `undefined` ' +
-        'for uncontrolled components.',
+      "`value` prop on `select` should not be null. " +
+        "Consider using an empty array when `multiple` is " +
+        "set to `true` to clear the component or `undefined` " +
+        "for uncontrolled components.",
     );
 
     ReactTestUtils.renderIntoDocument(
@@ -682,7 +684,7 @@ describe('ReactDOMSelect', () => {
     );
   });
 
-  it('should refresh state on change', () => {
+  it("should refresh state on change", () => {
     const stub = (
       <select value="giraffe" onChange={noop}>
         <option value="monkey">A monkey!</option>
@@ -690,23 +692,23 @@ describe('ReactDOMSelect', () => {
         <option value="gorilla">A gorilla!</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     try {
       const node = ReactDOM.render(stub, container);
 
       node.dispatchEvent(
-        new Event('change', {bubbles: true, cancelable: false}),
+        new Event("change", { bubbles: true, cancelable: false }),
       );
 
-      expect(node.value).toBe('giraffe');
+      expect(node.value).toBe("giraffe");
     } finally {
       document.body.removeChild(container);
     }
   });
 
-  it('should warn if value and defaultValue props are specified', () => {
+  it("should warn if value and defaultValue props are specified", () => {
     expect(() =>
       ReactTestUtils.renderIntoDocument(
         <select value="giraffe" defaultValue="giraffe" readOnly={true}>
@@ -716,11 +718,11 @@ describe('ReactDOMSelect', () => {
         </select>,
       ),
     ).toErrorDev(
-      'Select elements must be either controlled or uncontrolled ' +
-        '(specify either the value prop, or the defaultValue prop, but not ' +
-        'both). Decide between using a controlled or uncontrolled select ' +
-        'element and remove one of these props. More info: ' +
-        'https://reactjs.org/link/controlled-components',
+      "Select elements must be either controlled or uncontrolled " +
+        "(specify either the value prop, or the defaultValue prop, but not " +
+        "both). Decide between using a controlled or uncontrolled select " +
+        "element and remove one of these props. More info: " +
+        "https://reactjs.org/link/controlled-components",
     );
 
     ReactTestUtils.renderIntoDocument(
@@ -732,19 +734,19 @@ describe('ReactDOMSelect', () => {
     );
   });
 
-  it('should not warn about missing onChange in uncontrolled textareas', () => {
-    const container = document.createElement('div');
+  it("should not warn about missing onChange in uncontrolled textareas", () => {
+    const container = document.createElement("div");
     ReactDOM.render(<select />, container);
     ReactDOM.unmountComponentAtNode(container);
     ReactDOM.render(<select value={undefined} />, container);
   });
 
-  it('should be able to safely remove select onChange', () => {
+  it("should be able to safely remove select onChange", () => {
     function changeView() {
       ReactDOM.unmountComponentAtNode(container);
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const stub = (
       <select value="giraffe" onChange={changeView}>
         <option value="monkey">A monkey!</option>
@@ -757,7 +759,7 @@ describe('ReactDOMSelect', () => {
     expect(() => ReactTestUtils.Simulate.change(node)).not.toThrow();
   });
 
-  it('should select grandchild options nested inside an optgroup', () => {
+  it("should select grandchild options nested inside an optgroup", () => {
     const stub = (
       <select value="b" onChange={noop}>
         <optgroup label="group">
@@ -767,7 +769,7 @@ describe('ReactDOMSelect', () => {
         </optgroup>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // a
@@ -775,12 +777,12 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // c
   });
 
-  it('should allow controlling `value` in a nested render', () => {
+  it("should allow controlling `value` in a nested render", () => {
     let selectNode;
 
     class Parent extends React.Component {
       state = {
-        value: 'giraffe',
+        value: "giraffe",
       };
 
       componentDidMount() {
@@ -792,15 +794,16 @@ describe('ReactDOMSelect', () => {
       }
 
       _handleChange(event) {
-        this.setState({value: event.target.value});
+        this.setState({ value: event.target.value });
       }
 
       _renderNested() {
         ReactDOM.render(
           <select
             onChange={this._handleChange.bind(this)}
-            ref={n => (selectNode = n)}
-            value={this.state.value}>
+            ref={(n) => (selectNode = n)}
+            value={this.state.value}
+          >
             <option value="monkey">A monkey!</option>
             <option value="giraffe">A giraffe!</option>
             <option value="gorilla">A gorilla!</option>
@@ -810,36 +813,36 @@ describe('ReactDOMSelect', () => {
       }
 
       render() {
-        return <div ref={n => (this._nestingContainer = n)} />;
+        return <div ref={(n) => (this._nestingContainer = n)} />;
       }
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
 
     document.body.appendChild(container);
 
     ReactDOM.render(<Parent />, container);
 
-    expect(selectNode.value).toBe('giraffe');
+    expect(selectNode.value).toBe("giraffe");
 
-    selectNode.value = 'gorilla';
+    selectNode.value = "gorilla";
 
-    let nativeEvent = document.createEvent('Event');
-    nativeEvent.initEvent('input', true, true);
+    let nativeEvent = document.createEvent("Event");
+    nativeEvent.initEvent("input", true, true);
     selectNode.dispatchEvent(nativeEvent);
 
-    expect(selectNode.value).toEqual('gorilla');
+    expect(selectNode.value).toEqual("gorilla");
 
-    nativeEvent = document.createEvent('Event');
-    nativeEvent.initEvent('change', true, true);
+    nativeEvent = document.createEvent("Event");
+    nativeEvent.initEvent("change", true, true);
     selectNode.dispatchEvent(nativeEvent);
 
-    expect(selectNode.value).toEqual('gorilla');
+    expect(selectNode.value).toEqual("gorilla");
 
     document.body.removeChild(container);
   });
 
-  it('should not select first option by default when multiple is set and no defaultValue is set', () => {
+  it("should not select first option by default when multiple is set and no defaultValue is set", () => {
     const stub = (
       <select multiple={true} onChange={noop}>
         <option value="a">a</option>
@@ -847,7 +850,7 @@ describe('ReactDOMSelect', () => {
         <option value="c">c</option>
       </select>
     );
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const node = ReactDOM.render(stub, container);
 
     expect(node.options[0].selected).toBe(false); // a
@@ -855,94 +858,94 @@ describe('ReactDOMSelect', () => {
     expect(node.options[2].selected).toBe(false); // c
   });
 
-  describe('When given a Symbol value', () => {
-    it('treats initial Symbol value as missing', () => {
+  describe("When given a Symbol value", () => {
+    it("treats initial Symbol value as missing", () => {
       let node;
 
       expect(() => {
         node = ReactTestUtils.renderIntoDocument(
-          <select onChange={noop} value={Symbol('foobar')}>
-            <option value={Symbol('foobar')}>A Symbol!</option>
+          <select onChange={noop} value={Symbol("foobar")}>
+            <option value={Symbol("foobar")}>A Symbol!</option>
             <option value="monkey">A monkey!</option>
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('A Symbol!');
+      expect(node.value).toBe("A Symbol!");
     });
 
-    it('treats updated Symbol value as missing', () => {
+    it("treats updated Symbol value as missing", () => {
       let node;
 
       expect(() => {
         node = ReactTestUtils.renderIntoDocument(
           <select onChange={noop} value="monkey">
-            <option value={Symbol('foobar')}>A Symbol!</option>
+            <option value={Symbol("foobar")}>A Symbol!</option>
             <option value="monkey">A monkey!</option>
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('monkey');
+      expect(node.value).toBe("monkey");
 
       node = ReactTestUtils.renderIntoDocument(
-        <select onChange={noop} value={Symbol('foobar')}>
-          <option value={Symbol('foobar')}>A Symbol!</option>
+        <select onChange={noop} value={Symbol("foobar")}>
+          <option value={Symbol("foobar")}>A Symbol!</option>
           <option value="monkey">A monkey!</option>
           <option value="giraffe">A giraffe!</option>
         </select>,
       );
 
-      expect(node.value).toBe('A Symbol!');
+      expect(node.value).toBe("A Symbol!");
     });
 
-    it('treats initial Symbol defaultValue as an empty string', () => {
+    it("treats initial Symbol defaultValue as an empty string", () => {
       let node;
 
       expect(() => {
         node = ReactTestUtils.renderIntoDocument(
-          <select defaultValue={Symbol('foobar')}>
-            <option value={Symbol('foobar')}>A Symbol!</option>
+          <select defaultValue={Symbol("foobar")}>
+            <option value={Symbol("foobar")}>A Symbol!</option>
             <option value="monkey">A monkey!</option>
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('A Symbol!');
+      expect(node.value).toBe("A Symbol!");
     });
 
-    it('treats updated Symbol defaultValue as an empty string', () => {
+    it("treats updated Symbol defaultValue as an empty string", () => {
       let node;
 
       expect(() => {
         node = ReactTestUtils.renderIntoDocument(
           <select defaultValue="monkey">
-            <option value={Symbol('foobar')}>A Symbol!</option>
+            <option value={Symbol("foobar")}>A Symbol!</option>
             <option value="monkey">A monkey!</option>
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('monkey');
+      expect(node.value).toBe("monkey");
 
       node = ReactTestUtils.renderIntoDocument(
-        <select defaultValue={Symbol('foobar')}>
-          <option value={Symbol('foobar')}>A Symbol!</option>
+        <select defaultValue={Symbol("foobar")}>
+          <option value={Symbol("foobar")}>A Symbol!</option>
           <option value="monkey">A monkey!</option>
           <option value="giraffe">A giraffe!</option>
         </select>,
       );
 
-      expect(node.value).toBe('A Symbol!');
+      expect(node.value).toBe("A Symbol!");
     });
   });
 
-  describe('When given a function value', () => {
-    it('treats initial function value as missing', () => {
+  describe("When given a function value", () => {
+    it("treats initial function value as missing", () => {
       let node;
 
       expect(() => {
@@ -953,12 +956,12 @@ describe('ReactDOMSelect', () => {
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('A function!');
+      expect(node.value).toBe("A function!");
     });
 
-    it('treats initial function defaultValue as an empty string', () => {
+    it("treats initial function defaultValue as an empty string", () => {
       let node;
 
       expect(() => {
@@ -969,12 +972,12 @@ describe('ReactDOMSelect', () => {
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('A function!');
+      expect(node.value).toBe("A function!");
     });
 
-    it('treats updated function value as an empty string', () => {
+    it("treats updated function value as an empty string", () => {
       let node;
 
       expect(() => {
@@ -985,9 +988,9 @@ describe('ReactDOMSelect', () => {
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('monkey');
+      expect(node.value).toBe("monkey");
 
       node = ReactTestUtils.renderIntoDocument(
         <select onChange={noop} value={() => {}}>
@@ -997,10 +1000,10 @@ describe('ReactDOMSelect', () => {
         </select>,
       );
 
-      expect(node.value).toBe('A function!');
+      expect(node.value).toBe("A function!");
     });
 
-    it('treats updated function defaultValue as an empty string', () => {
+    it("treats updated function defaultValue as an empty string", () => {
       let node;
 
       expect(() => {
@@ -1011,9 +1014,9 @@ describe('ReactDOMSelect', () => {
             <option value="giraffe">A giraffe!</option>
           </select>,
         );
-      }).toErrorDev('Invalid value for prop `value`');
+      }).toErrorDev("Invalid value for prop `value`");
 
-      expect(node.value).toBe('monkey');
+      expect(node.value).toBe("monkey");
 
       node = ReactTestUtils.renderIntoDocument(
         <select defaultValue={() => {}}>
@@ -1023,23 +1026,23 @@ describe('ReactDOMSelect', () => {
         </select>,
       );
 
-      expect(node.value).toBe('A function!');
+      expect(node.value).toBe("A function!");
     });
   });
 
-  describe('When given a Temporal.PlainDate-like value', () => {
+  describe("When given a Temporal.PlainDate-like value", () => {
     class TemporalLike {
       valueOf() {
         // Throwing here is the behavior of ECMAScript "Temporal" date/time API.
         // See https://tc39.es/proposal-temporal/docs/plaindate.html#valueOf
-        throw new TypeError('prod message');
+        throw new TypeError("prod message");
       }
       toString() {
-        return '2020-01-01';
+        return "2020-01-01";
       }
     }
 
-    it('throws when given a Temporal.PlainDate-like value (select)', () => {
+    it("throws when given a Temporal.PlainDate-like value (select)", () => {
       const test = () => {
         ReactTestUtils.renderIntoDocument(
           <select onChange={noop} value={new TemporalLike()}>
@@ -1050,15 +1053,15 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'Form field values (value, checked, defaultValue, or defaultChecked props)' +
-          ' must be strings, not TemporalLike. ' +
-          'This value must be coerced to a string before before using it here.',
+        "Form field values (value, checked, defaultValue, or defaultChecked props)" +
+          " must be strings, not TemporalLike. " +
+          "This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws when given a Temporal.PlainDate-like value (option)', () => {
+    it("throws when given a Temporal.PlainDate-like value (option)", () => {
       const test = () => {
         ReactTestUtils.renderIntoDocument(
           <select onChange={noop} value="2020-01-01">
@@ -1071,14 +1074,14 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws when given a Temporal.PlainDate-like value (both)', () => {
+    it("throws when given a Temporal.PlainDate-like value (both)", () => {
       const test = () => {
         ReactTestUtils.renderIntoDocument(
           <select onChange={noop} value={new TemporalLike()}>
@@ -1091,14 +1094,14 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws with updated Temporal.PlainDate-like value (select)', () => {
+    it("throws with updated Temporal.PlainDate-like value (select)", () => {
       ReactTestUtils.renderIntoDocument(
         <select onChange={noop} value="monkey">
           <option value="2020-01-01">like a Temporal.PlainDate</option>
@@ -1116,15 +1119,15 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'Form field values (value, checked, defaultValue, or defaultChecked props)' +
-          ' must be strings, not TemporalLike. ' +
-          'This value must be coerced to a string before before using it here.',
+        "Form field values (value, checked, defaultValue, or defaultChecked props)" +
+          " must be strings, not TemporalLike. " +
+          "This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws with updated Temporal.PlainDate-like value (option)', () => {
+    it("throws with updated Temporal.PlainDate-like value (option)", () => {
       ReactTestUtils.renderIntoDocument(
         <select onChange={noop} value="2020-01-01">
           <option value="donkey">like a Temporal.PlainDate</option>
@@ -1144,14 +1147,14 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws with updated Temporal.PlainDate-like value (both)', () => {
+    it("throws with updated Temporal.PlainDate-like value (both)", () => {
       ReactTestUtils.renderIntoDocument(
         <select onChange={noop} value="donkey">
           <option value="donkey">like a Temporal.PlainDate</option>
@@ -1171,14 +1174,14 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws when given a Temporal.PlainDate-like defaultValue (select)', () => {
+    it("throws when given a Temporal.PlainDate-like defaultValue (select)", () => {
       const test = () => {
         ReactTestUtils.renderIntoDocument(
           <select onChange={noop} defaultValue={new TemporalLike()}>
@@ -1189,15 +1192,15 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'Form field values (value, checked, defaultValue, or defaultChecked props)' +
-          ' must be strings, not TemporalLike. ' +
-          'This value must be coerced to a string before before using it here.',
+        "Form field values (value, checked, defaultValue, or defaultChecked props)" +
+          " must be strings, not TemporalLike. " +
+          "This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws when given a Temporal.PlainDate-like defaultValue (option)', () => {
+    it("throws when given a Temporal.PlainDate-like defaultValue (option)", () => {
       const test = () => {
         ReactTestUtils.renderIntoDocument(
           <select onChange={noop} defaultValue="2020-01-01">
@@ -1210,14 +1213,14 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws when given a Temporal.PlainDate-like value (both)', () => {
+    it("throws when given a Temporal.PlainDate-like value (both)", () => {
       const test = () => {
         ReactTestUtils.renderIntoDocument(
           <select onChange={noop} defaultValue={new TemporalLike()}>
@@ -1230,14 +1233,14 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws with updated Temporal.PlainDate-like defaultValue (select)', () => {
+    it("throws with updated Temporal.PlainDate-like defaultValue (select)", () => {
       ReactTestUtils.renderIntoDocument(
         <select onChange={noop} defaultValue="monkey">
           <option value="2020-01-01">like a Temporal.PlainDate</option>
@@ -1255,15 +1258,15 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'Form field values (value, checked, defaultValue, or defaultChecked props)' +
-          ' must be strings, not TemporalLike. ' +
-          'This value must be coerced to a string before before using it here.',
+        "Form field values (value, checked, defaultValue, or defaultChecked props)" +
+          " must be strings, not TemporalLike. " +
+          "This value must be coerced to a string before before using it here.",
       );
     });
 
-    it('throws with updated Temporal.PlainDate-like defaultValue (both)', () => {
+    it("throws with updated Temporal.PlainDate-like defaultValue (both)", () => {
       ReactTestUtils.renderIntoDocument(
         <select onChange={noop} defaultValue="monkey">
           <option value="donkey">like a Temporal.PlainDate</option>
@@ -1283,10 +1286,10 @@ describe('ReactDOMSelect', () => {
         );
       };
       expect(() =>
-        expect(test).toThrowError(new TypeError('prod message')),
+        expect(test).toThrowError(new TypeError("prod message")),
       ).toErrorDev(
-        'The provided `value` attribute is an unsupported type TemporalLike.' +
-          ' This value must be coerced to a string before before using it here.',
+        "The provided `value` attribute is an unsupported type TemporalLike." +
+          " This value must be coerced to a string before before using it here.",
       );
     });
   });

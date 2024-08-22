@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -20,10 +20,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -33,17 +33,17 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  describe('context', function () {
+  describe("context", function () {
     let Context, PurpleContextProvider, RedContextProvider, Consumer;
     beforeEach(() => {
-      Context = React.createContext('none');
+      Context = React.createContext("none");
 
       class Parent extends React.Component {
         render() {
@@ -55,20 +55,20 @@ describe('ReactDOMServerIntegration', () => {
         }
       }
       Consumer = Context.Consumer;
-      PurpleContextProvider = props => (
+      PurpleContextProvider = (props) => (
         <Parent text="purple">{props.children}</Parent>
       );
-      RedContextProvider = props => (
+      RedContextProvider = (props) => (
         <Parent text="red">{props.children}</Parent>
       );
     });
 
-    itRenders('class child with context', async render => {
+    itRenders("class child with context", async (render) => {
       class ClassChildWithContext extends React.Component {
         render() {
           return (
             <div>
-              <Consumer>{text => text}</Consumer>
+              <Consumer>{(text) => text}</Consumer>
             </div>
           );
         }
@@ -79,12 +79,12 @@ describe('ReactDOMServerIntegration', () => {
           <ClassChildWithContext />
         </PurpleContextProvider>,
       );
-      expect(e.textContent).toBe('purple');
+      expect(e.textContent).toBe("purple");
     });
 
-    itRenders('stateless child with context', async render => {
+    itRenders("stateless child with context", async (render) => {
       function FunctionChildWithContext(props) {
-        return <Consumer>{text => text}</Consumer>;
+        return <Consumer>{(text) => text}</Consumer>;
       }
 
       const e = await render(
@@ -92,61 +92,61 @@ describe('ReactDOMServerIntegration', () => {
           <FunctionChildWithContext />
         </PurpleContextProvider>,
       );
-      expect(e.textContent).toBe('purple');
+      expect(e.textContent).toBe("purple");
     });
 
-    itRenders('class child with default context', async render => {
+    itRenders("class child with default context", async (render) => {
       class ClassChildWithWrongContext extends React.Component {
         render() {
           return (
             <div id="classWrongChild">
-              <Consumer>{text => text}</Consumer>
+              <Consumer>{(text) => text}</Consumer>
             </div>
           );
         }
       }
 
       const e = await render(<ClassChildWithWrongContext />);
-      expect(e.textContent).toBe('none');
+      expect(e.textContent).toBe("none");
     });
 
-    itRenders('stateless child with wrong context', async render => {
+    itRenders("stateless child with wrong context", async (render) => {
       function FunctionChildWithWrongContext(props) {
         return (
           <div id="statelessWrongChild">
-            <Consumer>{text => text}</Consumer>
+            <Consumer>{(text) => text}</Consumer>
           </div>
         );
       }
 
       const e = await render(<FunctionChildWithWrongContext />);
-      expect(e.textContent).toBe('none');
+      expect(e.textContent).toBe("none");
     });
 
-    itRenders('with context passed through to a grandchild', async render => {
+    itRenders("with context passed through to a grandchild", async (render) => {
       function Grandchild(props) {
         return (
           <div>
-            <Consumer>{text => text}</Consumer>
+            <Consumer>{(text) => text}</Consumer>
           </div>
         );
       }
 
-      const Child = props => <Grandchild />;
+      const Child = (props) => <Grandchild />;
 
       const e = await render(
         <PurpleContextProvider>
           <Child />
         </PurpleContextProvider>,
       );
-      expect(e.textContent).toBe('purple');
+      expect(e.textContent).toBe("purple");
     });
 
-    itRenders('a child context overriding a parent context', async render => {
-      const Grandchild = props => {
+    itRenders("a child context overriding a parent context", async (render) => {
+      const Grandchild = (props) => {
         return (
           <div>
-            <Consumer>{text => text}</Consumer>
+            <Consumer>{(text) => text}</Consumer>
           </div>
         );
       };
@@ -158,10 +158,10 @@ describe('ReactDOMServerIntegration', () => {
           </RedContextProvider>
         </PurpleContextProvider>,
       );
-      expect(e.textContent).toBe('red');
+      expect(e.textContent).toBe("red");
     });
 
-    itRenders('readContext() in different components', async render => {
+    itRenders("readContext() in different components", async (render) => {
       function readContext(Ctx) {
         const dispatcher =
           React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
@@ -197,12 +197,12 @@ describe('ReactDOMServerIntegration', () => {
           </RedContextProvider>
         </PurpleContextProvider>,
       );
-      expect(e.textContent).toBe('redredredredred');
+      expect(e.textContent).toBe("redredredredred");
     });
 
-    itRenders('multiple contexts', async render => {
-      const Theme = React.createContext('dark');
-      const Language = React.createContext('french');
+    itRenders("multiple contexts", async (render) => {
+      const Theme = React.createContext("dark");
+      const Language = React.createContext("french");
       class Parent extends React.Component {
         render() {
           return (
@@ -221,27 +221,27 @@ describe('ReactDOMServerIntegration', () => {
         );
       }
 
-      const Grandchild = props => {
+      const Grandchild = (props) => {
         return (
           <div>
             <Theme.Consumer>
-              {theme => <div id="theme">{theme}</div>}
+              {(theme) => <div id="theme">{theme}</div>}
             </Theme.Consumer>
             <Language.Consumer>
-              {language => <div id="language">{language}</div>}
+              {(language) => <div id="language">{language}</div>}
             </Language.Consumer>
           </div>
         );
       };
 
       const e = await render(<Parent />);
-      expect(e.querySelector('#theme').textContent).toBe('light');
-      expect(e.querySelector('#language').textContent).toBe('english');
+      expect(e.querySelector("#theme").textContent).toBe("light");
+      expect(e.querySelector("#language").textContent).toBe("english");
     });
 
-    itRenders('nested context unwinding', async render => {
-      const Theme = React.createContext('dark');
-      const Language = React.createContext('french');
+    itRenders("nested context unwinding", async (render) => {
+      const Theme = React.createContext("dark");
+      const Language = React.createContext("french");
 
       const App = () => (
         <div>
@@ -249,11 +249,11 @@ describe('ReactDOMServerIntegration', () => {
             <Language.Provider value="english">
               <Theme.Provider value="dark">
                 <Theme.Consumer>
-                  {theme => <div id="theme1">{theme}</div>}
+                  {(theme) => <div id="theme1">{theme}</div>}
                 </Theme.Consumer>
               </Theme.Provider>
               <Theme.Consumer>
-                {theme => <div id="theme2">{theme}</div>}
+                {(theme) => <div id="theme2">{theme}</div>}
               </Theme.Consumer>
               <Language.Provider value="sanskrit">
                 <Theme.Provider value="blue">
@@ -263,17 +263,17 @@ describe('ReactDOMServerIntegration', () => {
                         <Language.Provider value="chinese">
                           <Language.Provider value="hungarian" />
                           <Language.Consumer>
-                            {language => <div id="language1">{language}</div>}
+                            {(language) => <div id="language1">{language}</div>}
                           </Language.Consumer>
                         </Language.Provider>
                       )}
                     </Language.Consumer>
                   </Theme.Provider>
                   <Language.Consumer>
-                    {language => (
+                    {(language) => (
                       <>
                         <Theme.Consumer>
-                          {theme => <div id="theme3">{theme}</div>}
+                          {(theme) => <div id="theme3">{theme}</div>}
                         </Theme.Consumer>
                         <div id="language2">{language}</div>
                       </>
@@ -284,31 +284,31 @@ describe('ReactDOMServerIntegration', () => {
             </Language.Provider>
           </Theme.Provider>
           <Language.Consumer>
-            {language => <div id="language3">{language}</div>}
+            {(language) => <div id="language3">{language}</div>}
           </Language.Consumer>
         </div>
       );
       const e = await render(<App />);
-      expect(e.querySelector('#theme1').textContent).toBe('dark');
-      expect(e.querySelector('#theme2').textContent).toBe('light');
-      expect(e.querySelector('#theme3').textContent).toBe('blue');
-      expect(e.querySelector('#language1').textContent).toBe('chinese');
-      expect(e.querySelector('#language2').textContent).toBe('sanskrit');
-      expect(e.querySelector('#language3').textContent).toBe('french');
+      expect(e.querySelector("#theme1").textContent).toBe("dark");
+      expect(e.querySelector("#theme2").textContent).toBe("light");
+      expect(e.querySelector("#theme3").textContent).toBe("blue");
+      expect(e.querySelector("#language1").textContent).toBe("chinese");
+      expect(e.querySelector("#language2").textContent).toBe("sanskrit");
+      expect(e.querySelector("#language3").textContent).toBe("french");
     });
 
     itRenders(
-      'should warn with an error message when using Context as consumer in DEV',
-      async render => {
-        const Theme = React.createContext('dark');
-        const Language = React.createContext('french');
+      "should warn with an error message when using Context as consumer in DEV",
+      async (render) => {
+        const Theme = React.createContext("dark");
+        const Language = React.createContext("french");
 
         const App = () => (
           <div>
             <Theme.Provider value="light">
               <Language.Provider value="english">
                 <Theme.Provider value="dark">
-                  <Theme>{theme => <div id="theme1">{theme}</div>}</Theme>
+                  <Theme>{(theme) => <div id="theme1">{theme}</div>}</Theme>
                 </Theme.Provider>
               </Language.Provider>
             </Theme.Provider>
@@ -321,10 +321,10 @@ describe('ReactDOMServerIntegration', () => {
 
     // False positive regression test.
     itRenders(
-      'should not warn when using Consumer from React < 16.6 with newer renderer',
-      async render => {
-        const Theme = React.createContext('dark');
-        const Language = React.createContext('french');
+      "should not warn when using Consumer from React < 16.6 with newer renderer",
+      async (render) => {
+        const Theme = React.createContext("dark");
+        const Language = React.createContext("french");
         // React 16.5 and earlier didn't have a separate object.
         Theme.Consumer = Theme;
 
@@ -333,7 +333,7 @@ describe('ReactDOMServerIntegration', () => {
             <Theme.Provider value="light">
               <Language.Provider value="english">
                 <Theme.Provider value="dark">
-                  <Theme>{theme => <div id="theme1">{theme}</div>}</Theme>
+                  <Theme>{(theme) => <div id="theme1">{theme}</div>}</Theme>
                 </Theme.Provider>
               </Language.Provider>
             </Theme.Provider>
@@ -345,11 +345,11 @@ describe('ReactDOMServerIntegration', () => {
     );
 
     itRenders(
-      'should warn with an error message when using nested context consumers in DEV',
-      async render => {
+      "should warn with an error message when using nested context consumers in DEV",
+      async (render) => {
         const App = () => {
-          const Theme = React.createContext('dark');
-          const Language = React.createContext('french');
+          const Theme = React.createContext("dark");
+          const Language = React.createContext("french");
 
           return (
             <div>
@@ -357,7 +357,7 @@ describe('ReactDOMServerIntegration', () => {
                 <Language.Provider value="english">
                   <Theme.Provider value="dark">
                     <Theme.Consumer.Consumer>
-                      {theme => <div id="theme1">{theme}</div>}
+                      {(theme) => <div id="theme1">{theme}</div>}
                     </Theme.Consumer.Consumer>
                   </Theme.Provider>
                 </Language.Provider>
@@ -371,11 +371,11 @@ describe('ReactDOMServerIntegration', () => {
     );
 
     itRenders(
-      'should warn with an error message when using Context.Consumer.Provider DEV',
-      async render => {
+      "should warn with an error message when using Context.Consumer.Provider DEV",
+      async (render) => {
         const App = () => {
-          const Theme = React.createContext('dark');
-          const Language = React.createContext('french');
+          const Theme = React.createContext("dark");
+          const Language = React.createContext("french");
 
           return (
             <div>
@@ -383,7 +383,7 @@ describe('ReactDOMServerIntegration', () => {
                 <Language.Provider value="english">
                   <Theme.Consumer.Provider value="dark">
                     <Theme.Consumer>
-                      {theme => <div id="theme1">{theme}</div>}
+                      {(theme) => <div id="theme1">{theme}</div>}
                     </Theme.Consumer>
                   </Theme.Consumer.Provider>
                 </Language.Provider>
@@ -396,16 +396,16 @@ describe('ReactDOMServerIntegration', () => {
       },
     );
 
-    it('does not pollute parallel node streams', () => {
+    it("does not pollute parallel node streams", () => {
       const LoggedInUser = React.createContext();
 
-      const AppWithUser = user => (
+      const AppWithUser = (user) => (
         <LoggedInUser.Provider value={user}>
           <header>
-            <LoggedInUser.Consumer>{whoAmI => whoAmI}</LoggedInUser.Consumer>
+            <LoggedInUser.Consumer>{(whoAmI) => whoAmI}</LoggedInUser.Consumer>
           </header>
           <footer>
-            <LoggedInUser.Consumer>{whoAmI => whoAmI}</LoggedInUser.Consumer>
+            <LoggedInUser.Consumer>{(whoAmI) => whoAmI}</LoggedInUser.Consumer>
           </footer>
         </LoggedInUser.Provider>
       );
@@ -414,19 +414,19 @@ describe('ReactDOMServerIntegration', () => {
       let streamBob;
       expect(() => {
         streamAmy = ReactDOMServer.renderToNodeStream(
-          AppWithUser('Amy'),
-        ).setEncoding('utf8');
+          AppWithUser("Amy"),
+        ).setEncoding("utf8");
       }).toErrorDev(
-        'renderToNodeStream is deprecated. Use renderToPipeableStream instead.',
-        {withoutStack: true},
+        "renderToNodeStream is deprecated. Use renderToPipeableStream instead.",
+        { withoutStack: true },
       );
       expect(() => {
         streamBob = ReactDOMServer.renderToNodeStream(
-          AppWithUser('Bob'),
-        ).setEncoding('utf8');
+          AppWithUser("Bob"),
+        ).setEncoding("utf8");
       }).toErrorDev(
-        'renderToNodeStream is deprecated. Use renderToPipeableStream instead.',
-        {withoutStack: true},
+        "renderToNodeStream is deprecated. Use renderToPipeableStream instead.",
+        { withoutStack: true },
       );
 
       // Testing by filling the buffer using internal _read() with a small
@@ -437,20 +437,20 @@ describe('ReactDOMServerIntegration', () => {
       streamAmy._read(20);
       streamBob._read(20);
 
-      expect(streamAmy.read()).toBe('<header>Amy</header><footer>Amy</footer>');
-      expect(streamBob.read()).toBe('<header>Bob</header><footer>Bob</footer>');
+      expect(streamAmy.read()).toBe("<header>Amy</header><footer>Amy</footer>");
+      expect(streamBob.read()).toBe("<header>Bob</header><footer>Bob</footer>");
     });
 
-    it('does not pollute parallel node streams when many are used', () => {
+    it("does not pollute parallel node streams when many are used", () => {
       const CurrentIndex = React.createContext();
 
-      const NthRender = index => (
+      const NthRender = (index) => (
         <CurrentIndex.Provider value={index}>
           <header>
-            <CurrentIndex.Consumer>{idx => idx}</CurrentIndex.Consumer>
+            <CurrentIndex.Consumer>{(idx) => idx}</CurrentIndex.Consumer>
           </header>
           <footer>
-            <CurrentIndex.Consumer>{idx => idx}</CurrentIndex.Consumer>
+            <CurrentIndex.Consumer>{(idx) => idx}</CurrentIndex.Consumer>
           </footer>
         </CurrentIndex.Provider>
       );
@@ -464,11 +464,11 @@ describe('ReactDOMServerIntegration', () => {
       for (let i = 0; i < streamCount; i++) {
         expect(() => {
           streams[i] = ReactDOMServer.renderToNodeStream(
-            NthRender(i % 2 === 0 ? 'Expected to be recreated' : i),
-          ).setEncoding('utf8');
+            NthRender(i % 2 === 0 ? "Expected to be recreated" : i),
+          ).setEncoding("utf8");
         }).toErrorDev(
-          'renderToNodeStream is deprecated. Use renderToPipeableStream instead.',
-          {withoutStack: true},
+          "renderToNodeStream is deprecated. Use renderToPipeableStream instead.",
+          { withoutStack: true },
         );
       }
 
@@ -489,10 +489,10 @@ describe('ReactDOMServerIntegration', () => {
         expect(() => {
           streams[i] = ReactDOMServer.renderToNodeStream(
             NthRender(i),
-          ).setEncoding('utf8');
+          ).setEncoding("utf8");
         }).toErrorDev(
-          'renderToNodeStream is deprecated. Use renderToPipeableStream instead.',
-          {withoutStack: true},
+          "renderToNodeStream is deprecated. Use renderToPipeableStream instead.",
+          { withoutStack: true },
         );
       }
 
@@ -504,33 +504,33 @@ describe('ReactDOMServerIntegration', () => {
       // Assert that all stream rendered the expected output.
       for (let i = 0; i < streamCount; i++) {
         expect(streams[i].read()).toBe(
-          '<header>' + i + '</header><footer>' + i + '</footer>',
+          "<header>" + i + "</header><footer>" + i + "</footer>",
         );
       }
     });
 
-    it('does not pollute sync renders after an error', () => {
-      const LoggedInUser = React.createContext('default');
+    it("does not pollute sync renders after an error", () => {
+      const LoggedInUser = React.createContext("default");
       const Crash = () => {
-        throw new Error('Boo!');
+        throw new Error("Boo!");
       };
-      const AppWithUser = user => (
+      const AppWithUser = (user) => (
         <LoggedInUser.Provider value={user}>
-          <LoggedInUser.Consumer>{whoAmI => whoAmI}</LoggedInUser.Consumer>
+          <LoggedInUser.Consumer>{(whoAmI) => whoAmI}</LoggedInUser.Consumer>
           <Crash />
         </LoggedInUser.Provider>
       );
 
       expect(() => {
-        ReactDOMServer.renderToString(AppWithUser('Casper'));
-      }).toThrow('Boo');
+        ReactDOMServer.renderToString(AppWithUser("Casper"));
+      }).toThrow("Boo");
 
       // Should not report a value from failed render
       expect(
         ReactDOMServer.renderToString(
-          <LoggedInUser.Consumer>{whoAmI => whoAmI}</LoggedInUser.Consumer>,
+          <LoggedInUser.Consumer>{(whoAmI) => whoAmI}</LoggedInUser.Consumer>,
         ),
-      ).toBe('default');
+      ).toBe("default");
     });
   });
 });

@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactFeatureFlags;
@@ -23,7 +23,7 @@ let waitFor;
 let waitForAll;
 let assertLog;
 
-describe('updaters', () => {
+describe("updaters", () => {
   beforeEach(() => {
     jest.resetModules();
 
@@ -32,20 +32,20 @@ describe('updaters', () => {
 
     onCommitRootShouldYield = true;
 
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
     ReactFeatureFlags.enableUpdaterTracking = true;
     ReactFeatureFlags.debugRenderPhaseSideEffectsForStrictMode = false;
 
     mockDevToolsHook = {
       injectInternals: jest.fn(() => {}),
       isDevToolsPresent: true,
-      onCommitRoot: jest.fn(fiberRoot => {
+      onCommitRoot: jest.fn((fiberRoot) => {
         if (onCommitRootShouldYield) {
-          Scheduler.log('onCommitRoot');
+          Scheduler.log("onCommitRoot");
         }
         const schedulerTags = [];
         const schedulerTypes = [];
-        fiberRoot.memoizedUpdaters.forEach(fiber => {
+        fiberRoot.memoizedUpdaters.forEach((fiber) => {
           schedulerTags.push(fiber.tag);
           schedulerTypes.push(fiber.elementType);
         });
@@ -84,29 +84,29 @@ describe('updaters', () => {
     };
 
     jest.mock(
-      'react-reconciler/src/ReactFiberDevToolsHook',
+      "react-reconciler/src/ReactFiberDevToolsHook",
       () => mockDevToolsHook,
     );
 
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMClient = require('react-dom/client');
-    Scheduler = require('scheduler');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMClient = require("react-dom/client");
+    Scheduler = require("scheduler");
 
-    act = require('internal-test-utils').act;
+    act = require("internal-test-utils").act;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitFor = InternalTestUtils.waitFor;
     waitForAll = InternalTestUtils.waitForAll;
     assertLog = InternalTestUtils.assertLog;
   });
 
-  it('should report the (host) root as the scheduler for root-level render', async () => {
-    const {HostRoot} = require('react-reconciler/src/ReactWorkTags');
+  it("should report the (host) root as the scheduler for root-level render", async () => {
+    const { HostRoot } = require("react-reconciler/src/ReactWorkTags");
 
     const Parent = () => <Child />;
     const Child = () => null;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
 
     await act(() => {
       ReactDOM.render(<Parent />, container);
@@ -119,7 +119,7 @@ describe('updaters', () => {
     expect(allSchedulerTags).toEqual([[HostRoot], [HostRoot]]);
   });
 
-  it('should report a function component as the scheduler for a hooks update', async () => {
+  it("should report a function component as the scheduler for a hooks update", async () => {
     let scheduleForA = null;
     let scheduleForB = null;
 
@@ -131,18 +131,18 @@ describe('updaters', () => {
     );
     const SchedulingComponentA = () => {
       const [count, setCount] = React.useState(0);
-      scheduleForA = () => setCount(prevCount => prevCount + 1);
+      scheduleForA = () => setCount((prevCount) => prevCount + 1);
       return <Child count={count} />;
     };
     const SchedulingComponentB = () => {
       const [count, setCount] = React.useState(0);
-      scheduleForB = () => setCount(prevCount => prevCount + 1);
+      scheduleForB = () => setCount((prevCount) => prevCount + 1);
       return <Child count={count} />;
     };
     const Child = () => null;
 
     await act(() => {
-      ReactDOM.render(<Parent />, document.createElement('div'));
+      ReactDOM.render(<Parent />, document.createElement("div"));
     });
     expect(scheduleForA).not.toBeNull();
     expect(scheduleForB).not.toBeNull();
@@ -163,7 +163,7 @@ describe('updaters', () => {
     ]);
   });
 
-  it('should report a class component as the scheduler for a setState update', async () => {
+  it("should report a class component as the scheduler for a setState update", async () => {
     const Parent = () => <SchedulingComponent />;
     class SchedulingComponent extends React.Component {
       state = {};
@@ -175,7 +175,7 @@ describe('updaters', () => {
     const Child = () => null;
     let instance;
     await act(() => {
-      ReactDOM.render(<Parent />, document.createElement('div'));
+      ReactDOM.render(<Parent />, document.createElement("div"));
     });
     expect(allSchedulerTypes).toEqual([[null]]);
 
@@ -186,39 +186,39 @@ describe('updaters', () => {
     expect(allSchedulerTypes).toEqual([[null], [SchedulingComponent]]);
   });
 
-  it('should cover cascading updates', async () => {
+  it("should cover cascading updates", async () => {
     let triggerActiveCascade = null;
     let triggerPassiveCascade = null;
 
     const Parent = () => <SchedulingComponent />;
     const SchedulingComponent = () => {
       const [cascade, setCascade] = React.useState(null);
-      triggerActiveCascade = () => setCascade('active');
-      triggerPassiveCascade = () => setCascade('passive');
+      triggerActiveCascade = () => setCascade("active");
+      triggerPassiveCascade = () => setCascade("passive");
       return <CascadingChild cascade={cascade} />;
     };
-    const CascadingChild = ({cascade}) => {
+    const CascadingChild = ({ cascade }) => {
       const [count, setCount] = React.useState(0);
       Scheduler.log(`CascadingChild ${count}`);
       React.useLayoutEffect(() => {
-        if (cascade === 'active') {
-          setCount(prevCount => prevCount + 1);
+        if (cascade === "active") {
+          setCount((prevCount) => prevCount + 1);
         }
         return () => {};
       }, [cascade]);
       React.useEffect(() => {
-        if (cascade === 'passive') {
-          setCount(prevCount => prevCount + 1);
+        if (cascade === "passive") {
+          setCount((prevCount) => prevCount + 1);
         }
         return () => {};
       }, [cascade]);
       return count;
     };
 
-    const root = ReactDOMClient.createRoot(document.createElement('div'));
+    const root = ReactDOMClient.createRoot(document.createElement("div"));
     await act(async () => {
       root.render(<Parent />);
-      await waitFor(['CascadingChild 0', 'onCommitRoot']);
+      await waitFor(["CascadingChild 0", "onCommitRoot"]);
     });
     expect(triggerActiveCascade).not.toBeNull();
     expect(triggerPassiveCascade).not.toBeNull();
@@ -227,10 +227,10 @@ describe('updaters', () => {
     await act(async () => {
       triggerActiveCascade();
       await waitFor([
-        'CascadingChild 0',
-        'onCommitRoot',
-        'CascadingChild 1',
-        'onCommitRoot',
+        "CascadingChild 0",
+        "onCommitRoot",
+        "CascadingChild 1",
+        "onCommitRoot",
       ]);
     });
     expect(allSchedulerTypes).toEqual([
@@ -242,10 +242,10 @@ describe('updaters', () => {
     await act(async () => {
       triggerPassiveCascade();
       await waitFor([
-        'CascadingChild 1',
-        'onCommitRoot',
-        'CascadingChild 2',
-        'onCommitRoot',
+        "CascadingChild 1",
+        "onCommitRoot",
+        "CascadingChild 2",
+        "onCommitRoot",
       ]);
     });
     expect(allSchedulerTypes).toEqual([
@@ -260,14 +260,14 @@ describe('updaters', () => {
     await waitForAll([]);
   });
 
-  it('should cover suspense pings', async () => {
+  it("should cover suspense pings", async () => {
     let data = null;
     let resolver = null;
     let promise = null;
     const fakeCacheRead = () => {
       if (data === null) {
-        promise = new Promise(resolve => {
-          resolver = resolvedData => {
+        promise = new Promise((resolve) => {
+          resolver = (resolvedData) => {
             data = resolvedData;
             resolve(resolvedData);
           };
@@ -284,7 +284,7 @@ describe('updaters', () => {
     );
     const Fallback = () => null;
     let setShouldSuspend = null;
-    const Suspender = ({suspend}) => {
+    const Suspender = ({ suspend }) => {
       const tuple = React.useState(false);
       setShouldSuspend = tuple[1];
       if (tuple[0] === true) {
@@ -295,8 +295,8 @@ describe('updaters', () => {
     };
 
     await act(() => {
-      ReactDOM.render(<Parent />, document.createElement('div'));
-      assertLog(['onCommitRoot']);
+      ReactDOM.render(<Parent />, document.createElement("div"));
+      assertLog(["onCommitRoot"]);
     });
     expect(setShouldSuspend).not.toBeNull();
     expect(allSchedulerTypes).toEqual([[null]]);
@@ -304,22 +304,22 @@ describe('updaters', () => {
     await act(() => {
       setShouldSuspend(true);
     });
-    assertLog(['onCommitRoot']);
+    assertLog(["onCommitRoot"]);
     expect(allSchedulerTypes).toEqual([[null], [Suspender]]);
 
     expect(resolver).not.toBeNull();
     await act(() => {
-      resolver('abc');
+      resolver("abc");
       return promise;
     });
-    assertLog(['onCommitRoot']);
+    assertLog(["onCommitRoot"]);
     expect(allSchedulerTypes).toEqual([[null], [Suspender], [Suspender]]);
 
     // Verify no outstanding flushes
     await waitForAll([]);
   });
 
-  it('should cover error handling', async () => {
+  it("should cover error handling", async () => {
     let triggerError = null;
 
     const Parent = () => {
@@ -336,9 +336,9 @@ describe('updaters', () => {
       );
     };
     class ErrorBoundary extends React.Component {
-      state = {error: null};
+      state = { error: null };
       componentDidCatch(error) {
-        this.setState({error});
+        this.setState({ error });
       }
       render() {
         if (this.state.error) {
@@ -347,19 +347,19 @@ describe('updaters', () => {
         return this.props.children;
       }
     }
-    const Yield = ({value}) => {
+    const Yield = ({ value }) => {
       Scheduler.log(value);
       return null;
     };
     const BrokenRender = () => {
-      throw new Error('Hello');
+      throw new Error("Hello");
     };
 
-    const root = ReactDOMClient.createRoot(document.createElement('div'));
+    const root = ReactDOMClient.createRoot(document.createElement("div"));
     await act(() => {
       root.render(<Parent shouldError={false} />);
     });
-    assertLog(['initial', 'onCommitRoot']);
+    assertLog(["initial", "onCommitRoot"]);
     expect(triggerError).not.toBeNull();
 
     allSchedulerTypes.splice(0);
@@ -368,25 +368,25 @@ describe('updaters', () => {
     await act(() => {
       triggerError();
     });
-    assertLog(['onCommitRoot', 'error', 'onCommitRoot']);
+    assertLog(["onCommitRoot", "error", "onCommitRoot"]);
     expect(allSchedulerTypes).toEqual([[Parent], [ErrorBoundary]]);
 
     // Verify no outstanding flushes
     await waitForAll([]);
   });
 
-  it('should distinguish between updaters in the case of interleaved work', async () => {
+  it("should distinguish between updaters in the case of interleaved work", async () => {
     const {
       FunctionComponent,
       HostRoot,
-    } = require('react-reconciler/src/ReactWorkTags');
+    } = require("react-reconciler/src/ReactWorkTags");
 
     let triggerLowPriorityUpdate = null;
     let triggerSyncPriorityUpdate = null;
 
     const SyncPriorityUpdater = () => {
       const [count, setCount] = React.useState(0);
-      triggerSyncPriorityUpdate = () => setCount(prevCount => prevCount + 1);
+      triggerSyncPriorityUpdate = () => setCount((prevCount) => prevCount + 1);
       Scheduler.log(`SyncPriorityUpdater ${count}`);
       return <Yield value={`HighPriority ${count}`} />;
     };
@@ -394,18 +394,18 @@ describe('updaters', () => {
       const [count, setCount] = React.useState(0);
       triggerLowPriorityUpdate = () => {
         React.startTransition(() => {
-          setCount(prevCount => prevCount + 1);
+          setCount((prevCount) => prevCount + 1);
         });
       };
       Scheduler.log(`LowPriorityUpdater ${count}`);
       return <Yield value={`LowPriority ${count}`} />;
     };
-    const Yield = ({value}) => {
+    const Yield = ({ value }) => {
       Scheduler.log(`Yield ${value}`);
       return null;
     };
 
-    const root = ReactDOMClient.createRoot(document.createElement('div'));
+    const root = ReactDOMClient.createRoot(document.createElement("div"));
     root.render(
       <React.Fragment>
         <SyncPriorityUpdater />
@@ -415,11 +415,11 @@ describe('updaters', () => {
 
     // Render everything initially.
     await waitForAll([
-      'SyncPriorityUpdater 0',
-      'Yield HighPriority 0',
-      'LowPriorityUpdater 0',
-      'Yield LowPriority 0',
-      'onCommitRoot',
+      "SyncPriorityUpdater 0",
+      "Yield HighPriority 0",
+      "LowPriorityUpdater 0",
+      "Yield LowPriority 0",
+      "onCommitRoot",
     ]);
     expect(triggerLowPriorityUpdate).not.toBeNull();
     expect(triggerSyncPriorityUpdate).not.toBeNull();
@@ -428,24 +428,24 @@ describe('updaters', () => {
     // Render a partial update, but don't finish.
     await act(async () => {
       triggerLowPriorityUpdate();
-      await waitFor(['LowPriorityUpdater 1']);
+      await waitFor(["LowPriorityUpdater 1"]);
       expect(allSchedulerTags).toEqual([[HostRoot]]);
 
       // Interrupt with higher priority work.
       ReactDOM.flushSync(triggerSyncPriorityUpdate);
       assertLog([
-        'SyncPriorityUpdater 1',
-        'Yield HighPriority 1',
-        'onCommitRoot',
+        "SyncPriorityUpdater 1",
+        "Yield HighPriority 1",
+        "onCommitRoot",
       ]);
       expect(allSchedulerTypes).toEqual([[null], [SyncPriorityUpdater]]);
 
       // Finish the initial partial update
       triggerLowPriorityUpdate();
       await waitForAll([
-        'LowPriorityUpdater 2',
-        'Yield LowPriority 2',
-        'onCommitRoot',
+        "LowPriorityUpdater 2",
+        "Yield LowPriority 2",
+        "onCommitRoot",
       ]);
     });
     expect(allSchedulerTags).toEqual([

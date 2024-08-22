@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
+"use strict";
 
-describe('ReactDOMEventListener', () => {
+describe("ReactDOMEventListener", () => {
   let React;
   let OuterReactDOM;
   let InnerReactDOM;
@@ -17,11 +17,11 @@ describe('ReactDOMEventListener', () => {
     window.TextEvent = function () {};
     jest.resetModules();
     jest.isolateModules(() => {
-      React = require('react');
-      OuterReactDOM = require('react-dom');
+      React = require("react");
+      OuterReactDOM = require("react-dom");
     });
     jest.isolateModules(() => {
-      InnerReactDOM = require('react-dom');
+      InnerReactDOM = require("react-dom");
     });
     expect(OuterReactDOM).not.toBe(InnerReactDOM);
   });
@@ -40,21 +40,21 @@ describe('ReactDOMEventListener', () => {
 
   function render(tree) {
     cleanup();
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
     OuterReactDOM.render(tree, container);
   }
 
-  describe('bubbling events', () => {
-    it('onAnimationEnd', () => {
+  describe("bubbling events", () => {
+    it("onAnimationEnd", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onAnimationEnd',
-        reactEventType: 'animationend',
-        nativeEvent: 'animationend',
+        type: "div",
+        reactEvent: "onAnimationEnd",
+        reactEventType: "animationend",
+        nativeEvent: "animationend",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('animationend', {
+            new Event("animationend", {
               bubbles: true,
               cancelable: true,
             }),
@@ -63,15 +63,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onAnimationIteration', () => {
+    it("onAnimationIteration", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onAnimationIteration',
-        reactEventType: 'animationiteration',
-        nativeEvent: 'animationiteration',
+        type: "div",
+        reactEvent: "onAnimationIteration",
+        reactEventType: "animationiteration",
+        nativeEvent: "animationiteration",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('animationiteration', {
+            new Event("animationiteration", {
               bubbles: true,
               cancelable: true,
             }),
@@ -80,15 +80,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onAnimationStart', () => {
+    it("onAnimationStart", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onAnimationStart',
-        reactEventType: 'animationstart',
-        nativeEvent: 'animationstart',
+        type: "div",
+        reactEvent: "onAnimationStart",
+        reactEventType: "animationstart",
+        nativeEvent: "animationstart",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('animationstart', {
+            new Event("animationstart", {
               bubbles: true,
               cancelable: true,
             }),
@@ -97,15 +97,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onAuxClick', () => {
+    it("onAuxClick", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onAuxClick',
-        reactEventType: 'auxclick',
-        nativeEvent: 'auxclick',
+        type: "div",
+        reactEvent: "onAuxClick",
+        reactEventType: "auxclick",
+        nativeEvent: "auxclick",
         dispatch(node) {
           node.dispatchEvent(
-            new KeyboardEvent('auxclick', {
+            new KeyboardEvent("auxclick", {
               bubbles: true,
               cancelable: true,
             }),
@@ -114,14 +114,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onBlur', () => {
+    it("onBlur", () => {
       testNativeBubblingEvent({
-        type: 'input',
-        reactEvent: 'onBlur',
-        reactEventType: 'blur',
-        nativeEvent: 'focusout',
+        type: "input",
+        reactEvent: "onBlur",
+        reactEventType: "blur",
+        nativeEvent: "focusout",
         dispatch(node) {
-          const e = new Event('focusout', {
+          const e = new Event("focusout", {
             bubbles: true,
             cancelable: true,
           });
@@ -134,27 +134,27 @@ describe('ReactDOMEventListener', () => {
     // because we emulate the React 16 behavior where
     // the click handler is attached to the document.
     // @gate !enableLegacyFBSupport
-    it('onClick', () => {
+    it("onClick", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onClick',
-        reactEventType: 'click',
-        nativeEvent: 'click',
+        type: "div",
+        reactEvent: "onClick",
+        reactEventType: "click",
+        nativeEvent: "click",
         dispatch(node) {
           node.click();
         },
       });
     });
 
-    it('onContextMenu', () => {
+    it("onContextMenu", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onContextMenu',
-        reactEventType: 'contextmenu',
-        nativeEvent: 'contextmenu',
+        type: "div",
+        reactEvent: "onContextMenu",
+        reactEventType: "contextmenu",
+        nativeEvent: "contextmenu",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('contextmenu', {
+            new MouseEvent("contextmenu", {
               bubbles: true,
               cancelable: true,
             }),
@@ -163,15 +163,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onCopy', () => {
+    it("onCopy", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onCopy',
-        reactEventType: 'copy',
-        nativeEvent: 'copy',
+        type: "div",
+        reactEvent: "onCopy",
+        reactEventType: "copy",
+        nativeEvent: "copy",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('copy', {
+            new Event("copy", {
               bubbles: true,
               cancelable: true,
             }),
@@ -180,15 +180,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onCut', () => {
+    it("onCut", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onCut',
-        reactEventType: 'cut',
-        nativeEvent: 'cut',
+        type: "div",
+        reactEvent: "onCut",
+        reactEventType: "cut",
+        nativeEvent: "cut",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('cut', {
+            new Event("cut", {
               bubbles: true,
               cancelable: true,
             }),
@@ -197,15 +197,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDoubleClick', () => {
+    it("onDoubleClick", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDoubleClick',
-        reactEventType: 'dblclick',
-        nativeEvent: 'dblclick',
+        type: "div",
+        reactEvent: "onDoubleClick",
+        reactEventType: "dblclick",
+        nativeEvent: "dblclick",
         dispatch(node) {
           node.dispatchEvent(
-            new KeyboardEvent('dblclick', {
+            new KeyboardEvent("dblclick", {
               bubbles: true,
               cancelable: true,
             }),
@@ -214,15 +214,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDrag', () => {
+    it("onDrag", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDrag',
-        reactEventType: 'drag',
-        nativeEvent: 'drag',
+        type: "div",
+        reactEvent: "onDrag",
+        reactEventType: "drag",
+        nativeEvent: "drag",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('drag', {
+            new MouseEvent("drag", {
               bubbles: true,
               cancelable: true,
             }),
@@ -231,15 +231,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDragEnd', () => {
+    it("onDragEnd", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDragEnd',
-        reactEventType: 'dragend',
-        nativeEvent: 'dragend',
+        type: "div",
+        reactEvent: "onDragEnd",
+        reactEventType: "dragend",
+        nativeEvent: "dragend",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('dragend', {
+            new MouseEvent("dragend", {
               bubbles: true,
               cancelable: true,
             }),
@@ -248,15 +248,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDragEnter', () => {
+    it("onDragEnter", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDragEnter',
-        reactEventType: 'dragenter',
-        nativeEvent: 'dragenter',
+        type: "div",
+        reactEvent: "onDragEnter",
+        reactEventType: "dragenter",
+        nativeEvent: "dragenter",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('dragenter', {
+            new MouseEvent("dragenter", {
               bubbles: true,
               cancelable: true,
             }),
@@ -265,15 +265,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDragExit', () => {
+    it("onDragExit", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDragExit',
-        reactEventType: 'dragexit',
-        nativeEvent: 'dragexit',
+        type: "div",
+        reactEvent: "onDragExit",
+        reactEventType: "dragexit",
+        nativeEvent: "dragexit",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('dragexit', {
+            new MouseEvent("dragexit", {
               bubbles: true,
               cancelable: true,
             }),
@@ -282,15 +282,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDragLeave', () => {
+    it("onDragLeave", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDragLeave',
-        reactEventType: 'dragleave',
-        nativeEvent: 'dragleave',
+        type: "div",
+        reactEvent: "onDragLeave",
+        reactEventType: "dragleave",
+        nativeEvent: "dragleave",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('dragleave', {
+            new MouseEvent("dragleave", {
               bubbles: true,
               cancelable: true,
             }),
@@ -299,15 +299,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDragOver', () => {
+    it("onDragOver", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDragOver',
-        reactEventType: 'dragover',
-        nativeEvent: 'dragover',
+        type: "div",
+        reactEvent: "onDragOver",
+        reactEventType: "dragover",
+        nativeEvent: "dragover",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('dragover', {
+            new MouseEvent("dragover", {
               bubbles: true,
               cancelable: true,
             }),
@@ -316,15 +316,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDragStart', () => {
+    it("onDragStart", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDragStart',
-        reactEventType: 'dragstart',
-        nativeEvent: 'dragstart',
+        type: "div",
+        reactEvent: "onDragStart",
+        reactEventType: "dragstart",
+        nativeEvent: "dragstart",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('dragstart', {
+            new MouseEvent("dragstart", {
               bubbles: true,
               cancelable: true,
             }),
@@ -333,15 +333,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDrop', () => {
+    it("onDrop", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onDrop',
-        reactEventType: 'drop',
-        nativeEvent: 'drop',
+        type: "div",
+        reactEvent: "onDrop",
+        reactEventType: "drop",
+        nativeEvent: "drop",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('drop', {
+            new MouseEvent("drop", {
               bubbles: true,
               cancelable: true,
             }),
@@ -350,14 +350,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onFocus', () => {
+    it("onFocus", () => {
       testNativeBubblingEvent({
-        type: 'input',
-        reactEvent: 'onFocus',
-        reactEventType: 'focus',
-        nativeEvent: 'focusin',
+        type: "input",
+        reactEvent: "onFocus",
+        reactEventType: "focus",
+        nativeEvent: "focusin",
         dispatch(node) {
-          const e = new Event('focusin', {
+          const e = new Event("focusin", {
             bubbles: true,
             cancelable: true,
           });
@@ -366,15 +366,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onGotPointerCapture', () => {
+    it("onGotPointerCapture", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onGotPointerCapture',
-        reactEventType: 'gotpointercapture',
-        nativeEvent: 'gotpointercapture',
+        type: "div",
+        reactEvent: "onGotPointerCapture",
+        reactEventType: "gotpointercapture",
+        nativeEvent: "gotpointercapture",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('gotpointercapture', {
+            new Event("gotpointercapture", {
               bubbles: true,
               cancelable: true,
             }),
@@ -383,15 +383,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onKeyDown', () => {
+    it("onKeyDown", () => {
       testNativeBubblingEvent({
-        type: 'input',
-        reactEvent: 'onKeyDown',
-        reactEventType: 'keydown',
-        nativeEvent: 'keydown',
+        type: "input",
+        reactEvent: "onKeyDown",
+        reactEventType: "keydown",
+        nativeEvent: "keydown",
         dispatch(node) {
           node.dispatchEvent(
-            new KeyboardEvent('keydown', {
+            new KeyboardEvent("keydown", {
               bubbles: true,
               cancelable: true,
             }),
@@ -400,15 +400,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onKeyPress', () => {
+    it("onKeyPress", () => {
       testNativeBubblingEvent({
-        type: 'input',
-        reactEvent: 'onKeyPress',
-        reactEventType: 'keypress',
-        nativeEvent: 'keypress',
+        type: "input",
+        reactEvent: "onKeyPress",
+        reactEventType: "keypress",
+        nativeEvent: "keypress",
         dispatch(node) {
           node.dispatchEvent(
-            new KeyboardEvent('keypress', {
+            new KeyboardEvent("keypress", {
               keyCode: 13,
               bubbles: true,
               cancelable: true,
@@ -418,15 +418,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onKeyUp', () => {
+    it("onKeyUp", () => {
       testNativeBubblingEvent({
-        type: 'input',
-        reactEvent: 'onKeyUp',
-        reactEventType: 'keyup',
-        nativeEvent: 'keyup',
+        type: "input",
+        reactEvent: "onKeyUp",
+        reactEventType: "keyup",
+        nativeEvent: "keyup",
         dispatch(node) {
           node.dispatchEvent(
-            new KeyboardEvent('keyup', {
+            new KeyboardEvent("keyup", {
               bubbles: true,
               cancelable: true,
             }),
@@ -435,15 +435,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onLostPointerCapture', () => {
+    it("onLostPointerCapture", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onLostPointerCapture',
-        reactEventType: 'lostpointercapture',
-        nativeEvent: 'lostpointercapture',
+        type: "div",
+        reactEvent: "onLostPointerCapture",
+        reactEventType: "lostpointercapture",
+        nativeEvent: "lostpointercapture",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('lostpointercapture', {
+            new Event("lostpointercapture", {
               bubbles: true,
               cancelable: true,
             }),
@@ -452,15 +452,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onMouseDown', () => {
+    it("onMouseDown", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onMouseDown',
-        reactEventType: 'mousedown',
-        nativeEvent: 'mousedown',
+        type: "div",
+        reactEvent: "onMouseDown",
+        reactEventType: "mousedown",
+        nativeEvent: "mousedown",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('mousedown', {
+            new MouseEvent("mousedown", {
               bubbles: true,
               cancelable: true,
             }),
@@ -469,15 +469,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onMouseOut', () => {
+    it("onMouseOut", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onMouseOut',
-        reactEventType: 'mouseout',
-        nativeEvent: 'mouseout',
+        type: "div",
+        reactEvent: "onMouseOut",
+        reactEventType: "mouseout",
+        nativeEvent: "mouseout",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('mouseout', {
+            new MouseEvent("mouseout", {
               bubbles: true,
               cancelable: true,
             }),
@@ -486,15 +486,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onMouseOver', () => {
+    it("onMouseOver", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onMouseOver',
-        reactEventType: 'mouseover',
-        nativeEvent: 'mouseover',
+        type: "div",
+        reactEvent: "onMouseOver",
+        reactEventType: "mouseover",
+        nativeEvent: "mouseover",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('mouseover', {
+            new MouseEvent("mouseover", {
               bubbles: true,
               cancelable: true,
             }),
@@ -503,15 +503,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onMouseUp', () => {
+    it("onMouseUp", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onMouseUp',
-        reactEventType: 'mouseup',
-        nativeEvent: 'mouseup',
+        type: "div",
+        reactEvent: "onMouseUp",
+        reactEventType: "mouseup",
+        nativeEvent: "mouseup",
         dispatch(node) {
           node.dispatchEvent(
-            new MouseEvent('mouseup', {
+            new MouseEvent("mouseup", {
               bubbles: true,
               cancelable: true,
             }),
@@ -520,15 +520,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPaste', () => {
+    it("onPaste", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPaste',
-        reactEventType: 'paste',
-        nativeEvent: 'paste',
+        type: "div",
+        reactEvent: "onPaste",
+        reactEventType: "paste",
+        nativeEvent: "paste",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('paste', {
+            new Event("paste", {
               bubbles: true,
               cancelable: true,
             }),
@@ -537,15 +537,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPointerCancel', () => {
+    it("onPointerCancel", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPointerCancel',
-        reactEventType: 'pointercancel',
-        nativeEvent: 'pointercancel',
+        type: "div",
+        reactEvent: "onPointerCancel",
+        reactEventType: "pointercancel",
+        nativeEvent: "pointercancel",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('pointercancel', {
+            new Event("pointercancel", {
               bubbles: true,
               cancelable: true,
             }),
@@ -554,15 +554,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPointerDown', () => {
+    it("onPointerDown", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPointerDown',
-        reactEventType: 'pointerdown',
-        nativeEvent: 'pointerdown',
+        type: "div",
+        reactEvent: "onPointerDown",
+        reactEventType: "pointerdown",
+        nativeEvent: "pointerdown",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('pointerdown', {
+            new Event("pointerdown", {
               bubbles: true,
               cancelable: true,
             }),
@@ -571,15 +571,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPointerMove', () => {
+    it("onPointerMove", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPointerMove',
-        reactEventType: 'pointermove',
-        nativeEvent: 'pointermove',
+        type: "div",
+        reactEvent: "onPointerMove",
+        reactEventType: "pointermove",
+        nativeEvent: "pointermove",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('pointermove', {
+            new Event("pointermove", {
               bubbles: true,
               cancelable: true,
             }),
@@ -588,15 +588,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPointerOut', () => {
+    it("onPointerOut", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPointerOut',
-        reactEventType: 'pointerout',
-        nativeEvent: 'pointerout',
+        type: "div",
+        reactEvent: "onPointerOut",
+        reactEventType: "pointerout",
+        nativeEvent: "pointerout",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('pointerout', {
+            new Event("pointerout", {
               bubbles: true,
               cancelable: true,
             }),
@@ -605,15 +605,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPointerOver', () => {
+    it("onPointerOver", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPointerOver',
-        reactEventType: 'pointerover',
-        nativeEvent: 'pointerover',
+        type: "div",
+        reactEvent: "onPointerOver",
+        reactEventType: "pointerover",
+        nativeEvent: "pointerover",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('pointerover', {
+            new Event("pointerover", {
               bubbles: true,
               cancelable: true,
             }),
@@ -622,15 +622,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPointerUp', () => {
+    it("onPointerUp", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onPointerUp',
-        reactEventType: 'pointerup',
-        nativeEvent: 'pointerup',
+        type: "div",
+        reactEvent: "onPointerUp",
+        reactEventType: "pointerup",
+        nativeEvent: "pointerup",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('pointerup', {
+            new Event("pointerup", {
               bubbles: true,
               cancelable: true,
             }),
@@ -639,14 +639,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onReset', () => {
+    it("onReset", () => {
       testNativeBubblingEvent({
-        type: 'form',
-        reactEvent: 'onReset',
-        reactEventType: 'reset',
-        nativeEvent: 'reset',
+        type: "form",
+        reactEvent: "onReset",
+        reactEventType: "reset",
+        nativeEvent: "reset",
         dispatch(node) {
-          const e = new Event('reset', {
+          const e = new Event("reset", {
             bubbles: true,
             cancelable: true,
           });
@@ -655,14 +655,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onSubmit', () => {
+    it("onSubmit", () => {
       testNativeBubblingEvent({
-        type: 'form',
-        reactEvent: 'onSubmit',
-        reactEventType: 'submit',
-        nativeEvent: 'submit',
+        type: "form",
+        reactEvent: "onSubmit",
+        reactEventType: "submit",
+        nativeEvent: "submit",
         dispatch(node) {
-          const e = new Event('submit', {
+          const e = new Event("submit", {
             bubbles: true,
             cancelable: true,
           });
@@ -671,15 +671,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onTouchCancel', () => {
+    it("onTouchCancel", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onTouchCancel',
-        reactEventType: 'touchcancel',
-        nativeEvent: 'touchcancel',
+        type: "div",
+        reactEvent: "onTouchCancel",
+        reactEventType: "touchcancel",
+        nativeEvent: "touchcancel",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('touchcancel', {
+            new Event("touchcancel", {
               bubbles: true,
               cancelable: true,
             }),
@@ -688,15 +688,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onTouchEnd', () => {
+    it("onTouchEnd", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onTouchEnd',
-        reactEventType: 'touchend',
-        nativeEvent: 'touchend',
+        type: "div",
+        reactEvent: "onTouchEnd",
+        reactEventType: "touchend",
+        nativeEvent: "touchend",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('touchend', {
+            new Event("touchend", {
               bubbles: true,
               cancelable: true,
             }),
@@ -705,15 +705,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onTouchMove', () => {
+    it("onTouchMove", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onTouchMove',
-        reactEventType: 'touchmove',
-        nativeEvent: 'touchmove',
+        type: "div",
+        reactEvent: "onTouchMove",
+        reactEventType: "touchmove",
+        nativeEvent: "touchmove",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('touchmove', {
+            new Event("touchmove", {
               bubbles: true,
               cancelable: true,
             }),
@@ -722,15 +722,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onTouchStart', () => {
+    it("onTouchStart", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onTouchStart',
-        reactEventType: 'touchstart',
-        nativeEvent: 'touchstart',
+        type: "div",
+        reactEvent: "onTouchStart",
+        reactEventType: "touchstart",
+        nativeEvent: "touchstart",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('touchstart', {
+            new Event("touchstart", {
               bubbles: true,
               cancelable: true,
             }),
@@ -739,15 +739,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onTransitionEnd', () => {
+    it("onTransitionEnd", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onTransitionEnd',
-        reactEventType: 'transitionend',
-        nativeEvent: 'transitionend',
+        type: "div",
+        reactEvent: "onTransitionEnd",
+        reactEventType: "transitionend",
+        nativeEvent: "transitionend",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('transitionend', {
+            new Event("transitionend", {
               bubbles: true,
               cancelable: true,
             }),
@@ -756,15 +756,15 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onWheel', () => {
+    it("onWheel", () => {
       testNativeBubblingEvent({
-        type: 'div',
-        reactEvent: 'onWheel',
-        reactEventType: 'wheel',
-        nativeEvent: 'wheel',
+        type: "div",
+        reactEvent: "onWheel",
+        reactEventType: "wheel",
+        nativeEvent: "wheel",
         dispatch(node) {
           node.dispatchEvent(
-            new Event('wheel', {
+            new Event("wheel", {
               bubbles: true,
               cancelable: true,
             }),
@@ -774,15 +774,15 @@ describe('ReactDOMEventListener', () => {
     });
   });
 
-  describe('non-bubbling events that bubble in React', () => {
-    it('onAbort', () => {
+  describe("non-bubbling events that bubble in React", () => {
+    it("onAbort", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onAbort',
-        reactEventType: 'abort',
-        nativeEvent: 'abort',
+        type: "video",
+        reactEvent: "onAbort",
+        reactEventType: "abort",
+        nativeEvent: "abort",
         dispatch(node) {
-          const e = new Event('abort', {
+          const e = new Event("abort", {
             bubbles: false,
             cancelable: true,
           });
@@ -791,14 +791,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onCancel', () => {
+    it("onCancel", () => {
       testEmulatedBubblingEvent({
-        type: 'dialog',
-        reactEvent: 'onCancel',
-        reactEventType: 'cancel',
-        nativeEvent: 'cancel',
+        type: "dialog",
+        reactEvent: "onCancel",
+        reactEventType: "cancel",
+        nativeEvent: "cancel",
         dispatch(node) {
-          const e = new Event('cancel', {
+          const e = new Event("cancel", {
             bubbles: false,
             cancelable: true,
           });
@@ -807,14 +807,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onCanPlay', () => {
+    it("onCanPlay", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onCanPlay',
-        reactEventType: 'canplay',
-        nativeEvent: 'canplay',
+        type: "video",
+        reactEvent: "onCanPlay",
+        reactEventType: "canplay",
+        nativeEvent: "canplay",
         dispatch(node) {
-          const e = new Event('canplay', {
+          const e = new Event("canplay", {
             bubbles: false,
             cancelable: true,
           });
@@ -823,14 +823,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onCanPlayThrough', () => {
+    it("onCanPlayThrough", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onCanPlayThrough',
-        reactEventType: 'canplaythrough',
-        nativeEvent: 'canplaythrough',
+        type: "video",
+        reactEvent: "onCanPlayThrough",
+        reactEventType: "canplaythrough",
+        nativeEvent: "canplaythrough",
         dispatch(node) {
-          const e = new Event('canplaythrough', {
+          const e = new Event("canplaythrough", {
             bubbles: false,
             cancelable: true,
           });
@@ -839,14 +839,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onClose', () => {
+    it("onClose", () => {
       testEmulatedBubblingEvent({
-        type: 'dialog',
-        reactEvent: 'onClose',
-        reactEventType: 'close',
-        nativeEvent: 'close',
+        type: "dialog",
+        reactEvent: "onClose",
+        reactEventType: "close",
+        nativeEvent: "close",
         dispatch(node) {
-          const e = new Event('close', {
+          const e = new Event("close", {
             bubbles: false,
             cancelable: true,
           });
@@ -855,14 +855,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onDurationChange', () => {
+    it("onDurationChange", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onDurationChange',
-        reactEventType: 'durationchange',
-        nativeEvent: 'durationchange',
+        type: "video",
+        reactEvent: "onDurationChange",
+        reactEventType: "durationchange",
+        nativeEvent: "durationchange",
         dispatch(node) {
-          const e = new Event('durationchange', {
+          const e = new Event("durationchange", {
             bubbles: false,
             cancelable: true,
           });
@@ -871,14 +871,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onEmptied', () => {
+    it("onEmptied", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onEmptied',
-        reactEventType: 'emptied',
-        nativeEvent: 'emptied',
+        type: "video",
+        reactEvent: "onEmptied",
+        reactEventType: "emptied",
+        nativeEvent: "emptied",
         dispatch(node) {
-          const e = new Event('emptied', {
+          const e = new Event("emptied", {
             bubbles: false,
             cancelable: true,
           });
@@ -887,14 +887,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onEncrypted', () => {
+    it("onEncrypted", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onEncrypted',
-        reactEventType: 'encrypted',
-        nativeEvent: 'encrypted',
+        type: "video",
+        reactEvent: "onEncrypted",
+        reactEventType: "encrypted",
+        nativeEvent: "encrypted",
         dispatch(node) {
-          const e = new Event('encrypted', {
+          const e = new Event("encrypted", {
             bubbles: false,
             cancelable: true,
           });
@@ -903,14 +903,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onEnded', () => {
+    it("onEnded", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onEnded',
-        reactEventType: 'ended',
-        nativeEvent: 'ended',
+        type: "video",
+        reactEvent: "onEnded",
+        reactEventType: "ended",
+        nativeEvent: "ended",
         dispatch(node) {
-          const e = new Event('ended', {
+          const e = new Event("ended", {
             bubbles: false,
             cancelable: true,
           });
@@ -919,14 +919,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onError', () => {
+    it("onError", () => {
       testEmulatedBubblingEvent({
-        type: 'img',
-        reactEvent: 'onError',
-        reactEventType: 'error',
-        nativeEvent: 'error',
+        type: "img",
+        reactEvent: "onError",
+        reactEventType: "error",
+        nativeEvent: "error",
         dispatch(node) {
-          const e = new Event('error', {
+          const e = new Event("error", {
             bubbles: false,
             cancelable: true,
           });
@@ -935,14 +935,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onInvalid', () => {
+    it("onInvalid", () => {
       testEmulatedBubblingEvent({
-        type: 'input',
-        reactEvent: 'onInvalid',
-        reactEventType: 'invalid',
-        nativeEvent: 'invalid',
+        type: "input",
+        reactEvent: "onInvalid",
+        reactEventType: "invalid",
+        nativeEvent: "invalid",
         dispatch(node) {
-          const e = new Event('invalid', {
+          const e = new Event("invalid", {
             bubbles: false,
             cancelable: true,
           });
@@ -951,14 +951,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onLoad', () => {
+    it("onLoad", () => {
       testEmulatedBubblingEvent({
-        type: 'img',
-        reactEvent: 'onLoad',
-        reactEventType: 'load',
-        nativeEvent: 'load',
+        type: "img",
+        reactEvent: "onLoad",
+        reactEventType: "load",
+        nativeEvent: "load",
         dispatch(node) {
-          const e = new Event('load', {
+          const e = new Event("load", {
             bubbles: false,
             cancelable: true,
           });
@@ -967,14 +967,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onLoadedData', () => {
+    it("onLoadedData", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onLoadedData',
-        reactEventType: 'loadeddata',
-        nativeEvent: 'loadeddata',
+        type: "video",
+        reactEvent: "onLoadedData",
+        reactEventType: "loadeddata",
+        nativeEvent: "loadeddata",
         dispatch(node) {
-          const e = new Event('loadeddata', {
+          const e = new Event("loadeddata", {
             bubbles: false,
             cancelable: true,
           });
@@ -983,14 +983,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onLoadedMetadata', () => {
+    it("onLoadedMetadata", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onLoadedMetadata',
-        reactEventType: 'loadedmetadata',
-        nativeEvent: 'loadedmetadata',
+        type: "video",
+        reactEvent: "onLoadedMetadata",
+        reactEventType: "loadedmetadata",
+        nativeEvent: "loadedmetadata",
         dispatch(node) {
-          const e = new Event('loadedmetadata', {
+          const e = new Event("loadedmetadata", {
             bubbles: false,
             cancelable: true,
           });
@@ -999,14 +999,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onLoadStart', () => {
+    it("onLoadStart", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onLoadStart',
-        reactEventType: 'loadstart',
-        nativeEvent: 'loadstart',
+        type: "video",
+        reactEvent: "onLoadStart",
+        reactEventType: "loadstart",
+        nativeEvent: "loadstart",
         dispatch(node) {
-          const e = new Event('loadstart', {
+          const e = new Event("loadstart", {
             bubbles: false,
             cancelable: true,
           });
@@ -1015,14 +1015,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPause', () => {
+    it("onPause", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onPause',
-        reactEventType: 'pause',
-        nativeEvent: 'pause',
+        type: "video",
+        reactEvent: "onPause",
+        reactEventType: "pause",
+        nativeEvent: "pause",
         dispatch(node) {
-          const e = new Event('pause', {
+          const e = new Event("pause", {
             bubbles: false,
             cancelable: true,
           });
@@ -1031,14 +1031,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPlay', () => {
+    it("onPlay", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onPlay',
-        reactEventType: 'play',
-        nativeEvent: 'play',
+        type: "video",
+        reactEvent: "onPlay",
+        reactEventType: "play",
+        nativeEvent: "play",
         dispatch(node) {
-          const e = new Event('play', {
+          const e = new Event("play", {
             bubbles: false,
             cancelable: true,
           });
@@ -1047,14 +1047,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onPlaying', () => {
+    it("onPlaying", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onPlaying',
-        reactEventType: 'playing',
-        nativeEvent: 'playing',
+        type: "video",
+        reactEvent: "onPlaying",
+        reactEventType: "playing",
+        nativeEvent: "playing",
         dispatch(node) {
-          const e = new Event('playing', {
+          const e = new Event("playing", {
             bubbles: false,
             cancelable: true,
           });
@@ -1063,14 +1063,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onProgress', () => {
+    it("onProgress", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onProgress',
-        reactEventType: 'progress',
-        nativeEvent: 'progress',
+        type: "video",
+        reactEvent: "onProgress",
+        reactEventType: "progress",
+        nativeEvent: "progress",
         dispatch(node) {
-          const e = new Event('progress', {
+          const e = new Event("progress", {
             bubbles: false,
             cancelable: true,
           });
@@ -1079,14 +1079,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onRateChange', () => {
+    it("onRateChange", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onRateChange',
-        reactEventType: 'ratechange',
-        nativeEvent: 'ratechange',
+        type: "video",
+        reactEvent: "onRateChange",
+        reactEventType: "ratechange",
+        nativeEvent: "ratechange",
         dispatch(node) {
-          const e = new Event('ratechange', {
+          const e = new Event("ratechange", {
             bubbles: false,
             cancelable: true,
           });
@@ -1095,14 +1095,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onResize', () => {
+    it("onResize", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onResize',
-        reactEventType: 'resize',
-        nativeEvent: 'resize',
+        type: "video",
+        reactEvent: "onResize",
+        reactEventType: "resize",
+        nativeEvent: "resize",
         dispatch(node) {
-          const e = new Event('resize', {
+          const e = new Event("resize", {
             bubbles: false,
             cancelable: true,
           });
@@ -1111,14 +1111,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onSeeked', () => {
+    it("onSeeked", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onSeeked',
-        reactEventType: 'seeked',
-        nativeEvent: 'seeked',
+        type: "video",
+        reactEvent: "onSeeked",
+        reactEventType: "seeked",
+        nativeEvent: "seeked",
         dispatch(node) {
-          const e = new Event('seeked', {
+          const e = new Event("seeked", {
             bubbles: false,
             cancelable: true,
           });
@@ -1127,14 +1127,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onSeeking', () => {
+    it("onSeeking", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onSeeking',
-        reactEventType: 'seeking',
-        nativeEvent: 'seeking',
+        type: "video",
+        reactEvent: "onSeeking",
+        reactEventType: "seeking",
+        nativeEvent: "seeking",
         dispatch(node) {
-          const e = new Event('seeking', {
+          const e = new Event("seeking", {
             bubbles: false,
             cancelable: true,
           });
@@ -1143,14 +1143,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onStalled', () => {
+    it("onStalled", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onStalled',
-        reactEventType: 'stalled',
-        nativeEvent: 'stalled',
+        type: "video",
+        reactEvent: "onStalled",
+        reactEventType: "stalled",
+        nativeEvent: "stalled",
         dispatch(node) {
-          const e = new Event('stalled', {
+          const e = new Event("stalled", {
             bubbles: false,
             cancelable: true,
           });
@@ -1159,14 +1159,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onSuspend', () => {
+    it("onSuspend", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onSuspend',
-        reactEventType: 'suspend',
-        nativeEvent: 'suspend',
+        type: "video",
+        reactEvent: "onSuspend",
+        reactEventType: "suspend",
+        nativeEvent: "suspend",
         dispatch(node) {
-          const e = new Event('suspend', {
+          const e = new Event("suspend", {
             bubbles: false,
             cancelable: true,
           });
@@ -1175,14 +1175,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onTimeUpdate', () => {
+    it("onTimeUpdate", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onTimeUpdate',
-        reactEventType: 'timeupdate',
-        nativeEvent: 'timeupdate',
+        type: "video",
+        reactEvent: "onTimeUpdate",
+        reactEventType: "timeupdate",
+        nativeEvent: "timeupdate",
         dispatch(node) {
-          const e = new Event('timeupdate', {
+          const e = new Event("timeupdate", {
             bubbles: false,
             cancelable: true,
           });
@@ -1191,14 +1191,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onToggle', () => {
+    it("onToggle", () => {
       testEmulatedBubblingEvent({
-        type: 'details',
-        reactEvent: 'onToggle',
-        reactEventType: 'toggle',
-        nativeEvent: 'toggle',
+        type: "details",
+        reactEvent: "onToggle",
+        reactEventType: "toggle",
+        nativeEvent: "toggle",
         dispatch(node) {
-          const e = new Event('toggle', {
+          const e = new Event("toggle", {
             bubbles: false,
             cancelable: true,
           });
@@ -1207,14 +1207,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onVolumeChange', () => {
+    it("onVolumeChange", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onVolumeChange',
-        reactEventType: 'volumechange',
-        nativeEvent: 'volumechange',
+        type: "video",
+        reactEvent: "onVolumeChange",
+        reactEventType: "volumechange",
+        nativeEvent: "volumechange",
         dispatch(node) {
-          const e = new Event('volumechange', {
+          const e = new Event("volumechange", {
             bubbles: false,
             cancelable: true,
           });
@@ -1223,14 +1223,14 @@ describe('ReactDOMEventListener', () => {
       });
     });
 
-    it('onWaiting', () => {
+    it("onWaiting", () => {
       testEmulatedBubblingEvent({
-        type: 'video',
-        reactEvent: 'onWaiting',
-        reactEventType: 'waiting',
-        nativeEvent: 'waiting',
+        type: "video",
+        reactEvent: "onWaiting",
+        reactEventType: "waiting",
+        nativeEvent: "waiting",
         dispatch(node) {
-          const e = new Event('waiting', {
+          const e = new Event("waiting", {
             bubbles: false,
             cancelable: true,
           });
@@ -1240,15 +1240,15 @@ describe('ReactDOMEventListener', () => {
     });
   });
 
-  describe('non-bubbling events that do not bubble in React', () => {
-    it('onScroll', () => {
+  describe("non-bubbling events that do not bubble in React", () => {
+    it("onScroll", () => {
       testNonBubblingEvent({
-        type: 'div',
-        reactEvent: 'onScroll',
-        reactEventType: 'scroll',
-        nativeEvent: 'scroll',
+        type: "div",
+        reactEvent: "onScroll",
+        reactEventType: "scroll",
+        nativeEvent: "scroll",
         dispatch(node) {
-          const e = new Event('scroll', {
+          const e = new Event("scroll", {
             bubbles: false,
             cancelable: true,
           });
@@ -1262,8 +1262,8 @@ describe('ReactDOMEventListener', () => {
   // because they are fully synthetic, and so they don't
   // work very well across different roots. For now, we'll
   // just document the current state in these tests.
-  describe('enter/leave events', () => {
-    it('onMouseEnter and onMouseLeave', () => {
+  describe("enter/leave events", () => {
+    it("onMouseEnter and onMouseLeave", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1271,42 +1271,42 @@ describe('ReactDOMEventListener', () => {
           type="div"
           targetRef={targetRef}
           targetProps={{
-            onMouseEnter: e => {
-              log.push('---- inner enter');
+            onMouseEnter: (e) => {
+              log.push("---- inner enter");
             },
-            onMouseLeave: e => {
-              log.push('---- inner leave');
+            onMouseLeave: (e) => {
+              log.push("---- inner leave");
             },
           }}
           parentProps={{
-            onMouseEnter: e => {
-              log.push('--- inner parent enter');
+            onMouseEnter: (e) => {
+              log.push("--- inner parent enter");
             },
-            onMouseLeave: e => {
-              log.push('--- inner parent leave');
+            onMouseLeave: (e) => {
+              log.push("--- inner parent leave");
             },
           }}
           outerProps={{
-            onMouseEnter: e => {
-              log.push('-- outer enter');
+            onMouseEnter: (e) => {
+              log.push("-- outer enter");
             },
-            onMouseLeave: e => {
-              log.push('-- outer leave');
+            onMouseLeave: (e) => {
+              log.push("-- outer leave");
             },
           }}
           outerParentProps={{
-            onMouseEnter: e => {
-              log.push('- outer parent enter');
+            onMouseEnter: (e) => {
+              log.push("- outer parent enter");
             },
-            onMouseLeave: e => {
-              log.push('- outer parent leave');
+            onMouseLeave: (e) => {
+              log.push("- outer parent leave");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
       targetRef.current.dispatchEvent(
-        new MouseEvent('mouseover', {
+        new MouseEvent("mouseover", {
           bubbles: true,
           cancelable: true,
           relatedTarget: null,
@@ -1322,7 +1322,7 @@ describe('ReactDOMEventListener', () => {
       `);
       log.length = 0;
       targetRef.current.dispatchEvent(
-        new MouseEvent('mouseout', {
+        new MouseEvent("mouseout", {
           bubbles: true,
           cancelable: true,
           relatedTarget: document.body,
@@ -1336,7 +1336,7 @@ describe('ReactDOMEventListener', () => {
       `);
     });
 
-    it('onPointerEnter and onPointerLeave', () => {
+    it("onPointerEnter and onPointerLeave", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1344,42 +1344,42 @@ describe('ReactDOMEventListener', () => {
           type="div"
           targetRef={targetRef}
           targetProps={{
-            onPointerEnter: e => {
-              log.push('---- inner enter');
+            onPointerEnter: (e) => {
+              log.push("---- inner enter");
             },
-            onPointerLeave: e => {
-              log.push('---- inner leave');
+            onPointerLeave: (e) => {
+              log.push("---- inner leave");
             },
           }}
           parentProps={{
-            onPointerEnter: e => {
-              log.push('--- inner parent enter');
+            onPointerEnter: (e) => {
+              log.push("--- inner parent enter");
             },
-            onPointerLeave: e => {
-              log.push('--- inner parent leave');
+            onPointerLeave: (e) => {
+              log.push("--- inner parent leave");
             },
           }}
           outerProps={{
-            onPointerEnter: e => {
-              log.push('-- outer enter');
+            onPointerEnter: (e) => {
+              log.push("-- outer enter");
             },
-            onPointerLeave: e => {
-              log.push('-- outer leave');
+            onPointerLeave: (e) => {
+              log.push("-- outer leave");
             },
           }}
           outerParentProps={{
-            onPointerEnter: e => {
-              log.push('- outer parent enter');
+            onPointerEnter: (e) => {
+              log.push("- outer parent enter");
             },
-            onPointerLeave: e => {
-              log.push('- outer parent leave');
+            onPointerLeave: (e) => {
+              log.push("- outer parent leave");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
       targetRef.current.dispatchEvent(
-        new Event('pointerover', {
+        new Event("pointerover", {
           bubbles: true,
           cancelable: true,
           relatedTarget: null,
@@ -1395,7 +1395,7 @@ describe('ReactDOMEventListener', () => {
       `);
       log.length = 0;
       targetRef.current.dispatchEvent(
-        new Event('pointerout', {
+        new Event("pointerout", {
           bubbles: true,
           cancelable: true,
           relatedTarget: document.body,
@@ -1412,15 +1412,15 @@ describe('ReactDOMEventListener', () => {
 
   const setUntrackedValue = Object.getOwnPropertyDescriptor(
     HTMLInputElement.prototype,
-    'value',
+    "value",
   ).set;
 
   // The tests for these events are currently very limited
   // because they are fully synthetic, and so they don't
   // work very well across different roots. For now, we'll
   // just document the current state in these tests.
-  describe('polyfilled events', () => {
-    it('onBeforeInput', () => {
+  describe("polyfilled events", () => {
+    it("onBeforeInput", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1428,45 +1428,45 @@ describe('ReactDOMEventListener', () => {
           type="input"
           targetRef={targetRef}
           targetProps={{
-            onBeforeInput: e => {
-              log.push('---- inner');
+            onBeforeInput: (e) => {
+              log.push("---- inner");
             },
-            onBeforeInputCapture: e => {
-              log.push('---- inner capture');
+            onBeforeInputCapture: (e) => {
+              log.push("---- inner capture");
             },
           }}
           parentProps={{
-            onBeforeInput: e => {
-              log.push('--- inner parent');
+            onBeforeInput: (e) => {
+              log.push("--- inner parent");
             },
-            onBeforeInputCapture: e => {
-              log.push('--- inner parent capture');
+            onBeforeInputCapture: (e) => {
+              log.push("--- inner parent capture");
             },
           }}
           outerProps={{
-            onBeforeInput: e => {
-              log.push('-- outer');
+            onBeforeInput: (e) => {
+              log.push("-- outer");
             },
-            onBeforeInputCapture: e => {
-              log.push('-- outer capture');
+            onBeforeInputCapture: (e) => {
+              log.push("-- outer capture");
             },
           }}
           outerParentProps={{
-            onBeforeInput: e => {
-              log.push('- outer parent');
+            onBeforeInput: (e) => {
+              log.push("- outer parent");
             },
-            onBeforeInputCapture: e => {
-              expect(e.type).toBe('beforeinput');
-              log.push('- outer parent capture');
+            onBeforeInputCapture: (e) => {
+              expect(e.type).toBe("beforeinput");
+              log.push("- outer parent capture");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
-      const e = new Event('textInput', {
+      const e = new Event("textInput", {
         bubbles: true,
       });
-      e.data = 'abcd';
+      e.data = "abcd";
       targetRef.current.dispatchEvent(e);
       // Since this is a polyfilled event,
       // the capture and bubble phases are
@@ -1483,7 +1483,7 @@ describe('ReactDOMEventListener', () => {
       `);
     });
 
-    it('onChange', () => {
+    it("onChange", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1491,44 +1491,44 @@ describe('ReactDOMEventListener', () => {
           type="input"
           targetRef={targetRef}
           targetProps={{
-            onChange: e => {
-              log.push('---- inner');
+            onChange: (e) => {
+              log.push("---- inner");
             },
-            onChangeCapture: e => {
-              log.push('---- inner capture');
+            onChangeCapture: (e) => {
+              log.push("---- inner capture");
             },
           }}
           parentProps={{
-            onChange: e => {
-              log.push('--- inner parent');
+            onChange: (e) => {
+              log.push("--- inner parent");
             },
-            onChangeCapture: e => {
-              log.push('--- inner parent capture');
+            onChangeCapture: (e) => {
+              log.push("--- inner parent capture");
             },
           }}
           outerProps={{
-            onChange: e => {
-              log.push('-- outer');
+            onChange: (e) => {
+              log.push("-- outer");
             },
-            onChangeCapture: e => {
-              log.push('-- outer capture');
+            onChangeCapture: (e) => {
+              log.push("-- outer capture");
             },
           }}
           outerParentProps={{
-            onChange: e => {
-              log.push('- outer parent');
+            onChange: (e) => {
+              log.push("- outer parent");
             },
-            onChangeCapture: e => {
-              expect(e.type).toBe('change');
-              log.push('- outer parent capture');
+            onChangeCapture: (e) => {
+              expect(e.type).toBe("change");
+              log.push("- outer parent capture");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
-      setUntrackedValue.call(targetRef.current, 'hello');
+      setUntrackedValue.call(targetRef.current, "hello");
       targetRef.current.dispatchEvent(
-        new Event('input', {
+        new Event("input", {
           bubbles: true,
         }),
       );
@@ -1542,7 +1542,7 @@ describe('ReactDOMEventListener', () => {
       `);
     });
 
-    it('onCompositionStart', () => {
+    it("onCompositionStart", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1550,42 +1550,42 @@ describe('ReactDOMEventListener', () => {
           type="input"
           targetRef={targetRef}
           targetProps={{
-            onCompositionStart: e => {
-              log.push('---- inner');
+            onCompositionStart: (e) => {
+              log.push("---- inner");
             },
-            onCompositionStartCapture: e => {
-              log.push('---- inner capture');
+            onCompositionStartCapture: (e) => {
+              log.push("---- inner capture");
             },
           }}
           parentProps={{
-            onCompositionStart: e => {
-              log.push('--- inner parent');
+            onCompositionStart: (e) => {
+              log.push("--- inner parent");
             },
-            onCompositionStartCapture: e => {
-              log.push('--- inner parent capture');
+            onCompositionStartCapture: (e) => {
+              log.push("--- inner parent capture");
             },
           }}
           outerProps={{
-            onCompositionStart: e => {
-              log.push('-- outer');
+            onCompositionStart: (e) => {
+              log.push("-- outer");
             },
-            onCompositionStartCapture: e => {
-              log.push('-- outer capture');
+            onCompositionStartCapture: (e) => {
+              log.push("-- outer capture");
             },
           }}
           outerParentProps={{
-            onCompositionStart: e => {
-              log.push('- outer parent');
+            onCompositionStart: (e) => {
+              log.push("- outer parent");
             },
-            onCompositionStartCapture: e => {
-              expect(e.type).toBe('compositionstart');
-              log.push('- outer parent capture');
+            onCompositionStartCapture: (e) => {
+              expect(e.type).toBe("compositionstart");
+              log.push("- outer parent capture");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
-      const e = new Event('compositionstart', {
+      const e = new Event("compositionstart", {
         bubbles: true,
       });
       targetRef.current.dispatchEvent(e);
@@ -1604,7 +1604,7 @@ describe('ReactDOMEventListener', () => {
       `);
     });
 
-    it('onCompositionEnd', () => {
+    it("onCompositionEnd", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1612,42 +1612,42 @@ describe('ReactDOMEventListener', () => {
           type="input"
           targetRef={targetRef}
           targetProps={{
-            onCompositionEnd: e => {
-              log.push('---- inner');
+            onCompositionEnd: (e) => {
+              log.push("---- inner");
             },
-            onCompositionEndCapture: e => {
-              log.push('---- inner capture');
+            onCompositionEndCapture: (e) => {
+              log.push("---- inner capture");
             },
           }}
           parentProps={{
-            onCompositionEnd: e => {
-              log.push('--- inner parent');
+            onCompositionEnd: (e) => {
+              log.push("--- inner parent");
             },
-            onCompositionEndCapture: e => {
-              log.push('--- inner parent capture');
+            onCompositionEndCapture: (e) => {
+              log.push("--- inner parent capture");
             },
           }}
           outerProps={{
-            onCompositionEnd: e => {
-              log.push('-- outer');
+            onCompositionEnd: (e) => {
+              log.push("-- outer");
             },
-            onCompositionEndCapture: e => {
-              log.push('-- outer capture');
+            onCompositionEndCapture: (e) => {
+              log.push("-- outer capture");
             },
           }}
           outerParentProps={{
-            onCompositionEnd: e => {
-              log.push('- outer parent');
+            onCompositionEnd: (e) => {
+              log.push("- outer parent");
             },
-            onCompositionEndCapture: e => {
-              expect(e.type).toBe('compositionend');
-              log.push('- outer parent capture');
+            onCompositionEndCapture: (e) => {
+              expect(e.type).toBe("compositionend");
+              log.push("- outer parent capture");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
-      const e = new Event('compositionend', {
+      const e = new Event("compositionend", {
         bubbles: true,
       });
       targetRef.current.dispatchEvent(e);
@@ -1666,7 +1666,7 @@ describe('ReactDOMEventListener', () => {
       `);
     });
 
-    it('onCompositionUpdate', () => {
+    it("onCompositionUpdate", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1674,42 +1674,42 @@ describe('ReactDOMEventListener', () => {
           type="input"
           targetRef={targetRef}
           targetProps={{
-            onCompositionUpdate: e => {
-              log.push('---- inner');
+            onCompositionUpdate: (e) => {
+              log.push("---- inner");
             },
-            onCompositionUpdateCapture: e => {
-              log.push('---- inner capture');
+            onCompositionUpdateCapture: (e) => {
+              log.push("---- inner capture");
             },
           }}
           parentProps={{
-            onCompositionUpdate: e => {
-              log.push('--- inner parent');
+            onCompositionUpdate: (e) => {
+              log.push("--- inner parent");
             },
-            onCompositionUpdateCapture: e => {
-              log.push('--- inner parent capture');
+            onCompositionUpdateCapture: (e) => {
+              log.push("--- inner parent capture");
             },
           }}
           outerProps={{
-            onCompositionUpdate: e => {
-              log.push('-- outer');
+            onCompositionUpdate: (e) => {
+              log.push("-- outer");
             },
-            onCompositionUpdateCapture: e => {
-              log.push('-- outer capture');
+            onCompositionUpdateCapture: (e) => {
+              log.push("-- outer capture");
             },
           }}
           outerParentProps={{
-            onCompositionUpdate: e => {
-              log.push('- outer parent');
+            onCompositionUpdate: (e) => {
+              log.push("- outer parent");
             },
-            onCompositionUpdateCapture: e => {
-              expect(e.type).toBe('compositionupdate');
-              log.push('- outer parent capture');
+            onCompositionUpdateCapture: (e) => {
+              expect(e.type).toBe("compositionupdate");
+              log.push("- outer parent capture");
             },
           }}
         />,
       );
       expect(log.length).toBe(0);
-      const e = new Event('compositionupdate', {
+      const e = new Event("compositionupdate", {
         bubbles: true,
       });
       targetRef.current.dispatchEvent(e);
@@ -1728,7 +1728,7 @@ describe('ReactDOMEventListener', () => {
       `);
     });
 
-    it('onSelect', () => {
+    it("onSelect", () => {
       const log = [];
       const targetRef = React.createRef();
       render(
@@ -1736,36 +1736,36 @@ describe('ReactDOMEventListener', () => {
           type="input"
           targetRef={targetRef}
           targetProps={{
-            onSelect: e => {
-              log.push('---- inner');
+            onSelect: (e) => {
+              log.push("---- inner");
             },
-            onSelectCapture: e => {
-              log.push('---- inner capture');
+            onSelectCapture: (e) => {
+              log.push("---- inner capture");
             },
           }}
           parentProps={{
-            onSelect: e => {
-              log.push('--- inner parent');
+            onSelect: (e) => {
+              log.push("--- inner parent");
             },
-            onSelectCapture: e => {
-              log.push('--- inner parent capture');
+            onSelectCapture: (e) => {
+              log.push("--- inner parent capture");
             },
           }}
           outerProps={{
-            onSelect: e => {
-              log.push('-- outer');
+            onSelect: (e) => {
+              log.push("-- outer");
             },
-            onSelectCapture: e => {
-              log.push('-- outer capture');
+            onSelectCapture: (e) => {
+              log.push("-- outer capture");
             },
           }}
           outerParentProps={{
-            onSelect: e => {
-              log.push('- outer parent');
+            onSelect: (e) => {
+              log.push("- outer parent");
             },
-            onSelectCapture: e => {
-              expect(e.type).toBe('select');
-              log.push('- outer parent capture');
+            onSelectCapture: (e) => {
+              expect(e.type).toBe("select");
+              log.push("- outer parent capture");
             },
           }}
         />,
@@ -1773,7 +1773,7 @@ describe('ReactDOMEventListener', () => {
       expect(log.length).toBe(0);
       targetRef.current.focus();
       targetRef.current.dispatchEvent(
-        new Event('keydown', {
+        new Event("keydown", {
           bubbles: true,
         }),
       );
@@ -1835,36 +1835,36 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -1892,36 +1892,36 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -1951,36 +1951,36 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2012,28 +2012,28 @@ describe('ReactDOMEventListener', () => {
           }
         }
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2064,28 +2064,28 @@ describe('ReactDOMEventListener', () => {
           }
         }
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2118,28 +2118,28 @@ describe('ReactDOMEventListener', () => {
           }
         }
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2162,49 +2162,49 @@ describe('ReactDOMEventListener', () => {
     render(
       <Fixture
         type={eventConfig.type}
-        targetRef={node => {
+        targetRef={(node) => {
           targetRef.current = node;
           if (node) {
             // No cleanup, assume we render once.
-            node.addEventListener(eventConfig.nativeEvent, e => {
+            node.addEventListener(eventConfig.nativeEvent, (e) => {
               // We *don't* expect this to appear in the log
               // at all because the event is stopped earlier.
-              log.push('---- inner (native)');
+              log.push("---- inner (native)");
             });
           }
         }}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             e.stopPropagation(); // <---------
-            log.push('-- outer capture');
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2225,49 +2225,49 @@ describe('ReactDOMEventListener', () => {
     render(
       <Fixture
         type={eventConfig.type}
-        targetRef={node => {
+        targetRef={(node) => {
           targetRef.current = node;
           if (node) {
             // No cleanup, assume we render once.
-            node.addEventListener(eventConfig.nativeEvent, e => {
+            node.addEventListener(eventConfig.nativeEvent, (e) => {
               // We *don't* expect this to appear in the log
               // at all because the event is stopped earlier.
-              log.push('---- inner (native)');
+              log.push("---- inner (native)");
             });
           }
         }}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             e.stopPropagation(); // <---------
-            log.push('--- inner parent capture');
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2291,47 +2291,47 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
+          [eventConfig.reactEvent]: (e) => {
             e.stopPropagation(); // <---------
-            log.push('---- inner');
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
-        outerRef={node => {
+        outerRef={(node) => {
           if (node) {
             // No cleanup, assume we render once.
-            node.addEventListener(eventConfig.nativeEvent, e => {
+            node.addEventListener(eventConfig.nativeEvent, (e) => {
               // We *don't* expect this to appear in the log
               // at all because the event is stopped earlier.
-              log.push('-- outer (native)');
+              log.push("-- outer (native)");
             });
           }
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2356,37 +2356,37 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
+          [eventConfig.reactEvent]: (e) => {
             e.stopPropagation(); // <---------
-            log.push('-- outer');
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2413,49 +2413,49 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
-        outerParentRef={node => {
+        outerParentRef={(node) => {
           if (node) {
             // No cleanup, assume we render once.
             node.addEventListener(
               eventConfig.nativeEvent,
-              e => {
-                log.push('- outer parent capture (native)');
+              (e) => {
+                log.push("- outer parent capture (native)");
                 e.stopPropagation(); // <---------
               },
-              {capture: true},
+              { capture: true },
             );
           }
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2481,49 +2481,49 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
-        parentRef={node => {
+        parentRef={(node) => {
           if (node) {
             // No cleanup, assume we render once.
             node.addEventListener(
               eventConfig.nativeEvent,
-              e => {
-                log.push('--- inner parent capture (native)');
+              (e) => {
+                log.push("--- inner parent capture (native)");
                 e.stopPropagation(); // <---------
               },
-              {capture: true},
+              { capture: true },
             );
           }
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2549,47 +2549,47 @@ describe('ReactDOMEventListener', () => {
     render(
       <Fixture
         type={eventConfig.type}
-        targetRef={node => {
+        targetRef={(node) => {
           targetRef.current = node;
           if (node) {
             // No cleanup, assume we render once.
-            node.addEventListener(eventConfig.nativeEvent, e => {
-              log.push('---- inner (native)');
+            node.addEventListener(eventConfig.nativeEvent, (e) => {
+              log.push("---- inner (native)");
               e.stopPropagation(); // <---------
             });
           }
         }}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2615,47 +2615,47 @@ describe('ReactDOMEventListener', () => {
     render(
       <Fixture
         type={eventConfig.type}
-        targetRef={node => {
+        targetRef={(node) => {
           targetRef.current = node;
           if (node) {
             // No cleanup, assume we render once.
-            node.addEventListener(eventConfig.nativeEvent, e => {
-              log.push('---- inner (native)');
+            node.addEventListener(eventConfig.nativeEvent, (e) => {
+              log.push("---- inner (native)");
               e.stopPropagation(); // <---------
             });
           }
         }}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2686,45 +2686,45 @@ describe('ReactDOMEventListener', () => {
         type={eventConfig.type}
         targetRef={targetRef}
         targetProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('---- inner');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("---- inner");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('---- inner capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("---- inner capture");
           },
         }}
         parentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('--- inner parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("--- inner parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('--- inner parent capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("--- inner parent capture");
           },
         }}
-        outerRef={node => {
+        outerRef={(node) => {
           if (node) {
             // No cleanup, assume we render once.
-            node.addEventListener(eventConfig.nativeEvent, e => {
-              log.push('-- outer (native)');
+            node.addEventListener(eventConfig.nativeEvent, (e) => {
+              log.push("-- outer (native)");
               e.stopPropagation(); // <---------
             });
           }
         }}
         outerProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('-- outer');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("-- outer");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
-            log.push('-- outer capture');
+          [eventConfig.reactEvent + "Capture"]: (e) => {
+            log.push("-- outer capture");
           },
         }}
         outerParentProps={{
-          [eventConfig.reactEvent]: e => {
-            log.push('- outer parent');
+          [eventConfig.reactEvent]: (e) => {
+            log.push("- outer parent");
           },
-          [eventConfig.reactEvent + 'Capture']: e => {
+          [eventConfig.reactEvent + "Capture"]: (e) => {
             expect(e.type).toBe(eventConfig.reactEventType);
-            log.push('- outer parent capture');
+            log.push("- outer parent capture");
           },
         }}
       />,
@@ -2774,17 +2774,18 @@ describe('ReactDOMEventListener', () => {
         outerRef={outerRef}
         outerProps={outerProps}
         outerParentRef={outerParentRef}
-        outerParentProps={outerParentProps}>
+        outerParentProps={outerParentProps}
+      >
         <NestedReact>{inner}</NestedReact>
       </Outer>
     );
   }
 
-  function NestedReact({children}) {
+  function NestedReact({ children }) {
     const ref = React.useRef();
     React.useLayoutEffect(() => {
       const parent = ref.current;
-      const innerContainer = document.createElement('div');
+      const innerContainer = document.createElement("div");
       parent.appendChild(innerContainer);
       InnerReactDOM.render(children, innerContainer);
       return () => {
@@ -2795,7 +2796,7 @@ describe('ReactDOMEventListener', () => {
     return <div ref={ref} />;
   }
 
-  function Inner({type, targetRef, targetProps, parentRef, parentProps}) {
+  function Inner({ type, targetRef, targetProps, parentRef, parentProps }) {
     const T = type;
     return (
       <div {...parentProps} ref={parentRef}>
@@ -2822,8 +2823,8 @@ describe('ReactDOMEventListener', () => {
 
   function unindent(str) {
     return str[0]
-      .split('\n')
-      .map(s => s.trim())
-      .filter(s => s !== '');
+      .split("\n")
+      .map((s) => s.trim())
+      .filter((s) => s !== "");
   }
 });

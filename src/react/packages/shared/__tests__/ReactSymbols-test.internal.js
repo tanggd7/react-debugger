@@ -6,12 +6,12 @@
  *
  * @emails react-core
  */
-'use strict';
+"use strict";
 
-describe('ReactSymbols', () => {
+describe("ReactSymbols", () => {
   beforeEach(() => jest.resetModules());
 
-  const expectToBeUnique = keyValuePairs => {
+  const expectToBeUnique = (keyValuePairs) => {
     const map = new Map();
     keyValuePairs.forEach(([key, value]) => {
       if (map.has(value)) {
@@ -23,7 +23,7 @@ describe('ReactSymbols', () => {
     });
   };
 
-  it('Symbol values should be unique', () => {
-    expectToBeUnique(Object.entries(require('shared/ReactSymbols')));
+  it("Symbol values should be unique", () => {
+    expectToBeUnique(Object.entries(require("shared/ReactSymbols")));
   });
 });

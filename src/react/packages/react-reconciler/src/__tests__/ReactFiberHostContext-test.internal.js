@@ -8,7 +8,7 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let act;
@@ -16,22 +16,22 @@ let ReactFiberReconciler;
 let ConcurrentRoot;
 let DefaultEventPriority;
 
-describe('ReactFiberHostContext', () => {
+describe("ReactFiberHostContext", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
+    React = require("react");
     act = React.unstable_act;
-    ReactFiberReconciler = require('react-reconciler');
+    ReactFiberReconciler = require("react-reconciler");
     ConcurrentRoot =
-      require('react-reconciler/src/ReactRootTags').ConcurrentRoot;
+      require("react-reconciler/src/ReactRootTags").ConcurrentRoot;
     DefaultEventPriority =
-      require('react-reconciler/src/ReactEventPriorities').DefaultEventPriority;
+      require("react-reconciler/src/ReactEventPriorities").DefaultEventPriority;
   });
 
   global.IS_REACT_ACT_ENVIRONMENT = true;
 
   // @gate __DEV__
-  it('should send the context to prepareForCommit and resetAfterCommit', () => {
+  it("should send the context to prepareForCommit and resetAfterCommit", () => {
     const rootContext = {};
     const childContext = {};
     const Renderer = ReactFiberReconciler({
@@ -93,7 +93,7 @@ describe('ReactFiberHostContext', () => {
       ConcurrentRoot,
       null,
       false,
-      '',
+      "",
       null,
     );
     act(() => {

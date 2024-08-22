@@ -4,19 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-             
-                    
-                 
-                 
-                         
 
-import ReactDOMSharedInternals from 'shared/ReactDOMSharedInternals';
+import ReactDOMSharedInternals from "shared/ReactDOMSharedInternals";
 const Dispatcher = ReactDOMSharedInternals.Dispatcher;
 
-export function prefetchDNS(href        ) {
-  let passedOptionArg     ;
+export function prefetchDNS(href) {
+  let passedOptionArg;
   if (__DEV__) {
     if (arguments[1] !== undefined) {
       passedOptionArg = arguments[1];
@@ -43,7 +38,7 @@ export function prefetchDNS(href        ) {
   // so we favor silent bailout over warning or erroring.
 }
 
-export function preconnect(href        , options                     ) {
+export function preconnect(href, options) {
   const dispatcher = Dispatcher.current;
   if (dispatcher) {
     dispatcher.preconnect(href, options);
@@ -53,7 +48,7 @@ export function preconnect(href        , options                     ) {
   // so we favor silent bailout over warning or erroring.
 }
 
-export function preload(href        , options                ) {
+export function preload(href, options) {
   const dispatcher = Dispatcher.current;
   if (dispatcher) {
     dispatcher.preload(href, options);
@@ -63,7 +58,7 @@ export function preload(href        , options                ) {
   // so we favor silent bailout over warning or erroring.
 }
 
-export function preinit(href        , options                ) {
+export function preinit(href, options) {
   const dispatcher = Dispatcher.current;
   if (dispatcher) {
     dispatcher.preinit(href, options);

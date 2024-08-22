@@ -7,21 +7,21 @@
  * @emails react-core
  * @jest-environment node
  */
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
 let waitForAll;
 let act;
 
-describe('ReactSuspense', () => {
+describe("ReactSuspense", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     act = InternalTestUtils.act;
   });
@@ -29,7 +29,7 @@ describe('ReactSuspense', () => {
   function createThenable() {
     let completed = false;
     let resolve;
-    const promise = new Promise(res => {
+    const promise = new Promise((res) => {
       resolve = () => {
         completed = true;
         res();
@@ -39,30 +39,30 @@ describe('ReactSuspense', () => {
       if (!completed) {
         throw promise;
       }
-      return 'Done';
+      return "Done";
     };
-    return {promise, resolve, PromiseComp};
+    return { promise, resolve, PromiseComp };
   }
 
   // Warning don't fire in production, so this test passes in prod even if
   // the suspenseCallback feature is not enabled
   // @gate www || !__DEV__
-  it('check type', async () => {
-    const {PromiseComp} = createThenable();
+  it("check type", async () => {
+    const { PromiseComp } = createThenable();
 
     const elementBadType = (
-      <React.Suspense suspenseCallback={1} fallback={'Waiting'}>
+      <React.Suspense suspenseCallback={1} fallback={"Waiting"}>
         <PromiseComp />
       </React.Suspense>
     );
 
     ReactNoop.render(elementBadType);
     await expect(async () => await waitForAll([])).toErrorDev([
-      'Warning: Unexpected type for suspenseCallback.',
+      "Warning: Unexpected type for suspenseCallback.",
     ]);
 
     const elementMissingCallback = (
-      <React.Suspense fallback={'Waiting'}>
+      <React.Suspense fallback={"Waiting"}>
         <PromiseComp />
       </React.Suspense>
     );
@@ -72,34 +72,34 @@ describe('ReactSuspense', () => {
   });
 
   // @gate www
-  it('1 then 0 suspense callback', async () => {
-    const {promise, resolve, PromiseComp} = createThenable();
+  it("1 then 0 suspense callback", async () => {
+    const { promise, resolve, PromiseComp } = createThenable();
 
     let ops = [];
-    const suspenseCallback = thenables => {
+    const suspenseCallback = (thenables) => {
       ops.push(thenables);
     };
 
     const element = (
-      <React.Suspense suspenseCallback={suspenseCallback} fallback={'Waiting'}>
+      <React.Suspense suspenseCallback={suspenseCallback} fallback={"Waiting"}>
         <PromiseComp />
       </React.Suspense>
     );
 
     ReactNoop.render(element);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Waiting');
+    expect(ReactNoop).toMatchRenderedOutput("Waiting");
     expect(ops).toEqual([new Set([promise])]);
     ops = [];
 
     await act(() => resolve());
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Done');
+    expect(ReactNoop).toMatchRenderedOutput("Done");
     expect(ops).toEqual([]);
   });
 
   // @gate www
-  it('2 then 1 then 0 suspense callback', async () => {
+  it("2 then 1 then 0 suspense callback", async () => {
     const {
       promise: promise1,
       resolve: resolve1,
@@ -112,14 +112,15 @@ describe('ReactSuspense', () => {
     } = createThenable();
 
     let ops = [];
-    const suspenseCallback1 = thenables => {
+    const suspenseCallback1 = (thenables) => {
       ops.push(thenables);
     };
 
     const element = (
       <React.Suspense
         suspenseCallback={suspenseCallback1}
-        fallback={'Waiting Tier 1'}>
+        fallback={"Waiting Tier 1"}
+      >
         <PromiseComp1 />
         <PromiseComp2 />
       </React.Suspense>
@@ -127,44 +128,46 @@ describe('ReactSuspense', () => {
 
     ReactNoop.render(element);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Waiting Tier 1');
+    expect(ReactNoop).toMatchRenderedOutput("Waiting Tier 1");
     expect(ops).toEqual([new Set([promise1])]);
     ops = [];
 
     await act(() => resolve1());
     ReactNoop.render(element);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Waiting Tier 1');
+    expect(ReactNoop).toMatchRenderedOutput("Waiting Tier 1");
     expect(ops).toEqual([new Set([promise2])]);
     ops = [];
 
     await act(() => resolve2());
     ReactNoop.render(element);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('DoneDone');
+    expect(ReactNoop).toMatchRenderedOutput("DoneDone");
     expect(ops).toEqual([]);
   });
 
   // @gate www
-  it('nested suspense promises are reported only for their tier', async () => {
-    const {promise, PromiseComp} = createThenable();
+  it("nested suspense promises are reported only for their tier", async () => {
+    const { promise, PromiseComp } = createThenable();
 
     const ops1 = [];
-    const suspenseCallback1 = thenables => {
+    const suspenseCallback1 = (thenables) => {
       ops1.push(thenables);
     };
     const ops2 = [];
-    const suspenseCallback2 = thenables => {
+    const suspenseCallback2 = (thenables) => {
       ops2.push(thenables);
     };
 
     const element = (
       <React.Suspense
         suspenseCallback={suspenseCallback1}
-        fallback={'Waiting Tier 1'}>
+        fallback={"Waiting Tier 1"}
+      >
         <React.Suspense
           suspenseCallback={suspenseCallback2}
-          fallback={'Waiting Tier 2'}>
+          fallback={"Waiting Tier 2"}
+        >
           <PromiseComp />
         </React.Suspense>
       </React.Suspense>
@@ -172,13 +175,13 @@ describe('ReactSuspense', () => {
 
     ReactNoop.render(element);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Waiting Tier 2');
+    expect(ReactNoop).toMatchRenderedOutput("Waiting Tier 2");
     expect(ops1).toEqual([]);
     expect(ops2).toEqual([new Set([promise])]);
   });
 
   // @gate www
-  it('competing suspense promises', async () => {
+  it("competing suspense promises", async () => {
     const {
       promise: promise1,
       resolve: resolve1,
@@ -191,21 +194,23 @@ describe('ReactSuspense', () => {
     } = createThenable();
 
     let ops1 = [];
-    const suspenseCallback1 = thenables => {
+    const suspenseCallback1 = (thenables) => {
       ops1.push(thenables);
     };
     let ops2 = [];
-    const suspenseCallback2 = thenables => {
+    const suspenseCallback2 = (thenables) => {
       ops2.push(thenables);
     };
 
     const element = (
       <React.Suspense
         suspenseCallback={suspenseCallback1}
-        fallback={'Waiting Tier 1'}>
+        fallback={"Waiting Tier 1"}
+      >
         <React.Suspense
           suspenseCallback={suspenseCallback2}
-          fallback={'Waiting Tier 2'}>
+          fallback={"Waiting Tier 2"}
+        >
           <PromiseComp2 />
         </React.Suspense>
         <PromiseComp1 />
@@ -214,21 +219,21 @@ describe('ReactSuspense', () => {
 
     ReactNoop.render(element);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Waiting Tier 1');
+    expect(ReactNoop).toMatchRenderedOutput("Waiting Tier 1");
     expect(ops1).toEqual([new Set([promise1])]);
     expect(ops2).toEqual([]);
     ops1 = [];
     ops2 = [];
 
     await act(() => resolve1());
-    expect(ReactNoop).toMatchRenderedOutput('Waiting Tier 2Done');
+    expect(ReactNoop).toMatchRenderedOutput("Waiting Tier 2Done");
     expect(ops1).toEqual([]);
     expect(ops2).toEqual([new Set([promise2])]);
     ops1 = [];
     ops2 = [];
 
     await act(() => resolve2());
-    expect(ReactNoop).toMatchRenderedOutput('DoneDone');
+    expect(ReactNoop).toMatchRenderedOutput("DoneDone");
     expect(ops1).toEqual([]);
     expect(ops2).toEqual([]);
   });

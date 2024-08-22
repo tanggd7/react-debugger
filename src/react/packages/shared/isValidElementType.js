@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 import {
@@ -24,19 +24,19 @@ import {
   REACT_OFFSCREEN_TYPE,
   REACT_CACHE_TYPE,
   REACT_TRACING_MARKER_TYPE,
-} from 'shared/ReactSymbols';
+} from "shared/ReactSymbols";
 import {
   enableScopeAPI,
   enableCacheElement,
   enableTransitionTracing,
   enableDebugTracing,
   enableLegacyHidden,
-} from './ReactFeatureFlags';
+} from "./ReactFeatureFlags";
 
-const REACT_CLIENT_REFERENCE         = Symbol.for('react.client.reference');
+const REACT_CLIENT_REFERENCE = Symbol.for("react.client.reference");
 
-export default function isValidElementType(type       )          {
-  if (typeof type === 'string' || typeof type === 'function') {
+export default function isValidElementType(type) {
+  if (typeof type === "string" || typeof type === "function") {
     return true;
   }
 
@@ -57,7 +57,7 @@ export default function isValidElementType(type       )          {
     return true;
   }
 
-  if (typeof type === 'object' && type !== null) {
+  if (typeof type === "object" && type !== null) {
     if (
       type.$$typeof === REACT_LAZY_TYPE ||
       type.$$typeof === REACT_MEMO_TYPE ||

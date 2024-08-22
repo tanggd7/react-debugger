@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *        
+ *
  */
 
 const hasReadOnlyValue = {
@@ -17,10 +17,7 @@ const hasReadOnlyValue = {
   submit: true,
 };
 
-export function checkControlledValueProps(
-  tagName        ,
-  props        ,
-)       {
+export function checkControlledValueProps(tagName, props) {
   if (__DEV__) {
     if (
       !(
@@ -33,10 +30,10 @@ export function checkControlledValueProps(
       )
     ) {
       console.error(
-        'You provided a `value` prop to a form field without an ' +
-          '`onChange` handler. This will render a read-only field. If ' +
-          'the field should be mutable use `defaultValue`. Otherwise, ' +
-          'set either `onChange` or `readOnly`.',
+        "You provided a `value` prop to a form field without an " +
+          "`onChange` handler. This will render a read-only field. If " +
+          "the field should be mutable use `defaultValue`. Otherwise, " +
+          "set either `onChange` or `readOnly`.",
       );
     }
 
@@ -49,10 +46,10 @@ export function checkControlledValueProps(
       )
     ) {
       console.error(
-        'You provided a `checked` prop to a form field without an ' +
-          '`onChange` handler. This will render a read-only field. If ' +
-          'the field should be mutable use `defaultChecked`. Otherwise, ' +
-          'set either `onChange` or `readOnly`.',
+        "You provided a `checked` prop to a form field without an " +
+          "`onChange` handler. This will render a read-only field. If " +
+          "the field should be mutable use `defaultChecked`. Otherwise, " +
+          "set either `onChange` or `readOnly`.",
       );
     }
   }

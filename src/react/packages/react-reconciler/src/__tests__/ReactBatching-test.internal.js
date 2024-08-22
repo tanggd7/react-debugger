@@ -9,19 +9,19 @@ let Suspense;
 let TextResource;
 let act;
 
-describe('ReactBlockingMode', () => {
+describe("ReactBlockingMode", () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
 
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    ReactCache = require('react-cache');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    ReactCache = require("react-cache");
     Suspense = React.Suspense;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     assertLog = InternalTestUtils.assertLog;
     act = InternalTestUtils.act;
@@ -51,7 +51,7 @@ describe('ReactBlockingMode', () => {
       Scheduler.log(text);
       return props.text;
     } catch (promise) {
-      if (typeof promise.then === 'function') {
+      if (typeof promise.then === "function") {
         Scheduler.log(`Suspend! [${text}]`);
       } else {
         Scheduler.log(`Error! [${text}]`);
@@ -60,7 +60,7 @@ describe('ReactBlockingMode', () => {
     }
   }
 
-  it('updates flush without yielding in the next event', async () => {
+  it("updates flush without yielding in the next event", async () => {
     const root = ReactNoop.createRoot();
 
     root.render(
@@ -74,16 +74,16 @@ describe('ReactBlockingMode', () => {
     // Nothing should have rendered yet
     expect(root).toMatchRenderedOutput(null);
 
-    await waitForAll(['A', 'B', 'C']);
-    expect(root).toMatchRenderedOutput('ABC');
+    await waitForAll(["A", "B", "C"]);
+    expect(root).toMatchRenderedOutput("ABC");
   });
 
-  it('layout updates flush synchronously in same event', async () => {
-    const {useLayoutEffect} = React;
+  it("layout updates flush synchronously in same event", async () => {
+    const { useLayoutEffect } = React;
 
     function App() {
       useLayoutEffect(() => {
-        Scheduler.log('Layout effect');
+        Scheduler.log("Layout effect");
       });
       return <Text text="Hi" />;
     }
@@ -93,11 +93,11 @@ describe('ReactBlockingMode', () => {
     expect(root).toMatchRenderedOutput(null);
     assertLog([]);
 
-    await waitForAll(['Hi', 'Layout effect']);
-    expect(root).toMatchRenderedOutput('Hi');
+    await waitForAll(["Hi", "Layout effect"]);
+    expect(root).toMatchRenderedOutput("Hi");
   });
 
-  it('uses proper Suspense semantics, not legacy ones', async () => {
+  it("uses proper Suspense semantics, not legacy ones", async () => {
     const root = ReactNoop.createRoot();
     root.render(
       <Suspense fallback={<Text text="Loading..." />}>
@@ -113,14 +113,14 @@ describe('ReactBlockingMode', () => {
       </Suspense>,
     );
 
-    await waitForAll(['A', 'Suspend! [B]', 'Loading...']);
+    await waitForAll(["A", "Suspend! [B]", "Loading..."]);
     // In Legacy Mode, A and B would mount in a hidden primary tree. In
     // Concurrent Mode, nothing in the primary tree should mount. But the
     // fallback should mount immediately.
-    expect(root).toMatchRenderedOutput('Loading...');
+    expect(root).toMatchRenderedOutput("Loading...");
 
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [B]', 'A', 'B', 'C']);
+    assertLog(["Promise resolved [B]", "A", "B", "C"]);
     expect(root).toMatchRenderedOutput(
       <>
         <span>A</span>
@@ -130,13 +130,13 @@ describe('ReactBlockingMode', () => {
     );
   });
 
-  it('flushSync does not flush batched work', async () => {
-    const {useState, forwardRef, useImperativeHandle} = React;
+  it("flushSync does not flush batched work", async () => {
+    const { useState, forwardRef, useImperativeHandle } = React;
     const root = ReactNoop.createRoot();
 
-    const Foo = forwardRef(({label}, ref) => {
+    const Foo = forwardRef(({ label }, ref) => {
       const [step, setStep] = useState(0);
-      useImperativeHandle(ref, () => ({setStep}));
+      useImperativeHandle(ref, () => ({ setStep }));
       return <Text text={label + step} />;
     });
 
@@ -149,8 +149,8 @@ describe('ReactBlockingMode', () => {
       </>,
     );
 
-    await waitForAll(['A0', 'B0']);
-    expect(root).toMatchRenderedOutput('A0B0');
+    await waitForAll(["A0", "B0"]);
+    expect(root).toMatchRenderedOutput("A0B0");
 
     // Schedule a batched update to the first sibling
     ReactNoop.batchedUpdates(() => foo1.current.setStep(1));
@@ -163,17 +163,17 @@ describe('ReactBlockingMode', () => {
     );
 
     // Now flush the first update
-    if (gate(flags => flags.enableUnifiedSyncLane)) {
-      assertLog(['A1', 'B1']);
-      expect(root).toMatchRenderedOutput('A1B1');
+    if (gate((flags) => flags.enableUnifiedSyncLane)) {
+      assertLog(["A1", "B1"]);
+      expect(root).toMatchRenderedOutput("A1B1");
     } else {
       // Only the second update should have flushed synchronously
-      assertLog(['B1']);
-      expect(root).toMatchRenderedOutput('A0B1');
+      assertLog(["B1"]);
+      expect(root).toMatchRenderedOutput("A0B1");
 
       // Now flush the first update
-      await waitForAll(['A1']);
-      expect(root).toMatchRenderedOutput('A1B1');
+      await waitForAll(["A1"]);
+      expect(root).toMatchRenderedOutput("A1B1");
     }
   });
 });

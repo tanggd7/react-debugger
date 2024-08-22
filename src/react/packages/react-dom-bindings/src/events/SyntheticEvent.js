@@ -4,19 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 /* eslint valid-typeof: 0 */
 
-                                                                   
-
-import assign from 'shared/assign';
-import getEventCharCode from './getEventCharCode';
-
-                           
-                                                                               
-  
+import assign from "shared/assign";
+import getEventCharCode from "./getEventCharCode";
 
 function functionThatReturnsTrue() {
   return true;
@@ -28,7 +22,7 @@ function functionThatReturnsFalse() {
 
 // This is intentionally a factory so that we have different returned constructors.
 // If we had a single constructor, it would be megamorphic and engines would deopt.
-function createSyntheticEvent(Interface                    ) {
+function createSyntheticEvent(Interface) {
   /**
    * Synthetic events are dispatched by event plugins, typically in response to a
    * top-level event delegation handler.
@@ -44,11 +38,11 @@ function createSyntheticEvent(Interface                    ) {
    */
   // $FlowFixMe[missing-this-annot]
   function SyntheticBaseEvent(
-    reactName               ,
-    reactEventType        ,
-    targetInst              ,
-    nativeEvent                                  ,
-    nativeEventTarget                    ,
+    reactName,
+    reactEventType,
+    targetInst,
+    nativeEvent,
+    nativeEventTarget,
   ) {
     this._reactName = reactName;
     this._targetInst = targetInst;
@@ -95,7 +89,7 @@ function createSyntheticEvent(Interface                    ) {
       if (event.preventDefault) {
         event.preventDefault();
         // $FlowFixMe[illegal-typeof] - flow is not aware of `unknown` in IE
-      } else if (typeof event.returnValue !== 'unknown') {
+      } else if (typeof event.returnValue !== "unknown") {
         event.returnValue = false;
       }
       this.isDefaultPrevented = functionThatReturnsTrue;
@@ -111,7 +105,7 @@ function createSyntheticEvent(Interface                    ) {
       if (event.stopPropagation) {
         event.stopPropagation();
         // $FlowFixMe[illegal-typeof] - flow is not aware of `unknown` in IE
-      } else if (typeof event.cancelBubble !== 'unknown') {
+      } else if (typeof event.cancelBubble !== "unknown") {
         // The ChangeEventPlugin registers a "propertychange" event for
         // IE. This event does not support bubbling or cancelling, and
         // any references to cancelBubble throw "Member not found".  A
@@ -150,29 +144,28 @@ const EventInterface = {
   eventPhase: 0,
   bubbles: 0,
   cancelable: 0,
-  timeStamp: function (event                             ) {
+  timeStamp: function (event) {
     return event.timeStamp || Date.now();
   },
   defaultPrevented: 0,
   isTrusted: 0,
 };
-export const SyntheticEvent             = createSyntheticEvent(EventInterface);
+export const SyntheticEvent = createSyntheticEvent(EventInterface);
 
-const UIEventInterface                     = {
+const UIEventInterface = {
   ...EventInterface,
   view: 0,
   detail: 0,
 };
-export const SyntheticUIEvent             =
-  createSyntheticEvent(UIEventInterface);
+export const SyntheticUIEvent = createSyntheticEvent(UIEventInterface);
 
 let lastMovementX;
 let lastMovementY;
 let lastMouseEvent;
 
-function updateMouseMovementPolyfillState(event                             ) {
+function updateMouseMovementPolyfillState(event) {
   if (event !== lastMouseEvent) {
-    if (lastMouseEvent && event.type === 'mousemove') {
+    if (lastMouseEvent && event.type === "mousemove") {
       // $FlowFixMe[unsafe-arithmetic] assuming this is a number
       lastMovementX = event.screenX - lastMouseEvent.screenX;
       // $FlowFixMe[unsafe-arithmetic] assuming this is a number
@@ -189,7 +182,7 @@ function updateMouseMovementPolyfillState(event                             ) {
  * @interface MouseEvent
  * @see http://www.w3.org/TR/DOM-Level-3-Events/
  */
-const MouseEventInterface                     = {
+const MouseEventInterface = {
   ...UIEventInterface,
   screenX: 0,
   screenY: 0,
@@ -213,14 +206,14 @@ const MouseEventInterface                     = {
     return event.relatedTarget;
   },
   movementX: function (event) {
-    if ('movementX' in event) {
+    if ("movementX" in event) {
       return event.movementX;
     }
     updateMouseMovementPolyfillState(event);
     return lastMovementX;
   },
   movementY: function (event) {
-    if ('movementY' in event) {
+    if ("movementY" in event) {
       return event.movementY;
     }
     // Don't need to call updateMouseMovementPolyfillState() here
@@ -229,43 +222,40 @@ const MouseEventInterface                     = {
     return lastMovementY;
   },
 };
-export const SyntheticMouseEvent             =
-  createSyntheticEvent(MouseEventInterface);
+export const SyntheticMouseEvent = createSyntheticEvent(MouseEventInterface);
 
 /**
  * @interface DragEvent
  * @see http://www.w3.org/TR/DOM-Level-3-Events/
  */
-const DragEventInterface                     = {
+const DragEventInterface = {
   ...MouseEventInterface,
   dataTransfer: 0,
 };
-export const SyntheticDragEvent             =
-  createSyntheticEvent(DragEventInterface);
+export const SyntheticDragEvent = createSyntheticEvent(DragEventInterface);
 
 /**
  * @interface FocusEvent
  * @see http://www.w3.org/TR/DOM-Level-3-Events/
  */
-const FocusEventInterface                     = {
+const FocusEventInterface = {
   ...UIEventInterface,
   relatedTarget: 0,
 };
-export const SyntheticFocusEvent             =
-  createSyntheticEvent(FocusEventInterface);
+export const SyntheticFocusEvent = createSyntheticEvent(FocusEventInterface);
 
 /**
  * @interface Event
  * @see http://www.w3.org/TR/css3-animations/#AnimationEvent-interface
  * @see https://developer.mozilla.org/en-US/docs/Web/API/AnimationEvent
  */
-const AnimationEventInterface                     = {
+const AnimationEventInterface = {
   ...EventInterface,
   animationName: 0,
   elapsedTime: 0,
   pseudoElement: 0,
 };
-export const SyntheticAnimationEvent             = createSyntheticEvent(
+export const SyntheticAnimationEvent = createSyntheticEvent(
   AnimationEventInterface,
 );
 
@@ -273,15 +263,15 @@ export const SyntheticAnimationEvent             = createSyntheticEvent(
  * @interface Event
  * @see http://www.w3.org/TR/clipboard-apis/
  */
-const ClipboardEventInterface                     = {
+const ClipboardEventInterface = {
   ...EventInterface,
   clipboardData: function (event) {
-    return 'clipboardData' in event
+    return "clipboardData" in event
       ? event.clipboardData
       : window.clipboardData;
   },
 };
-export const SyntheticClipboardEvent             = createSyntheticEvent(
+export const SyntheticClipboardEvent = createSyntheticEvent(
   ClipboardEventInterface,
 );
 
@@ -289,11 +279,11 @@ export const SyntheticClipboardEvent             = createSyntheticEvent(
  * @interface Event
  * @see http://www.w3.org/TR/DOM-Level-3-Events/#events-compositionevents
  */
-const CompositionEventInterface                     = {
+const CompositionEventInterface = {
   ...EventInterface,
   data: 0,
 };
-export const SyntheticCompositionEvent             = createSyntheticEvent(
+export const SyntheticCompositionEvent = createSyntheticEvent(
   CompositionEventInterface,
 );
 
@@ -310,18 +300,18 @@ export const SyntheticInputEvent = SyntheticCompositionEvent;
  * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent#Key_names
  */
 const normalizeKey = {
-  Esc: 'Escape',
-  Spacebar: ' ',
-  Left: 'ArrowLeft',
-  Up: 'ArrowUp',
-  Right: 'ArrowRight',
-  Down: 'ArrowDown',
-  Del: 'Delete',
-  Win: 'OS',
-  Menu: 'ContextMenu',
-  Apps: 'ContextMenu',
-  Scroll: 'ScrollLock',
-  MozPrintableKey: 'Unidentified',
+  Esc: "Escape",
+  Spacebar: " ",
+  Left: "ArrowLeft",
+  Up: "ArrowUp",
+  Right: "ArrowRight",
+  Down: "ArrowDown",
+  Del: "Delete",
+  Win: "OS",
+  Menu: "ContextMenu",
+  Apps: "ContextMenu",
+  Scroll: "ScrollLock",
+  MozPrintableKey: "Unidentified",
 };
 
 /**
@@ -330,49 +320,49 @@ const normalizeKey = {
  * @see https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent#Key_names
  */
 const translateToKey = {
-  '8': 'Backspace',
-  '9': 'Tab',
-  '12': 'Clear',
-  '13': 'Enter',
-  '16': 'Shift',
-  '17': 'Control',
-  '18': 'Alt',
-  '19': 'Pause',
-  '20': 'CapsLock',
-  '27': 'Escape',
-  '32': ' ',
-  '33': 'PageUp',
-  '34': 'PageDown',
-  '35': 'End',
-  '36': 'Home',
-  '37': 'ArrowLeft',
-  '38': 'ArrowUp',
-  '39': 'ArrowRight',
-  '40': 'ArrowDown',
-  '45': 'Insert',
-  '46': 'Delete',
-  '112': 'F1',
-  '113': 'F2',
-  '114': 'F3',
-  '115': 'F4',
-  '116': 'F5',
-  '117': 'F6',
-  '118': 'F7',
-  '119': 'F8',
-  '120': 'F9',
-  '121': 'F10',
-  '122': 'F11',
-  '123': 'F12',
-  '144': 'NumLock',
-  '145': 'ScrollLock',
-  '224': 'Meta',
+  8: "Backspace",
+  9: "Tab",
+  12: "Clear",
+  13: "Enter",
+  16: "Shift",
+  17: "Control",
+  18: "Alt",
+  19: "Pause",
+  20: "CapsLock",
+  27: "Escape",
+  32: " ",
+  33: "PageUp",
+  34: "PageDown",
+  35: "End",
+  36: "Home",
+  37: "ArrowLeft",
+  38: "ArrowUp",
+  39: "ArrowRight",
+  40: "ArrowDown",
+  45: "Insert",
+  46: "Delete",
+  112: "F1",
+  113: "F2",
+  114: "F3",
+  115: "F4",
+  116: "F5",
+  117: "F6",
+  118: "F7",
+  119: "F8",
+  120: "F9",
+  121: "F10",
+  122: "F11",
+  123: "F12",
+  144: "NumLock",
+  145: "ScrollLock",
+  224: "Meta",
 };
 
 /**
  * @param {object} nativeEvent Native browser event.
  * @return {string} Normalized `key` property.
  */
-function getEventKey(nativeEvent                             ) {
+function getEventKey(nativeEvent) {
   if (nativeEvent.key) {
     // Normalize inconsistent values reported by browsers due to
     // implementations of a working draft specification.
@@ -382,13 +372,13 @@ function getEventKey(nativeEvent                             ) {
     const key =
       // $FlowFixMe[invalid-computed-prop] unable to index with a `mixed` value
       normalizeKey[nativeEvent.key] || nativeEvent.key;
-    if (key !== 'Unidentified') {
+    if (key !== "Unidentified") {
       return key;
     }
   }
 
   // Browser does not implement `key`, polyfill as much of it as we can.
-  if (nativeEvent.type === 'keypress') {
+  if (nativeEvent.type === "keypress") {
     const charCode = getEventCharCode(
       // $FlowFixMe[incompatible-call] unable to narrow to `KeyboardEvent`
       nativeEvent,
@@ -396,15 +386,15 @@ function getEventKey(nativeEvent                             ) {
 
     // The enter-key is technically both printable and non-printable and can
     // thus be captured by `keypress`, no other non-printable key should.
-    return charCode === 13 ? 'Enter' : String.fromCharCode(charCode);
+    return charCode === 13 ? "Enter" : String.fromCharCode(charCode);
   }
-  if (nativeEvent.type === 'keydown' || nativeEvent.type === 'keyup') {
+  if (nativeEvent.type === "keydown" || nativeEvent.type === "keyup") {
     // While user keyboard layout determines the actual meaning of each
     // `keyCode` value, almost all function keys have a universal value.
     // $FlowFixMe[invalid-computed-prop] unable to index with a `mixed` value
-    return translateToKey[nativeEvent.keyCode] || 'Unidentified';
+    return translateToKey[nativeEvent.keyCode] || "Unidentified";
   }
-  return '';
+  return "";
 }
 
 /**
@@ -412,10 +402,10 @@ function getEventKey(nativeEvent                             ) {
  * @see http://www.w3.org/TR/DOM-Level-3-Events/#keys-Modifiers
  */
 const modifierKeyToProp = {
-  Alt: 'altKey',
-  Control: 'ctrlKey',
-  Meta: 'metaKey',
-  Shift: 'shiftKey',
+  Alt: "altKey",
+  Control: "ctrlKey",
+  Meta: "metaKey",
+  Shift: "shiftKey",
 };
 
 // Older browsers (Safari <= 10, iOS Safari <= 10.2) do not support
@@ -433,7 +423,7 @@ function modifierStateGetter(keyArg) {
   return keyProp ? !!nativeEvent[keyProp] : false;
 }
 
-function getEventModifierState(nativeEvent                             ) {
+function getEventModifierState(nativeEvent) {
   return modifierStateGetter;
 }
 
@@ -454,13 +444,13 @@ const KeyboardEventInterface = {
   locale: 0,
   getModifierState: getEventModifierState,
   // Legacy Interface
-  charCode: function (event                             ) {
+  charCode: function (event) {
     // `charCode` is the result of a KeyPress event and represents the value of
     // the actual printable character.
 
     // KeyPress is deprecated, but its replacement is not yet final and not
     // implemented in any major browser. Only KeyPress has charCode.
-    if (event.type === 'keypress') {
+    if (event.type === "keypress") {
       return getEventCharCode(
         // $FlowFixMe[incompatible-call] unable to narrow to `KeyboardEvent`
         event,
@@ -468,7 +458,7 @@ const KeyboardEventInterface = {
     }
     return 0;
   },
-  keyCode: function (event                             ) {
+  keyCode: function (event) {
     // `keyCode` is the result of a KeyDown/Up event and represents the value of
     // physical keyboard key.
 
@@ -476,27 +466,27 @@ const KeyboardEventInterface = {
     // which cannot be detected. Assuming that it is a US keyboard layout
     // provides a surprisingly accurate mapping for US and European users.
     // Due to this, it is left to the user to implement at this time.
-    if (event.type === 'keydown' || event.type === 'keyup') {
+    if (event.type === "keydown" || event.type === "keyup") {
       return event.keyCode;
     }
     return 0;
   },
-  which: function (event                             ) {
+  which: function (event) {
     // `which` is an alias for either `keyCode` or `charCode` depending on the
     // type of the event.
-    if (event.type === 'keypress') {
+    if (event.type === "keypress") {
       return getEventCharCode(
         // $FlowFixMe[incompatible-call] unable to narrow to `KeyboardEvent`
         event,
       );
     }
-    if (event.type === 'keydown' || event.type === 'keyup') {
+    if (event.type === "keydown" || event.type === "keyup") {
       return event.keyCode;
     }
     return 0;
   },
 };
-export const SyntheticKeyboardEvent             = createSyntheticEvent(
+export const SyntheticKeyboardEvent = createSyntheticEvent(
   KeyboardEventInterface,
 );
 
@@ -517,7 +507,7 @@ const PointerEventInterface = {
   pointerType: 0,
   isPrimary: 0,
 };
-export const SyntheticPointerEvent             = createSyntheticEvent(
+export const SyntheticPointerEvent = createSyntheticEvent(
   PointerEventInterface,
 );
 
@@ -536,8 +526,7 @@ const TouchEventInterface = {
   shiftKey: 0,
   getModifierState: getEventModifierState,
 };
-export const SyntheticTouchEvent             =
-  createSyntheticEvent(TouchEventInterface);
+export const SyntheticTouchEvent = createSyntheticEvent(TouchEventInterface);
 
 /**
  * @interface Event
@@ -550,7 +539,7 @@ const TransitionEventInterface = {
   elapsedTime: 0,
   pseudoElement: 0,
 };
-export const SyntheticTransitionEvent             = createSyntheticEvent(
+export const SyntheticTransitionEvent = createSyntheticEvent(
   TransitionEventInterface,
 );
 
@@ -560,27 +549,27 @@ export const SyntheticTransitionEvent             = createSyntheticEvent(
  */
 const WheelEventInterface = {
   ...MouseEventInterface,
-  deltaX(event                             ) {
-    return 'deltaX' in event
+  deltaX(event) {
+    return "deltaX" in event
       ? event.deltaX
       : // Fallback to `wheelDeltaX` for Webkit and normalize (right is positive).
-      'wheelDeltaX' in event
-      ? // $FlowFixMe[unsafe-arithmetic] assuming this is a number
-        -event.wheelDeltaX
-      : 0;
+        "wheelDeltaX" in event
+        ? // $FlowFixMe[unsafe-arithmetic] assuming this is a number
+          -event.wheelDeltaX
+        : 0;
   },
-  deltaY(event                             ) {
-    return 'deltaY' in event
+  deltaY(event) {
+    return "deltaY" in event
       ? event.deltaY
       : // Fallback to `wheelDeltaY` for Webkit and normalize (down is positive).
-      'wheelDeltaY' in event
-      ? // $FlowFixMe[unsafe-arithmetic] assuming this is a number
-        -event.wheelDeltaY
-      : // Fallback to `wheelDelta` for IE<9 and normalize (down is positive).
-      'wheelDelta' in event
-      ? // $FlowFixMe[unsafe-arithmetic] assuming this is a number
-        -event.wheelDelta
-      : 0;
+        "wheelDeltaY" in event
+        ? // $FlowFixMe[unsafe-arithmetic] assuming this is a number
+          -event.wheelDeltaY
+        : // Fallback to `wheelDelta` for IE<9 and normalize (down is positive).
+          "wheelDelta" in event
+          ? // $FlowFixMe[unsafe-arithmetic] assuming this is a number
+            -event.wheelDelta
+          : 0;
   },
   deltaZ: 0,
 
@@ -590,5 +579,4 @@ const WheelEventInterface = {
   // ~40 pixels, for DOM_DELTA_SCREEN (2) it is 87.5% of viewport size.
   deltaMode: 0,
 };
-export const SyntheticWheelEvent             =
-  createSyntheticEvent(WheelEventInterface);
+export const SyntheticWheelEvent = createSyntheticEvent(WheelEventInterface);

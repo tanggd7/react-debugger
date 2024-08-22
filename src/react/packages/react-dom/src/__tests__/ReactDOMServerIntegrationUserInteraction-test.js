@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -19,10 +19,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -32,28 +32,28 @@ function initModules() {
   };
 }
 
-const {resetModules, itClientRenders, renderIntoDom, serverRender} =
+const { resetModules, itClientRenders, renderIntoDom, serverRender } =
   ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegrationUserInteraction', () => {
+describe("ReactDOMServerIntegrationUserInteraction", () => {
   let ControlledInput, ControlledTextArea, ControlledCheckbox, ControlledSelect;
 
   beforeEach(() => {
     resetModules();
     ControlledInput = class extends React.Component {
       static defaultProps = {
-        type: 'text',
-        initialValue: 'Hello',
+        type: "text",
+        initialValue: "Hello",
       };
       constructor() {
         super(...arguments);
-        this.state = {value: this.props.initialValue};
+        this.state = { value: this.props.initialValue };
       }
       handleChange(event) {
         if (this.props.onChange) {
           this.props.onChange(event);
         }
-        this.setState({value: event.target.value});
+        this.setState({ value: event.target.value });
       }
       render() {
         return (
@@ -68,13 +68,13 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
     ControlledTextArea = class extends React.Component {
       constructor() {
         super();
-        this.state = {value: 'Hello'};
+        this.state = { value: "Hello" };
       }
       handleChange(event) {
         if (this.props.onChange) {
           this.props.onChange(event);
         }
-        this.setState({value: event.target.value});
+        this.setState({ value: event.target.value });
       }
       render() {
         return (
@@ -88,13 +88,13 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
     ControlledCheckbox = class extends React.Component {
       constructor() {
         super();
-        this.state = {value: true};
+        this.state = { value: true };
       }
       handleChange(event) {
         if (this.props.onChange) {
           this.props.onChange(event);
         }
-        this.setState({value: event.target.checked});
+        this.setState({ value: event.target.checked });
       }
       render() {
         return (
@@ -109,19 +109,20 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
     ControlledSelect = class extends React.Component {
       constructor() {
         super();
-        this.state = {value: 'Hello'};
+        this.state = { value: "Hello" };
       }
       handleChange(event) {
         if (this.props.onChange) {
           this.props.onChange(event);
         }
-        this.setState({value: event.target.value});
+        this.setState({ value: event.target.value });
       }
       render() {
         return (
           <select
             value={this.state.value}
-            onChange={this.handleChange.bind(this)}>
+            onChange={this.handleChange.bind(this)}
+          >
             <option key="1" value="Hello">
               Hello
             </option>
@@ -134,11 +135,11 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
     };
   });
 
-  describe('user interaction with controlled inputs', function () {
-    itClientRenders('a controlled text input', async render => {
+  describe("user interaction with controlled inputs", function () {
+    itClientRenders("a controlled text input", async (render) => {
       const setUntrackedValue = Object.getOwnPropertyDescriptor(
         HTMLInputElement.prototype,
-        'value',
+        "value",
       ).set;
 
       let changeCount = 0;
@@ -150,23 +151,25 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
 
       try {
         expect(changeCount).toBe(0);
-        expect(e.value).toBe('Hello');
+        expect(e.value).toBe("Hello");
 
         // simulate a user typing.
-        setUntrackedValue.call(e, 'Goodbye');
-        e.dispatchEvent(new Event('input', {bubbles: true, cancelable: false}));
+        setUntrackedValue.call(e, "Goodbye");
+        e.dispatchEvent(
+          new Event("input", { bubbles: true, cancelable: false }),
+        );
 
         expect(changeCount).toBe(1);
-        expect(e.value).toBe('Goodbye');
+        expect(e.value).toBe("Goodbye");
       } finally {
         document.body.removeChild(container);
       }
     });
 
-    itClientRenders('a controlled textarea', async render => {
+    itClientRenders("a controlled textarea", async (render) => {
       const setUntrackedValue = Object.getOwnPropertyDescriptor(
         HTMLTextAreaElement.prototype,
-        'value',
+        "value",
       ).set;
 
       let changeCount = 0;
@@ -178,20 +181,22 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
 
       try {
         expect(changeCount).toBe(0);
-        expect(e.value).toBe('Hello');
+        expect(e.value).toBe("Hello");
 
         // simulate a user typing.
-        setUntrackedValue.call(e, 'Goodbye');
-        e.dispatchEvent(new Event('input', {bubbles: true, cancelable: false}));
+        setUntrackedValue.call(e, "Goodbye");
+        e.dispatchEvent(
+          new Event("input", { bubbles: true, cancelable: false }),
+        );
 
         expect(changeCount).toBe(1);
-        expect(e.value).toBe('Goodbye');
+        expect(e.value).toBe("Goodbye");
       } finally {
         document.body.removeChild(container);
       }
     });
 
-    itClientRenders('a controlled checkbox', async render => {
+    itClientRenders("a controlled checkbox", async (render) => {
       let changeCount = 0;
       const e = await render(
         <ControlledCheckbox onChange={() => changeCount++} />,
@@ -213,10 +218,10 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
       }
     });
 
-    itClientRenders('a controlled select', async render => {
+    itClientRenders("a controlled select", async (render) => {
       const setUntrackedValue = Object.getOwnPropertyDescriptor(
         HTMLSelectElement.prototype,
-        'value',
+        "value",
       ).set;
 
       let changeCount = 0;
@@ -228,23 +233,23 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
 
       try {
         expect(changeCount).toBe(0);
-        expect(e.value).toBe('Hello');
+        expect(e.value).toBe("Hello");
 
         // simulate a user typing.
-        setUntrackedValue.call(e, 'Goodbye');
+        setUntrackedValue.call(e, "Goodbye");
         e.dispatchEvent(
-          new Event('change', {bubbles: true, cancelable: false}),
+          new Event("change", { bubbles: true, cancelable: false }),
         );
 
         expect(changeCount).toBe(1);
-        expect(e.value).toBe('Goodbye');
+        expect(e.value).toBe("Goodbye");
       } finally {
         document.body.removeChild(container);
       }
     });
   });
 
-  describe('user interaction with inputs before client render', function () {
+  describe("user interaction with inputs before client render", function () {
     // renders the element and changes the value **before** the client
     // code has a chance to render; this simulates what happens when a
     // user starts to interact with a server-rendered form before
@@ -252,9 +257,9 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
     // the changes the user has made.
     const testUserInteractionBeforeClientRender = async (
       element,
-      initialValue = 'Hello',
-      changedValue = 'Goodbye',
-      valueKey = 'value',
+      initialValue = "Hello",
+      changedValue = "Goodbye",
+      valueKey = "value",
     ) => {
       const field = await serverRender(element);
       expect(field[valueKey]).toBe(initialValue);
@@ -273,10 +278,10 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
       expect(clientField[valueKey]).toBe(changedValue);
     };
 
-    it('should not blow away user-entered text on successful reconnect to an uncontrolled input', () =>
+    it("should not blow away user-entered text on successful reconnect to an uncontrolled input", () =>
       testUserInteractionBeforeClientRender(<input defaultValue="Hello" />));
 
-    it('should not blow away user-entered text on successful reconnect to a controlled input', async () => {
+    it("should not blow away user-entered text on successful reconnect to a controlled input", async () => {
       let changeCount = 0;
       await testUserInteractionBeforeClientRender(
         <ControlledInput onChange={() => changeCount++} />,
@@ -287,14 +292,14 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
       expect(changeCount).toBe(0);
     });
 
-    it('should not blow away user-interaction on successful reconnect to an uncontrolled range input', () =>
+    it("should not blow away user-interaction on successful reconnect to an uncontrolled range input", () =>
       testUserInteractionBeforeClientRender(
         <input type="text" defaultValue="0.5" />,
-        '0.5',
-        '1',
+        "0.5",
+        "1",
       ));
 
-    it('should not blow away user-interaction on successful reconnect to a controlled range input', async () => {
+    it("should not blow away user-interaction on successful reconnect to a controlled range input", async () => {
       let changeCount = 0;
       await testUserInteractionBeforeClientRender(
         <ControlledInput
@@ -302,39 +307,39 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
           initialValue="0.25"
           onChange={() => changeCount++}
         />,
-        '0.25',
-        '1',
+        "0.25",
+        "1",
       );
       expect(changeCount).toBe(0);
     });
 
-    it('should not blow away user-entered text on successful reconnect to an uncontrolled checkbox', () =>
+    it("should not blow away user-entered text on successful reconnect to an uncontrolled checkbox", () =>
       testUserInteractionBeforeClientRender(
         <input type="checkbox" defaultChecked={true} />,
         true,
         false,
-        'checked',
+        "checked",
       ));
 
-    it('should not blow away user-entered text on successful reconnect to a controlled checkbox', async () => {
+    it("should not blow away user-entered text on successful reconnect to a controlled checkbox", async () => {
       let changeCount = 0;
       await testUserInteractionBeforeClientRender(
         <ControlledCheckbox onChange={() => changeCount++} />,
         true,
         false,
-        'checked',
+        "checked",
       );
       expect(changeCount).toBe(0);
     });
 
     // skipping this test because React 15 does the wrong thing. it blows
     // away the user's typing in the textarea.
-    xit('should not blow away user-entered text on successful reconnect to an uncontrolled textarea', () =>
+    xit("should not blow away user-entered text on successful reconnect to an uncontrolled textarea", () =>
       testUserInteractionBeforeClientRender(<textarea defaultValue="Hello" />));
 
     // skipping this test because React 15 does the wrong thing. it blows
     // away the user's typing in the textarea.
-    xit('should not blow away user-entered text on successful reconnect to a controlled textarea', async () => {
+    xit("should not blow away user-entered text on successful reconnect to a controlled textarea", async () => {
       let changeCount = 0;
       await testUserInteractionBeforeClientRender(
         <ControlledTextArea onChange={() => changeCount++} />,
@@ -342,7 +347,7 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
       expect(changeCount).toBe(0);
     });
 
-    it('should not blow away user-selected value on successful reconnect to an uncontrolled select', () =>
+    it("should not blow away user-selected value on successful reconnect to an uncontrolled select", () =>
       testUserInteractionBeforeClientRender(
         <select defaultValue="Hello">
           <option key="1" value="Hello">
@@ -354,7 +359,7 @@ describe('ReactDOMServerIntegrationUserInteraction', () => {
         </select>,
       ));
 
-    it('should not blow away user-selected value on successful reconnect to an controlled select', async () => {
+    it("should not blow away user-selected value on successful reconnect to an controlled select", async () => {
       let changeCount = 0;
       await testUserInteractionBeforeClientRender(
         <ControlledSelect onChange={() => changeCount++} />,

@@ -4,23 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *        
+ *
  */
 
-import {REACT_MEMO_TYPE} from 'shared/ReactSymbols';
+import { REACT_MEMO_TYPE } from "shared/ReactSymbols";
 
-import isValidElementType from 'shared/isValidElementType';
+import isValidElementType from "shared/isValidElementType";
 
-export function memo       (
-  type                   ,
-  compare                                                ,
-) {
+export function memo(type, compare) {
   if (__DEV__) {
     if (!isValidElementType(type)) {
       console.error(
-        'memo: The first argument must be a component. Instead ' +
-          'received: %s',
-        type === null ? 'null' : typeof type,
+        "memo: The first argument must be a component. Instead " +
+          "received: %s",
+        type === null ? "null" : typeof type,
       );
     }
   }
@@ -31,7 +28,7 @@ export function memo       (
   };
   if (__DEV__) {
     let ownName;
-    Object.defineProperty(elementType, 'displayName', {
+    Object.defineProperty(elementType, "displayName", {
       enumerable: false,
       configurable: true,
       get: function () {

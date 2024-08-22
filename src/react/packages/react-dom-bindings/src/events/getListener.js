@@ -3,40 +3,33 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *      
+ *
  */
 
-                                                                   
-                                                         
+import { getFiberCurrentPropsFromNode } from "../client/ReactDOMComponentTree";
 
-import {getFiberCurrentPropsFromNode} from '../client/ReactDOMComponentTree';
-
-function isInteractive(tag        )          {
+function isInteractive(tag) {
   return (
-    tag === 'button' ||
-    tag === 'input' ||
-    tag === 'select' ||
-    tag === 'textarea'
+    tag === "button" ||
+    tag === "input" ||
+    tag === "select" ||
+    tag === "textarea"
   );
 }
 
-function shouldPreventMouseEvent(
-  name        ,
-  type        ,
-  props       ,
-)          {
+function shouldPreventMouseEvent(name, type, props) {
   switch (name) {
-    case 'onClick':
-    case 'onClickCapture':
-    case 'onDoubleClick':
-    case 'onDoubleClickCapture':
-    case 'onMouseDown':
-    case 'onMouseDownCapture':
-    case 'onMouseMove':
-    case 'onMouseMoveCapture':
-    case 'onMouseUp':
-    case 'onMouseUpCapture':
-    case 'onMouseEnter':
+    case "onClick":
+    case "onClickCapture":
+    case "onDoubleClick":
+    case "onDoubleClickCapture":
+    case "onMouseDown":
+    case "onMouseDownCapture":
+    case "onMouseMove":
+    case "onMouseMoveCapture":
+    case "onMouseUp":
+    case "onMouseUpCapture":
+    case "onMouseEnter":
       return !!(props.disabled && isInteractive(type));
     default:
       return false;
@@ -48,10 +41,7 @@ function shouldPreventMouseEvent(
  * @param {string} registrationName Name of listener (e.g. `onClick`).
  * @return {?function} The stored callback.
  */
-export default function getListener(
-  inst       ,
-  registrationName        ,
-)                  {
+export default function getListener(inst, registrationName) {
   const stateNode = inst.stateNode;
   if (stateNode === null) {
     // Work in progress (ex: onload events in incremental mode).
@@ -67,7 +57,7 @@ export default function getListener(
     return null;
   }
 
-  if (listener && typeof listener !== 'function') {
+  if (listener && typeof listener !== "function") {
     throw new Error(
       `Expected \`${registrationName}\` listener to be a function, instead got a value of \`${typeof listener}\` type.`,
     );

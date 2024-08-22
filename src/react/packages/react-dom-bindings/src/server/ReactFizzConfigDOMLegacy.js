@@ -4,17 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-             
-            
-                            
-                        
-                
-                  
-                   
-                              
 
 import {
   createResponseState as createResponseStateImpl,
@@ -25,50 +16,18 @@ import {
   writeEndCompletedSuspenseBoundary as writeEndCompletedSuspenseBoundaryImpl,
   writeEndClientRenderedSuspenseBoundary as writeEndClientRenderedSuspenseBoundaryImpl,
   HTML_MODE,
-} from './ReactFizzConfigDOM';
+} from "./ReactFizzConfigDOM";
 
-             
-              
-        
-                   
-                                                  
-
-                                                              
-
-import {NotPending} from '../shared/ReactDOMFormActions';
+import { NotPending } from "../shared/ReactDOMFormActions";
 
 export const isPrimaryRenderer = false;
 
-                             
-                                              
-                                                   
-                                      
-                                  
-                         
-                   
-                         
-                                   
-                                      
-                                 
-                                                      
-                                                     
-                                                     
-                   
-                                                 
-                                                    
-                                                 
-                                                   
-                         
-                                                   
-                                
-  
-
 export function createResponseState(
-  resources           ,
-  generateStaticMarkup         ,
-  identifierPrefix               ,
-  externalRuntimeConfig                                           ,
-)                {
+  resources,
+  generateStaticMarkup,
+  identifierPrefix,
+  externalRuntimeConfig,
+) {
   const responseState = createResponseStateImpl(
     resources,
     identifierPrefix,
@@ -104,20 +63,13 @@ export function createResponseState(
   };
 }
 
-export function createRootFormatContext()                {
+export function createRootFormatContext() {
   return {
     insertionMode: HTML_MODE, // We skip the root mode because we don't want to emit the DOCTYPE in legacy mode.
     selectedValue: null,
     noscriptTagInScope: false,
   };
 }
-
-             
-            
-                    
-                
-                     
-                              
 
 export {
   getChildFormatContext,
@@ -146,18 +98,13 @@ export {
   hoistResources,
   setCurrentlyRenderingBoundaryResourcesTarget,
   prepareHostDispatcher,
-} from './ReactFizzConfigDOM';
+} from "./ReactFizzConfigDOM";
 
-import {stringToChunk} from 'react-server/src/ReactServerStreamConfig';
+import { stringToChunk } from "react-server/src/ReactServerStreamConfig";
 
-import escapeTextForBrowser from './escapeTextForBrowser';
+import escapeTextForBrowser from "./escapeTextForBrowser";
 
-export function pushTextInstance(
-  target                                 ,
-  text        ,
-  responseState               ,
-  textEmbedded         ,
-)          {
+export function pushTextInstance(target, text, responseState, textEmbedded) {
   if (responseState.generateStaticMarkup) {
     target.push(stringToChunk(escapeTextForBrowser(text)));
     return false;
@@ -167,11 +114,11 @@ export function pushTextInstance(
 }
 
 export function pushSegmentFinale(
-  target                                 ,
-  responseState               ,
-  lastPushedText         ,
-  textEmbedded         ,
-)       {
+  target,
+  responseState,
+  lastPushedText,
+  textEmbedded,
+) {
   if (responseState.generateStaticMarkup) {
     return;
   } else {
@@ -185,9 +132,9 @@ export function pushSegmentFinale(
 }
 
 export function writeStartCompletedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+  destination,
+  responseState,
+) {
   if (responseState.generateStaticMarkup) {
     // A completed boundary is done and doesn't need a representation in the HTML
     // if we're not going to be hydrating it.
@@ -196,13 +143,13 @@ export function writeStartCompletedSuspenseBoundary(
   return writeStartCompletedSuspenseBoundaryImpl(destination, responseState);
 }
 export function writeStartClientRenderedSuspenseBoundary(
-  destination             ,
-  responseState               ,
+  destination,
+  responseState,
   // flushing these error arguments are not currently supported in this legacy streaming format.
-  errorDigest         ,
-  errorMessage         ,
-  errorComponentStack         ,
-)          {
+  errorDigest,
+  errorMessage,
+  errorComponentStack,
+) {
   if (responseState.generateStaticMarkup) {
     // A client rendered boundary is done and doesn't need a representation in the HTML
     // since we'll never hydrate it. This is arguably an error in static generation.
@@ -216,24 +163,20 @@ export function writeStartClientRenderedSuspenseBoundary(
     errorComponentStack,
   );
 }
-export function writeEndCompletedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+export function writeEndCompletedSuspenseBoundary(destination, responseState) {
   if (responseState.generateStaticMarkup) {
     return true;
   }
   return writeEndCompletedSuspenseBoundaryImpl(destination, responseState);
 }
 export function writeEndClientRenderedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+  destination,
+  responseState,
+) {
   if (responseState.generateStaticMarkup) {
     return true;
   }
   return writeEndClientRenderedSuspenseBoundaryImpl(destination, responseState);
 }
 
-                                          
-export const NotPendingTransition                   = NotPending;
+export const NotPendingTransition = NotPending;

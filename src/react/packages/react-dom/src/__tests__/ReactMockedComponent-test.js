@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -15,33 +15,33 @@ let ReactDOM;
 let MockedComponent;
 let ReactDOMServer;
 
-describe('ReactMockedComponent', () => {
+describe("ReactMockedComponent", () => {
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMServer = require('react-dom/server');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMServer = require("react-dom/server");
 
     MockedComponent = class extends React.Component {
       render() {
-        throw new Error('Should not get here.');
+        throw new Error("Should not get here.");
       }
     };
     // This is close enough to what a Jest mock would give us.
     MockedComponent.prototype.render = jest.fn();
   });
 
-  it('should allow a mocked component to be rendered', () => {
-    const container = document.createElement('container');
+  it("should allow a mocked component to be rendered", () => {
+    const container = document.createElement("container");
     ReactDOM.render(<MockedComponent />, container);
   });
 
-  it('should allow a mocked component to be updated in dev', () => {
-    const container = document.createElement('container');
+  it("should allow a mocked component to be updated in dev", () => {
+    const container = document.createElement("container");
     ReactDOM.render(<MockedComponent />, container);
     ReactDOM.render(<MockedComponent />, container);
   });
 
-  it('should allow a mocked component to be rendered in dev (SSR)', () => {
+  it("should allow a mocked component to be rendered in dev (SSR)", () => {
     ReactDOMServer.renderToString(<MockedComponent />);
   });
 });

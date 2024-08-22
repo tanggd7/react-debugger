@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import isArray from 'shared/isArray';
+import isArray from "shared/isArray";
 
-import {getCurrentFiberOwnerNameInDevOrNull} from 'react-reconciler/src/ReactCurrentFiber';
-import {getToStringValue, toString} from './ToStringValue';
-import {disableTextareaChildren} from 'shared/ReactFeatureFlags';
+import { getCurrentFiberOwnerNameInDevOrNull } from "react-reconciler/src/ReactCurrentFiber";
+import { getToStringValue, toString } from "./ToStringValue";
+import { disableTextareaChildren } from "shared/ReactFeatureFlags";
 
 let didWarnValDefaultVal = false;
 
@@ -31,7 +31,7 @@ let didWarnValDefaultVal = false;
  * `defaultValue` if specified, or the children content (deprecated).
  */
 
-export function validateTextareaProps(element         , props        ) {
+export function validateTextareaProps(element, props) {
   if (__DEV__) {
     if (
       props.value !== undefined &&
@@ -39,31 +39,27 @@ export function validateTextareaProps(element         , props        ) {
       !didWarnValDefaultVal
     ) {
       console.error(
-        '%s contains a textarea with both value and defaultValue props. ' +
-          'Textarea elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled textarea ' +
-          'and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
-        getCurrentFiberOwnerNameInDevOrNull() || 'A component',
+        "%s contains a textarea with both value and defaultValue props. " +
+          "Textarea elements must be either controlled or uncontrolled " +
+          "(specify either the value prop, or the defaultValue prop, but not " +
+          "both). Decide between using a controlled or uncontrolled textarea " +
+          "and remove one of these props. More info: " +
+          "https://reactjs.org/link/controlled-components",
+        getCurrentFiberOwnerNameInDevOrNull() || "A component",
       );
       didWarnValDefaultVal = true;
     }
     if (props.children != null && props.value == null) {
       console.error(
-        'Use the `defaultValue` or `value` props instead of setting ' +
-          'children on <textarea>.',
+        "Use the `defaultValue` or `value` props instead of setting " +
+          "children on <textarea>.",
       );
     }
   }
 }
 
-export function updateTextarea(
-  element         ,
-  value         ,
-  defaultValue         ,
-) {
-  const node                      = (element     );
+export function updateTextarea(element, value, defaultValue) {
+  const node = element;
   if (value != null) {
     // Cast `value` to a string to ensure the value is set correctly. While
     // browsers typically do this as necessary, jsdom doesn't.
@@ -83,17 +79,12 @@ export function updateTextarea(
   if (defaultValue != null) {
     node.defaultValue = toString(getToStringValue(defaultValue));
   } else {
-    node.defaultValue = '';
+    node.defaultValue = "";
   }
 }
 
-export function initTextarea(
-  element         ,
-  value         ,
-  defaultValue         ,
-  children         ,
-) {
-  const node                      = (element     );
+export function initTextarea(element, value, defaultValue, children) {
+  const node = element;
 
   let initialValue = value;
 
@@ -103,13 +94,13 @@ export function initTextarea(
       if (!disableTextareaChildren) {
         if (defaultValue != null) {
           throw new Error(
-            'If you supply `defaultValue` on a <textarea>, do not pass children.',
+            "If you supply `defaultValue` on a <textarea>, do not pass children.",
           );
         }
 
         if (isArray(children)) {
           if (children.length > 1) {
-            throw new Error('<textarea> can only have at most one child.');
+            throw new Error("<textarea> can only have at most one child.");
           }
 
           children = children[0];
@@ -119,13 +110,13 @@ export function initTextarea(
       }
     }
     if (defaultValue == null) {
-      defaultValue = '';
+      defaultValue = "";
     }
     initialValue = defaultValue;
   }
 
   const stringValue = getToStringValue(initialValue);
-  node.defaultValue = (stringValue     ); // This will be toString:ed.
+  node.defaultValue = stringValue; // This will be toString:ed.
 
   // This is in postMount because we need access to the DOM node, which is not
   // available until after the component has mounted.
@@ -136,16 +127,13 @@ export function initTextarea(
   // will populate textContent as well.
   // https://developer.microsoft.com/microsoft-edge/platform/issues/101525/
   if (textContent === stringValue) {
-    if (textContent !== '' && textContent !== null) {
+    if (textContent !== "" && textContent !== null) {
       node.value = textContent;
     }
   }
 }
 
-export function restoreControlledTextareaState(
-  element         ,
-  props        ,
-) {
+export function restoreControlledTextareaState(element, props) {
   // DOM component is still mounted; update
   updateTextarea(element, props.value, props.defaultValue);
 }

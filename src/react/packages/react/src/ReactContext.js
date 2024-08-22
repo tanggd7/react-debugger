@@ -4,19 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import {REACT_PROVIDER_TYPE, REACT_CONTEXT_TYPE} from 'shared/ReactSymbols';
+import { REACT_PROVIDER_TYPE, REACT_CONTEXT_TYPE } from "shared/ReactSymbols";
 
-                                                         
-                                                    
-
-export function createContext   (defaultValue   )                  {
+export function createContext(defaultValue) {
   // TODO: Second argument used to be an optional `calculateChangedBits`
   // function. Warn to reserve for future use?
 
-  const context                  = {
+  const context = {
     $$typeof: REACT_CONTEXT_TYPE,
     // As a workaround to support multiple concurrent renderers, we categorize
     // some renderers as primary and others as secondary. We only expect
@@ -29,12 +26,12 @@ export function createContext   (defaultValue   )                  {
     // supports within in a single renderer. Such as parallel server rendering.
     _threadCount: 0,
     // These are circular
-    Provider: (null     ),
-    Consumer: (null     ),
+    Provider: null,
+    Consumer: null,
 
     // Add these to use same hidden class in VM as ServerContext
-    _defaultValue: (null     ),
-    _globalName: (null     ),
+    _defaultValue: null,
+    _globalName: null,
   };
 
   context.Provider = {
@@ -61,13 +58,13 @@ export function createContext   (defaultValue   )                  {
           if (!hasWarnedAboutUsingConsumerProvider) {
             hasWarnedAboutUsingConsumerProvider = true;
             console.error(
-              'Rendering <Context.Consumer.Provider> is not supported and will be removed in ' +
-                'a future major release. Did you mean to render <Context.Provider> instead?',
+              "Rendering <Context.Consumer.Provider> is not supported and will be removed in " +
+                "a future major release. Did you mean to render <Context.Provider> instead?",
             );
           }
           return context.Provider;
         },
-        set(_Provider                      ) {
+        set(_Provider) {
           context.Provider = _Provider;
         },
       },
@@ -75,7 +72,7 @@ export function createContext   (defaultValue   )                  {
         get() {
           return context._currentValue;
         },
-        set(_currentValue   ) {
+        set(_currentValue) {
           context._currentValue = _currentValue;
         },
       },
@@ -83,7 +80,7 @@ export function createContext   (defaultValue   )                  {
         get() {
           return context._currentValue2;
         },
-        set(_currentValue2   ) {
+        set(_currentValue2) {
           context._currentValue2 = _currentValue2;
         },
       },
@@ -91,7 +88,7 @@ export function createContext   (defaultValue   )                  {
         get() {
           return context._threadCount;
         },
-        set(_threadCount        ) {
+        set(_threadCount) {
           context._threadCount = _threadCount;
         },
       },
@@ -100,8 +97,8 @@ export function createContext   (defaultValue   )                  {
           if (!hasWarnedAboutUsingNestedContextConsumers) {
             hasWarnedAboutUsingNestedContextConsumers = true;
             console.error(
-              'Rendering <Context.Consumer.Consumer> is not supported and will be removed in ' +
-                'a future major release. Did you mean to render <Context.Consumer> instead?',
+              "Rendering <Context.Consumer.Consumer> is not supported and will be removed in " +
+                "a future major release. Did you mean to render <Context.Consumer> instead?",
             );
           }
           return context.Consumer;
@@ -111,10 +108,10 @@ export function createContext   (defaultValue   )                  {
         get() {
           return context.displayName;
         },
-        set(displayName               ) {
+        set(displayName) {
           if (!hasWarnedAboutDisplayNameOnConsumer) {
             console.warn(
-              'Setting `displayName` on Context.Consumer has no effect. ' +
+              "Setting `displayName` on Context.Consumer has no effect. " +
                 "You should set it directly on the context with Context.displayName = '%s'.",
               displayName,
             );

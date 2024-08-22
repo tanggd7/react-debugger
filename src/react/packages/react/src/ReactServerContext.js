@@ -4,36 +4,28 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 import {
   REACT_PROVIDER_TYPE,
   REACT_SERVER_CONTEXT_TYPE,
   REACT_SERVER_CONTEXT_DEFAULT_VALUE_NOT_LOADED,
-} from 'shared/ReactSymbols';
+} from "shared/ReactSymbols";
 
-             
-                     
-                         
-                           
-
-import {enableServerContext} from 'shared/ReactFeatureFlags';
-import ReactSharedInternals from 'shared/ReactSharedInternals';
+import { enableServerContext } from "shared/ReactFeatureFlags";
+import ReactSharedInternals from "shared/ReactSharedInternals";
 
 const ContextRegistry = ReactSharedInternals.ContextRegistry;
 
-export function createServerContext                           (
-  globalName        ,
-  defaultValue   ,
-)                        {
+export function createServerContext(globalName, defaultValue) {
   if (!enableServerContext) {
-    throw new Error('Not implemented.');
+    throw new Error("Not implemented.");
   }
   let wasDefined = true;
   if (!ContextRegistry[globalName]) {
     wasDefined = false;
-    const context                        = {
+    const context = {
       $$typeof: REACT_SERVER_CONTEXT_TYPE,
 
       // As a workaround to support multiple concurrent renderers, we categorize
@@ -50,8 +42,8 @@ export function createServerContext                           (
       // supports within in a single renderer. Such as parallel server rendering.
       _threadCount: 0,
       // These are circular
-      Provider: (null     ),
-      Consumer: (null     ),
+      Provider: null,
+      Consumer: null,
       _globalName: globalName,
     };
 
@@ -64,22 +56,19 @@ export function createServerContext                           (
       let hasWarnedAboutUsingConsumer;
       context._currentRenderer = null;
       context._currentRenderer2 = null;
-      Object.defineProperties(
-        context,
-        ({
-          Consumer: {
-            get() {
-              if (!hasWarnedAboutUsingConsumer) {
-                console.error(
-                  'Consumer pattern is not supported by ReactServerContext',
-                );
-                hasWarnedAboutUsingConsumer = true;
-              }
-              return null;
-            },
+      Object.defineProperties(context, {
+        Consumer: {
+          get() {
+            if (!hasWarnedAboutUsingConsumer) {
+              console.error(
+                "Consumer pattern is not supported by ReactServerContext",
+              );
+              hasWarnedAboutUsingConsumer = true;
+            }
+            return null;
           },
-        }     ),
-      );
+        },
+      });
     }
     ContextRegistry[globalName] = context;
   }

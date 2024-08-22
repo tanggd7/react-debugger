@@ -4,35 +4,22 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
-                                                   
-                                            
+import { createCursor, push, pop } from "./ReactFiberStack";
 
-import {createCursor, push, pop} from './ReactFiberStack';
-
-import {getRenderLanes, setRenderLanes} from './ReactFiberWorkLoop';
-import {NoLanes, mergeLanes} from './ReactFiberLane';
+import { getRenderLanes, setRenderLanes } from "./ReactFiberWorkLoop";
+import { NoLanes, mergeLanes } from "./ReactFiberLane";
 
 // TODO: Remove `renderLanes` context in favor of hidden context
-                      
-                                                                          
-                                        
-                                                                             
-                    
-     
-  
 
 // TODO: This isn't being used yet, but it's intended to replace the
 // InvisibleParentContext that is currently managed by SuspenseContext.
-export const currentTreeHiddenStackCursor                                    =
-  createCursor(null);
-export const prevRenderLanesStackCursor                     =
-  createCursor(NoLanes);
+export const currentTreeHiddenStackCursor = createCursor(null);
+export const prevRenderLanesStackCursor = createCursor(NoLanes);
 
-export function pushHiddenContext(fiber       , context               )       {
+export function pushHiddenContext(fiber, context) {
   const prevRenderLanes = getRenderLanes();
   push(prevRenderLanesStackCursor, prevRenderLanes, fiber);
   push(currentTreeHiddenStackCursor, context, fiber);
@@ -44,7 +31,7 @@ export function pushHiddenContext(fiber       , context               )       {
   setRenderLanes(mergeLanes(prevRenderLanes, context.baseLanes));
 }
 
-export function reuseHiddenContextOnStack(fiber       )       {
+export function reuseHiddenContextOnStack(fiber) {
   // This subtree is not currently hidden, so we don't need to add any lanes
   // to the render lanes. But we still need to push something to avoid a
   // context mismatch. Reuse the existing context on the stack.
@@ -56,7 +43,7 @@ export function reuseHiddenContextOnStack(fiber       )       {
   );
 }
 
-export function popHiddenContext(fiber       )       {
+export function popHiddenContext(fiber) {
   // Restore the previous render lanes from the stack
   setRenderLanes(prevRenderLanesStackCursor.current);
 
@@ -64,6 +51,6 @@ export function popHiddenContext(fiber       )       {
   pop(prevRenderLanesStackCursor, fiber);
 }
 
-export function isCurrentTreeHidden()          {
+export function isCurrentTreeHidden() {
   return currentTreeHiddenStackCursor.current !== null;
 }

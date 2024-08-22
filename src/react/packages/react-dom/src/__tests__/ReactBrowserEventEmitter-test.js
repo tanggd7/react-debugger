@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -26,8 +26,8 @@ const recordIDAndReturnFalse = function (id, event) {
   return false;
 };
 const LISTENER = jest.fn();
-const ON_CLICK_KEY = 'onClick';
-const ON_MOUSE_ENTER_KEY = 'onMouseEnter';
+const ON_CLICK_KEY = "onClick";
+const ON_MOUSE_ENTER_KEY = "onMouseEnter";
 
 let GRANDPARENT;
 let PARENT;
@@ -41,16 +41,16 @@ let container;
 
 // This test is written in a bizarre way because it was previously using internals.
 // It should probably be rewritten but we're keeping it for some extra coverage.
-describe('ReactBrowserEventEmitter', () => {
+describe("ReactBrowserEventEmitter", () => {
   beforeEach(() => {
     jest.resetModules();
     LISTENER.mockClear();
 
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactTestUtils = require('react-dom/test-utils');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactTestUtils = require("react-dom/test-utils");
 
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
 
     let GRANDPARENT_PROPS = {};
@@ -59,7 +59,7 @@ describe('ReactBrowserEventEmitter', () => {
     let BUTTON_PROPS = {};
 
     function Child(props) {
-      return <div ref={c => (CHILD = c)} {...props} />;
+      return <div ref={(c) => (CHILD = c)} {...props} />;
     }
 
     class ChildWrapper extends React.PureComponent {
@@ -70,10 +70,14 @@ describe('ReactBrowserEventEmitter', () => {
 
     function renderTree() {
       ReactDOM.render(
-        <div ref={c => (GRANDPARENT = c)} {...GRANDPARENT_PROPS}>
-          <div ref={c => (PARENT = c)} {...PARENT_PROPS}>
+        <div ref={(c) => (GRANDPARENT = c)} {...GRANDPARENT_PROPS}>
+          <div ref={(c) => (PARENT = c)} {...PARENT_PROPS}>
             <ChildWrapper {...CHILD_PROPS} />
-            <button disabled={true} ref={c => (BUTTON = c)} {...BUTTON_PROPS} />
+            <button
+              disabled={true}
+              ref={(c) => (BUTTON = c)}
+              {...BUTTON_PROPS}
+            />
           </div>
         </div>,
         container,
@@ -126,7 +130,7 @@ describe('ReactBrowserEventEmitter', () => {
     container = null;
   });
 
-  it('should bubble simply', () => {
+  it("should bubble simply", () => {
     putListener(CHILD, ON_CLICK_KEY, recordID.bind(null, CHILD));
     putListener(PARENT, ON_CLICK_KEY, recordID.bind(null, PARENT));
     putListener(GRANDPARENT, ON_CLICK_KEY, recordID.bind(null, GRANDPARENT));
@@ -137,12 +141,12 @@ describe('ReactBrowserEventEmitter', () => {
     expect(idCallOrder[2]).toBe(GRANDPARENT);
   });
 
-  it('should bubble to the right handler after an update', () => {
-    putListener(GRANDPARENT, ON_CLICK_KEY, recordID.bind(null, 'GRANDPARENT'));
-    putListener(PARENT, ON_CLICK_KEY, recordID.bind(null, 'PARENT'));
-    putListener(CHILD, ON_CLICK_KEY, recordID.bind(null, 'CHILD'));
+  it("should bubble to the right handler after an update", () => {
+    putListener(GRANDPARENT, ON_CLICK_KEY, recordID.bind(null, "GRANDPARENT"));
+    putListener(PARENT, ON_CLICK_KEY, recordID.bind(null, "PARENT"));
+    putListener(CHILD, ON_CLICK_KEY, recordID.bind(null, "CHILD"));
     CHILD.click();
-    expect(idCallOrder).toEqual(['CHILD', 'PARENT', 'GRANDPARENT']);
+    expect(idCallOrder).toEqual(["CHILD", "PARENT", "GRANDPARENT"]);
 
     idCallOrder = [];
 
@@ -150,18 +154,18 @@ describe('ReactBrowserEventEmitter', () => {
     putListener(
       GRANDPARENT,
       ON_CLICK_KEY,
-      recordID.bind(null, 'UPDATED_GRANDPARENT'),
+      recordID.bind(null, "UPDATED_GRANDPARENT"),
     );
 
     CHILD.click();
-    expect(idCallOrder).toEqual(['CHILD', 'PARENT', 'UPDATED_GRANDPARENT']);
+    expect(idCallOrder).toEqual(["CHILD", "PARENT", "UPDATED_GRANDPARENT"]);
   });
 
-  it('should continue bubbling if an error is thrown', () => {
+  it("should continue bubbling if an error is thrown", () => {
     putListener(CHILD, ON_CLICK_KEY, recordID.bind(null, CHILD));
     putListener(PARENT, ON_CLICK_KEY, function () {
       recordID(PARENT);
-      throw new Error('Handler interrupted');
+      throw new Error("Handler interrupted");
     });
     putListener(GRANDPARENT, ON_CLICK_KEY, recordID.bind(null, GRANDPARENT));
     expect(function () {
@@ -173,7 +177,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(idCallOrder[2]).toBe(GRANDPARENT);
   });
 
-  it('should set currentTarget', () => {
+  it("should set currentTarget", () => {
     putListener(CHILD, ON_CLICK_KEY, function (event) {
       recordID(CHILD);
       expect(event.currentTarget).toBe(CHILD);
@@ -193,7 +197,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(idCallOrder[2]).toBe(GRANDPARENT);
   });
 
-  it('should support stopPropagation()', () => {
+  it("should support stopPropagation()", () => {
     putListener(CHILD, ON_CLICK_KEY, recordID.bind(null, CHILD));
     putListener(
       PARENT,
@@ -207,7 +211,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(idCallOrder[1]).toBe(PARENT);
   });
 
-  it('should support overriding .isPropagationStopped()', () => {
+  it("should support overriding .isPropagationStopped()", () => {
     // Ew. See D4504876.
     putListener(CHILD, ON_CLICK_KEY, recordID.bind(null, CHILD));
     putListener(PARENT, ON_CLICK_KEY, function (e) {
@@ -222,7 +226,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(idCallOrder[1]).toBe(PARENT);
   });
 
-  it('should stop after first dispatch if stopPropagation', () => {
+  it("should stop after first dispatch if stopPropagation", () => {
     putListener(
       CHILD,
       ON_CLICK_KEY,
@@ -235,7 +239,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(idCallOrder[0]).toBe(CHILD);
   });
 
-  it('should not stopPropagation if false is returned', () => {
+  it("should not stopPropagation if false is returned", () => {
     putListener(CHILD, ON_CLICK_KEY, recordIDAndReturnFalse.bind(null, CHILD));
     putListener(PARENT, ON_CLICK_KEY, recordID.bind(null, PARENT));
     putListener(GRANDPARENT, ON_CLICK_KEY, recordID.bind(null, GRANDPARENT));
@@ -255,7 +259,7 @@ describe('ReactBrowserEventEmitter', () => {
    * these new listeners.
    */
 
-  it('should invoke handlers that were removed while bubbling', () => {
+  it("should invoke handlers that were removed while bubbling", () => {
     const handleParentClick = jest.fn();
     const handleChildClick = function (event) {
       deleteAllListeners(PARENT);
@@ -266,7 +270,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(handleParentClick).toHaveBeenCalledTimes(1);
   });
 
-  it('should not invoke newly inserted handlers while bubbling', () => {
+  it("should not invoke newly inserted handlers while bubbling", () => {
     const handleParentClick = jest.fn();
     const handleChildClick = function (event) {
       putListener(PARENT, ON_CLICK_KEY, handleParentClick);
@@ -276,7 +280,7 @@ describe('ReactBrowserEventEmitter', () => {
     expect(handleParentClick).toHaveBeenCalledTimes(0);
   });
 
-  it('should have mouse enter simulated by test utils', () => {
+  it("should have mouse enter simulated by test utils", () => {
     putListener(CHILD, ON_MOUSE_ENTER_KEY, recordID.bind(null, CHILD));
     ReactTestUtils.Simulate.mouseEnter(CHILD);
     expect(idCallOrder.length).toBe(1);

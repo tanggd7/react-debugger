@@ -7,34 +7,34 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('ReactErrorBoundariesHooks', () => {
+describe("ReactErrorBoundariesHooks", () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactDOM = require('react-dom');
-    React = require('react');
+    ReactDOM = require("react-dom");
+    React = require("react");
   });
 
-  it('should preserve hook order if errors are caught', () => {
+  it("should preserve hook order if errors are caught", () => {
     function ErrorThrower() {
       React.useMemo(() => undefined, []);
-      throw new Error('expected');
+      throw new Error("expected");
     }
 
     function StatefulComponent() {
       React.useState(null);
-      return ' | stateful';
+      return " | stateful";
     }
 
     class ErrorHandler extends React.Component {
-      state = {error: null};
+      state = { error: null };
 
       componentDidCatch(error) {
-        return this.setState({error});
+        return this.setState({ error });
       }
 
       render() {
@@ -56,7 +56,7 @@ describe('ReactErrorBoundariesHooks', () => {
       );
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     ReactDOM.render(<App />, container);
 
     expect(() => {

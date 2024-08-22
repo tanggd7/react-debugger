@@ -7,14 +7,14 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-import {insertNodesAndExecuteScripts} from '../test-utils/FizzTestUtils';
+import { insertNodesAndExecuteScripts } from "../test-utils/FizzTestUtils";
 
 // Polyfills for test environment
 global.ReadableStream =
-  require('web-streams-polyfill/ponyfill/es6').ReadableStream;
-global.TextEncoder = require('util').TextEncoder;
+  require("web-streams-polyfill/ponyfill/es6").ReadableStream;
+global.TextEncoder = require("util").TextEncoder;
 
 let act;
 let container;
@@ -24,16 +24,16 @@ let ReactDOMClient;
 let useFormStatus;
 let useOptimistic;
 
-describe('ReactDOMFizzForm', () => {
+describe("ReactDOMFizzForm", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOMServer = require('react-dom/server.browser');
-    ReactDOMClient = require('react-dom/client');
-    useFormStatus = require('react-dom').experimental_useFormStatus;
-    useOptimistic = require('react').experimental_useOptimistic;
-    act = require('internal-test-utils').act;
-    container = document.createElement('div');
+    React = require("react");
+    ReactDOMServer = require("react-dom/server.browser");
+    ReactDOMClient = require("react-dom/client");
+    useFormStatus = require("react-dom").experimental_useFormStatus;
+    useOptimistic = require("react").experimental_useOptimistic;
+    act = require("internal-test-utils").act;
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -46,41 +46,44 @@ describe('ReactDOMFizzForm', () => {
     if (!submitter.form) {
       submitter = undefined;
     }
-    const submitEvent = new Event('submit', {bubbles: true, cancelable: true});
+    const submitEvent = new Event("submit", {
+      bubbles: true,
+      cancelable: true,
+    });
     submitEvent.submitter = submitter;
     const returnValue = form.dispatchEvent(submitEvent);
     if (!returnValue) {
       return;
     }
     const action =
-      (submitter && submitter.getAttribute('formaction')) || form.action;
+      (submitter && submitter.getAttribute("formaction")) || form.action;
     if (!/\s*javascript:/i.test(action)) {
-      throw new Error('Navigate to: ' + action);
+      throw new Error("Navigate to: " + action);
     }
   }
 
   async function readIntoContainer(stream) {
     const reader = stream.getReader();
-    let result = '';
+    let result = "";
     while (true) {
-      const {done, value} = await reader.read();
+      const { done, value } = await reader.read();
       if (done) {
         break;
       }
-      result += Buffer.from(value).toString('utf8');
+      result += Buffer.from(value).toString("utf8");
     }
-    const temp = document.createElement('div');
+    const temp = document.createElement("div");
     temp.innerHTML = result;
     insertNodesAndExecuteScripts(temp, container, null);
   }
 
   // @gate enableFormActions
-  it('should allow passing a function to form action during SSR', async () => {
+  it("should allow passing a function to form action during SSR", async () => {
     const ref = React.createRef();
     let foo;
 
     function action(formData) {
-      foo = formData.get('foo');
+      foo = formData.get("foo");
     }
     function App() {
       return (
@@ -98,11 +101,11 @@ describe('ReactDOMFizzForm', () => {
 
     submit(ref.current);
 
-    expect(foo).toBe('bar');
+    expect(foo).toBe("bar");
   });
 
   // @gate enableFormActions
-  it('should allow passing a function to an input/button formAction', async () => {
+  it("should allow passing a function to an input/button formAction", async () => {
     const inputRef = React.createRef();
     const buttonRef = React.createRef();
     let rootActionCalled = false;
@@ -114,11 +117,11 @@ describe('ReactDOMFizzForm', () => {
     }
 
     function saveItem(formData) {
-      savedTitle = formData.get('title');
+      savedTitle = formData.get("title");
     }
 
     function deleteItem(formData) {
-      deletedTitle = formData.get('title');
+      deletedTitle = formData.get("title");
     }
 
     function App() {
@@ -148,24 +151,24 @@ describe('ReactDOMFizzForm', () => {
     expect(deletedTitle).toBe(null);
 
     submit(inputRef.current);
-    expect(savedTitle).toBe('Hello');
+    expect(savedTitle).toBe("Hello");
     expect(deletedTitle).toBe(null);
     savedTitle = null;
 
     submit(buttonRef.current);
     expect(savedTitle).toBe(null);
-    expect(deletedTitle).toBe('Hello');
+    expect(deletedTitle).toBe("Hello");
     deletedTitle = null;
 
     expect(rootActionCalled).toBe(false);
   });
 
   // @gate enableFormActions || !__DEV__
-  it('should warn when passing a function action during SSR and string during hydration', async () => {
+  it("should warn when passing a function action during SSR and string during hydration", async () => {
     function action(formData) {}
-    function App({isClient}) {
+    function App({ isClient }) {
       return (
-        <form action={isClient ? 'action' : action}>
+        <form action={isClient ? "action" : action}>
           <input type="text" name="foo" defaultValue="bar" />
         </form>
       );
@@ -183,11 +186,11 @@ describe('ReactDOMFizzForm', () => {
   });
 
   // @gate enableFormActions || !__DEV__
-  it('should ideally warn when passing a string during SSR and function during hydration', async () => {
+  it("should ideally warn when passing a string during SSR and function during hydration", async () => {
     function action(formData) {}
-    function App({isClient}) {
+    function App({ isClient }) {
       return (
-        <form action={isClient ? action : 'action'}>
+        <form action={isClient ? action : "action"}>
           <input type="text" name="foo" defaultValue="bar" />
         </form>
       );
@@ -202,27 +205,28 @@ describe('ReactDOMFizzForm', () => {
   });
 
   // @gate enableFormActions || !__DEV__
-  it('should reset form fields after you update away from hydrated function', async () => {
+  it("should reset form fields after you update away from hydrated function", async () => {
     const formRef = React.createRef();
     const inputRef = React.createRef();
     const buttonRef = React.createRef();
     function action(formData) {}
-    function App({isUpdate}) {
+    function App({ isUpdate }) {
       return (
         <form
-          action={isUpdate ? 'action' : action}
+          action={isUpdate ? "action" : action}
           ref={formRef}
-          method={isUpdate ? 'POST' : null}>
+          method={isUpdate ? "POST" : null}
+        >
           <input
             type="submit"
-            formAction={isUpdate ? 'action' : action}
+            formAction={isUpdate ? "action" : action}
             ref={inputRef}
-            formTarget={isUpdate ? 'elsewhere' : null}
+            formTarget={isUpdate ? "elsewhere" : null}
           />
           <button
-            formAction={isUpdate ? 'action' : action}
+            formAction={isUpdate ? "action" : action}
             ref={buttonRef}
-            formEncType={isUpdate ? 'multipart/form-data' : null}
+            formEncType={isUpdate ? "multipart/form-data" : null}
           />
         </form>
       );
@@ -237,33 +241,33 @@ describe('ReactDOMFizzForm', () => {
     await act(async () => {
       root.render(<App isUpdate={true} />);
     });
-    expect(formRef.current.getAttribute('action')).toBe('action');
-    expect(formRef.current.hasAttribute('encType')).toBe(false);
-    expect(formRef.current.getAttribute('method')).toBe('POST');
-    expect(formRef.current.hasAttribute('target')).toBe(false);
+    expect(formRef.current.getAttribute("action")).toBe("action");
+    expect(formRef.current.hasAttribute("encType")).toBe(false);
+    expect(formRef.current.getAttribute("method")).toBe("POST");
+    expect(formRef.current.hasAttribute("target")).toBe(false);
 
-    expect(inputRef.current.getAttribute('formAction')).toBe('action');
-    expect(inputRef.current.hasAttribute('name')).toBe(false);
-    expect(inputRef.current.hasAttribute('formEncType')).toBe(false);
-    expect(inputRef.current.hasAttribute('formMethod')).toBe(false);
-    expect(inputRef.current.getAttribute('formTarget')).toBe('elsewhere');
+    expect(inputRef.current.getAttribute("formAction")).toBe("action");
+    expect(inputRef.current.hasAttribute("name")).toBe(false);
+    expect(inputRef.current.hasAttribute("formEncType")).toBe(false);
+    expect(inputRef.current.hasAttribute("formMethod")).toBe(false);
+    expect(inputRef.current.getAttribute("formTarget")).toBe("elsewhere");
 
-    expect(buttonRef.current.getAttribute('formAction')).toBe('action');
-    expect(buttonRef.current.hasAttribute('name')).toBe(false);
-    expect(buttonRef.current.getAttribute('formEncType')).toBe(
-      'multipart/form-data',
+    expect(buttonRef.current.getAttribute("formAction")).toBe("action");
+    expect(buttonRef.current.hasAttribute("name")).toBe(false);
+    expect(buttonRef.current.getAttribute("formEncType")).toBe(
+      "multipart/form-data",
     );
-    expect(buttonRef.current.hasAttribute('formMethod')).toBe(false);
-    expect(buttonRef.current.hasAttribute('formTarget')).toBe(false);
+    expect(buttonRef.current.hasAttribute("formMethod")).toBe(false);
+    expect(buttonRef.current.hasAttribute("formTarget")).toBe(false);
   });
 
   // @gate enableFormActions || !__DEV__
-  it('should reset form fields after you remove a hydrated function', async () => {
+  it("should reset form fields after you remove a hydrated function", async () => {
     const formRef = React.createRef();
     const inputRef = React.createRef();
     const buttonRef = React.createRef();
     function action(formData) {}
-    function App({isUpdate}) {
+    function App({ isUpdate }) {
       return (
         <form action={isUpdate ? undefined : action} ref={formRef}>
           <input
@@ -285,44 +289,45 @@ describe('ReactDOMFizzForm', () => {
     await act(async () => {
       root.render(<App isUpdate={true} />);
     });
-    expect(formRef.current.hasAttribute('action')).toBe(false);
-    expect(formRef.current.hasAttribute('encType')).toBe(false);
-    expect(formRef.current.hasAttribute('method')).toBe(false);
-    expect(formRef.current.hasAttribute('target')).toBe(false);
+    expect(formRef.current.hasAttribute("action")).toBe(false);
+    expect(formRef.current.hasAttribute("encType")).toBe(false);
+    expect(formRef.current.hasAttribute("method")).toBe(false);
+    expect(formRef.current.hasAttribute("target")).toBe(false);
 
-    expect(inputRef.current.hasAttribute('formAction')).toBe(false);
-    expect(inputRef.current.hasAttribute('name')).toBe(false);
-    expect(inputRef.current.hasAttribute('formEncType')).toBe(false);
-    expect(inputRef.current.hasAttribute('formMethod')).toBe(false);
-    expect(inputRef.current.hasAttribute('formTarget')).toBe(false);
+    expect(inputRef.current.hasAttribute("formAction")).toBe(false);
+    expect(inputRef.current.hasAttribute("name")).toBe(false);
+    expect(inputRef.current.hasAttribute("formEncType")).toBe(false);
+    expect(inputRef.current.hasAttribute("formMethod")).toBe(false);
+    expect(inputRef.current.hasAttribute("formTarget")).toBe(false);
 
-    expect(buttonRef.current.hasAttribute('formAction')).toBe(false);
-    expect(buttonRef.current.hasAttribute('name')).toBe(false);
-    expect(buttonRef.current.hasAttribute('formEncType')).toBe(false);
-    expect(buttonRef.current.hasAttribute('formMethod')).toBe(false);
-    expect(buttonRef.current.hasAttribute('formTarget')).toBe(false);
+    expect(buttonRef.current.hasAttribute("formAction")).toBe(false);
+    expect(buttonRef.current.hasAttribute("name")).toBe(false);
+    expect(buttonRef.current.hasAttribute("formEncType")).toBe(false);
+    expect(buttonRef.current.hasAttribute("formMethod")).toBe(false);
+    expect(buttonRef.current.hasAttribute("formTarget")).toBe(false);
   });
 
   // @gate enableFormActions || !__DEV__
-  it('should restore the form fields even if they were incorrectly set', async () => {
+  it("should restore the form fields even if they were incorrectly set", async () => {
     const formRef = React.createRef();
     const inputRef = React.createRef();
     const buttonRef = React.createRef();
     function action(formData) {}
-    function App({isUpdate}) {
+    function App({ isUpdate }) {
       return (
         <form
-          action={isUpdate ? 'action' : action}
+          action={isUpdate ? "action" : action}
           ref={formRef}
-          method="DELETE">
+          method="DELETE"
+        >
           <input
             type="submit"
-            formAction={isUpdate ? 'action' : action}
+            formAction={isUpdate ? "action" : action}
             ref={inputRef}
             formTarget="elsewhere"
           />
           <button
-            formAction={isUpdate ? 'action' : action}
+            formAction={isUpdate ? "action" : action}
             ref={buttonRef}
             formEncType="text/plain"
           />
@@ -336,57 +341,57 @@ describe('ReactDOMFizzForm', () => {
       const stream = await ReactDOMServer.renderToReadableStream(<App />);
       await readIntoContainer(stream);
     }).toErrorDev([
-      'Cannot specify a encType or method for a form that specifies a function as the action.',
-      'Cannot specify a formTarget for a button that specifies a function as a formAction.',
+      "Cannot specify a encType or method for a form that specifies a function as the action.",
+      "Cannot specify a formTarget for a button that specifies a function as a formAction.",
     ]);
     let root;
     await expect(async () => {
       await act(async () => {
         root = ReactDOMClient.hydrateRoot(container, <App />);
       });
-    }).toErrorDev(['Prop `formTarget` did not match.']);
+    }).toErrorDev(["Prop `formTarget` did not match."]);
     await act(async () => {
       root.render(<App isUpdate={true} />);
     });
-    expect(formRef.current.getAttribute('action')).toBe('action');
-    expect(formRef.current.hasAttribute('encType')).toBe(false);
-    expect(formRef.current.getAttribute('method')).toBe('DELETE');
-    expect(formRef.current.hasAttribute('target')).toBe(false);
+    expect(formRef.current.getAttribute("action")).toBe("action");
+    expect(formRef.current.hasAttribute("encType")).toBe(false);
+    expect(formRef.current.getAttribute("method")).toBe("DELETE");
+    expect(formRef.current.hasAttribute("target")).toBe(false);
 
-    expect(inputRef.current.getAttribute('formAction')).toBe('action');
-    expect(inputRef.current.hasAttribute('name')).toBe(false);
-    expect(inputRef.current.hasAttribute('formEncType')).toBe(false);
-    expect(inputRef.current.hasAttribute('formMethod')).toBe(false);
-    expect(inputRef.current.getAttribute('formTarget')).toBe('elsewhere');
+    expect(inputRef.current.getAttribute("formAction")).toBe("action");
+    expect(inputRef.current.hasAttribute("name")).toBe(false);
+    expect(inputRef.current.hasAttribute("formEncType")).toBe(false);
+    expect(inputRef.current.hasAttribute("formMethod")).toBe(false);
+    expect(inputRef.current.getAttribute("formTarget")).toBe("elsewhere");
 
-    expect(buttonRef.current.getAttribute('formAction')).toBe('action');
-    expect(buttonRef.current.hasAttribute('name')).toBe(false);
-    expect(buttonRef.current.getAttribute('formEncType')).toBe('text/plain');
-    expect(buttonRef.current.hasAttribute('formMethod')).toBe(false);
-    expect(buttonRef.current.hasAttribute('formTarget')).toBe(false);
+    expect(buttonRef.current.getAttribute("formAction")).toBe("action");
+    expect(buttonRef.current.hasAttribute("name")).toBe(false);
+    expect(buttonRef.current.getAttribute("formEncType")).toBe("text/plain");
+    expect(buttonRef.current.hasAttribute("formMethod")).toBe(false);
+    expect(buttonRef.current.hasAttribute("formTarget")).toBe(false);
   });
 
   // @gate enableFormActions
   // @gate enableAsyncActions
-  it('useFormStatus is not pending during server render', async () => {
+  it("useFormStatus is not pending during server render", async () => {
     function App() {
-      const {pending} = useFormStatus();
-      return 'Pending: ' + pending;
+      const { pending } = useFormStatus();
+      return "Pending: " + pending;
     }
 
     const stream = await ReactDOMServer.renderToReadableStream(<App />);
     await readIntoContainer(stream);
-    expect(container.textContent).toBe('Pending: false');
+    expect(container.textContent).toBe("Pending: false");
 
     await act(() => ReactDOMClient.hydrateRoot(container, <App />));
-    expect(container.textContent).toBe('Pending: false');
+    expect(container.textContent).toBe("Pending: false");
   });
 
   // @gate enableFormActions
-  it('should replay a form action after hydration', async () => {
+  it("should replay a form action after hydration", async () => {
     let foo;
     function action(formData) {
-      foo = formData.get('foo');
+      foo = formData.get("foo");
     }
     function App() {
       return (
@@ -400,18 +405,18 @@ describe('ReactDOMFizzForm', () => {
     await readIntoContainer(stream);
 
     // Dispatch an event before hydration
-    submit(container.getElementsByTagName('form')[0]);
+    submit(container.getElementsByTagName("form")[0]);
 
     await act(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
     });
 
     // It should've now been replayed
-    expect(foo).toBe('bar');
+    expect(foo).toBe("bar");
   });
 
   // @gate enableFormActions
-  it('should replay input/button formAction', async () => {
+  it("should replay input/button formAction", async () => {
     let rootActionCalled = false;
     let savedTitle = null;
     let deletedTitle = null;
@@ -421,11 +426,11 @@ describe('ReactDOMFizzForm', () => {
     }
 
     function saveItem(formData) {
-      savedTitle = formData.get('title');
+      savedTitle = formData.get("title");
     }
 
     function deleteItem(formData) {
-      deletedTitle = formData.get('title');
+      deletedTitle = formData.get("title");
     }
 
     function App() {
@@ -441,52 +446,52 @@ describe('ReactDOMFizzForm', () => {
     const stream = await ReactDOMServer.renderToReadableStream(<App />);
     await readIntoContainer(stream);
 
-    submit(container.getElementsByTagName('input')[1]);
-    submit(container.getElementsByTagName('button')[0]);
+    submit(container.getElementsByTagName("input")[1]);
+    submit(container.getElementsByTagName("button")[0]);
 
     await act(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
     });
 
-    expect(savedTitle).toBe('Hello');
-    expect(deletedTitle).toBe('Hello');
+    expect(savedTitle).toBe("Hello");
+    expect(deletedTitle).toBe("Hello");
     expect(rootActionCalled).toBe(false);
   });
 
   // @gate enableAsyncActions
-  it('useOptimistic returns passthrough value', async () => {
+  it("useOptimistic returns passthrough value", async () => {
     function App() {
-      const [optimisticState] = useOptimistic('hi');
+      const [optimisticState] = useOptimistic("hi");
       return optimisticState;
     }
 
     const stream = await ReactDOMServer.renderToReadableStream(<App />);
     await readIntoContainer(stream);
-    expect(container.textContent).toBe('hi');
+    expect(container.textContent).toBe("hi");
 
     await act(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
     });
-    expect(container.textContent).toBe('hi');
+    expect(container.textContent).toBe("hi");
   });
 
   // @gate enableFormActions
-  it('can provide a custom action on the server for actions', async () => {
+  it("can provide a custom action on the server for actions", async () => {
     const ref = React.createRef();
     let foo;
 
     function action(formData) {
-      foo = formData.get('foo');
+      foo = formData.get("foo");
     }
     action.$$FORM_ACTION = function (identifierPrefix) {
       const extraFields = new FormData();
-      extraFields.append(identifierPrefix + 'hello', 'world');
+      extraFields.append(identifierPrefix + "hello", "world");
       return {
         action: this.name,
         name: identifierPrefix,
-        method: 'POST',
-        encType: 'multipart/form-data',
-        target: 'self',
+        method: "POST",
+        encType: "multipart/form-data",
+        target: "self",
         data: extraFields,
       };
     };
@@ -502,16 +507,16 @@ describe('ReactDOMFizzForm', () => {
     await readIntoContainer(stream);
 
     const form = container.firstChild;
-    expect(form.getAttribute('action')).toBe('action');
-    expect(form.getAttribute('method')).toBe('POST');
-    expect(form.getAttribute('enctype')).toBe('multipart/form-data');
-    expect(form.getAttribute('target')).toBe('self');
-    const formActionName = form.firstChild.getAttribute('name');
+    expect(form.getAttribute("action")).toBe("action");
+    expect(form.getAttribute("method")).toBe("POST");
+    expect(form.getAttribute("enctype")).toBe("multipart/form-data");
+    expect(form.getAttribute("target")).toBe("self");
+    const formActionName = form.firstChild.getAttribute("name");
     expect(
       container
         .querySelector('input[name="' + formActionName + 'hello"]')
-        .getAttribute('value'),
-    ).toBe('world');
+        .getAttribute("value"),
+    ).toBe("world");
 
     await act(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
@@ -519,28 +524,28 @@ describe('ReactDOMFizzForm', () => {
 
     submit(ref.current);
 
-    expect(foo).toBe('bar');
+    expect(foo).toBe("bar");
   });
 
   // @gate enableFormActions
-  it('can provide a custom action on buttons the server for actions', async () => {
+  it("can provide a custom action on buttons the server for actions", async () => {
     const hiddenRef = React.createRef();
     const inputRef = React.createRef();
     const buttonRef = React.createRef();
     let foo;
 
     function action(formData) {
-      foo = formData.get('foo');
+      foo = formData.get("foo");
     }
     action.$$FORM_ACTION = function (identifierPrefix) {
       const extraFields = new FormData();
-      extraFields.append(identifierPrefix + 'hello', 'world');
+      extraFields.append(identifierPrefix + "hello", "world");
       return {
         action: this.name,
         name: identifierPrefix,
-        method: 'POST',
-        encType: 'multipart/form-data',
-        target: 'self',
+        method: "POST",
+        encType: "multipart/form-data",
+        target: "self",
         data: extraFields,
       };
     };
@@ -562,48 +567,48 @@ describe('ReactDOMFizzForm', () => {
     const stream = await ReactDOMServer.renderToReadableStream(<App />);
     await readIntoContainer(stream);
 
-    const input = container.getElementsByTagName('input')[1];
-    const button = container.getElementsByTagName('button')[0];
-    expect(input.getAttribute('formaction')).toBe('action');
-    expect(input.getAttribute('formmethod')).toBe('POST');
-    expect(input.getAttribute('formenctype')).toBe('multipart/form-data');
-    expect(input.getAttribute('formtarget')).toBe('self');
-    expect(button.getAttribute('formaction')).toBe('action');
-    expect(button.getAttribute('formmethod')).toBe('POST');
-    expect(button.getAttribute('formenctype')).toBe('multipart/form-data');
-    expect(button.getAttribute('formtarget')).toBe('self');
-    const inputName = input.getAttribute('name');
-    const buttonName = button.getAttribute('name');
+    const input = container.getElementsByTagName("input")[1];
+    const button = container.getElementsByTagName("button")[0];
+    expect(input.getAttribute("formaction")).toBe("action");
+    expect(input.getAttribute("formmethod")).toBe("POST");
+    expect(input.getAttribute("formenctype")).toBe("multipart/form-data");
+    expect(input.getAttribute("formtarget")).toBe("self");
+    expect(button.getAttribute("formaction")).toBe("action");
+    expect(button.getAttribute("formmethod")).toBe("POST");
+    expect(button.getAttribute("formenctype")).toBe("multipart/form-data");
+    expect(button.getAttribute("formtarget")).toBe("self");
+    const inputName = input.getAttribute("name");
+    const buttonName = button.getAttribute("name");
     expect(
       container
         .querySelector('input[name="' + inputName + 'hello"]')
-        .getAttribute('value'),
-    ).toBe('world');
+        .getAttribute("value"),
+    ).toBe("world");
     expect(
       container
         .querySelector('input[name="' + buttonName + 'hello"]')
-        .getAttribute('value'),
-    ).toBe('world');
+        .getAttribute("value"),
+    ).toBe("world");
 
     await act(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
     });
 
-    expect(hiddenRef.current.name).toBe('foo');
+    expect(hiddenRef.current.name).toBe("foo");
 
     submit(inputRef.current);
 
-    expect(foo).toBe('bar');
+    expect(foo).toBe("bar");
 
     foo = null;
 
     submit(buttonRef.current);
 
-    expect(foo).toBe('bar');
+    expect(foo).toBe("bar");
   });
 
   // @gate enableFormActions
-  it('can hydrate hidden fields in the beginning of a form', async () => {
+  it("can hydrate hidden fields in the beginning of a form", async () => {
     const hiddenRef = React.createRef();
 
     let invoked = false;
@@ -612,12 +617,12 @@ describe('ReactDOMFizzForm', () => {
     }
     action.$$FORM_ACTION = function (identifierPrefix) {
       const extraFields = new FormData();
-      extraFields.append(identifierPrefix + 'hello', 'world');
+      extraFields.append(identifierPrefix + "hello", "world");
       return {
-        action: '',
+        action: "",
         name: identifierPrefix,
-        method: 'POST',
-        encType: 'multipart/form-data',
+        method: "POST",
+        encType: "multipart/form-data",
         data: extraFields,
       };
     };
@@ -633,7 +638,7 @@ describe('ReactDOMFizzForm', () => {
     const stream = await ReactDOMServer.renderToReadableStream(<App />);
     await readIntoContainer(stream);
 
-    const barField = container.querySelector('[name=bar]');
+    const barField = container.querySelector("[name=bar]");
 
     await act(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
@@ -641,10 +646,10 @@ describe('ReactDOMFizzForm', () => {
 
     expect(hiddenRef.current).toBe(barField);
 
-    expect(hiddenRef.current.name).toBe('bar');
-    expect(hiddenRef.current.value).toBe('baz');
+    expect(hiddenRef.current.name).toBe("bar");
+    expect(hiddenRef.current.value).toBe("baz");
 
-    expect(container.querySelectorAll('[name=bar]').length).toBe(1);
+    expect(container.querySelectorAll("[name=bar]").length).toBe(1);
 
     submit(hiddenRef.current.form);
 

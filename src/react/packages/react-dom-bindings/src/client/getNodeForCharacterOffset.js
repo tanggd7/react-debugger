@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import {TEXT_NODE} from './HTMLNodeType';
+import { TEXT_NODE } from "./HTMLNodeType";
 
 /**
  * Given any node return the first leaf node without children.
@@ -15,7 +15,7 @@ import {TEXT_NODE} from './HTMLNodeType';
  * @param {DOMElement|DOMTextNode} node
  * @return {DOMElement|DOMTextNode}
  */
-function getLeafNode(node                   ) {
+function getLeafNode(node) {
   while (node && node.firstChild) {
     node = node.firstChild;
   }
@@ -29,7 +29,7 @@ function getLeafNode(node                   ) {
  * @param {DOMElement|DOMTextNode} node
  * @return {?DOMElement|DOMTextNode}
  */
-function getSiblingNode(node                   ) {
+function getSiblingNode(node) {
   while (node) {
     if (node.nextSibling) {
       return node.nextSibling;
@@ -45,7 +45,7 @@ function getSiblingNode(node                   ) {
  * @param {number} offset
  * @return {?object}
  */
-function getNodeForCharacterOffset(root         , offset        )          {
+function getNodeForCharacterOffset(root, offset) {
   let node = getLeafNode(root);
   let nodeStart = 0;
   let nodeEnd = 0;

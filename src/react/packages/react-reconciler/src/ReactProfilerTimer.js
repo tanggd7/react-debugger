@@ -4,40 +4,26 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                
 
 import {
   enableProfilerCommitHooks,
   enableProfilerNestedUpdatePhase,
   enableProfilerTimer,
-} from 'shared/ReactFeatureFlags';
-import {HostRoot, Profiler} from './ReactWorkTags';
+} from "shared/ReactFeatureFlags";
+import { HostRoot, Profiler } from "./ReactWorkTags";
 
 // Intentionally not named imports because Rollup would use dynamic dispatch for
 // CommonJS interop named imports.
-import * as Scheduler from 'scheduler';
+import * as Scheduler from "scheduler";
 
-const {unstable_now: now} = Scheduler;
+const { unstable_now: now } = Scheduler;
 
-                             
-                          
-                                   
-                                    
-                           
-                                         
-                                                 
-                                                               
-                               
-     
-  
-
-let commitTime         = 0;
-let layoutEffectStartTime         = -1;
-let profilerStartTime         = -1;
-let passiveEffectStartTime         = -1;
+let commitTime = 0;
+let layoutEffectStartTime = -1;
+let profilerStartTime = -1;
+let passiveEffectStartTime = -1;
 
 /**
  * Tracks whether the current update was a nested/cascading update (scheduled from a layout effect).
@@ -55,67 +41,64 @@ let passiveEffectStartTime         = -1;
  * and the other tracks whether the current update was a nested update.
  * The first value gets synced to the second at the start of the render phase.
  */
-let currentUpdateIsNested          = false;
-let nestedUpdateScheduled          = false;
+let currentUpdateIsNested = false;
+let nestedUpdateScheduled = false;
 
-function isCurrentUpdateNested()          {
+function isCurrentUpdateNested() {
   return currentUpdateIsNested;
 }
 
-function markNestedUpdateScheduled()       {
+function markNestedUpdateScheduled() {
   if (enableProfilerNestedUpdatePhase) {
     nestedUpdateScheduled = true;
   }
 }
 
-function resetNestedUpdateFlag()       {
+function resetNestedUpdateFlag() {
   if (enableProfilerNestedUpdatePhase) {
     currentUpdateIsNested = false;
     nestedUpdateScheduled = false;
   }
 }
 
-function syncNestedUpdateFlag()       {
+function syncNestedUpdateFlag() {
   if (enableProfilerNestedUpdatePhase) {
     currentUpdateIsNested = nestedUpdateScheduled;
     nestedUpdateScheduled = false;
   }
 }
 
-function getCommitTime()         {
+function getCommitTime() {
   return commitTime;
 }
 
-function recordCommitTime()       {
+function recordCommitTime() {
   if (!enableProfilerTimer) {
     return;
   }
   commitTime = now();
 }
 
-function startProfilerTimer(fiber       )       {
+function startProfilerTimer(fiber) {
   if (!enableProfilerTimer) {
     return;
   }
 
   profilerStartTime = now();
 
-  if (((fiber.actualStartTime     )        ) < 0) {
+  if (fiber.actualStartTime < 0) {
     fiber.actualStartTime = now();
   }
 }
 
-function stopProfilerTimerIfRunning(fiber       )       {
+function stopProfilerTimerIfRunning(fiber) {
   if (!enableProfilerTimer) {
     return;
   }
   profilerStartTime = -1;
 }
 
-function stopProfilerTimerIfRunningAndRecordDelta(
-  fiber       ,
-  overrideBaseTime         ,
-)       {
+function stopProfilerTimerIfRunningAndRecordDelta(fiber, overrideBaseTime) {
   if (!enableProfilerTimer) {
     return;
   }
@@ -130,7 +113,7 @@ function stopProfilerTimerIfRunningAndRecordDelta(
   }
 }
 
-function recordLayoutEffectDuration(fiber       )       {
+function recordLayoutEffectDuration(fiber) {
   if (!enableProfilerTimer || !enableProfilerCommitHooks) {
     return;
   }
@@ -159,7 +142,7 @@ function recordLayoutEffectDuration(fiber       )       {
   }
 }
 
-function recordPassiveEffectDuration(fiber       )       {
+function recordPassiveEffectDuration(fiber) {
   if (!enableProfilerTimer || !enableProfilerCommitHooks) {
     return;
   }
@@ -195,21 +178,21 @@ function recordPassiveEffectDuration(fiber       )       {
   }
 }
 
-function startLayoutEffectTimer()       {
+function startLayoutEffectTimer() {
   if (!enableProfilerTimer || !enableProfilerCommitHooks) {
     return;
   }
   layoutEffectStartTime = now();
 }
 
-function startPassiveEffectTimer()       {
+function startPassiveEffectTimer() {
   if (!enableProfilerTimer || !enableProfilerCommitHooks) {
     return;
   }
   passiveEffectStartTime = now();
 }
 
-function transferActualDuration(fiber       )       {
+function transferActualDuration(fiber) {
   // Transfer time spent rendering these children so we don't lose it
   // after we rerender. This is used as a helper in special cases
   // where we should count the work of multiple passes.

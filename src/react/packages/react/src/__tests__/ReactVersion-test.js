@@ -8,7 +8,7 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 // NOTE: Intentionally using the dynamic version of the `gate` pragma to opt out
 // the negative test behavior. If this test happens to pass when running
@@ -17,10 +17,10 @@
 // TODO: The experimental builds have a different version at runtime than
 // the package.json because DevTools uses it for feature detection. Consider
 // some other way of handling that.
-test('ReactVersion matches package.json', () => {
-  if (gate(flags => flags.build && flags.stable && !flags.www)) {
-    const React = require('react');
-    const packageJSON = require('react/package.json');
+test("ReactVersion matches package.json", () => {
+  if (gate((flags) => flags.build && flags.stable && !flags.www)) {
+    const React = require("react");
+    const packageJSON = require("react/package.json");
     expect(React.version).toBe(packageJSON.version);
   }
 });

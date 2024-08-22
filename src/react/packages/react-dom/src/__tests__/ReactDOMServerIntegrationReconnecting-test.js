@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -20,10 +20,10 @@ function initModules() {
   // Reset warning cache.
   jest.resetModules();
 
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -33,15 +33,15 @@ function initModules() {
   };
 }
 
-const {resetModules, expectMarkupMismatch, expectMarkupMatch} =
+const { resetModules, expectMarkupMismatch, expectMarkupMatch } =
   ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  describe('reconnecting to server markup', function () {
+  describe("reconnecting to server markup", function () {
     let EmptyComponent;
     beforeEach(() => {
       EmptyComponent = class extends React.Component {
@@ -51,8 +51,8 @@ describe('ReactDOMServerIntegration', () => {
       };
     });
 
-    describe('elements', function () {
-      describe('reconnecting different component implementations', function () {
+    describe("elements", function () {
+      describe("reconnecting different component implementations", function () {
         let ES6ClassComponent, PureComponent, bareElement;
         beforeEach(() => {
           // try each type of component on client and server.
@@ -61,69 +61,69 @@ describe('ReactDOMServerIntegration', () => {
               return <div id={this.props.id} />;
             }
           };
-          PureComponent = props => <div id={props.id} />;
+          PureComponent = (props) => <div id={props.id} />;
           bareElement = <div id="foobarbaz" />;
         });
 
-        it('should reconnect ES6 Class to ES6 Class', () =>
+        it("should reconnect ES6 Class to ES6 Class", () =>
           expectMarkupMatch(
             <ES6ClassComponent id="foobarbaz" />,
             <ES6ClassComponent id="foobarbaz" />,
           ));
 
-        it('should reconnect Pure Component to ES6 Class', () =>
+        it("should reconnect Pure Component to ES6 Class", () =>
           expectMarkupMatch(
             <ES6ClassComponent id="foobarbaz" />,
             <PureComponent id="foobarbaz" />,
           ));
 
-        it('should reconnect Bare Element to ES6 Class', () =>
+        it("should reconnect Bare Element to ES6 Class", () =>
           expectMarkupMatch(<ES6ClassComponent id="foobarbaz" />, bareElement));
 
-        it('should reconnect ES6 Class to Pure Component', () =>
+        it("should reconnect ES6 Class to Pure Component", () =>
           expectMarkupMatch(
             <PureComponent id="foobarbaz" />,
             <ES6ClassComponent id="foobarbaz" />,
           ));
 
-        it('should reconnect Pure Component to Pure Component', () =>
+        it("should reconnect Pure Component to Pure Component", () =>
           expectMarkupMatch(
             <PureComponent id="foobarbaz" />,
             <PureComponent id="foobarbaz" />,
           ));
 
-        it('should reconnect Bare Element to Pure Component', () =>
+        it("should reconnect Bare Element to Pure Component", () =>
           expectMarkupMatch(<PureComponent id="foobarbaz" />, bareElement));
 
-        it('should reconnect ES6 Class to Bare Element', () =>
+        it("should reconnect ES6 Class to Bare Element", () =>
           expectMarkupMatch(bareElement, <ES6ClassComponent id="foobarbaz" />));
 
-        it('should reconnect Pure Component to Bare Element', () =>
+        it("should reconnect Pure Component to Bare Element", () =>
           expectMarkupMatch(bareElement, <PureComponent id="foobarbaz" />));
 
-        it('should reconnect Bare Element to Bare Element', () =>
+        it("should reconnect Bare Element to Bare Element", () =>
           expectMarkupMatch(bareElement, bareElement));
       });
 
-      it('should error reconnecting different element types', () =>
+      it("should error reconnecting different element types", () =>
         expectMarkupMismatch(<div />, <span />));
 
-      it('should error reconnecting fewer root children', () =>
+      it("should error reconnecting fewer root children", () =>
         expectMarkupMismatch(<span key="a" />, [
           <span key="a" />,
           <span key="b" />,
         ]));
 
-      it('should error reconnecting missing attributes', () =>
+      it("should error reconnecting missing attributes", () =>
         expectMarkupMismatch(<div id="foo" />, <div />));
 
-      it('should error reconnecting added attributes', () =>
+      it("should error reconnecting added attributes", () =>
         expectMarkupMismatch(<div />, <div id="foo" />));
 
-      it('should error reconnecting different attribute values', () =>
+      it("should error reconnecting different attribute values", () =>
         expectMarkupMismatch(<div id="foo" />, <div id="bar" />));
 
-      it('can explicitly ignore errors reconnecting different element types of children', () =>
+      it("can explicitly ignore errors reconnecting different element types of children", () =>
         expectMarkupMatch(
           <div>
             <div />
@@ -133,25 +133,25 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('can explicitly ignore errors reconnecting missing attributes', () =>
+      it("can explicitly ignore errors reconnecting missing attributes", () =>
         expectMarkupMatch(
           <div id="foo" />,
           <div suppressHydrationWarning={true} />,
         ));
 
-      it('can explicitly ignore errors reconnecting added attributes', () =>
+      it("can explicitly ignore errors reconnecting added attributes", () =>
         expectMarkupMatch(
           <div />,
           <div id="foo" suppressHydrationWarning={true} />,
         ));
 
-      it('can explicitly ignore errors reconnecting different attribute values', () =>
+      it("can explicitly ignore errors reconnecting different attribute values", () =>
         expectMarkupMatch(
           <div id="foo" />,
           <div id="bar" suppressHydrationWarning={true} />,
         ));
 
-      it('can not deeply ignore errors reconnecting different attribute values', () =>
+      it("can not deeply ignore errors reconnecting different attribute values", () =>
         expectMarkupMismatch(
           <div>
             <div id="foo" />
@@ -162,102 +162,102 @@ describe('ReactDOMServerIntegration', () => {
         ));
     });
 
-    describe('inline styles', function () {
-      it('should error reconnecting missing style attribute', () =>
-        expectMarkupMismatch(<div style={{width: '1px'}} />, <div />));
+    describe("inline styles", function () {
+      it("should error reconnecting missing style attribute", () =>
+        expectMarkupMismatch(<div style={{ width: "1px" }} />, <div />));
 
-      it('should error reconnecting added style attribute', () =>
-        expectMarkupMismatch(<div />, <div style={{width: '1px'}} />));
+      it("should error reconnecting added style attribute", () =>
+        expectMarkupMismatch(<div />, <div style={{ width: "1px" }} />));
 
-      it('should error reconnecting empty style attribute', () =>
+      it("should error reconnecting empty style attribute", () =>
         expectMarkupMismatch(
-          <div style={{width: '1px'}} />,
+          <div style={{ width: "1px" }} />,
           <div style={{}} />,
         ));
 
-      it('should error reconnecting added style values', () =>
+      it("should error reconnecting added style values", () =>
         expectMarkupMismatch(
           <div style={{}} />,
-          <div style={{width: '1px'}} />,
+          <div style={{ width: "1px" }} />,
         ));
 
-      it('should error reconnecting different style values', () =>
+      it("should error reconnecting different style values", () =>
         expectMarkupMismatch(
-          <div style={{width: '1px'}} />,
-          <div style={{width: '2px'}} />,
+          <div style={{ width: "1px" }} />,
+          <div style={{ width: "2px" }} />,
         ));
 
-      it('should reconnect number and string versions of a number', () =>
+      it("should reconnect number and string versions of a number", () =>
         expectMarkupMatch(
-          <div style={{width: '1px', height: 2}} />,
-          <div style={{width: 1, height: '2px'}} />,
+          <div style={{ width: "1px", height: 2 }} />,
+          <div style={{ width: 1, height: "2px" }} />,
         ));
 
-      it('should error reconnecting reordered style values', () =>
+      it("should error reconnecting reordered style values", () =>
         expectMarkupMismatch(
-          <div style={{width: '1px', fontSize: '2px'}} />,
-          <div style={{fontSize: '2px', width: '1px'}} />,
+          <div style={{ width: "1px", fontSize: "2px" }} />,
+          <div style={{ fontSize: "2px", width: "1px" }} />,
         ));
 
-      it('can explicitly ignore errors reconnecting added style values', () =>
+      it("can explicitly ignore errors reconnecting added style values", () =>
         expectMarkupMatch(
           <div style={{}} />,
-          <div style={{width: '1px'}} suppressHydrationWarning={true} />,
+          <div style={{ width: "1px" }} suppressHydrationWarning={true} />,
         ));
 
-      it('can explicitly ignore reconnecting different style values', () =>
+      it("can explicitly ignore reconnecting different style values", () =>
         expectMarkupMatch(
-          <div style={{width: '1px'}} />,
-          <div style={{width: '2px'}} suppressHydrationWarning={true} />,
+          <div style={{ width: "1px" }} />,
+          <div style={{ width: "2px" }} suppressHydrationWarning={true} />,
         ));
     });
 
-    describe('text nodes', function () {
-      it('should error reconnecting different text', () =>
+    describe("text nodes", function () {
+      it("should error reconnecting different text", () =>
         expectMarkupMismatch(<div>Text</div>, <div>Other Text</div>));
 
-      it('should reconnect a div with a number and string version of number', () =>
+      it("should reconnect a div with a number and string version of number", () =>
         expectMarkupMatch(<div>{2}</div>, <div>2</div>));
 
-      it('should error reconnecting different numbers', () =>
+      it("should error reconnecting different numbers", () =>
         expectMarkupMismatch(<div>{2}</div>, <div>{3}</div>));
 
-      it('should error reconnecting different number from text', () =>
+      it("should error reconnecting different number from text", () =>
         expectMarkupMismatch(<div>{2}</div>, <div>3</div>));
 
-      it('should error reconnecting different text in two code blocks', () =>
+      it("should error reconnecting different text in two code blocks", () =>
         expectMarkupMismatch(
           <div>
-            {'Text1'}
-            {'Text2'}
+            {"Text1"}
+            {"Text2"}
           </div>,
           <div>
-            {'Text1'}
-            {'Text3'}
+            {"Text1"}
+            {"Text3"}
           </div>,
         ));
 
-      it('can explicitly ignore reconnecting different text', () =>
+      it("can explicitly ignore reconnecting different text", () =>
         expectMarkupMatch(
           <div>Text</div>,
           <div suppressHydrationWarning={true}>Other Text</div>,
         ));
 
-      it('can explicitly ignore reconnecting different text in two code blocks', () =>
+      it("can explicitly ignore reconnecting different text in two code blocks", () =>
         expectMarkupMatch(
           <div suppressHydrationWarning={true}>
-            {'Text1'}
-            {'Text2'}
+            {"Text1"}
+            {"Text2"}
           </div>,
           <div suppressHydrationWarning={true}>
-            {'Text1'}
-            {'Text3'}
+            {"Text1"}
+            {"Text3"}
           </div>,
         ));
     });
 
-    describe('element trees and children', function () {
-      it('should error reconnecting missing children', () =>
+    describe("element trees and children", function () {
+      it("should error reconnecting missing children", () =>
         expectMarkupMismatch(
           <div>
             <div />
@@ -265,7 +265,7 @@ describe('ReactDOMServerIntegration', () => {
           <div />,
         ));
 
-      it('should error reconnecting added children', () =>
+      it("should error reconnecting added children", () =>
         expectMarkupMismatch(
           <div />,
           <div>
@@ -273,7 +273,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('should error reconnecting more children', () =>
+      it("should error reconnecting more children", () =>
         expectMarkupMismatch(
           <div>
             <div />
@@ -284,7 +284,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('should error reconnecting fewer children', () =>
+      it("should error reconnecting fewer children", () =>
         expectMarkupMismatch(
           <div>
             <div />
@@ -295,7 +295,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('should error reconnecting reordered children', () =>
+      it("should error reconnecting reordered children", () =>
         expectMarkupMismatch(
           <div>
             <div />
@@ -307,7 +307,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('should error reconnecting a div with children separated by whitespace on the client', () =>
+      it("should error reconnecting a div with children separated by whitespace on the client", () =>
         expectMarkupMismatch(
           <div id="parent">
             <div id="child1" />
@@ -317,7 +317,7 @@ describe('ReactDOMServerIntegration', () => {
           <div id="parent"><div id="child1" />      <div id="child2" /></div>, // eslint-disable-line no-multi-spaces
         ));
 
-      it('should error reconnecting a div with children separated by different whitespace on the server', () =>
+      it("should error reconnecting a div with children separated by different whitespace on the server", () =>
         expectMarkupMismatch(
           // prettier-ignore
           <div id="parent"><div id="child1" />      <div id="child2" /></div>, // eslint-disable-line no-multi-spaces
@@ -327,7 +327,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('should error reconnecting a div with children separated by different whitespace', () =>
+      it("should error reconnecting a div with children separated by different whitespace", () =>
         expectMarkupMismatch(
           <div id="parent">
             <div id="child1" /> <div id="child2" />
@@ -336,7 +336,7 @@ describe('ReactDOMServerIntegration', () => {
           <div id="parent"><div id="child1" />      <div id="child2" /></div>, // eslint-disable-line no-multi-spaces
         ));
 
-      it('can distinguish an empty component from a dom node', () =>
+      it("can distinguish an empty component from a dom node", () =>
         expectMarkupMismatch(
           <div>
             <span />
@@ -346,15 +346,15 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('can distinguish an empty component from an empty text component', () =>
+      it("can distinguish an empty component from an empty text component", () =>
         expectMarkupMatch(
           <div>
             <EmptyComponent />
           </div>,
-          <div>{''}</div>,
+          <div>{""}</div>,
         ));
 
-      it('can explicitly ignore reconnecting more children', () =>
+      it("can explicitly ignore reconnecting more children", () =>
         expectMarkupMatch(
           <div>
             <div />
@@ -365,7 +365,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('can explicitly ignore reconnecting fewer children', () =>
+      it("can explicitly ignore reconnecting fewer children", () =>
         expectMarkupMatch(
           <div>
             <div />
@@ -376,7 +376,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('can explicitly ignore reconnecting reordered children', () =>
+      it("can explicitly ignore reconnecting reordered children", () =>
         expectMarkupMatch(
           <div suppressHydrationWarning={true}>
             <div />
@@ -388,7 +388,7 @@ describe('ReactDOMServerIntegration', () => {
           </div>,
         ));
 
-      it('can not deeply ignore reconnecting reordered children', () =>
+      it("can not deeply ignore reconnecting reordered children", () =>
         expectMarkupMismatch(
           <div suppressHydrationWarning={true}>
             <div>
@@ -406,31 +406,31 @@ describe('ReactDOMServerIntegration', () => {
     });
 
     // Markup Mismatches: misc
-    it('should error reconnecting a div with different dangerouslySetInnerHTML', () =>
+    it("should error reconnecting a div with different dangerouslySetInnerHTML", () =>
       expectMarkupMismatch(
-        <div dangerouslySetInnerHTML={{__html: "<span id='child1'/>"}} />,
-        <div dangerouslySetInnerHTML={{__html: "<span id='child2'/>"}} />,
+        <div dangerouslySetInnerHTML={{ __html: "<span id='child1'/>" }} />,
+        <div dangerouslySetInnerHTML={{ __html: "<span id='child2'/>" }} />,
       ));
 
-    it('should error reconnecting a div with different text dangerouslySetInnerHTML', () =>
+    it("should error reconnecting a div with different text dangerouslySetInnerHTML", () =>
       expectMarkupMismatch(
-        <div dangerouslySetInnerHTML={{__html: 'foo'}} />,
-        <div dangerouslySetInnerHTML={{__html: 'bar'}} />,
+        <div dangerouslySetInnerHTML={{ __html: "foo" }} />,
+        <div dangerouslySetInnerHTML={{ __html: "bar" }} />,
       ));
 
-    it('should error reconnecting a div with different number dangerouslySetInnerHTML', () =>
+    it("should error reconnecting a div with different number dangerouslySetInnerHTML", () =>
       expectMarkupMismatch(
-        <div dangerouslySetInnerHTML={{__html: 10}} />,
-        <div dangerouslySetInnerHTML={{__html: 20}} />,
+        <div dangerouslySetInnerHTML={{ __html: 10 }} />,
+        <div dangerouslySetInnerHTML={{ __html: 20 }} />,
       ));
 
-    it('should error reconnecting a div with different object dangerouslySetInnerHTML', () =>
+    it("should error reconnecting a div with different object dangerouslySetInnerHTML", () =>
       expectMarkupMismatch(
         <div
           dangerouslySetInnerHTML={{
             __html: {
               toString() {
-                return 'hi';
+                return "hi";
               },
             },
           }}
@@ -439,18 +439,18 @@ describe('ReactDOMServerIntegration', () => {
           dangerouslySetInnerHTML={{
             __html: {
               toString() {
-                return 'bye';
+                return "bye";
               },
             },
           }}
         />,
       ));
 
-    it('can explicitly ignore reconnecting a div with different dangerouslySetInnerHTML', () =>
+    it("can explicitly ignore reconnecting a div with different dangerouslySetInnerHTML", () =>
       expectMarkupMatch(
-        <div dangerouslySetInnerHTML={{__html: "<span id='child1'/>"}} />,
+        <div dangerouslySetInnerHTML={{ __html: "<span id='child1'/>" }} />,
         <div
-          dangerouslySetInnerHTML={{__html: "<span id='child2'/>"}}
+          dangerouslySetInnerHTML={{ __html: "<span id='child2'/>" }}
           suppressHydrationWarning={true}
         />,
       ));

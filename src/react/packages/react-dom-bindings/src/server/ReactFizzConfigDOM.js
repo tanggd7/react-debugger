@@ -4,24 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                                            
-             
-                     
-                    
-                 
-                 
-                                            
 
 import {
   checkHtmlStringCoercion,
   checkCSSPropertyStringCoercion,
   checkAttributeStringCoercion,
-} from 'shared/CheckStringCoercion';
+} from "shared/CheckStringCoercion";
 
-import {Children} from 'react';
+import { Children } from "react";
 
 import {
   enableFilterEmptyStringAttributesDOM,
@@ -29,15 +21,7 @@ import {
   enableFloat,
   enableFormActions,
   enableFizzExternalRuntime,
-} from 'shared/ReactFeatureFlags';
-
-             
-              
-        
-                   
-                                                  
-
-                                                              
+} from "shared/ReactFeatureFlags";
 
 import {
   writeChunk,
@@ -45,28 +29,28 @@ import {
   stringToChunk,
   stringToPrecomputedChunk,
   clonePrecomputedChunk,
-} from 'react-server/src/ReactServerStreamConfig';
+} from "react-server/src/ReactServerStreamConfig";
 import {
   resolveRequest,
   getResources,
   flushResources,
-} from 'react-server/src/ReactFizzServer';
+} from "react-server/src/ReactFizzServer";
 
-import isAttributeNameSafe from '../shared/isAttributeNameSafe';
-import isUnitlessNumber from '../shared/isUnitlessNumber';
-import getAttributeAlias from '../shared/getAttributeAlias';
+import isAttributeNameSafe from "../shared/isAttributeNameSafe";
+import isUnitlessNumber from "../shared/isUnitlessNumber";
+import getAttributeAlias from "../shared/getAttributeAlias";
 
-import {checkControlledValueProps} from '../shared/ReactControlledValuePropTypes';
-import {validateProperties as validateARIAProperties} from '../shared/ReactDOMInvalidARIAHook';
-import {validateProperties as validateInputProperties} from '../shared/ReactDOMNullInputValuePropHook';
-import {validateProperties as validateUnknownProperties} from '../shared/ReactDOMUnknownPropertyHook';
-import warnValidStyle from '../shared/warnValidStyle';
+import { checkControlledValueProps } from "../shared/ReactControlledValuePropTypes";
+import { validateProperties as validateARIAProperties } from "../shared/ReactDOMInvalidARIAHook";
+import { validateProperties as validateInputProperties } from "../shared/ReactDOMNullInputValuePropHook";
+import { validateProperties as validateUnknownProperties } from "../shared/ReactDOMUnknownPropertyHook";
+import warnValidStyle from "../shared/warnValidStyle";
 
-import escapeTextForBrowser from './escapeTextForBrowser';
-import hyphenateStyleName from '../shared/hyphenateStyleName';
-import hasOwnProperty from 'shared/hasOwnProperty';
-import sanitizeURL from '../shared/sanitizeURL';
-import isArray from 'shared/isArray';
+import escapeTextForBrowser from "./escapeTextForBrowser";
+import hyphenateStyleName from "../shared/hyphenateStyleName";
+import hasOwnProperty from "shared/hasOwnProperty";
+import sanitizeURL from "../shared/sanitizeURL";
+import isArray from "shared/isArray";
 
 import {
   clientRenderBoundary as clientRenderFunction,
@@ -74,7 +58,7 @@ import {
   completeBoundaryWithStyles as styleInsertionFunction,
   completeSegment as completeSegmentFunction,
   formReplaying as formReplayingRuntime,
-} from './fizz-instruction-set/ReactDOMFizzInstructionSetInlineCodeStrings';
+} from "./fizz-instruction-set/ReactDOMFizzInstructionSetInlineCodeStrings";
 
 import {
   getValueDescriptorExpectingObjectForWarning,
@@ -88,11 +72,11 @@ import {
   describeDifferencesForPreinitOverScript,
   describeDifferencesForPreloads,
   describeDifferencesForPreloadOverImplicitPreload,
-} from '../shared/ReactDOMResourceValidation';
+} from "../shared/ReactDOMResourceValidation";
 
-import {NotPending} from '../shared/ReactDOMFormActions';
+import { NotPending } from "../shared/ReactDOMFormActions";
 
-import ReactDOMSharedInternals from 'shared/ReactDOMSharedInternals';
+import ReactDOMSharedInternals from "shared/ReactDOMSharedInternals";
 const ReactDOMCurrentDispatcher = ReactDOMSharedInternals.Dispatcher;
 
 const ReactDOMServerDispatcher = {
@@ -110,11 +94,9 @@ export function prepareHostDispatcher() {
 // E.g. this can be used to distinguish legacy renderers from this modern one.
 export const isPrimaryRenderer = true;
 
-                                    
-const ScriptStreamingFormat                  = 0;
-const DataStreamingFormat                  = 1;
+const ScriptStreamingFormat = 0;
+const DataStreamingFormat = 1;
 
-                                      
 const NothingSent /*                      */ = 0b00000;
 const SentCompleteSegmentFunction /*      */ = 0b00001;
 const SentCompleteBoundaryFunction /*     */ = 0b00010;
@@ -123,47 +105,11 @@ const SentStyleInsertionFunction /*       */ = 0b01000;
 const SentFormReplayingRuntime /*         */ = 0b10000;
 
 // Per response, global state that is not contextual to the rendering subtree.
-                             
-                                                   
-                                      
-                                  
-                         
-                   
-                         
-                                   
-
-                                                                               
-                                      
-                                 
-
-                                    
-                                                      
-
-                                            
-                                                     
-                                                     
-                   
-
-                     
-                                                 
-                                                    
-                                                 
-                                                   
-
-                                                                                
-                                                                                 
-                                                                  
-                         
-
-                                                        
-
-     
-  
 
 const dataElementQuotedEnd = stringToPrecomputedChunk('"></template>');
 
-const startInlineScript = stringToPrecomputedChunk('<script>');
-const endInlineScript = stringToPrecomputedChunk('</script>');
+const startInlineScript = stringToPrecomputedChunk("<script>");
+const endInlineScript = stringToPrecomputedChunk("</script>");
 
 const startScriptSrc = stringToPrecomputedChunk('<script src="');
 const startModuleSrc = stringToPrecomputedChunk('<script type="module" src="');
@@ -182,50 +128,37 @@ const endAsyncScript = stringToPrecomputedChunk('" async=""></script>');
  * While untrusted script content should be made safe before using this api it will
  * ensure that the script cannot be early terminated or never terminated state
  */
-function escapeBootstrapScriptContent(scriptText        ) {
+function escapeBootstrapScriptContent(scriptText) {
   if (__DEV__) {
     checkHtmlStringCoercion(scriptText);
   }
-  return ('' + scriptText).replace(scriptRegex, scriptReplacer);
+  return ("" + scriptText).replace(scriptRegex, scriptReplacer);
 }
 const scriptRegex = /(<\/|<)(s)(cript)/gi;
-const scriptReplacer = (
-  match        ,
-  prefix        ,
-  s        ,
-  suffix        ,
-) => `${prefix}${s === 's' ? '\\u0073' : '\\u0053'}${suffix}`;
+const scriptReplacer = (match, prefix, s, suffix) =>
+  `${prefix}${s === "s" ? "\\u0073" : "\\u0053"}${suffix}`;
 
-                                         
-              
-                     
-                       
-  
-                                     
-              
-                                          
-  
 // Allows us to keep track of what we've already written so we can refer back to it.
 // if passed externalRuntimeConfig and the enableFizzExternalRuntime feature flag
 // is set, the server will send instructions via data attributes (instead of inline scripts)
 export function createResponseState(
-  resources           ,
-  identifierPrefix               ,
-  nonce               ,
-  bootstrapScriptContent               ,
-  bootstrapScripts                                                           ,
-  bootstrapModules                                                           ,
-  externalRuntimeConfig                                           ,
-)                {
-  const idPrefix = identifierPrefix === undefined ? '' : identifierPrefix;
+  resources,
+  identifierPrefix,
+  nonce,
+  bootstrapScriptContent,
+  bootstrapScripts,
+  bootstrapModules,
+  externalRuntimeConfig,
+) {
+  const idPrefix = identifierPrefix === undefined ? "" : identifierPrefix;
   const inlineScriptWithNonce =
     nonce === undefined
       ? startInlineScript
       : stringToPrecomputedChunk(
           '<script nonce="' + escapeTextForBrowser(nonce) + '">',
         );
-  const bootstrapChunks                                  = [];
-  let externalRuntimeScript                               = null;
+  const bootstrapChunks = [];
+  let externalRuntimeScript = null;
   let streamingFormat = ScriptStreamingFormat;
   if (bootstrapScriptContent !== undefined) {
     bootstrapChunks.push(
@@ -237,12 +170,12 @@ export function createResponseState(
   if (enableFizzExternalRuntime) {
     if (!enableFloat) {
       throw new Error(
-        'enableFizzExternalRuntime without enableFloat is not supported. This should never appear in production, since it means you are using a misconfigured React bundle.',
+        "enableFizzExternalRuntime without enableFloat is not supported. This should never appear in production, since it means you are using a misconfigured React bundle.",
       );
     }
     if (externalRuntimeConfig !== undefined) {
       streamingFormat = DataStreamingFormat;
-      if (typeof externalRuntimeConfig === 'string') {
+      if (typeof externalRuntimeConfig === "string") {
         externalRuntimeScript = {
           src: externalRuntimeConfig,
           chunks: [],
@@ -271,15 +204,15 @@ export function createResponseState(
     for (let i = 0; i < bootstrapScripts.length; i++) {
       const scriptConfig = bootstrapScripts[i];
       const src =
-        typeof scriptConfig === 'string' ? scriptConfig : scriptConfig.src;
+        typeof scriptConfig === "string" ? scriptConfig : scriptConfig.src;
       const integrity =
-        typeof scriptConfig === 'string' ? undefined : scriptConfig.integrity;
+        typeof scriptConfig === "string" ? undefined : scriptConfig.integrity;
       const crossOrigin =
-        typeof scriptConfig === 'string' || scriptConfig.crossOrigin == null
+        typeof scriptConfig === "string" || scriptConfig.crossOrigin == null
           ? undefined
-          : scriptConfig.crossOrigin === 'use-credentials'
-          ? 'use-credentials'
-          : '';
+          : scriptConfig.crossOrigin === "use-credentials"
+            ? "use-credentials"
+            : "";
 
       preloadBootstrapScript(resources, src, nonce, integrity, crossOrigin);
 
@@ -299,7 +232,7 @@ export function createResponseState(
           stringToChunk(escapeTextForBrowser(integrity)),
         );
       }
-      if (typeof crossOrigin === 'string') {
+      if (typeof crossOrigin === "string") {
         bootstrapChunks.push(
           scriptCrossOrigin,
           stringToChunk(escapeTextForBrowser(crossOrigin)),
@@ -312,15 +245,15 @@ export function createResponseState(
     for (let i = 0; i < bootstrapModules.length; i++) {
       const scriptConfig = bootstrapModules[i];
       const src =
-        typeof scriptConfig === 'string' ? scriptConfig : scriptConfig.src;
+        typeof scriptConfig === "string" ? scriptConfig : scriptConfig.src;
       const integrity =
-        typeof scriptConfig === 'string' ? undefined : scriptConfig.integrity;
+        typeof scriptConfig === "string" ? undefined : scriptConfig.integrity;
       const crossOrigin =
-        typeof scriptConfig === 'string' || scriptConfig.crossOrigin == null
+        typeof scriptConfig === "string" || scriptConfig.crossOrigin == null
           ? undefined
-          : scriptConfig.crossOrigin === 'use-credentials'
-          ? 'use-credentials'
-          : '';
+          : scriptConfig.crossOrigin === "use-credentials"
+            ? "use-credentials"
+            : "";
 
       preloadBootstrapModule(resources, src, nonce, integrity, crossOrigin);
 
@@ -341,7 +274,7 @@ export function createResponseState(
           stringToChunk(escapeTextForBrowser(integrity)),
         );
       }
-      if (typeof crossOrigin === 'string') {
+      if (typeof crossOrigin === "string") {
         bootstrapChunks.push(
           scriptCrossOrigin,
           stringToChunk(escapeTextForBrowser(crossOrigin)),
@@ -352,9 +285,9 @@ export function createResponseState(
   }
   return {
     bootstrapChunks: bootstrapChunks,
-    placeholderPrefix: stringToPrecomputedChunk(idPrefix + 'P:'),
-    segmentPrefix: stringToPrecomputedChunk(idPrefix + 'S:'),
-    boundaryPrefix: idPrefix + 'B:',
+    placeholderPrefix: stringToPrecomputedChunk(idPrefix + "P:"),
+    segmentPrefix: stringToPrecomputedChunk(idPrefix + "S:"),
+    boundaryPrefix: idPrefix + "B:",
     idPrefix: idPrefix,
     nextSuspenseID: 0,
     streamingFormat,
@@ -390,20 +323,9 @@ const HTML_COLGROUP_MODE = 8;
 // We have a greater than HTML_TABLE_MODE check elsewhere. If you add more cases here, make sure it
 // still makes sense
 
-                                                       
-
 // Lets us keep track of contextual state and pick it back up after suspending.
-                             
-                                                             
-                                                                                                                    
-                              
-  
 
-function createFormatContext(
-  insertionMode               ,
-  selectedValue               ,
-  noscriptTagInScope         ,
-)                {
+function createFormatContext(insertionMode, selectedValue, noscriptTagInScope) {
   return {
     insertionMode,
     selectedValue,
@@ -411,43 +333,39 @@ function createFormatContext(
   };
 }
 
-export function createRootFormatContext(namespaceURI         )                {
+export function createRootFormatContext(namespaceURI) {
   const insertionMode =
-    namespaceURI === 'http://www.w3.org/2000/svg'
+    namespaceURI === "http://www.w3.org/2000/svg"
       ? SVG_MODE
-      : namespaceURI === 'http://www.w3.org/1998/Math/MathML'
-      ? MATHML_MODE
-      : ROOT_HTML_MODE;
+      : namespaceURI === "http://www.w3.org/1998/Math/MathML"
+        ? MATHML_MODE
+        : ROOT_HTML_MODE;
   return createFormatContext(insertionMode, null, false);
 }
 
-export function getChildFormatContext(
-  parentContext               ,
-  type        ,
-  props        ,
-)                {
+export function getChildFormatContext(parentContext, type, props) {
   switch (type) {
-    case 'noscript':
+    case "noscript":
       return createFormatContext(HTML_MODE, null, true);
-    case 'select':
+    case "select":
       return createFormatContext(
         HTML_MODE,
         props.value != null ? props.value : props.defaultValue,
         parentContext.noscriptTagInScope,
       );
-    case 'svg':
+    case "svg":
       return createFormatContext(
         SVG_MODE,
         null,
         parentContext.noscriptTagInScope,
       );
-    case 'math':
+    case "math":
       return createFormatContext(
         MATHML_MODE,
         null,
         parentContext.noscriptTagInScope,
       );
-    case 'foreignObject':
+    case "foreignObject":
       return createFormatContext(
         HTML_MODE,
         null,
@@ -455,27 +373,27 @@ export function getChildFormatContext(
       );
     // Table parents are special in that their children can only be created at all if they're
     // wrapped in a table parent. So we need to encode that we're entering this mode.
-    case 'table':
+    case "table":
       return createFormatContext(
         HTML_TABLE_MODE,
         null,
         parentContext.noscriptTagInScope,
       );
-    case 'thead':
-    case 'tbody':
-    case 'tfoot':
+    case "thead":
+    case "tbody":
+    case "tfoot":
       return createFormatContext(
         HTML_TABLE_BODY_MODE,
         null,
         parentContext.noscriptTagInScope,
       );
-    case 'colgroup':
+    case "colgroup":
       return createFormatContext(
         HTML_COLGROUP_MODE,
         null,
         parentContext.noscriptTagInScope,
       );
-    case 'tr':
+    case "tr":
       return createFormatContext(
         HTML_TABLE_ROW_MODE,
         null,
@@ -492,7 +410,7 @@ export function getChildFormatContext(
     );
   }
   if (parentContext.insertionMode === ROOT_HTML_MODE) {
-    if (type === 'html') {
+    if (type === "html") {
       // We've emitted the root and is now in <html> mode.
       return createFormatContext(HTML_HTML_MODE, null, false);
     } else {
@@ -506,51 +424,38 @@ export function getChildFormatContext(
   return parentContext;
 }
 
-                                                         
+export const UNINITIALIZED_SUSPENSE_BOUNDARY_ID = null;
 
-export const UNINITIALIZED_SUSPENSE_BOUNDARY_ID                     = null;
-
-export function assignSuspenseBoundaryID(
-  responseState               ,
-)                     {
+export function assignSuspenseBoundaryID(responseState) {
   const generatedID = responseState.nextSuspenseID++;
   return stringToPrecomputedChunk(
     responseState.boundaryPrefix + generatedID.toString(16),
   );
 }
 
-export function makeId(
-  responseState               ,
-  treeId        ,
-  localId        ,
-)         {
+export function makeId(responseState, treeId, localId) {
   const idPrefix = responseState.idPrefix;
 
-  let id = ':' + idPrefix + 'R' + treeId;
+  let id = ":" + idPrefix + "R" + treeId;
 
   // Unless this is the first id at this level, append a number at the end
   // that represents the position of this useId hook among all the useId
   // hooks for this fiber.
   if (localId > 0) {
-    id += 'H' + localId.toString(32);
+    id += "H" + localId.toString(32);
   }
 
-  return id + ':';
+  return id + ":";
 }
 
-function encodeHTMLTextNode(text        )         {
+function encodeHTMLTextNode(text) {
   return escapeTextForBrowser(text);
 }
 
-const textSeparator = stringToPrecomputedChunk('<!-- -->');
+const textSeparator = stringToPrecomputedChunk("<!-- -->");
 
-export function pushTextInstance(
-  target                                 ,
-  text        ,
-  responseState               ,
-  textEmbedded         ,
-)          {
-  if (text === '') {
+export function pushTextInstance(target, text, responseState, textEmbedded) {
+  if (text === "") {
     // Empty text doesn't have a DOM node representation and the hydration is aware of this.
     return textEmbedded;
   }
@@ -564,18 +469,18 @@ export function pushTextInstance(
 // Called when Fizz is done with a Segment. Currently the only purpose is to conditionally
 // emit a text separator when we don't know for sure it is safe to omit
 export function pushSegmentFinale(
-  target                                 ,
-  responseState               ,
-  lastPushedText         ,
-  textEmbedded         ,
-)       {
+  target,
+  responseState,
+  lastPushedText,
+  textEmbedded,
+) {
   if (lastPushedText && textEmbedded) {
     target.push(textSeparator);
   }
 }
 
-const styleNameCache                                = new Map();
-function processStyleName(styleName        )                   {
+const styleNameCache = new Map();
+function processStyleName(styleName) {
   const chunk = styleNameCache.get(styleName);
   if (chunk !== undefined) {
     return chunk;
@@ -588,18 +493,15 @@ function processStyleName(styleName        )                   {
 }
 
 const styleAttributeStart = stringToPrecomputedChunk(' style="');
-const styleAssign = stringToPrecomputedChunk(':');
-const styleSeparator = stringToPrecomputedChunk(';');
+const styleAssign = stringToPrecomputedChunk(":");
+const styleSeparator = stringToPrecomputedChunk(";");
 
-function pushStyleAttribute(
-  target                                 ,
-  style        ,
-)       {
-  if (typeof style !== 'object') {
+function pushStyleAttribute(target, style) {
+  if (typeof style !== "object") {
     throw new Error(
-      'The `style` prop expects a mapping from style properties to values, ' +
+      "The `style` prop expects a mapping from style properties to values, " +
         "not a string. For example, style={{marginRight: spacing + 'em'}} when " +
-        'using JSX.',
+        "using JSX.",
     );
   }
 
@@ -618,8 +520,8 @@ function pushStyleAttribute(
     const styleValue = style[styleName];
     if (
       styleValue == null ||
-      typeof styleValue === 'boolean' ||
-      styleValue === ''
+      typeof styleValue === "boolean" ||
+      styleValue === ""
     ) {
       // TODO: We used to set empty string as a style with an empty value. Does that ever make sense?
       continue;
@@ -627,14 +529,14 @@ function pushStyleAttribute(
 
     let nameChunk;
     let valueChunk;
-    const isCustomProperty = styleName.indexOf('--') === 0;
+    const isCustomProperty = styleName.indexOf("--") === 0;
     if (isCustomProperty) {
       nameChunk = stringToChunk(escapeTextForBrowser(styleName));
       if (__DEV__) {
         checkCSSPropertyStringCoercion(styleValue, styleName);
       }
       valueChunk = stringToChunk(
-        escapeTextForBrowser(('' + styleValue).trim()),
+        escapeTextForBrowser(("" + styleValue).trim()),
       );
     } else {
       if (__DEV__) {
@@ -642,18 +544,18 @@ function pushStyleAttribute(
       }
 
       nameChunk = processStyleName(styleName);
-      if (typeof styleValue === 'number') {
+      if (typeof styleValue === "number") {
         if (styleValue !== 0 && !isUnitlessNumber(styleName)) {
-          valueChunk = stringToChunk(styleValue + 'px'); // Presumes implicit 'px' suffix for unitless numbers
+          valueChunk = stringToChunk(styleValue + "px"); // Presumes implicit 'px' suffix for unitless numbers
         } else {
-          valueChunk = stringToChunk('' + styleValue);
+          valueChunk = stringToChunk("" + styleValue);
         }
       } else {
         if (__DEV__) {
           checkCSSPropertyStringCoercion(styleValue, styleName);
         }
         valueChunk = stringToChunk(
-          escapeTextForBrowser(('' + styleValue).trim()),
+          escapeTextForBrowser(("" + styleValue).trim()),
         );
       }
     }
@@ -670,30 +572,30 @@ function pushStyleAttribute(
   }
 }
 
-const attributeSeparator = stringToPrecomputedChunk(' ');
+const attributeSeparator = stringToPrecomputedChunk(" ");
 const attributeAssign = stringToPrecomputedChunk('="');
 const attributeEnd = stringToPrecomputedChunk('"');
 const attributeEmptyString = stringToPrecomputedChunk('=""');
 
 function pushBooleanAttribute(
-  target                                 ,
-  name        ,
-  value                                               , // not null or undefined
-)       {
-  if (value && typeof value !== 'function' && typeof value !== 'symbol') {
+  target,
+  name,
+  value, // not null or undefined
+) {
+  if (value && typeof value !== "function" && typeof value !== "symbol") {
     target.push(attributeSeparator, stringToChunk(name), attributeEmptyString);
   }
 }
 
 function pushStringAttribute(
-  target                                 ,
-  name        ,
-  value                                               , // not null or undefined
-)       {
+  target,
+  name,
+  value, // not null or undefined
+) {
   if (
-    typeof value !== 'function' &&
-    typeof value !== 'symbol' &&
-    typeof value !== 'boolean'
+    typeof value !== "function" &&
+    typeof value !== "symbol" &&
+    typeof value !== "boolean"
   ) {
     target.push(
       attributeSeparator,
@@ -705,7 +607,7 @@ function pushStringAttribute(
   }
 }
 
-function makeFormFieldPrefix(responseState               )         {
+function makeFormFieldPrefix(responseState) {
   // I'm just reusing this counter. It's not really the same namespace as "name".
   // It could just be its own counter.
   const id = responseState.nextSuspenseID++;
@@ -723,28 +625,21 @@ const actionJavaScriptURL = stringToPrecomputedChunk(
 
 const startHiddenInputChunk = stringToPrecomputedChunk('<input type="hidden"');
 
-function pushAdditionalFormField(
-                                        
-  value               ,
-  key        ,
-)       {
-  const target                                  = this;
+function pushAdditionalFormField(value, key) {
+  const target = this;
   target.push(startHiddenInputChunk);
-  if (typeof value !== 'string') {
+  if (typeof value !== "string") {
     throw new Error(
-      'File/Blob fields are not yet supported in progressive forms. ' +
-        'It probably means you are closing over binary data or FormData in a Server Action.',
+      "File/Blob fields are not yet supported in progressive forms. " +
+        "It probably means you are closing over binary data or FormData in a Server Action.",
     );
   }
-  pushStringAttribute(target, 'name', key);
-  pushStringAttribute(target, 'value', value);
+  pushStringAttribute(target, "name", key);
+  pushStringAttribute(target, "value", value);
   target.push(endOfStartTagSelfClosing);
 }
 
-function pushAdditionalFormFields(
-  target                                 ,
-  formData                 ,
-) {
+function pushAdditionalFormFields(target, formData) {
   if (formData !== null) {
     // $FlowFixMe[prop-missing]: FormData has forEach.
     formData.forEach(pushAdditionalFormField, target);
@@ -752,23 +647,23 @@ function pushAdditionalFormFields(
 }
 
 function pushFormActionAttribute(
-  target                                 ,
-  responseState               ,
-  formAction     ,
-  formEncType     ,
-  formMethod     ,
-  formTarget     ,
-  name     ,
-)                  {
+  target,
+  responseState,
+  formAction,
+  formEncType,
+  formMethod,
+  formTarget,
+  name,
+) {
   let formData = null;
-  if (enableFormActions && typeof formAction === 'function') {
+  if (enableFormActions && typeof formAction === "function") {
     // Function form actions cannot control the form properties
     if (__DEV__) {
       if (name !== null && !didWarnFormActionName) {
         didWarnFormActionName = true;
         console.error(
           'Cannot specify a "name" prop for a button that specifies a function as a formAction. ' +
-            'React needs it to encode which action should be invoked. It will get overridden.',
+            "React needs it to encode which action should be invoked. It will get overridden.",
         );
       }
       if (
@@ -777,26 +672,26 @@ function pushFormActionAttribute(
       ) {
         didWarnFormActionMethod = true;
         console.error(
-          'Cannot specify a formEncType or formMethod for a button that specifies a ' +
-            'function as a formAction. React provides those automatically. They will get overridden.',
+          "Cannot specify a formEncType or formMethod for a button that specifies a " +
+            "function as a formAction. React provides those automatically. They will get overridden.",
         );
       }
       if (formTarget !== null && !didWarnFormActionTarget) {
         didWarnFormActionTarget = true;
         console.error(
-          'Cannot specify a formTarget for a button that specifies a function as a formAction. ' +
-            'The function will always be executed in the same window.',
+          "Cannot specify a formTarget for a button that specifies a function as a formAction. " +
+            "The function will always be executed in the same window.",
         );
       }
     }
-    const customAction                        = formAction.$$FORM_ACTION;
-    if (typeof customAction === 'function') {
+    const customAction = formAction.$$FORM_ACTION;
+    if (typeof customAction === "function") {
       // This action has a custom progressive enhancement form that can submit the form
       // back to the server if it's invoked before hydration. Such as a Server Action.
       const prefix = makeFormFieldPrefix(responseState);
       const customFields = formAction.$$FORM_ACTION(prefix);
       name = customFields.name;
-      formAction = customFields.action || '';
+      formAction = customFields.action || "";
       formEncType = customFields.encType;
       formMethod = customFields.method;
       formTarget = customFields.target;
@@ -809,7 +704,7 @@ function pushFormActionAttribute(
       // error message but the URL will be logged.
       target.push(
         attributeSeparator,
-        stringToChunk('formAction'),
+        stringToChunk("formAction"),
         attributeAssign,
         actionJavaScriptURL,
         attributeEnd,
@@ -823,71 +718,71 @@ function pushFormActionAttribute(
     }
   }
   if (name != null) {
-    pushAttribute(target, 'name', name);
+    pushAttribute(target, "name", name);
   }
   if (formAction != null) {
-    pushAttribute(target, 'formAction', formAction);
+    pushAttribute(target, "formAction", formAction);
   }
   if (formEncType != null) {
-    pushAttribute(target, 'formEncType', formEncType);
+    pushAttribute(target, "formEncType", formEncType);
   }
   if (formMethod != null) {
-    pushAttribute(target, 'formMethod', formMethod);
+    pushAttribute(target, "formMethod", formMethod);
   }
   if (formTarget != null) {
-    pushAttribute(target, 'formTarget', formTarget);
+    pushAttribute(target, "formTarget", formTarget);
   }
   return formData;
 }
 
 function pushAttribute(
-  target                                 ,
-  name        ,
-  value                                               , // not null or undefined
-)       {
+  target,
+  name,
+  value, // not null or undefined
+) {
   switch (name) {
     // These are very common props and therefore are in the beginning of the switch.
     // TODO: aria-label is a very common prop but allows booleans so is not like the others
     // but should ideally go in this list too.
-    case 'className': {
-      pushStringAttribute(target, 'class', value);
+    case "className": {
+      pushStringAttribute(target, "class", value);
       break;
     }
-    case 'tabIndex': {
-      pushStringAttribute(target, 'tabindex', value);
+    case "tabIndex": {
+      pushStringAttribute(target, "tabindex", value);
       break;
     }
-    case 'dir':
-    case 'role':
-    case 'viewBox':
-    case 'width':
-    case 'height': {
+    case "dir":
+    case "role":
+    case "viewBox":
+    case "width":
+    case "height": {
       pushStringAttribute(target, name, value);
       break;
     }
-    case 'style': {
+    case "style": {
       pushStyleAttribute(target, value);
       return;
     }
-    case 'src':
-    case 'href': {
+    case "src":
+    case "href": {
       if (enableFilterEmptyStringAttributesDOM) {
-        if (value === '') {
+        if (value === "") {
           if (__DEV__) {
-            if (name === 'src') {
+            if (name === "src") {
               console.error(
                 'An empty string ("") was passed to the %s attribute. ' +
-                  'This may cause the browser to download the whole page again over the network. ' +
-                  'To fix this, either do not render the element at all ' +
-                  'or pass null to %s instead of an empty string.',
+                  "This may cause the browser to download the whole page again over the network. " +
+                  "To fix this, either do not render the element at all " +
+                  "or pass null to %s instead of an empty string.",
                 name,
                 name,
               );
             } else {
               console.error(
                 'An empty string ("") was passed to the %s attribute. ' +
-                  'To fix this, either do not render the element at all ' +
-                  'or pass null to %s instead of an empty string.',
+                  "To fix this, either do not render the element at all " +
+                  "or pass null to %s instead of an empty string.",
                 name,
                 name,
               );
@@ -898,21 +793,21 @@ function pushAttribute(
       }
     }
     // Fall through to the last case which shouldn't remove empty strings.
-    case 'action':
-    case 'formAction': {
+    case "action":
+    case "formAction": {
       // TODO: Consider only special casing these for each tag.
       if (
         value == null ||
-        typeof value === 'function' ||
-        typeof value === 'symbol' ||
-        typeof value === 'boolean'
+        typeof value === "function" ||
+        typeof value === "symbol" ||
+        typeof value === "boolean"
       ) {
         return;
       }
       if (__DEV__) {
         checkAttributeStringCoercion(value, name);
       }
-      const sanitizedValue = sanitizeURL('' + value);
+      const sanitizedValue = sanitizeURL("" + value);
       target.push(
         attributeSeparator,
         stringToChunk(name),
@@ -922,53 +817,53 @@ function pushAttribute(
       );
       return;
     }
-    case 'defaultValue':
-    case 'defaultChecked': // These shouldn't be set as attributes on generic HTML elements.
-    case 'innerHTML': // Must use dangerouslySetInnerHTML instead.
-    case 'suppressContentEditableWarning':
-    case 'suppressHydrationWarning':
+    case "defaultValue":
+    case "defaultChecked": // These shouldn't be set as attributes on generic HTML elements.
+    case "innerHTML": // Must use dangerouslySetInnerHTML instead.
+    case "suppressContentEditableWarning":
+    case "suppressHydrationWarning":
       // Ignored. These are built-in to React on the client.
       return;
-    case 'autoFocus':
-    case 'multiple':
-    case 'muted': {
+    case "autoFocus":
+    case "multiple":
+    case "muted": {
       pushBooleanAttribute(target, name.toLowerCase(), value);
       return;
     }
-    case 'xlinkHref': {
+    case "xlinkHref": {
       if (
-        typeof value === 'function' ||
-        typeof value === 'symbol' ||
-        typeof value === 'boolean'
+        typeof value === "function" ||
+        typeof value === "symbol" ||
+        typeof value === "boolean"
       ) {
         return;
       }
       if (__DEV__) {
         checkAttributeStringCoercion(value, name);
       }
-      const sanitizedValue = sanitizeURL('' + value);
+      const sanitizedValue = sanitizeURL("" + value);
       target.push(
         attributeSeparator,
-        stringToChunk('xlink:href'),
+        stringToChunk("xlink:href"),
         attributeAssign,
         stringToChunk(escapeTextForBrowser(sanitizedValue)),
         attributeEnd,
       );
       return;
     }
-    case 'contentEditable':
-    case 'spellCheck':
-    case 'draggable':
-    case 'value':
-    case 'autoReverse':
-    case 'externalResourcesRequired':
-    case 'focusable':
-    case 'preserveAlpha': {
+    case "contentEditable":
+    case "spellCheck":
+    case "draggable":
+    case "value":
+    case "autoReverse":
+    case "externalResourcesRequired":
+    case "focusable":
+    case "preserveAlpha": {
       // Booleanish String
       // These are "enumerated" attributes that accept "true" and "false".
       // In React, we let users pass `true` and `false` even though technically
       // these aren't boolean attributes (they are coerced to strings).
-      if (typeof value !== 'function' && typeof value !== 'symbol') {
+      if (typeof value !== "function" && typeof value !== "symbol") {
         target.push(
           attributeSeparator,
           stringToChunk(name),
@@ -979,30 +874,30 @@ function pushAttribute(
       }
       return;
     }
-    case 'allowFullScreen':
-    case 'async':
-    case 'autoPlay':
-    case 'controls':
-    case 'default':
-    case 'defer':
-    case 'disabled':
-    case 'disablePictureInPicture':
-    case 'disableRemotePlayback':
-    case 'formNoValidate':
-    case 'hidden':
-    case 'loop':
-    case 'noModule':
-    case 'noValidate':
-    case 'open':
-    case 'playsInline':
-    case 'readOnly':
-    case 'required':
-    case 'reversed':
-    case 'scoped':
-    case 'seamless':
-    case 'itemScope': {
+    case "allowFullScreen":
+    case "async":
+    case "autoPlay":
+    case "controls":
+    case "default":
+    case "defer":
+    case "disabled":
+    case "disablePictureInPicture":
+    case "disableRemotePlayback":
+    case "formNoValidate":
+    case "hidden":
+    case "loop":
+    case "noModule":
+    case "noValidate":
+    case "open":
+    case "playsInline":
+    case "readOnly":
+    case "required":
+    case "reversed":
+    case "scoped":
+    case "seamless":
+    case "itemScope": {
       // Boolean
-      if (value && typeof value !== 'function' && typeof value !== 'symbol') {
+      if (value && typeof value !== "function" && typeof value !== "symbol") {
         target.push(
           attributeSeparator,
           stringToChunk(name),
@@ -1011,8 +906,8 @@ function pushAttribute(
       }
       return;
     }
-    case 'capture':
-    case 'download': {
+    case "capture":
+    case "download": {
       // Overloaded Boolean
       if (value === true) {
         target.push(
@@ -1022,7 +917,7 @@ function pushAttribute(
         );
       } else if (value === false) {
         // Ignored
-      } else if (typeof value !== 'function' && typeof value !== 'symbol') {
+      } else if (typeof value !== "function" && typeof value !== "symbol") {
         target.push(
           attributeSeparator,
           stringToChunk(name),
@@ -1033,16 +928,16 @@ function pushAttribute(
       }
       return;
     }
-    case 'cols':
-    case 'rows':
-    case 'size':
-    case 'span': {
+    case "cols":
+    case "rows":
+    case "size":
+    case "span": {
       // These are HTML attributes that must be positive numbers.
       if (
-        typeof value !== 'function' &&
-        typeof value !== 'symbol' &&
+        typeof value !== "function" &&
+        typeof value !== "symbol" &&
         !isNaN(value) &&
-        (value     ) >= 1
+        value >= 1
       ) {
         target.push(
           attributeSeparator,
@@ -1054,12 +949,12 @@ function pushAttribute(
       }
       return;
     }
-    case 'rowSpan':
-    case 'start': {
+    case "rowSpan":
+    case "start": {
       // These are HTML attributes that must be numbers.
       if (
-        typeof value !== 'function' &&
-        typeof value !== 'symbol' &&
+        typeof value !== "function" &&
+        typeof value !== "symbol" &&
         !isNaN(value)
       ) {
         target.push(
@@ -1072,40 +967,40 @@ function pushAttribute(
       }
       return;
     }
-    case 'xlinkActuate':
-      pushStringAttribute(target, 'xlink:actuate', value);
+    case "xlinkActuate":
+      pushStringAttribute(target, "xlink:actuate", value);
       return;
-    case 'xlinkArcrole':
-      pushStringAttribute(target, 'xlink:arcrole', value);
+    case "xlinkArcrole":
+      pushStringAttribute(target, "xlink:arcrole", value);
       return;
-    case 'xlinkRole':
-      pushStringAttribute(target, 'xlink:role', value);
+    case "xlinkRole":
+      pushStringAttribute(target, "xlink:role", value);
       return;
-    case 'xlinkShow':
-      pushStringAttribute(target, 'xlink:show', value);
+    case "xlinkShow":
+      pushStringAttribute(target, "xlink:show", value);
       return;
-    case 'xlinkTitle':
-      pushStringAttribute(target, 'xlink:title', value);
+    case "xlinkTitle":
+      pushStringAttribute(target, "xlink:title", value);
       return;
-    case 'xlinkType':
-      pushStringAttribute(target, 'xlink:type', value);
+    case "xlinkType":
+      pushStringAttribute(target, "xlink:type", value);
       return;
-    case 'xmlBase':
-      pushStringAttribute(target, 'xml:base', value);
+    case "xmlBase":
+      pushStringAttribute(target, "xml:base", value);
       return;
-    case 'xmlLang':
-      pushStringAttribute(target, 'xml:lang', value);
+    case "xmlLang":
+      pushStringAttribute(target, "xml:lang", value);
       return;
-    case 'xmlSpace':
-      pushStringAttribute(target, 'xml:space', value);
+    case "xmlSpace":
+      pushStringAttribute(target, "xml:space", value);
       return;
     default:
       if (
         // shouldIgnoreAttribute
         // We have already filtered out null/undefined and reserved words.
         name.length > 2 &&
-        (name[0] === 'o' || name[0] === 'O') &&
-        (name[1] === 'n' || name[1] === 'N')
+        (name[0] === "o" || name[0] === "O") &&
+        (name[1] === "n" || name[1] === "N")
       ) {
         return;
       }
@@ -1114,12 +1009,12 @@ function pushAttribute(
       if (isAttributeNameSafe(attributeName)) {
         // shouldRemoveAttribute
         switch (typeof value) {
-          case 'function':
-          case 'symbol': // eslint-disable-line
+          case "function":
+          case "symbol": // eslint-disable-line
             return;
-          case 'boolean': {
+          case "boolean": {
             const prefix = attributeName.toLowerCase().slice(0, 5);
-            if (prefix !== 'data-' && prefix !== 'aria-') {
+            if (prefix !== "data-" && prefix !== "aria-") {
               return;
             }
           }
@@ -1135,26 +1030,22 @@ function pushAttribute(
   }
 }
 
-const endOfStartTag = stringToPrecomputedChunk('>');
-const endOfStartTagSelfClosing = stringToPrecomputedChunk('/>');
+const endOfStartTag = stringToPrecomputedChunk(">");
+const endOfStartTagSelfClosing = stringToPrecomputedChunk("/>");
 
-function pushInnerHTML(
-  target                                 ,
-  innerHTML     ,
-  children     ,
-) {
+function pushInnerHTML(target, innerHTML, children) {
   if (innerHTML != null) {
     if (children != null) {
       throw new Error(
-        'Can only set one of `children` or `props.dangerouslySetInnerHTML`.',
+        "Can only set one of `children` or `props.dangerouslySetInnerHTML`.",
       );
     }
 
-    if (typeof innerHTML !== 'object' || !('__html' in innerHTML)) {
+    if (typeof innerHTML !== "object" || !("__html" in innerHTML)) {
       throw new Error(
-        '`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. ' +
-          'Please visit https://reactjs.org/link/dangerously-set-inner-html ' +
-          'for more information.',
+        "`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. " +
+          "Please visit https://reactjs.org/link/dangerously-set-inner-html " +
+          "for more information.",
       );
     }
 
@@ -1163,7 +1054,7 @@ function pushInnerHTML(
       if (__DEV__) {
         checkHtmlStringCoercion(html);
       }
-      target.push(stringToChunk('' + html));
+      target.push(stringToChunk("" + html));
     }
   }
 }
@@ -1182,21 +1073,21 @@ let didWarnFormActionName = false;
 let didWarnFormActionTarget = false;
 let didWarnFormActionMethod = false;
 
-function checkSelectProp(props     , propName        ) {
+function checkSelectProp(props, propName) {
   if (__DEV__) {
     const value = props[propName];
     if (value != null) {
       const array = isArray(value);
       if (props.multiple && !array) {
         console.error(
-          'The `%s` prop supplied to <select> must be an array if ' +
-            '`multiple` is true.',
+          "The `%s` prop supplied to <select> must be an array if " +
+            "`multiple` is true.",
           propName,
         );
       } else if (!props.multiple && array) {
         console.error(
-          'The `%s` prop supplied to <select> must be a scalar ' +
-            'value if `multiple` is false.',
+          "The `%s` prop supplied to <select> must be a scalar " +
+            "value if `multiple` is false.",
           propName,
         );
       }
@@ -1204,15 +1095,12 @@ function checkSelectProp(props     , propName        ) {
   }
 }
 
-function pushStartSelect(
-  target                                 ,
-  props        ,
-)                {
+function pushStartSelect(target, props) {
   if (__DEV__) {
-    checkControlledValueProps('select', props);
+    checkControlledValueProps("select", props);
 
-    checkSelectProp(props, 'value');
-    checkSelectProp(props, 'defaultValue');
+    checkSelectProp(props, "value");
+    checkSelectProp(props, "defaultValue");
 
     if (
       props.value !== undefined &&
@@ -1220,17 +1108,17 @@ function pushStartSelect(
       !didWarnDefaultSelectValue
     ) {
       console.error(
-        'Select elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled select ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
+        "Select elements must be either controlled or uncontrolled " +
+          "(specify either the value prop, or the defaultValue prop, but not " +
+          "both). Decide between using a controlled or uncontrolled select " +
+          "element and remove one of these props. More info: " +
+          "https://reactjs.org/link/controlled-components",
       );
       didWarnDefaultSelectValue = true;
     }
   }
 
-  target.push(startChunkForTag('select'));
+  target.push(startChunkForTag("select"));
 
   let children = null;
   let innerHTML = null;
@@ -1241,16 +1129,16 @@ function pushStartSelect(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           // TODO: This doesn't really make sense for select since it can't use the controlled
           // value in the innerHTML.
           innerHTML = propValue;
           break;
-        case 'defaultValue':
-        case 'value':
+        case "defaultValue":
+        case "value":
           // These are set on the Context instead and applied to the nested options.
           break;
         default:
@@ -1265,25 +1153,25 @@ function pushStartSelect(
   return children;
 }
 
-function flattenOptionChildren(children       )         {
-  let content = '';
+function flattenOptionChildren(children) {
+  let content = "";
   // Flatten children and warn if they aren't strings or numbers;
   // invalid types are ignored.
-  Children.forEach((children     ), function (child) {
+  Children.forEach(children, function (child) {
     if (child == null) {
       return;
     }
-    content += (child     );
+    content += child;
     if (__DEV__) {
       if (
         !didWarnInvalidOptionChildren &&
-        typeof child !== 'string' &&
-        typeof child !== 'number'
+        typeof child !== "string" &&
+        typeof child !== "number"
       ) {
         didWarnInvalidOptionChildren = true;
         console.error(
-          'Cannot infer the option value of complex children. ' +
-            'Pass a `value` prop or use a plain string as children to <option>.',
+          "Cannot infer the option value of complex children. " +
+            "Pass a `value` prop or use a plain string as children to <option>.",
         );
       }
     }
@@ -1293,14 +1181,10 @@ function flattenOptionChildren(children       )         {
 
 const selectedMarkerAttribute = stringToPrecomputedChunk(' selected=""');
 
-function pushStartOption(
-  target                                 ,
-  props        ,
-  formatContext               ,
-)                {
+function pushStartOption(target, props, formatContext) {
   const selectedValue = formatContext.selectedValue;
 
-  target.push(startChunkForTag('option'));
+  target.push(startChunkForTag("option"));
 
   let children = null;
   let value = null;
@@ -1313,27 +1197,27 @@ function pushStartOption(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'selected':
+        case "selected":
           // ignore
           selected = propValue;
           if (__DEV__) {
             // TODO: Remove support for `selected` in <option>.
             if (!didWarnSelectedSetOnOption) {
               console.error(
-                'Use the `defaultValue` or `value` props on <select> instead of ' +
-                  'setting `selected` on <option>.',
+                "Use the `defaultValue` or `value` props on <select> instead of " +
+                  "setting `selected` on <option>.",
               );
               didWarnSelectedSetOnOption = true;
             }
           }
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
-        case 'value':
+        case "value":
           value = propValue;
         // We intentionally fallthrough to also set the attribute on the node.
         default:
@@ -1347,17 +1231,17 @@ function pushStartOption(
     let stringValue;
     if (value !== null) {
       if (__DEV__) {
-        checkAttributeStringCoercion(value, 'value');
+        checkAttributeStringCoercion(value, "value");
       }
-      stringValue = '' + value;
+      stringValue = "" + value;
     } else {
       if (__DEV__) {
         if (innerHTML !== null) {
           if (!didWarnInvalidOptionInnerHTML) {
             didWarnInvalidOptionInnerHTML = true;
             console.error(
-              'Pass a `value` prop if you set dangerouslyInnerHTML so React knows ' +
-                'which value should be selected.',
+              "Pass a `value` prop if you set dangerouslyInnerHTML so React knows " +
+                "which value should be selected.",
             );
           }
         }
@@ -1368,9 +1252,9 @@ function pushStartOption(
       // multiple
       for (let i = 0; i < selectedValue.length; i++) {
         if (__DEV__) {
-          checkAttributeStringCoercion(selectedValue[i], 'value');
+          checkAttributeStringCoercion(selectedValue[i], "value");
         }
-        const v = '' + selectedValue[i];
+        const v = "" + selectedValue[i];
         if (v === stringValue) {
           target.push(selectedMarkerAttribute);
           break;
@@ -1378,9 +1262,9 @@ function pushStartOption(
       }
     } else {
       if (__DEV__) {
-        checkAttributeStringCoercion(selectedValue, 'select.value');
+        checkAttributeStringCoercion(selectedValue, "select.value");
       }
-      if ('' + selectedValue === stringValue) {
+      if ("" + selectedValue === stringValue) {
         target.push(selectedMarkerAttribute);
       }
     }
@@ -1396,7 +1280,7 @@ function pushStartOption(
 const formReplayingRuntimeScript =
   stringToPrecomputedChunk(formReplayingRuntime);
 
-function injectFormReplayingRuntime(responseState               )       {
+function injectFormReplayingRuntime(responseState) {
   // If we haven't sent it yet, inject the runtime that tracks submitted JS actions
   // for later replaying by Fiber. If we use an external runtime, we don't need
   // to emit anything. It's always used.
@@ -1413,12 +1297,8 @@ function injectFormReplayingRuntime(responseState               )       {
   }
 }
 
-function pushStartForm(
-  target                                 ,
-  props        ,
-  responseState               ,
-)                {
-  target.push(startChunkForTag('form'));
+function pushStartForm(target, props, responseState) {
+  target.push(startChunkForTag("form"));
 
   let children = null;
   let innerHTML = null;
@@ -1434,22 +1314,22 @@ function pushStartForm(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
-        case 'action':
+        case "action":
           formAction = propValue;
           break;
-        case 'encType':
+        case "encType":
           formEncType = propValue;
           break;
-        case 'method':
+        case "method":
           formMethod = propValue;
           break;
-        case 'target':
+        case "target":
           formTarget = propValue;
           break;
         default:
@@ -1461,7 +1341,7 @@ function pushStartForm(
 
   let formData = null;
   let formActionName = null;
-  if (enableFormActions && typeof formAction === 'function') {
+  if (enableFormActions && typeof formAction === "function") {
     // Function form actions cannot control the form properties
     if (__DEV__) {
       if (
@@ -1470,26 +1350,26 @@ function pushStartForm(
       ) {
         didWarnFormActionMethod = true;
         console.error(
-          'Cannot specify a encType or method for a form that specifies a ' +
-            'function as the action. React provides those automatically. ' +
-            'They will get overridden.',
+          "Cannot specify a encType or method for a form that specifies a " +
+            "function as the action. React provides those automatically. " +
+            "They will get overridden.",
         );
       }
       if (formTarget !== null && !didWarnFormActionTarget) {
         didWarnFormActionTarget = true;
         console.error(
-          'Cannot specify a target for a form that specifies a function as the action. ' +
-            'The function will always be executed in the same window.',
+          "Cannot specify a target for a form that specifies a function as the action. " +
+            "The function will always be executed in the same window.",
         );
       }
     }
-    const customAction                        = formAction.$$FORM_ACTION;
-    if (typeof customAction === 'function') {
+    const customAction = formAction.$$FORM_ACTION;
+    if (typeof customAction === "function") {
       // This action has a custom progressive enhancement form that can submit the form
       // back to the server if it's invoked before hydration. Such as a Server Action.
       const prefix = makeFormFieldPrefix(responseState);
       const customFields = formAction.$$FORM_ACTION(prefix);
-      formAction = customFields.action || '';
+      formAction = customFields.action || "";
       formEncType = customFields.encType;
       formMethod = customFields.method;
       formTarget = customFields.target;
@@ -1503,7 +1383,7 @@ function pushStartForm(
       // error message but the URL will be logged.
       target.push(
         attributeSeparator,
-        stringToChunk('action'),
+        stringToChunk("action"),
         attributeAssign,
         actionJavaScriptURL,
         attributeEnd,
@@ -1516,29 +1396,29 @@ function pushStartForm(
     }
   }
   if (formAction != null) {
-    pushAttribute(target, 'action', formAction);
+    pushAttribute(target, "action", formAction);
   }
   if (formEncType != null) {
-    pushAttribute(target, 'encType', formEncType);
+    pushAttribute(target, "encType", formEncType);
   }
   if (formMethod != null) {
-    pushAttribute(target, 'method', formMethod);
+    pushAttribute(target, "method", formMethod);
   }
   if (formTarget != null) {
-    pushAttribute(target, 'target', formTarget);
+    pushAttribute(target, "target", formTarget);
   }
 
   target.push(endOfStartTag);
 
   if (formActionName !== null) {
     target.push(startHiddenInputChunk);
-    pushStringAttribute(target, 'name', formActionName);
+    pushStringAttribute(target, "name", formActionName);
     target.push(endOfStartTagSelfClosing);
     pushAdditionalFormFields(target, formData);
   }
 
   pushInnerHTML(target, innerHTML, children);
-  if (typeof children === 'string') {
+  if (typeof children === "string") {
     // Special case children as a string to avoid the unnecessary comment.
     // TODO: Remove this special case after the general optimization is in place.
     target.push(stringToChunk(encodeHTMLTextNode(children)));
@@ -1547,16 +1427,12 @@ function pushStartForm(
   return children;
 }
 
-function pushInput(
-  target                                 ,
-  props        ,
-  responseState               ,
-)                {
+function pushInput(target, props, responseState) {
   if (__DEV__) {
-    checkControlledValueProps('input', props);
+    checkControlledValueProps("input", props);
   }
 
-  target.push(startChunkForTag('input'));
+  target.push(startChunkForTag("input"));
 
   let name = null;
   let formAction = null;
@@ -1575,37 +1451,37 @@ function pushInput(
         continue;
       }
       switch (propKey) {
-        case 'children':
-        case 'dangerouslySetInnerHTML':
+        case "children":
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            `${'input'} is a self-closing tag and must neither have \`children\` nor ` +
-              'use `dangerouslySetInnerHTML`.',
+            `${"input"} is a self-closing tag and must neither have \`children\` nor ` +
+              "use `dangerouslySetInnerHTML`.",
           );
-        case 'name':
+        case "name":
           name = propValue;
           break;
-        case 'formAction':
+        case "formAction":
           formAction = propValue;
           break;
-        case 'formEncType':
+        case "formEncType":
           formEncType = propValue;
           break;
-        case 'formMethod':
+        case "formMethod":
           formMethod = propValue;
           break;
-        case 'formTarget':
+        case "formTarget":
           formTarget = propValue;
           break;
-        case 'defaultChecked':
+        case "defaultChecked":
           defaultChecked = propValue;
           break;
-        case 'defaultValue':
+        case "defaultValue":
           defaultValue = propValue;
           break;
-        case 'checked':
+        case "checked":
           checked = propValue;
           break;
-        case 'value':
+        case "value":
           value = propValue;
           break;
         default:
@@ -1618,8 +1494,8 @@ function pushInput(
   if (__DEV__) {
     if (
       formAction !== null &&
-      props.type !== 'image' &&
-      props.type !== 'submit' &&
+      props.type !== "image" &&
+      props.type !== "submit" &&
       !didWarnFormActionType
     ) {
       didWarnFormActionType = true;
@@ -1642,26 +1518,26 @@ function pushInput(
   if (__DEV__) {
     if (checked !== null && defaultChecked !== null && !didWarnDefaultChecked) {
       console.error(
-        '%s contains an input of type %s with both checked and defaultChecked props. ' +
-          'Input elements must be either controlled or uncontrolled ' +
-          '(specify either the checked prop, or the defaultChecked prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled input ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
-        'A component',
+        "%s contains an input of type %s with both checked and defaultChecked props. " +
+          "Input elements must be either controlled or uncontrolled " +
+          "(specify either the checked prop, or the defaultChecked prop, but not " +
+          "both). Decide between using a controlled or uncontrolled input " +
+          "element and remove one of these props. More info: " +
+          "https://reactjs.org/link/controlled-components",
+        "A component",
         props.type,
       );
       didWarnDefaultChecked = true;
     }
     if (value !== null && defaultValue !== null && !didWarnDefaultInputValue) {
       console.error(
-        '%s contains an input of type %s with both value and defaultValue props. ' +
-          'Input elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled input ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
-        'A component',
+        "%s contains an input of type %s with both value and defaultValue props. " +
+          "Input elements must be either controlled or uncontrolled " +
+          "(specify either the value prop, or the defaultValue prop, but not " +
+          "both). Decide between using a controlled or uncontrolled input " +
+          "element and remove one of these props. More info: " +
+          "https://reactjs.org/link/controlled-components",
+        "A component",
         props.type,
       );
       didWarnDefaultInputValue = true;
@@ -1669,14 +1545,14 @@ function pushInput(
   }
 
   if (checked !== null) {
-    pushBooleanAttribute(target, 'checked', checked);
+    pushBooleanAttribute(target, "checked", checked);
   } else if (defaultChecked !== null) {
-    pushBooleanAttribute(target, 'checked', defaultChecked);
+    pushBooleanAttribute(target, "checked", defaultChecked);
   }
   if (value !== null) {
-    pushAttribute(target, 'value', value);
+    pushAttribute(target, "value", value);
   } else if (defaultValue !== null) {
-    pushAttribute(target, 'value', defaultValue);
+    pushAttribute(target, "value", defaultValue);
   }
 
   target.push(endOfStartTagSelfClosing);
@@ -1687,12 +1563,8 @@ function pushInput(
   return null;
 }
 
-function pushStartButton(
-  target                                 ,
-  props        ,
-  responseState               ,
-)                {
-  target.push(startChunkForTag('button'));
+function pushStartButton(target, props, responseState) {
+  target.push(startChunkForTag("button"));
 
   let children = null;
   let innerHTML = null;
@@ -1709,25 +1581,25 @@ function pushStartButton(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
-        case 'name':
+        case "name":
           name = propValue;
           break;
-        case 'formAction':
+        case "formAction":
           formAction = propValue;
           break;
-        case 'formEncType':
+        case "formEncType":
           formEncType = propValue;
           break;
-        case 'formMethod':
+        case "formMethod":
           formMethod = propValue;
           break;
-        case 'formTarget':
+        case "formTarget":
           formTarget = propValue;
           break;
         default:
@@ -1741,7 +1613,7 @@ function pushStartButton(
     if (
       formAction !== null &&
       props.type != null &&
-      props.type !== 'submit' &&
+      props.type !== "submit" &&
       !didWarnFormActionType
     ) {
       didWarnFormActionType = true;
@@ -1767,7 +1639,7 @@ function pushStartButton(
   pushAdditionalFormFields(target, formData);
 
   pushInnerHTML(target, innerHTML, children);
-  if (typeof children === 'string') {
+  if (typeof children === "string") {
     // Special case children as a string to avoid the unnecessary comment.
     // TODO: Remove this special case after the general optimization is in place.
     target.push(stringToChunk(encodeHTMLTextNode(children)));
@@ -1777,29 +1649,26 @@ function pushStartButton(
   return children;
 }
 
-function pushStartTextArea(
-  target                                 ,
-  props        ,
-)                {
+function pushStartTextArea(target, props) {
   if (__DEV__) {
-    checkControlledValueProps('textarea', props);
+    checkControlledValueProps("textarea", props);
     if (
       props.value !== undefined &&
       props.defaultValue !== undefined &&
       !didWarnDefaultTextareaValue
     ) {
       console.error(
-        'Textarea elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled textarea ' +
-          'and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
+        "Textarea elements must be either controlled or uncontrolled " +
+          "(specify either the value prop, or the defaultValue prop, but not " +
+          "both). Decide between using a controlled or uncontrolled textarea " +
+          "and remove one of these props. More info: " +
+          "https://reactjs.org/link/controlled-components",
       );
       didWarnDefaultTextareaValue = true;
     }
   }
 
-  target.push(startChunkForTag('textarea'));
+  target.push(startChunkForTag("textarea"));
 
   let value = null;
   let defaultValue = null;
@@ -1811,18 +1680,18 @@ function pushStartTextArea(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'value':
+        case "value":
           value = propValue;
           break;
-        case 'defaultValue':
+        case "defaultValue":
           defaultValue = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            '`dangerouslySetInnerHTML` does not make sense on <textarea>.',
+            "`dangerouslySetInnerHTML` does not make sense on <textarea>.",
           );
         default:
           pushAttribute(target, propKey, propValue);
@@ -1840,20 +1709,20 @@ function pushStartTextArea(
   if (children != null) {
     if (__DEV__) {
       console.error(
-        'Use the `defaultValue` or `value` props instead of setting ' +
-          'children on <textarea>.',
+        "Use the `defaultValue` or `value` props instead of setting " +
+          "children on <textarea>.",
       );
     }
 
     if (value != null) {
       throw new Error(
-        'If you supply `defaultValue` on a <textarea>, do not pass children.',
+        "If you supply `defaultValue` on a <textarea>, do not pass children.",
       );
     }
 
     if (isArray(children)) {
       if (children.length > 1) {
-        throw new Error('<textarea> can only have at most one child.');
+        throw new Error("<textarea> can only have at most one child.");
       }
 
       // TODO: remove the coercion and the DEV check below because it will
@@ -1861,15 +1730,15 @@ function pushStartTextArea(
       if (__DEV__) {
         checkHtmlStringCoercion(children[0]);
       }
-      value = '' + children[0];
+      value = "" + children[0];
     }
     if (__DEV__) {
       checkHtmlStringCoercion(children);
     }
-    value = '' + children;
+    value = "" + children;
   }
 
-  if (typeof value === 'string' && value[0] === '\n') {
+  if (typeof value === "string" && value[0] === "\n") {
     // text/html ignores the first character in these tags if it's a newline
     // Prefer to break application/xml over text/html (for now) by adding
     // a newline specifically to get eaten by the parser. (Alternately for
@@ -1888,29 +1757,29 @@ function pushStartTextArea(
   // This also currently avoids a trailing comment node which breaks textarea.
   if (value !== null) {
     if (__DEV__) {
-      checkAttributeStringCoercion(value, 'value');
+      checkAttributeStringCoercion(value, "value");
     }
-    target.push(stringToChunk(encodeHTMLTextNode('' + value)));
+    target.push(stringToChunk(encodeHTMLTextNode("" + value)));
   }
 
   return null;
 }
 
 function pushMeta(
-  target                                 ,
-  props        ,
-  responseState               ,
-  textEmbedded         ,
-  insertionMode               ,
-  noscriptTagInScope         ,
-)       {
+  target,
+  props,
+  responseState,
+  textEmbedded,
+  insertionMode,
+  noscriptTagInScope,
+) {
   if (enableFloat) {
     if (
       insertionMode === SVG_MODE ||
       noscriptTagInScope ||
       props.itemProp != null
     ) {
-      return pushSelfClosing(target, props, 'meta');
+      return pushSelfClosing(target, props, "meta");
     } else {
       if (textEmbedded) {
         // This link follows text but we aren't writing a tag. while not as efficient as possible we need
@@ -1918,26 +1787,26 @@ function pushMeta(
         target.push(textSeparator);
       }
 
-      if (typeof props.charSet === 'string') {
-        return pushSelfClosing(responseState.charsetChunks, props, 'meta');
+      if (typeof props.charSet === "string") {
+        return pushSelfClosing(responseState.charsetChunks, props, "meta");
       } else {
-        return pushSelfClosing(responseState.hoistableChunks, props, 'meta');
+        return pushSelfClosing(responseState.hoistableChunks, props, "meta");
       }
     }
   } else {
-    return pushSelfClosing(target, props, 'meta');
+    return pushSelfClosing(target, props, "meta");
   }
 }
 
 function pushLink(
-  target                                 ,
-  props        ,
-  responseState               ,
-  resources           ,
-  textEmbedded         ,
-  insertionMode               ,
-  noscriptTagInScope         ,
-)       {
+  target,
+  props,
+  responseState,
+  resources,
+  textEmbedded,
+  insertionMode,
+  noscriptTagInScope,
+) {
   if (enableFloat) {
     const rel = props.rel;
     const href = props.href;
@@ -1946,13 +1815,13 @@ function pushLink(
       insertionMode === SVG_MODE ||
       noscriptTagInScope ||
       props.itemProp != null ||
-      typeof rel !== 'string' ||
-      typeof href !== 'string' ||
-      href === ''
+      typeof rel !== "string" ||
+      typeof href !== "string" ||
+      href === ""
     ) {
       if (__DEV__) {
-        if (rel === 'stylesheet' && typeof props.precedence === 'string') {
-          if (typeof href !== 'string' || !href) {
+        if (rel === "stylesheet" && typeof props.precedence === "string") {
+          if (typeof href !== "string" || !href) {
             console.error(
               'React encountered a `<link rel="stylesheet" .../>` with a `precedence` prop and expected the `href` prop to be a non-empty string but ecountered %s instead. If your intent was to have React hoist and deduplciate this stylesheet using the `precedence` prop ensure there is a non-empty string `href` prop as well, otherwise remove the `precedence` prop.',
               getValueDescriptorExpectingObjectForWarning(href),
@@ -1964,11 +1833,11 @@ function pushLink(
       return null;
     }
 
-    if (props.rel === 'stylesheet') {
+    if (props.rel === "stylesheet") {
       // This <link> may hoistable as a Stylesheet Resource, otherwise it will emit in place
-      const key = getResourceKey('style', href);
+      const key = getResourceKey("style", href);
       if (
-        typeof precedence !== 'string' ||
+        typeof precedence !== "string" ||
         props.disabled != null ||
         props.onLoad ||
         props.onError
@@ -1977,7 +1846,7 @@ function pushLink(
         // disqualify it for such. We can still create a preload resource to help it load faster on the
         // client
         if (__DEV__) {
-          if (typeof precedence === 'string') {
+          if (typeof precedence === "string") {
             if (props.disabled != null) {
               console.error(
                 'React encountered a `<link rel="stylesheet" .../>` with a `precedence` prop and a `disabled` prop. The presence of the `disabled` prop indicates an intent to manage the stylesheet active state from your from your Component code and React will not hoist or deduplicate this stylesheet. If your intent was to have React hoist and deduplciate this stylesheet using the `precedence` prop remove the `disabled` prop, otherwise remove the `precedence` prop.',
@@ -1985,10 +1854,10 @@ function pushLink(
             } else if (props.onLoad || props.onError) {
               const propDescription =
                 props.onLoad && props.onError
-                  ? '`onLoad` and `onError` props'
+                  ? "`onLoad` and `onError` props"
                   : props.onLoad
-                  ? '`onLoad` prop'
-                  : '`onError` prop';
+                    ? "`onLoad` prop"
+                    : "`onError` prop";
               console.error(
                 'React encountered a `<link rel="stylesheet" .../>` with a `precedence` prop and %s. The presence of loading and error handlers indicates an intent to manage the stylesheet loading state from your from your Component code and React will not hoist or deduplicate this stylesheet. If your intent was to have React hoist and deduplciate this stylesheet using the `precedence` prop remove the %s, otherwise remove the `precedence` prop.',
                 propDescription,
@@ -2005,7 +1874,7 @@ function pushLink(
           const devResource = getAsResourceDEV(resource);
           if (devResource) {
             switch (devResource.__provenance) {
-              case 'rendered': {
+              case "rendered": {
                 const differenceDescription = describeDifferencesForStylesheets(
                   // Diff the props from the JSX element, not the derived resource props
                   props,
@@ -2015,7 +1884,7 @@ function pushLink(
                   console.error(
                     'React encountered a <link rel="stylesheet" href="%s" .../> with a `precedence` prop that has props that conflict' +
                       ' with another hoistable stylesheet with the same `href`. When using `precedence` with <link rel="stylsheet" .../>' +
-                      ' the props from the first encountered instance will be used and props from later instances will be ignored.' +
+                      " the props from the first encountered instance will be used and props from later instances will be ignored." +
                       ' Update the props on either <link rel="stylesheet" .../> instance so they agree.%s',
                     href,
                     differenceDescription,
@@ -2023,7 +1892,7 @@ function pushLink(
                 }
                 break;
               }
-              case 'preinit': {
+              case "preinit": {
                 const differenceDescription =
                   describeDifferencesForStylesheetOverPreinit(
                     // Diff the props from the JSX element, not the derived resource props
@@ -2034,11 +1903,11 @@ function pushLink(
                   console.error(
                     'React encountered a <link rel="stylesheet" precedence="%s" href="%s" .../> with props that conflict' +
                       ' with the options provided to `ReactDOM.preinit("%s", { as: "style", ... })`. React will use the first props or preinitialization' +
-                      ' options encountered when rendering a hoistable stylesheet with a particular `href` and will ignore any newer props or' +
-                      ' options. The first instance of this stylesheet resource was created using the `ReactDOM.preinit()` function.' +
-                      ' Please note, `ReactDOM.preinit()` is modeled off of module import assertions capabilities and does not support' +
-                      ' arbitrary props. If you need to have props not included with the preinit options you will need to rely on rendering' +
-                      ' <link> tags only.%s',
+                      " options encountered when rendering a hoistable stylesheet with a particular `href` and will ignore any newer props or" +
+                      " options. The first instance of this stylesheet resource was created using the `ReactDOM.preinit()` function." +
+                      " Please note, `ReactDOM.preinit()` is modeled off of module import assertions capabilities and does not support" +
+                      " arbitrary props. If you need to have props not included with the preinit options you will need to rely on rendering" +
+                      " <link> tags only.%s",
                     precedence,
                     href,
                     href,
@@ -2067,8 +1936,8 @@ function pushLink(
             }
           }
           resource = {
-            type: 'stylesheet',
-            chunks: ([]                                 ),
+            type: "stylesheet",
+            chunks: [],
             state,
             props: resourceProps,
           };
@@ -2081,12 +1950,12 @@ function pushLink(
             precedenceSet = new Set();
             resources.precedences.set(precedence, precedenceSet);
             const emptyStyleResource = {
-              type: 'style',
-              chunks: ([]                                 ),
+              type: "style",
+              chunks: [],
               state: NoState,
               props: {
                 precedence,
-                hrefs: ([]               ),
+                hrefs: [],
               },
             };
             precedenceSet.add(emptyStyleResource);
@@ -2126,10 +1995,10 @@ function pushLink(
       }
 
       switch (props.rel) {
-        case 'preconnect':
-        case 'dns-prefetch':
+        case "preconnect":
+        case "dns-prefetch":
           return pushLinkImpl(responseState.preconnectChunks, props);
-        case 'preload':
+        case "preload":
           return pushLinkImpl(responseState.preloadChunks, props);
         default:
           return pushLinkImpl(responseState.hoistableChunks, props);
@@ -2140,11 +2009,8 @@ function pushLink(
   }
 }
 
-function pushLinkImpl(
-  target                                 ,
-  props        ,
-)       {
-  target.push(startChunkForTag('link'));
+function pushLinkImpl(target, props) {
+  target.push(startChunkForTag("link"));
 
   for (const propKey in props) {
     if (hasOwnProperty.call(props, propKey)) {
@@ -2153,11 +2019,11 @@ function pushLinkImpl(
         continue;
       }
       switch (propKey) {
-        case 'children':
-        case 'dangerouslySetInnerHTML':
+        case "children":
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            `${'link'} is a self-closing tag and must neither have \`children\` nor ` +
-              'use `dangerouslySetInnerHTML`.',
+            `${"link"} is a self-closing tag and must neither have \`children\` nor ` +
+              "use `dangerouslySetInnerHTML`.",
           );
         default:
           pushAttribute(target, propKey, propValue);
@@ -2171,15 +2037,15 @@ function pushLinkImpl(
 }
 
 function pushStyle(
-  target                                 ,
-  props        ,
-  resources           ,
-  textEmbedded         ,
-  insertionMode               ,
-  noscriptTagInScope         ,
-)                {
+  target,
+  props,
+  resources,
+  textEmbedded,
+  insertionMode,
+  noscriptTagInScope,
+) {
   if (__DEV__) {
-    if (hasOwnProperty.call(props, 'children')) {
+    if (hasOwnProperty.call(props, "children")) {
       const children = props.children;
 
       const child = Array.isArray(children)
@@ -2189,19 +2055,19 @@ function pushStyle(
         : children;
 
       if (
-        typeof child === 'function' ||
-        typeof child === 'symbol' ||
+        typeof child === "function" ||
+        typeof child === "symbol" ||
         Array.isArray(child)
       ) {
         const childType =
-          typeof child === 'function'
-            ? 'a Function'
-            : typeof child === 'symbol'
-            ? 'a Sybmol'
-            : 'an Array';
+          typeof child === "function"
+            ? "a Function"
+            : typeof child === "symbol"
+              ? "a Sybmol"
+              : "an Array";
         console.error(
-          'React expect children of <style> tags to be a string, number, or object with a `toString` method but found %s instead. ' +
-            'In browsers style Elements can only have `Text` Nodes as children.',
+          "React expect children of <style> tags to be a string, number, or object with a `toString` method but found %s instead. " +
+            "In browsers style Elements can only have `Text` Nodes as children.",
           childType,
         );
       }
@@ -2215,16 +2081,16 @@ function pushStyle(
       insertionMode === SVG_MODE ||
       noscriptTagInScope ||
       props.itemProp != null ||
-      typeof precedence !== 'string' ||
-      typeof href !== 'string' ||
-      href === ''
+      typeof precedence !== "string" ||
+      typeof href !== "string" ||
+      href === ""
     ) {
       // This style tag is not able to be turned into a Style Resource
       return pushStyleImpl(target, props);
     }
 
     if (__DEV__) {
-      if (href.includes(' ')) {
+      if (href.includes(" ")) {
         console.error(
           'React expected the `href` prop for a <style> tag opting into hoisting semantics using the `precedence` prop to not have any spaces but ecountered spaces instead. using spaces in this prop will cause hydration of this style to fail on the client. The href for the <style> where this ocurred is "%s".',
           href,
@@ -2232,13 +2098,13 @@ function pushStyle(
       }
     }
 
-    const key = getResourceKey('style', href);
+    const key = getResourceKey("style", href);
     let resource = resources.stylesMap.get(key);
     if (!resource) {
       resource = resources.stylePrecedences.get(precedence);
       if (!resource) {
         resource = {
-          type: 'style',
+          type: "style",
           chunks: [],
           state: NoState,
           props: {
@@ -2247,7 +2113,7 @@ function pushStyle(
           },
         };
         resources.stylePrecedences.set(precedence, resource);
-        const precedenceSet                     = new Set();
+        const precedenceSet = new Set();
         precedenceSet.add(resource);
         if (__DEV__) {
           if (resources.precedences.has(precedence)) {
@@ -2274,15 +2140,12 @@ function pushStyle(
       target.push(textSeparator);
     }
   } else {
-    return pushStartGenericElement(target, props, 'style');
+    return pushStartGenericElement(target, props, "style");
   }
 }
 
-function pushStyleImpl(
-  target                                 ,
-  props        ,
-)                {
-  target.push(startChunkForTag('style'));
+function pushStyleImpl(target, props) {
+  target.push(startChunkForTag("style"));
 
   let children = null;
   let innerHTML = null;
@@ -2293,10 +2156,10 @@ function pushStyleImpl(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
         default:
@@ -2313,23 +2176,20 @@ function pushStyleImpl(
       : null
     : children;
   if (
-    typeof child !== 'function' &&
-    typeof child !== 'symbol' &&
+    typeof child !== "function" &&
+    typeof child !== "symbol" &&
     child !== null &&
     child !== undefined
   ) {
     // eslint-disable-next-line react-internal/safe-string-coercion
-    target.push(stringToChunk(escapeTextForBrowser('' + child)));
+    target.push(stringToChunk(escapeTextForBrowser("" + child)));
   }
   pushInnerHTML(target, innerHTML, children);
-  target.push(endTag1, stringToChunk('style'), endTag2);
+  target.push(endTag1, stringToChunk("style"), endTag2);
   return null;
 }
 
-function pushStyleContents(
-  target                                 ,
-  props        ,
-)       {
+function pushStyleContents(target, props) {
   let children = null;
   let innerHTML = null;
   for (const propKey in props) {
@@ -2339,10 +2199,10 @@ function pushStyleContents(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
       }
@@ -2355,23 +2215,19 @@ function pushStyleContents(
       : null
     : children;
   if (
-    typeof child !== 'function' &&
-    typeof child !== 'symbol' &&
+    typeof child !== "function" &&
+    typeof child !== "symbol" &&
     child !== null &&
     child !== undefined
   ) {
     // eslint-disable-next-line react-internal/safe-string-coercion
-    target.push(stringToChunk(escapeTextForBrowser('' + child)));
+    target.push(stringToChunk(escapeTextForBrowser("" + child)));
   }
   pushInnerHTML(target, innerHTML, children);
   return;
 }
 
-function pushSelfClosing(
-  target                                 ,
-  props        ,
-  tag        ,
-)       {
+function pushSelfClosing(target, props, tag) {
   target.push(startChunkForTag(tag));
 
   for (const propKey in props) {
@@ -2381,11 +2237,11 @@ function pushSelfClosing(
         continue;
       }
       switch (propKey) {
-        case 'children':
-        case 'dangerouslySetInnerHTML':
+        case "children":
+        case "dangerouslySetInnerHTML":
           throw new Error(
             `${tag} is a self-closing tag and must neither have \`children\` nor ` +
-              'use `dangerouslySetInnerHTML`.',
+              "use `dangerouslySetInnerHTML`.",
           );
         default:
           pushAttribute(target, propKey, propValue);
@@ -2398,11 +2254,8 @@ function pushSelfClosing(
   return null;
 }
 
-function pushStartMenuItem(
-  target                                 ,
-  props        ,
-)                {
-  target.push(startChunkForTag('menuitem'));
+function pushStartMenuItem(target, props) {
+  target.push(startChunkForTag("menuitem"));
 
   for (const propKey in props) {
     if (hasOwnProperty.call(props, propKey)) {
@@ -2411,10 +2264,10 @@ function pushStartMenuItem(
         continue;
       }
       switch (propKey) {
-        case 'children':
-        case 'dangerouslySetInnerHTML':
+        case "children":
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            'menuitems cannot have `children` nor `dangerouslySetInnerHTML`.',
+            "menuitems cannot have `children` nor `dangerouslySetInnerHTML`.",
           );
         default:
           pushAttribute(target, propKey, propValue);
@@ -2428,14 +2281,14 @@ function pushStartMenuItem(
 }
 
 function pushTitle(
-  target                                 ,
-  props        ,
-  responseState               ,
-  insertionMode               ,
-  noscriptTagInScope         ,
-)                {
+  target,
+  props,
+  responseState,
+  insertionMode,
+  noscriptTagInScope,
+) {
   if (__DEV__) {
-    if (hasOwnProperty.call(props, 'children')) {
+    if (hasOwnProperty.call(props, "children")) {
       const children = props.children;
 
       const child = Array.isArray(children)
@@ -2446,36 +2299,36 @@ function pushTitle(
 
       if (Array.isArray(children) && children.length > 1) {
         console.error(
-          'React expects the `children` prop of <title> tags to be a string, number, or object with a novel `toString` method but found an Array with length %s instead.' +
-            ' Browsers treat all child Nodes of <title> tags as Text content and React expects to be able to convert `children` of <title> tags to a single string value' +
-            ' which is why Arrays of length greater than 1 are not supported. When using JSX it can be commong to combine text nodes and value nodes.' +
-            ' For example: <title>hello {nameOfUser}</title>. While not immediately apparent, `children` in this case is an Array with length 2. If your `children` prop' +
-            ' is using this form try rewriting it using a template string: <title>{`hello ${nameOfUser}`}</title>.',
+          "React expects the `children` prop of <title> tags to be a string, number, or object with a novel `toString` method but found an Array with length %s instead." +
+            " Browsers treat all child Nodes of <title> tags as Text content and React expects to be able to convert `children` of <title> tags to a single string value" +
+            " which is why Arrays of length greater than 1 are not supported. When using JSX it can be commong to combine text nodes and value nodes." +
+            " For example: <title>hello {nameOfUser}</title>. While not immediately apparent, `children` in this case is an Array with length 2. If your `children` prop" +
+            " is using this form try rewriting it using a template string: <title>{`hello ${nameOfUser}`}</title>.",
           children.length,
         );
-      } else if (typeof child === 'function' || typeof child === 'symbol') {
+      } else if (typeof child === "function" || typeof child === "symbol") {
         const childType =
-          typeof child === 'function' ? 'a Function' : 'a Sybmol';
+          typeof child === "function" ? "a Function" : "a Sybmol";
         console.error(
-          'React expect children of <title> tags to be a string, number, or object with a novel `toString` method but found %s instead.' +
-            ' Browsers treat all child Nodes of <title> tags as Text content and React expects to be able to convert children of <title>' +
-            ' tags to a single string value.',
+          "React expect children of <title> tags to be a string, number, or object with a novel `toString` method but found %s instead." +
+            " Browsers treat all child Nodes of <title> tags as Text content and React expects to be able to convert children of <title>" +
+            " tags to a single string value.",
           childType,
         );
       } else if (child && child.toString === {}.toString) {
         if (child.$$typeof != null) {
           console.error(
-            'React expects the `children` prop of <title> tags to be a string, number, or object with a novel `toString` method but found an object that appears to be' +
-              ' a React element which never implements a suitable `toString` method. Browsers treat all child Nodes of <title> tags as Text content and React expects to' +
-              ' be able to convert children of <title> tags to a single string value which is why rendering React elements is not supported. If the `children` of <title> is' +
-              ' a React Component try moving the <title> tag into that component. If the `children` of <title> is some HTML markup change it to be Text only to be valid HTML.',
+            "React expects the `children` prop of <title> tags to be a string, number, or object with a novel `toString` method but found an object that appears to be" +
+              " a React element which never implements a suitable `toString` method. Browsers treat all child Nodes of <title> tags as Text content and React expects to" +
+              " be able to convert children of <title> tags to a single string value which is why rendering React elements is not supported. If the `children` of <title> is" +
+              " a React Component try moving the <title> tag into that component. If the `children` of <title> is some HTML markup change it to be Text only to be valid HTML.",
           );
         } else {
           console.error(
-            'React expects the `children` prop of <title> tags to be a string, number, or object with a novel `toString` method but found an object that does not implement' +
-              ' a suitable `toString` method. Browsers treat all child Nodes of <title> tags as Text content and React expects to be able to convert children of <title> tags' +
-              ' to a single string value. Using the default `toString` method available on every object is almost certainly an error. Consider whether the `children` of this <title>' +
-              ' is an object in error and change it to a string or number value if so. Otherwise implement a `toString` method that React can use to produce a valid <title>.',
+            "React expects the `children` prop of <title> tags to be a string, number, or object with a novel `toString` method but found an object that does not implement" +
+              " a suitable `toString` method. Browsers treat all child Nodes of <title> tags as Text content and React expects to be able to convert children of <title> tags" +
+              " to a single string value. Using the default `toString` method available on every object is almost certainly an error. Consider whether the `children` of this <title>" +
+              " is an object in error and change it to a string or number value if so. Otherwise implement a `toString` method that React can use to produce a valid <title>.",
           );
         }
       }
@@ -2498,11 +2351,8 @@ function pushTitle(
   }
 }
 
-function pushTitleImpl(
-  target                                 ,
-  props        ,
-)       {
-  target.push(startChunkForTag('title'));
+function pushTitleImpl(target, props) {
+  target.push(startChunkForTag("title"));
 
   let children = null;
   let innerHTML = null;
@@ -2513,10 +2363,10 @@ function pushTitleImpl(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
         default:
@@ -2533,24 +2383,21 @@ function pushTitleImpl(
       : null
     : children;
   if (
-    typeof child !== 'function' &&
-    typeof child !== 'symbol' &&
+    typeof child !== "function" &&
+    typeof child !== "symbol" &&
     child !== null &&
     child !== undefined
   ) {
     // eslint-disable-next-line react-internal/safe-string-coercion
-    target.push(stringToChunk(escapeTextForBrowser('' + child)));
+    target.push(stringToChunk(escapeTextForBrowser("" + child)));
   }
   pushInnerHTML(target, innerHTML, children);
-  target.push(endTag1, stringToChunk('title'), endTag2);
+  target.push(endTag1, stringToChunk("title"), endTag2);
   return null;
 }
 
-function pushStartTitle(
-  target                                 ,
-  props        ,
-)                {
-  target.push(startChunkForTag('title'));
+function pushStartTitle(target, props) {
+  target.push(startChunkForTag("title"));
 
   let children = null;
   for (const propKey in props) {
@@ -2560,12 +2407,12 @@ function pushStartTitle(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            '`dangerouslySetInnerHTML` does not make sense on <title>.',
+            "`dangerouslySetInnerHTML` does not make sense on <title>.",
           );
         default:
           pushAttribute(target, propKey, propValue);
@@ -2582,34 +2429,34 @@ function pushStartTitle(
         : children;
     if (Array.isArray(children) && children.length > 1) {
       console.error(
-        'A title element received an array with more than 1 element as children. ' +
-          'In browsers title Elements can only have Text Nodes as children. If ' +
-          'the children being rendered output more than a single text node in aggregate the browser ' +
-          'will display markup and comments as text in the title and hydration will likely fail and ' +
-          'fall back to client rendering',
+        "A title element received an array with more than 1 element as children. " +
+          "In browsers title Elements can only have Text Nodes as children. If " +
+          "the children being rendered output more than a single text node in aggregate the browser " +
+          "will display markup and comments as text in the title and hydration will likely fail and " +
+          "fall back to client rendering",
       );
     } else if (
       childForValidation != null &&
       childForValidation.$$typeof != null
     ) {
       console.error(
-        'A title element received a React element for children. ' +
-          'In the browser title Elements can only have Text Nodes as children. If ' +
-          'the children being rendered output more than a single text node in aggregate the browser ' +
-          'will display markup and comments as text in the title and hydration will likely fail and ' +
-          'fall back to client rendering',
+        "A title element received a React element for children. " +
+          "In the browser title Elements can only have Text Nodes as children. If " +
+          "the children being rendered output more than a single text node in aggregate the browser " +
+          "will display markup and comments as text in the title and hydration will likely fail and " +
+          "fall back to client rendering",
       );
     } else if (
       childForValidation != null &&
-      typeof childForValidation !== 'string' &&
-      typeof childForValidation !== 'number'
+      typeof childForValidation !== "string" &&
+      typeof childForValidation !== "number"
     ) {
       console.error(
-        'A title element received a value that was not a string or number for children. ' +
-          'In the browser title Elements can only have Text Nodes as children. If ' +
-          'the children being rendered output more than a single text node in aggregate the browser ' +
-          'will display markup and comments as text in the title and hydration will likely fail and ' +
-          'fall back to client rendering',
+        "A title element received a value that was not a string or number for children. " +
+          "In the browser title Elements can only have Text Nodes as children. If " +
+          "the children being rendered output more than a single text node in aggregate the browser " +
+          "will display markup and comments as text in the title and hydration will likely fail and " +
+          "fall back to client rendering",
       );
     }
   }
@@ -2617,42 +2464,32 @@ function pushStartTitle(
   return children;
 }
 
-function pushStartHead(
-  target                                 ,
-  props        ,
-  responseState               ,
-  insertionMode               ,
-)                {
+function pushStartHead(target, props, responseState, insertionMode) {
   if (enableFloat) {
     if (insertionMode < HTML_MODE && responseState.headChunks === null) {
       // This <head> is the Document.head and should be part of the preamble
       responseState.headChunks = [];
-      return pushStartGenericElement(responseState.headChunks, props, 'head');
+      return pushStartGenericElement(responseState.headChunks, props, "head");
     } else {
       // This <head> is deep and is likely just an error. we emit it inline though.
       // Validation should warn that this tag is the the wrong spot.
-      return pushStartGenericElement(target, props, 'head');
+      return pushStartGenericElement(target, props, "head");
     }
   } else {
-    return pushStartGenericElement(target, props, 'head');
+    return pushStartGenericElement(target, props, "head");
   }
 }
 
-function pushStartHtml(
-  target                                 ,
-  props        ,
-  responseState               ,
-  insertionMode               ,
-)                {
+function pushStartHtml(target, props, responseState, insertionMode) {
   if (enableFloat) {
     if (insertionMode === ROOT_HTML_MODE && responseState.htmlChunks === null) {
       // This <html> is the Document.documentElement and should be part of the preamble
       responseState.htmlChunks = [DOCTYPE];
-      return pushStartGenericElement(responseState.htmlChunks, props, 'html');
+      return pushStartGenericElement(responseState.htmlChunks, props, "html");
     } else {
       // This <html> is deep and is likely just an error. we emit it inline though.
       // Validation should warn that this tag is the the wrong spot.
-      return pushStartGenericElement(target, props, 'html');
+      return pushStartGenericElement(target, props, "html");
     }
   } else {
     if (insertionMode === ROOT_HTML_MODE) {
@@ -2661,27 +2498,27 @@ function pushStartHtml(
       // rendering the whole document.
       target.push(DOCTYPE);
     }
-    return pushStartGenericElement(target, props, 'html');
+    return pushStartGenericElement(target, props, "html");
   }
 }
 
 function pushScript(
-  target                                 ,
-  props        ,
-  resources           ,
-  textEmbedded         ,
-  insertionMode               ,
-  noscriptTagInScope         ,
-)       {
+  target,
+  props,
+  resources,
+  textEmbedded,
+  insertionMode,
+  noscriptTagInScope,
+) {
   if (enableFloat) {
     const asyncProp = props.async;
     if (
-      typeof props.src !== 'string' ||
+      typeof props.src !== "string" ||
       !props.src ||
       !(
         asyncProp &&
-        typeof asyncProp !== 'function' &&
-        typeof asyncProp !== 'symbol'
+        typeof asyncProp !== "function" &&
+        typeof asyncProp !== "symbol"
       ) ||
       props.onLoad ||
       props.onError ||
@@ -2694,14 +2531,14 @@ function pushScript(
     }
 
     const src = props.src;
-    const key = getResourceKey('script', src);
+    const key = getResourceKey("script", src);
     // We can make this <script> into a ScriptResource
     let resource = resources.scriptsMap.get(key);
     if (__DEV__) {
       const devResource = getAsResourceDEV(resource);
       if (devResource) {
         switch (devResource.__provenance) {
-          case 'rendered': {
+          case "rendered": {
             const differenceDescription = describeDifferencesForScripts(
               // Diff the props from the JSX element, not the derived resource props
               props,
@@ -2710,16 +2547,16 @@ function pushScript(
             if (differenceDescription) {
               console.error(
                 'React encountered a <script async={true} src="%s" .../> that has props that conflict' +
-                  ' with another hoistable script with the same `src`. When rendering hoistable scripts (async scripts without any loading handlers)' +
-                  ' the props from the first encountered instance will be used and props from later instances will be ignored.' +
-                  ' Update the props on both <script async={true} .../> instance so they agree.%s',
+                  " with another hoistable script with the same `src`. When rendering hoistable scripts (async scripts without any loading handlers)" +
+                  " the props from the first encountered instance will be used and props from later instances will be ignored." +
+                  " Update the props on both <script async={true} .../> instance so they agree.%s",
                 src,
                 differenceDescription,
               );
             }
             break;
           }
-          case 'preinit': {
+          case "preinit": {
             const differenceDescription =
               describeDifferencesForScriptOverPreinit(
                 // Diff the props from the JSX element, not the derived resource props
@@ -2730,11 +2567,11 @@ function pushScript(
               console.error(
                 'React encountered a <script async={true} src="%s" .../> with props that conflict' +
                   ' with the options provided to `ReactDOM.preinit("%s", { as: "script", ... })`. React will use the first props or preinitialization' +
-                  ' options encountered when rendering a hoistable script with a particular `src` and will ignore any newer props or' +
-                  ' options. The first instance of this script resource was created using the `ReactDOM.preinit()` function.' +
-                  ' Please note, `ReactDOM.preinit()` is modeled off of module import assertions capabilities and does not support' +
-                  ' arbitrary props. If you need to have props not included with the preinit options you will need to rely on rendering' +
-                  ' <script> tags only.%s',
+                  " options encountered when rendering a hoistable script with a particular `src` and will ignore any newer props or" +
+                  " options. The first instance of this script resource was created using the `ReactDOM.preinit()` function." +
+                  " Please note, `ReactDOM.preinit()` is modeled off of module import assertions capabilities and does not support" +
+                  " arbitrary props. If you need to have props not included with the preinit options you will need to rely on rendering" +
+                  " <script> tags only.%s",
                 src,
                 src,
                 differenceDescription,
@@ -2747,7 +2584,7 @@ function pushScript(
     }
     if (!resource) {
       resource = {
-        type: 'script',
+        type: "script",
         chunks: [],
         state: NoState,
         props: null,
@@ -2765,7 +2602,7 @@ function pushScript(
         // If we already had a preload we don't want that resource to flush directly.
         // We let the newly created resource govern flushing.
         preloadResource.state |= Blocked;
-        scriptProps = {...props};
+        scriptProps = { ...props };
         adoptPreloadPropsForScriptProps(scriptProps, preloadResource.props);
       }
       // encode the tag as Chunks
@@ -2783,11 +2620,8 @@ function pushScript(
   }
 }
 
-function pushScriptImpl(
-  target                                 ,
-  props        ,
-)       {
-  target.push(startChunkForTag('script'));
+function pushScriptImpl(target, props) {
+  target.push(startChunkForTag("script"));
 
   let children = null;
   let innerHTML = null;
@@ -2798,10 +2632,10 @@ function pushScriptImpl(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
         default:
@@ -2813,34 +2647,30 @@ function pushScriptImpl(
   target.push(endOfStartTag);
 
   if (__DEV__) {
-    if (children != null && typeof children !== 'string') {
+    if (children != null && typeof children !== "string") {
       const descriptiveStatement =
-        typeof children === 'number'
-          ? 'a number for children'
+        typeof children === "number"
+          ? "a number for children"
           : Array.isArray(children)
-          ? 'an array for children'
-          : 'something unexpected for children';
+            ? "an array for children"
+            : "something unexpected for children";
       console.error(
-        'A script element was rendered with %s. If script element has children it must be a single string.' +
-          ' Consider using dangerouslySetInnerHTML or passing a plain string as children.',
+        "A script element was rendered with %s. If script element has children it must be a single string." +
+          " Consider using dangerouslySetInnerHTML or passing a plain string as children.",
         descriptiveStatement,
       );
     }
   }
 
   pushInnerHTML(target, innerHTML, children);
-  if (typeof children === 'string') {
+  if (typeof children === "string") {
     target.push(stringToChunk(encodeHTMLTextNode(children)));
   }
-  target.push(endTag1, stringToChunk('script'), endTag2);
+  target.push(endTag1, stringToChunk("script"), endTag2);
   return null;
 }
 
-function pushStartGenericElement(
-  target                                 ,
-  props        ,
-  tag        ,
-)                {
+function pushStartGenericElement(target, props, tag) {
   target.push(startChunkForTag(tag));
 
   let children = null;
@@ -2852,10 +2682,10 @@ function pushStartGenericElement(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
         default:
@@ -2867,7 +2697,7 @@ function pushStartGenericElement(
 
   target.push(endOfStartTag);
   pushInnerHTML(target, innerHTML, children);
-  if (typeof children === 'string') {
+  if (typeof children === "string") {
     // Special case children as a string to avoid the unnecessary comment.
     // TODO: Remove this special case after the general optimization is in place.
     target.push(stringToChunk(encodeHTMLTextNode(children)));
@@ -2876,11 +2706,7 @@ function pushStartGenericElement(
   return children;
 }
 
-function pushStartCustomElement(
-  target                                 ,
-  props        ,
-  tag        ,
-)                {
+function pushStartCustomElement(target, props, tag) {
   target.push(startChunkForTag(tag));
 
   let children = null;
@@ -2893,7 +2719,7 @@ function pushStartCustomElement(
       }
       if (
         enableCustomElementPropertySupport &&
-        (typeof propValue === 'function' || typeof propValue === 'object')
+        (typeof propValue === "function" || typeof propValue === "object")
       ) {
         // It is normal to render functions and objects on custom elements when
         // client rendering, but when server rendering the output isn't useful,
@@ -2904,32 +2730,32 @@ function pushStartCustomElement(
         continue;
       }
       if (enableCustomElementPropertySupport && propValue === true) {
-        propValue = '';
+        propValue = "";
       }
-      if (enableCustomElementPropertySupport && propKey === 'className') {
+      if (enableCustomElementPropertySupport && propKey === "className") {
         // className gets rendered as class on the client, so it should be
         // rendered as class on the server.
-        propKey = 'class';
+        propKey = "class";
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
-        case 'style':
+        case "style":
           pushStyleAttribute(target, propValue);
           break;
-        case 'suppressContentEditableWarning':
-        case 'suppressHydrationWarning':
+        case "suppressContentEditableWarning":
+        case "suppressHydrationWarning":
           // Ignored. These are built-in to React on the client.
           break;
         default:
           if (
             isAttributeNameSafe(propKey) &&
-            typeof propValue !== 'function' &&
-            typeof propValue !== 'symbol'
+            typeof propValue !== "function" &&
+            typeof propValue !== "symbol"
           ) {
             target.push(
               attributeSeparator,
@@ -2949,13 +2775,9 @@ function pushStartCustomElement(
   return children;
 }
 
-const leadingNewline = stringToPrecomputedChunk('\n');
+const leadingNewline = stringToPrecomputedChunk("\n");
 
-function pushStartPreformattedElement(
-  target                                 ,
-  props        ,
-  tag        ,
-)                {
+function pushStartPreformattedElement(target, props, tag) {
   target.push(startChunkForTag(tag));
 
   let children = null;
@@ -2967,10 +2789,10 @@ function pushStartPreformattedElement(
         continue;
       }
       switch (propKey) {
-        case 'children':
+        case "children":
           children = propValue;
           break;
-        case 'dangerouslySetInnerHTML':
+        case "dangerouslySetInnerHTML":
           innerHTML = propValue;
           break;
         default:
@@ -2997,31 +2819,31 @@ function pushStartPreformattedElement(
   if (innerHTML != null) {
     if (children != null) {
       throw new Error(
-        'Can only set one of `children` or `props.dangerouslySetInnerHTML`.',
+        "Can only set one of `children` or `props.dangerouslySetInnerHTML`.",
       );
     }
 
-    if (typeof innerHTML !== 'object' || !('__html' in innerHTML)) {
+    if (typeof innerHTML !== "object" || !("__html" in innerHTML)) {
       throw new Error(
-        '`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. ' +
-          'Please visit https://reactjs.org/link/dangerously-set-inner-html ' +
-          'for more information.',
+        "`props.dangerouslySetInnerHTML` must be in the form `{__html: ...}`. " +
+          "Please visit https://reactjs.org/link/dangerously-set-inner-html " +
+          "for more information.",
       );
     }
 
     const html = innerHTML.__html;
     if (html !== null && html !== undefined) {
-      if (typeof html === 'string' && html.length > 0 && html[0] === '\n') {
+      if (typeof html === "string" && html.length > 0 && html[0] === "\n") {
         target.push(leadingNewline, stringToChunk(html));
       } else {
         if (__DEV__) {
           checkHtmlStringCoercion(html);
         }
-        target.push(stringToChunk('' + html));
+        target.push(stringToChunk("" + html));
       }
     }
   }
-  if (typeof children === 'string' && children[0] === '\n') {
+  if (typeof children === "string" && children[0] === "\n") {
     target.push(leadingNewline);
   }
   return children;
@@ -3031,31 +2853,31 @@ function pushStartPreformattedElement(
 // HTML, we want to make sure that it's a safe tag.
 // http://www.w3.org/TR/REC-xml/#NT-Name
 const VALID_TAG_REGEX = /^[a-zA-Z][a-zA-Z:_\.\-\d]*$/; // Simplified subset
-const validatedTagCache = new Map                          ();
-function startChunkForTag(tag        )                   {
+const validatedTagCache = new Map();
+function startChunkForTag(tag) {
   let tagStartChunk = validatedTagCache.get(tag);
   if (tagStartChunk === undefined) {
     if (!VALID_TAG_REGEX.test(tag)) {
       throw new Error(`Invalid tag: ${tag}`);
     }
 
-    tagStartChunk = stringToPrecomputedChunk('<' + tag);
+    tagStartChunk = stringToPrecomputedChunk("<" + tag);
     validatedTagCache.set(tag, tagStartChunk);
   }
   return tagStartChunk;
 }
 
-const DOCTYPE                   = stringToPrecomputedChunk('<!DOCTYPE html>');
+const DOCTYPE = stringToPrecomputedChunk("<!DOCTYPE html>");
 
 export function pushStartInstance(
-  target                                 ,
-  type        ,
-  props        ,
-  resources           ,
-  responseState               ,
-  formatContext               ,
-  textEmbedded         ,
-)                {
+  target,
+  type,
+  props,
+  resources,
+  responseState,
+  formatContext,
+  textEmbedded,
+) {
   if (__DEV__) {
     validateARIAProperties(type, props);
     validateInputProperties(type, props);
@@ -3067,10 +2889,10 @@ export function pushStartInstance(
       props.children != null
     ) {
       console.error(
-        'A component is `contentEditable` and contains `children` managed by ' +
-          'React. It is now your responsibility to guarantee that none of ' +
-          'those nodes are unexpectedly modified or duplicated. This is ' +
-          'probably not intentional.',
+        "A component is `contentEditable` and contains `children` managed by " +
+          "React. It is now your responsibility to guarantee that none of " +
+          "those nodes are unexpectedly modified or duplicated. This is " +
+          "probably not intentional.",
       );
     }
 
@@ -3078,11 +2900,11 @@ export function pushStartInstance(
       formatContext.insertionMode !== SVG_MODE &&
       formatContext.insertionMode !== MATHML_MODE
     ) {
-      if (type.indexOf('-') === -1 && type.toLowerCase() !== type) {
+      if (type.indexOf("-") === -1 && type.toLowerCase() !== type) {
         console.error(
-          '<%s /> is using incorrect casing. ' +
-            'Use PascalCase for React components, ' +
-            'or lowercase for HTML elements.',
+          "<%s /> is using incorrect casing. " +
+            "Use PascalCase for React components, " +
+            "or lowercase for HTML elements.",
           type,
         );
       }
@@ -3090,32 +2912,32 @@ export function pushStartInstance(
   }
 
   switch (type) {
-    case 'div':
-    case 'span':
-    case 'svg':
-    case 'path':
-    case 'a':
-    case 'g':
-    case 'p':
-    case 'li':
+    case "div":
+    case "span":
+    case "svg":
+    case "path":
+    case "a":
+    case "g":
+    case "p":
+    case "li":
       // Fast track very common tags
       break;
     // Special tags
-    case 'select':
+    case "select":
       return pushStartSelect(target, props);
-    case 'option':
+    case "option":
       return pushStartOption(target, props, formatContext);
-    case 'textarea':
+    case "textarea":
       return pushStartTextArea(target, props);
-    case 'input':
+    case "input":
       return pushInput(target, props, responseState);
-    case 'button':
+    case "button":
       return pushStartButton(target, props, responseState);
-    case 'form':
+    case "form":
       return pushStartForm(target, props, responseState);
-    case 'menuitem':
+    case "menuitem":
       return pushStartMenuItem(target, props);
-    case 'title':
+    case "title":
       return enableFloat
         ? pushTitle(
             target,
@@ -3125,7 +2947,7 @@ export function pushStartInstance(
             formatContext.noscriptTagInScope,
           )
         : pushStartTitle(target, props);
-    case 'link':
+    case "link":
       return pushLink(
         target,
         props,
@@ -3135,7 +2957,7 @@ export function pushStartInstance(
         formatContext.insertionMode,
         formatContext.noscriptTagInScope,
       );
-    case 'script':
+    case "script":
       return enableFloat
         ? pushScript(
             target,
@@ -3146,7 +2968,7 @@ export function pushStartInstance(
             formatContext.noscriptTagInScope,
           )
         : pushStartGenericElement(target, props, type);
-    case 'style':
+    case "style":
       return pushStyle(
         target,
         props,
@@ -3155,7 +2977,7 @@ export function pushStartInstance(
         formatContext.insertionMode,
         formatContext.noscriptTagInScope,
       );
-    case 'meta':
+    case "meta":
       return pushMeta(
         target,
         props,
@@ -3165,46 +2987,46 @@ export function pushStartInstance(
         formatContext.noscriptTagInScope,
       );
     // Newline eating tags
-    case 'listing':
-    case 'pre': {
+    case "listing":
+    case "pre": {
       return pushStartPreformattedElement(target, props, type);
     }
     // Omitted close tags
-    case 'base':
-    case 'area':
-    case 'br':
-    case 'col':
-    case 'embed':
-    case 'hr':
-    case 'img':
-    case 'keygen':
-    case 'param':
-    case 'source':
-    case 'track':
-    case 'wbr': {
+    case "base":
+    case "area":
+    case "br":
+    case "col":
+    case "embed":
+    case "hr":
+    case "img":
+    case "keygen":
+    case "param":
+    case "source":
+    case "track":
+    case "wbr": {
       return pushSelfClosing(target, props, type);
     }
     // These are reserved SVG and MathML elements, that are never custom elements.
     // https://w3c.github.io/webcomponents/spec/custom/#custom-elements-core-concepts
-    case 'annotation-xml':
-    case 'color-profile':
-    case 'font-face':
-    case 'font-face-src':
-    case 'font-face-uri':
-    case 'font-face-format':
-    case 'font-face-name':
-    case 'missing-glyph': {
+    case "annotation-xml":
+    case "color-profile":
+    case "font-face":
+    case "font-face-src":
+    case "font-face-uri":
+    case "font-face-format":
+    case "font-face-name":
+    case "missing-glyph": {
       break;
     }
     // Preamble start tags
-    case 'head':
+    case "head":
       return pushStartHead(
         target,
         props,
         responseState,
         formatContext.insertionMode,
       );
-    case 'html': {
+    case "html": {
       return pushStartHtml(
         target,
         props,
@@ -3213,7 +3035,7 @@ export function pushStartInstance(
       );
     }
     default: {
-      if (type.indexOf('-') !== -1) {
+      if (type.indexOf("-") !== -1) {
         // Custom element
         return pushStartCustomElement(target, props, type);
       }
@@ -3223,23 +3045,23 @@ export function pushStartInstance(
   return pushStartGenericElement(target, props, type);
 }
 
-const endTag1 = stringToPrecomputedChunk('</');
-const endTag2 = stringToPrecomputedChunk('>');
+const endTag1 = stringToPrecomputedChunk("</");
+const endTag2 = stringToPrecomputedChunk(">");
 
 export function pushEndInstance(
-  target                                 ,
-  type        ,
-  props        ,
-  responseState               ,
-  formatContext               ,
-)       {
+  target,
+  type,
+  props,
+  responseState,
+  formatContext,
+) {
   switch (type) {
     // When float is on we expect title and script tags to always be pushed in
     // a unit and never return children. when we end up pushing the end tag we
     // want to ensure there is no extra closing tag pushed
-    case 'title':
-    case 'style':
-    case 'script': {
+    case "title":
+    case "style":
+    case "script": {
       if (!enableFloat) {
         break;
       }
@@ -3249,21 +3071,21 @@ export function pushEndInstance(
     // Omitted close tags
     // TODO: Instead of repeating this switch we could try to pass a flag from above.
     // That would require returning a tuple. Which might be ok if it gets inlined.
-    case 'area':
-    case 'base':
-    case 'br':
-    case 'col':
-    case 'embed':
-    case 'hr':
-    case 'img':
-    case 'input':
-    case 'keygen':
-    case 'link':
-    case 'meta':
-    case 'param':
-    case 'source':
-    case 'track':
-    case 'wbr': {
+    case "area":
+    case "base":
+    case "br":
+    case "col":
+    case "embed":
+    case "hr":
+    case "img":
+    case "input":
+    case "keygen":
+    case "link":
+    case "meta":
+    case "param":
+    case "source":
+    case "track":
+    case "wbr": {
       // No close tag needed.
       return;
     }
@@ -3272,14 +3094,14 @@ export function pushEndInstance(
     // they represent the Document.body and Document.documentElement Nodes.
     // This is so we can withhold them until the postamble when we know
     // we won't emit any more tags
-    case 'body': {
+    case "body": {
       if (enableFloat && formatContext.insertionMode <= HTML_HTML_MODE) {
         responseState.hasBody = true;
         return;
       }
       break;
     }
-    case 'html':
+    case "html":
       if (enableFloat && formatContext.insertionMode === ROOT_HTML_MODE) {
         return;
       }
@@ -3288,10 +3110,7 @@ export function pushEndInstance(
   target.push(endTag1, stringToChunk(type), endTag2);
 }
 
-function writeBootstrap(
-  destination             ,
-  responseState               ,
-)          {
+function writeBootstrap(destination, responseState) {
   const bootstrapChunks = responseState.bootstrapChunks;
   let i = 0;
   for (; i < bootstrapChunks.length - 1; i++) {
@@ -3305,10 +3124,7 @@ function writeBootstrap(
   return true;
 }
 
-export function writeCompletedRoot(
-  destination             ,
-  responseState               ,
-)          {
+export function writeCompletedRoot(destination, responseState) {
   return writeBootstrap(destination, responseState);
 }
 
@@ -3319,11 +3135,7 @@ export function writeCompletedRoot(
 // type of parent. <script> tags also work in every other tag except <colgroup>.
 const placeholder1 = stringToPrecomputedChunk('<template id="');
 const placeholder2 = stringToPrecomputedChunk('"></template>');
-export function writePlaceholder(
-  destination             ,
-  responseState               ,
-  id        ,
-)          {
+export function writePlaceholder(destination, responseState, id) {
   writeChunk(destination, placeholder1);
   writeChunk(destination, responseState.placeholderPrefix);
   const formattedID = stringToChunk(id.toString(16));
@@ -3332,17 +3144,17 @@ export function writePlaceholder(
 }
 
 // Suspense boundaries are encoded as comments.
-const startCompletedSuspenseBoundary = stringToPrecomputedChunk('<!--$-->');
+const startCompletedSuspenseBoundary = stringToPrecomputedChunk("<!--$-->");
 const startPendingSuspenseBoundary1 = stringToPrecomputedChunk(
   '<!--$?--><template id="',
 );
 const startPendingSuspenseBoundary2 = stringToPrecomputedChunk('"></template>');
 const startClientRenderedSuspenseBoundary =
-  stringToPrecomputedChunk('<!--$!-->');
-const endSuspenseBoundary = stringToPrecomputedChunk('<!--/$-->');
+  stringToPrecomputedChunk("<!--$!-->");
+const endSuspenseBoundary = stringToPrecomputedChunk("<!--/$-->");
 
 const clientRenderedSuspenseBoundaryError1 =
-  stringToPrecomputedChunk('<template');
+  stringToPrecomputedChunk("<template");
 const clientRenderedSuspenseBoundaryErrorAttrInterstitial =
   stringToPrecomputedChunk('"');
 const clientRenderedSuspenseBoundaryError1A =
@@ -3352,36 +3164,32 @@ const clientRenderedSuspenseBoundaryError1B =
 const clientRenderedSuspenseBoundaryError1C =
   stringToPrecomputedChunk(' data-stck="');
 const clientRenderedSuspenseBoundaryError2 =
-  stringToPrecomputedChunk('></template>');
+  stringToPrecomputedChunk("></template>");
 
-export function pushStartCompletedSuspenseBoundary(
-  target                                 ,
-) {
+export function pushStartCompletedSuspenseBoundary(target) {
   target.push(startCompletedSuspenseBoundary);
 }
 
-export function pushEndCompletedSuspenseBoundary(
-  target                                 ,
-) {
+export function pushEndCompletedSuspenseBoundary(target) {
   target.push(endSuspenseBoundary);
 }
 
 export function writeStartCompletedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+  destination,
+  responseState,
+) {
   return writeChunkAndReturn(destination, startCompletedSuspenseBoundary);
 }
 export function writeStartPendingSuspenseBoundary(
-  destination             ,
-  responseState               ,
-  id                    ,
-)          {
+  destination,
+  responseState,
+  id,
+) {
   writeChunk(destination, startPendingSuspenseBoundary1);
 
   if (id === null) {
     throw new Error(
-      'An ID must have been assigned before we can complete the boundary.',
+      "An ID must have been assigned before we can complete the boundary.",
     );
   }
 
@@ -3389,12 +3197,12 @@ export function writeStartPendingSuspenseBoundary(
   return writeChunkAndReturn(destination, startPendingSuspenseBoundary2);
 }
 export function writeStartClientRenderedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-  errorDigest         ,
-  errorMesssage         ,
-  errorComponentStack         ,
-)          {
+  destination,
+  responseState,
+  errorDigest,
+  errorMesssage,
+  errorComponentStack,
+) {
   let result;
   result = writeChunkAndReturn(
     destination,
@@ -3439,67 +3247,61 @@ export function writeStartClientRenderedSuspenseBoundary(
   );
   return result;
 }
-export function writeEndCompletedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+export function writeEndCompletedSuspenseBoundary(destination, responseState) {
   return writeChunkAndReturn(destination, endSuspenseBoundary);
 }
-export function writeEndPendingSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+export function writeEndPendingSuspenseBoundary(destination, responseState) {
   return writeChunkAndReturn(destination, endSuspenseBoundary);
 }
 export function writeEndClientRenderedSuspenseBoundary(
-  destination             ,
-  responseState               ,
-)          {
+  destination,
+  responseState,
+) {
   return writeChunkAndReturn(destination, endSuspenseBoundary);
 }
 
 const startSegmentHTML = stringToPrecomputedChunk('<div hidden id="');
 const startSegmentHTML2 = stringToPrecomputedChunk('">');
-const endSegmentHTML = stringToPrecomputedChunk('</div>');
+const endSegmentHTML = stringToPrecomputedChunk("</div>");
 
 const startSegmentSVG = stringToPrecomputedChunk(
   '<svg aria-hidden="true" style="display:none" id="',
 );
 const startSegmentSVG2 = stringToPrecomputedChunk('">');
-const endSegmentSVG = stringToPrecomputedChunk('</svg>');
+const endSegmentSVG = stringToPrecomputedChunk("</svg>");
 
 const startSegmentMathML = stringToPrecomputedChunk(
   '<math aria-hidden="true" style="display:none" id="',
 );
 const startSegmentMathML2 = stringToPrecomputedChunk('">');
-const endSegmentMathML = stringToPrecomputedChunk('</math>');
+const endSegmentMathML = stringToPrecomputedChunk("</math>");
 
 const startSegmentTable = stringToPrecomputedChunk('<table hidden id="');
 const startSegmentTable2 = stringToPrecomputedChunk('">');
-const endSegmentTable = stringToPrecomputedChunk('</table>');
+const endSegmentTable = stringToPrecomputedChunk("</table>");
 
 const startSegmentTableBody = stringToPrecomputedChunk(
   '<table hidden><tbody id="',
 );
 const startSegmentTableBody2 = stringToPrecomputedChunk('">');
-const endSegmentTableBody = stringToPrecomputedChunk('</tbody></table>');
+const endSegmentTableBody = stringToPrecomputedChunk("</tbody></table>");
 
 const startSegmentTableRow = stringToPrecomputedChunk('<table hidden><tr id="');
 const startSegmentTableRow2 = stringToPrecomputedChunk('">');
-const endSegmentTableRow = stringToPrecomputedChunk('</tr></table>');
+const endSegmentTableRow = stringToPrecomputedChunk("</tr></table>");
 
 const startSegmentColGroup = stringToPrecomputedChunk(
   '<table hidden><colgroup id="',
 );
 const startSegmentColGroup2 = stringToPrecomputedChunk('">');
-const endSegmentColGroup = stringToPrecomputedChunk('</colgroup></table>');
+const endSegmentColGroup = stringToPrecomputedChunk("</colgroup></table>");
 
 export function writeStartSegment(
-  destination             ,
-  responseState               ,
-  formatContext               ,
-  id        ,
-)          {
+  destination,
+  responseState,
+  formatContext,
+  id,
+) {
   switch (formatContext.insertionMode) {
     case ROOT_HTML_MODE:
     case HTML_HTML_MODE:
@@ -3550,14 +3352,11 @@ export function writeStartSegment(
       return writeChunkAndReturn(destination, startSegmentColGroup2);
     }
     default: {
-      throw new Error('Unknown insertion mode. This is a bug in React.');
+      throw new Error("Unknown insertion mode. This is a bug in React.");
     }
   }
 }
-export function writeEndSegment(
-  destination             ,
-  formatContext               ,
-)          {
+export function writeEndSegment(destination, formatContext) {
   switch (formatContext.insertionMode) {
     case ROOT_HTML_MODE:
     case HTML_HTML_MODE:
@@ -3583,7 +3382,7 @@ export function writeEndSegment(
       return writeChunkAndReturn(destination, endSegmentColGroup);
     }
     default: {
-      throw new Error('Unknown insertion mode. This is a bug in React.');
+      throw new Error("Unknown insertion mode. This is a bug in React.");
     }
   }
 }
@@ -3602,10 +3401,10 @@ const completeSegmentData2 = stringToPrecomputedChunk('" data-pid="');
 const completeSegmentDataEnd = dataElementQuotedEnd;
 
 export function writeCompletedSegmentInstruction(
-  destination             ,
-  responseState               ,
-  contentSegmentID        ,
-)          {
+  destination,
+  responseState,
+  contentSegmentID,
+) {
   const scriptFormat =
     !enableFizzExternalRuntime ||
     responseState.streamingFormat === ScriptStreamingFormat;
@@ -3662,7 +3461,7 @@ const completeBoundaryWithStylesScript1Partial =
 const completeBoundaryScript2 = stringToPrecomputedChunk('","');
 const completeBoundaryScript3a = stringToPrecomputedChunk('",');
 const completeBoundaryScript3b = stringToPrecomputedChunk('"');
-const completeBoundaryScriptEnd = stringToPrecomputedChunk(')</script>');
+const completeBoundaryScriptEnd = stringToPrecomputedChunk(")</script>");
 
 const completeBoundaryData1 = stringToPrecomputedChunk(
   '<template data-rci="" data-bid="',
@@ -3675,12 +3474,12 @@ const completeBoundaryData3a = stringToPrecomputedChunk('" data-sty="');
 const completeBoundaryDataEnd = dataElementQuotedEnd;
 
 export function writeCompletedBoundaryInstruction(
-  destination             ,
-  responseState               ,
-  boundaryID                    ,
-  contentSegmentID        ,
-  boundaryResources                   ,
-)          {
+  destination,
+  responseState,
+  boundaryID,
+  contentSegmentID,
+  boundaryResources,
+) {
   let requiresStyleInsertion;
   if (enableFloat) {
     requiresStyleInsertion = responseState.stylesToHoist;
@@ -3736,7 +3535,7 @@ export function writeCompletedBoundaryInstruction(
 
   if (boundaryID === null) {
     throw new Error(
-      'An ID must have been assigned before we can complete the boundary.',
+      "An ID must have been assigned before we can complete the boundary.",
     );
   }
 
@@ -3783,8 +3582,8 @@ const clientRenderScript1Full = stringToPrecomputedChunk(
 );
 const clientRenderScript1Partial = stringToPrecomputedChunk('$RX("');
 const clientRenderScript1A = stringToPrecomputedChunk('"');
-const clientRenderErrorScriptArgInterstitial = stringToPrecomputedChunk(',');
-const clientRenderScriptEnd = stringToPrecomputedChunk(')</script>');
+const clientRenderErrorScriptArgInterstitial = stringToPrecomputedChunk(",");
+const clientRenderScriptEnd = stringToPrecomputedChunk(")</script>");
 
 const clientRenderData1 = stringToPrecomputedChunk(
   '<template data-rxi="" data-bid="',
@@ -3795,13 +3594,13 @@ const clientRenderData4 = stringToPrecomputedChunk('" data-stck="');
 const clientRenderDataEnd = dataElementQuotedEnd;
 
 export function writeClientRenderBoundaryInstruction(
-  destination             ,
-  responseState               ,
-  boundaryID                    ,
-  errorDigest         ,
-  errorMessage         ,
-  errorComponentStack         ,
-)          {
+  destination,
+  responseState,
+  boundaryID,
+  errorDigest,
+  errorMessage,
+  errorComponentStack,
+) {
   const scriptFormat =
     !enableFizzExternalRuntime ||
     responseState.streamingFormat === ScriptStreamingFormat;
@@ -3825,7 +3624,7 @@ export function writeClientRenderBoundaryInstruction(
 
   if (boundaryID === null) {
     throw new Error(
-      'An ID must have been assigned before we can complete the boundary.',
+      "An ID must have been assigned before we can complete the boundary.",
     );
   }
 
@@ -3842,14 +3641,14 @@ export function writeClientRenderBoundaryInstruction(
       writeChunk(destination, clientRenderErrorScriptArgInterstitial);
       writeChunk(
         destination,
-        stringToChunk(escapeJSStringsForInstructionScripts(errorDigest || '')),
+        stringToChunk(escapeJSStringsForInstructionScripts(errorDigest || "")),
       );
     } else {
       // " data-dgst="HTMLString
       writeChunk(destination, clientRenderData2);
       writeChunk(
         destination,
-        stringToChunk(escapeTextForBrowser(errorDigest || '')),
+        stringToChunk(escapeTextForBrowser(errorDigest || "")),
       );
     }
   }
@@ -3859,14 +3658,14 @@ export function writeClientRenderBoundaryInstruction(
       writeChunk(destination, clientRenderErrorScriptArgInterstitial);
       writeChunk(
         destination,
-        stringToChunk(escapeJSStringsForInstructionScripts(errorMessage || '')),
+        stringToChunk(escapeJSStringsForInstructionScripts(errorMessage || "")),
       );
     } else {
       // " data-msg="HTMLString
       writeChunk(destination, clientRenderData3);
       writeChunk(
         destination,
-        stringToChunk(escapeTextForBrowser(errorMessage || '')),
+        stringToChunk(escapeTextForBrowser(errorMessage || "")),
       );
     }
   }
@@ -3900,21 +3699,21 @@ export function writeClientRenderBoundaryInstruction(
 }
 
 const regexForJSStringsInInstructionScripts = /[<\u2028\u2029]/g;
-function escapeJSStringsForInstructionScripts(input        )         {
+function escapeJSStringsForInstructionScripts(input) {
   const escaped = JSON.stringify(input);
-  return escaped.replace(regexForJSStringsInInstructionScripts, match => {
+  return escaped.replace(regexForJSStringsInInstructionScripts, (match) => {
     switch (match) {
       // santizing breaking out of strings and script tags
-      case '<':
-        return '\\u003c';
-      case '\u2028':
-        return '\\u2028';
-      case '\u2029':
-        return '\\u2029';
+      case "<":
+        return "\\u003c";
+      case "\u2028":
+        return "\\u2028";
+      case "\u2029":
+        return "\\u2029";
       default: {
         // eslint-disable-next-line react-internal/prod-error-codes
         throw new Error(
-          'escapeJSStringsForInstructionScripts encountered a match it does not know how to replace. this means the match regex and the replacement characters are no longer in sync. This is a bug in React',
+          "escapeJSStringsForInstructionScripts encountered a match it does not know how to replace. this means the match regex and the replacement characters are no longer in sync. This is a bug in React",
         );
       }
     }
@@ -3922,25 +3721,25 @@ function escapeJSStringsForInstructionScripts(input        )         {
 }
 
 const regexForJSStringsInScripts = /[&><\u2028\u2029]/g;
-function escapeJSObjectForInstructionScripts(input        )         {
+function escapeJSObjectForInstructionScripts(input) {
   const escaped = JSON.stringify(input);
-  return escaped.replace(regexForJSStringsInScripts, match => {
+  return escaped.replace(regexForJSStringsInScripts, (match) => {
     switch (match) {
       // santizing breaking out of strings and script tags
-      case '&':
-        return '\\u0026';
-      case '>':
-        return '\\u003e';
-      case '<':
-        return '\\u003c';
-      case '\u2028':
-        return '\\u2028';
-      case '\u2029':
-        return '\\u2029';
+      case "&":
+        return "\\u0026";
+      case ">":
+        return "\\u003e";
+      case "<":
+        return "\\u003c";
+      case "\u2028":
+        return "\\u2028";
+      case "\u2029":
+        return "\\u2029";
       default: {
         // eslint-disable-next-line react-internal/prod-error-codes
         throw new Error(
-          'escapeJSObjectForInstructionScripts encountered a match it does not know how to replace. this means the match regex and the replacement characters are no longer in sync. This is a bug in React',
+          "escapeJSObjectForInstructionScripts encountered a match it does not know how to replace. this means the match regex and the replacement characters are no longer in sync. This is a bug in React",
         );
       }
     }
@@ -3952,7 +3751,7 @@ const lateStyleTagResourceOpen1 = stringToPrecomputedChunk(
 );
 const lateStyleTagResourceOpen2 = stringToPrecomputedChunk('" data-href="');
 const lateStyleTagResourceOpen3 = stringToPrecomputedChunk('">');
-const lateStyleTagTemplateClose = stringToPrecomputedChunk('</style>');
+const lateStyleTagTemplateClose = stringToPrecomputedChunk("</style>");
 
 // Tracks whether the boundary currently flushing is flushign style tags or has any
 // stylesheet dependencies not flushed in the Preamble.
@@ -3961,16 +3760,13 @@ let currentlyRenderingBoundaryHasStylesToHoist = false;
 // Acts as a return value for the forEach execution of style tag flushing.
 let destinationHasCapacity = true;
 
-function flushStyleTagsLateForBoundary(
-                    
-  resource               ,
-) {
+function flushStyleTagsLateForBoundary(resource) {
   if (
-    resource.type === 'stylesheet' &&
+    resource.type === "stylesheet" &&
     (resource.state & FlushedInPreamble) === NoState
   ) {
     currentlyRenderingBoundaryHasStylesToHoist = true;
-  } else if (resource.type === 'style') {
+  } else if (resource.type === "style") {
     const chunks = resource.chunks;
     const hrefs = resource.props.hrefs;
     let i = 0;
@@ -4011,10 +3807,10 @@ function flushStyleTagsLateForBoundary(
 }
 
 export function writeResourcesForBoundary(
-  destination             ,
-  boundaryResources                   ,
-  responseState               ,
-)          {
+  destination,
+  boundaryResources,
+  responseState,
+) {
   // Reset these on each invocation, they are only safe to read in this function
   currentlyRenderingBoundaryHasStylesToHoist = false;
   destinationHasCapacity = true;
@@ -4027,7 +3823,7 @@ export function writeResourcesForBoundary(
   return destinationHasCapacity;
 }
 
-function flushResourceInPreamble             (                   resource   ) {
+function flushResourceInPreamble(resource) {
   if ((resource.state & (Flushed | Blocked)) === NoState) {
     const chunks = resource.chunks;
     for (let i = 0; i < chunks.length; i++) {
@@ -4037,7 +3833,7 @@ function flushResourceInPreamble             (                   resource   ) {
   }
 }
 
-function flushResourceLate             (                   resource   ) {
+function flushResourceLate(resource) {
   if ((resource.state & (Flushed | Blocked)) === NoState) {
     const chunks = resource.chunks;
     for (let i = 0; i < chunks.length; i++) {
@@ -4049,19 +3845,14 @@ function flushResourceLate             (                   resource   ) {
 
 // This must always be read after flushing stylesheet styles. we know we will encounter a style resource
 // per precedence and it will be set before ready so we cast this to avoid an extra check at runtime
-let precedenceStyleTagResource                   = (null     );
+let precedenceStyleTagResource = null;
 
 // This flags let's us opt out of flushing a placeholder style tag to emit the precedence in the right order.
 // If a stylesheet was flushed then we have the precedence order preserved and only need to emit <style> tags
 // if there are actual chunks to flush
 let didFlushPrecedence = false;
 
-function flushStyleInPreamble(
-                    
-  resource               ,
-  key       ,
-  set                    ,
-) {
+function flushStyleInPreamble(resource, key, set) {
   const chunks = resource.chunks;
   if (resource.state & Flushed) {
     // In theory this should never happen because we clear from the
@@ -4070,7 +3861,7 @@ function flushStyleInPreamble(
     set.delete(resource);
   } else {
     // We can emit this style or stylesheet as is.
-    if (resource.type === 'style') {
+    if (resource.type === "style") {
       precedenceStyleTagResource = resource;
       return;
     }
@@ -4092,16 +3883,12 @@ const styleTagResourceOpen1 = stringToPrecomputedChunk(
   '<style data-precedence="',
 );
 const styleTagResourceOpen2 = stringToPrecomputedChunk('" data-href="');
-const spaceSeparator = stringToPrecomputedChunk(' ');
+const spaceSeparator = stringToPrecomputedChunk(" ");
 const styleTagResourceOpen3 = stringToPrecomputedChunk('">');
 
-const styleTagResourceClose = stringToPrecomputedChunk('</style>');
+const styleTagResourceClose = stringToPrecomputedChunk("</style>");
 
-function flushAllStylesInPreamble(
-                    
-  set                    ,
-  precedence        ,
-) {
+function flushAllStylesInPreamble(set, precedence) {
   didFlushPrecedence = false;
   set.forEach(flushStyleInPreamble, this);
   set.clear();
@@ -4134,13 +3921,13 @@ function flushAllStylesInPreamble(
   }
 }
 
-function preloadLateStyle(                   resource               ) {
+function preloadLateStyle(resource) {
   if (resource.state & PreloadFlushed) {
     // This resource has already had a preload flushed
     return;
   }
 
-  if (resource.type === 'style') {
+  if (resource.type === "style") {
     // <style> tags do not need to be preloaded
     return;
   }
@@ -4158,11 +3945,7 @@ function preloadLateStyle(                   resource               ) {
   chunks.length = 0;
 }
 
-function preloadLateStyles(
-                    
-  set                    ,
-  precedence        ,
-) {
+function preloadLateStyles(set, precedence) {
   set.forEach(preloadLateStyle, this);
   set.clear();
 }
@@ -4172,11 +3955,11 @@ function preloadLateStyles(
 // in the future to be backpressure sensitive but that requires a larger refactor
 // of the flushing code in Fizz.
 export function writePreamble(
-  destination             ,
-  resources           ,
-  responseState               ,
-  willFlushAllSegments         ,
-)       {
+  destination,
+  resources,
+  responseState,
+  willFlushAllSegments,
+) {
   // This function must be called exactly once on every request
   if (
     enableFizzExternalRuntime &&
@@ -4188,7 +3971,7 @@ export function writePreamble(
     // streaming format, ensure the external runtime is sent.
     // (User code could choose to send this even earlier by calling
     //  preinit(...), if they know they will suspend).
-    const {src, chunks} = responseState.externalRuntimeScript;
+    const { src, chunks } = responseState.externalRuntimeScript;
     internalPreinitScript(resources, src, chunks);
   }
 
@@ -4209,7 +3992,7 @@ export function writePreamble(
       }
     } else {
       // We did not render a head but we emitted an <html> so we emit one now
-      writeChunk(destination, startChunkForTag('head'));
+      writeChunk(destination, startChunkForTag("head"));
       writeChunk(destination, endOfStartTag);
     }
   } else if (headChunks) {
@@ -4282,7 +4065,7 @@ export function writePreamble(
     // <head>. This means that all the content inside <html> is either <body> or
     // invalid HTML
     writeChunk(destination, endTag1);
-    writeChunk(destination, stringToChunk('head'));
+    writeChunk(destination, stringToChunk("head"));
     writeChunk(destination, endTag2);
   }
 }
@@ -4291,11 +4074,7 @@ export function writePreamble(
 // flush the entire preamble in a single pass. This probably should be modified
 // in the future to be backpressure sensitive but that requires a larger refactor
 // of the flushing code in Fizz.
-export function writeHoistables(
-  destination             ,
-  resources           ,
-  responseState               ,
-)       {
+export function writeHoistables(destination, resources, responseState) {
   let i = 0;
 
   // Emit high priority Hoistables
@@ -4346,39 +4125,33 @@ export function writeHoistables(
   hoistableChunks.length = 0;
 }
 
-export function writePostamble(
-  destination             ,
-  responseState               ,
-)       {
+export function writePostamble(destination, responseState) {
   if (responseState.hasBody) {
     writeChunk(destination, endTag1);
-    writeChunk(destination, stringToChunk('body'));
+    writeChunk(destination, stringToChunk("body"));
     writeChunk(destination, endTag2);
   }
   if (responseState.htmlChunks) {
     writeChunk(destination, endTag1);
-    writeChunk(destination, stringToChunk('html'));
+    writeChunk(destination, stringToChunk("html"));
     writeChunk(destination, endTag2);
   }
 }
 
-const arrayFirstOpenBracket = stringToPrecomputedChunk('[');
-const arraySubsequentOpenBracket = stringToPrecomputedChunk(',[');
-const arrayInterstitial = stringToPrecomputedChunk(',');
-const arrayCloseBracket = stringToPrecomputedChunk(']');
+const arrayFirstOpenBracket = stringToPrecomputedChunk("[");
+const arraySubsequentOpenBracket = stringToPrecomputedChunk(",[");
+const arrayInterstitial = stringToPrecomputedChunk(",");
+const arrayCloseBracket = stringToPrecomputedChunk("]");
 
 // This function writes a 2D array of strings to be embedded in javascript.
 // E.g.
 //  [["JS_escaped_string1", "JS_escaped_string2"]]
-function writeStyleResourceDependenciesInJS(
-  destination             ,
-  boundaryResources                   ,
-)       {
+function writeStyleResourceDependenciesInJS(destination, boundaryResources) {
   writeChunk(destination, arrayFirstOpenBracket);
 
   let nextArrayOpenBrackChunk = arrayFirstOpenBracket;
-  boundaryResources.forEach(resource => {
-    if (resource.type === 'style') {
+  boundaryResources.forEach((resource) => {
+    if (resource.type === "style") {
       // Style dependencies don't require coordinated reveal and can be omitted
     } else if (resource.state & FlushedInPreamble) {
       // We can elide this dependency because it was flushed in the shell and
@@ -4394,13 +4167,13 @@ function writeStyleResourceDependenciesInJS(
       );
       writeChunk(destination, arrayCloseBracket);
       nextArrayOpenBrackChunk = arraySubsequentOpenBracket;
-    } else if (resource.type === 'stylesheet') {
+    } else if (resource.type === "stylesheet") {
       // We need to emit the whole resource for insertion on the client
       writeChunk(destination, nextArrayOpenBrackChunk);
       writeStyleResourceDependencyInJS(
         destination,
         resource.props.href,
-        resource.props['data-precedence'],
+        resource.props["data-precedence"],
         resource.props,
       );
       writeChunk(destination, arrayCloseBracket);
@@ -4413,16 +4186,13 @@ function writeStyleResourceDependenciesInJS(
 }
 
 /* Helper functions */
-function writeStyleResourceDependencyHrefOnlyInJS(
-  destination             ,
-  href        ,
-) {
+function writeStyleResourceDependencyHrefOnlyInJS(destination, href) {
   // We should actually enforce this earlier when the resource is created but for
   // now we make sure we are actually dealing with a string here.
   if (__DEV__) {
-    checkAttributeStringCoercion(href, 'href');
+    checkAttributeStringCoercion(href, "href");
   }
-  const coercedHref = '' + (href     );
+  const coercedHref = "" + href;
   writeChunk(
     destination,
     stringToChunk(escapeJSObjectForInstructionScripts(coercedHref)),
@@ -4430,22 +4200,22 @@ function writeStyleResourceDependencyHrefOnlyInJS(
 }
 
 function writeStyleResourceDependencyInJS(
-  destination             ,
-  href       ,
-  precedence       ,
-  props        ,
+  destination,
+  href,
+  precedence,
+  props,
 ) {
   // eslint-disable-next-line react-internal/safe-string-coercion
-  const coercedHref = sanitizeURL('' + (href     ));
+  const coercedHref = sanitizeURL("" + href);
   writeChunk(
     destination,
     stringToChunk(escapeJSObjectForInstructionScripts(coercedHref)),
   );
 
   if (__DEV__) {
-    checkAttributeStringCoercion(precedence, 'precedence');
+    checkAttributeStringCoercion(precedence, "precedence");
   }
-  const coercedPrecedence = '' + (precedence     );
+  const coercedPrecedence = "" + precedence;
   writeChunk(destination, arrayInterstitial);
   writeChunk(
     destination,
@@ -4459,17 +4229,17 @@ function writeStyleResourceDependencyInJS(
         continue;
       }
       switch (propKey) {
-        case 'href':
-        case 'rel':
-        case 'precedence':
-        case 'data-precedence': {
+        case "href":
+        case "rel":
+        case "precedence":
+        case "data-precedence": {
           break;
         }
-        case 'children':
-        case 'dangerouslySetInnerHTML':
+        case "children":
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            `${'link'} is a self-closing tag and must neither have \`children\` nor ` +
-              'use `dangerouslySetInnerHTML`.',
+            `${"link"} is a self-closing tag and must neither have \`children\` nor ` +
+              "use `dangerouslySetInnerHTML`.",
           );
         default:
           writeStyleResourceAttributeInJS(destination, propKey, propValue);
@@ -4481,53 +4251,53 @@ function writeStyleResourceDependencyInJS(
 }
 
 function writeStyleResourceAttributeInJS(
-  destination             ,
-  name        ,
-  value                                               , // not null or undefined
-)       {
+  destination,
+  name,
+  value, // not null or undefined
+) {
   let attributeName = name.toLowerCase();
   let attributeValue;
   switch (typeof value) {
-    case 'function':
-    case 'symbol':
+    case "function":
+    case "symbol":
       return;
   }
 
   switch (name) {
     // Reserved names
-    case 'innerHTML':
-    case 'dangerouslySetInnerHTML':
-    case 'suppressContentEditableWarning':
-    case 'suppressHydrationWarning':
-    case 'style':
+    case "innerHTML":
+    case "dangerouslySetInnerHTML":
+    case "suppressContentEditableWarning":
+    case "suppressHydrationWarning":
+    case "style":
       // Ignored
       return;
 
     // Attribute renames
-    case 'className': {
-      attributeName = 'class';
+    case "className": {
+      attributeName = "class";
       if (__DEV__) {
         checkAttributeStringCoercion(value, attributeName);
       }
-      attributeValue = '' + (value     );
+      attributeValue = "" + value;
       break;
     }
     // Booleans
-    case 'hidden': {
+    case "hidden": {
       if (value === false) {
         return;
       }
-      attributeValue = '';
+      attributeValue = "";
       break;
     }
     // Santized URLs
-    case 'src':
-    case 'href': {
+    case "src":
+    case "href": {
       value = sanitizeURL(value);
       if (__DEV__) {
         checkAttributeStringCoercion(value, attributeName);
       }
-      attributeValue = '' + (value     );
+      attributeValue = "" + value;
       break;
     }
     default: {
@@ -4535,8 +4305,8 @@ function writeStyleResourceAttributeInJS(
         // unrecognized event handlers are not SSR'd and we (apparently)
         // use on* as hueristic for these handler props
         name.length > 2 &&
-        (name[0] === 'o' || name[0] === 'O') &&
-        (name[1] === 'n' || name[1] === 'N')
+        (name[0] === "o" || name[0] === "O") &&
+        (name[1] === "n" || name[1] === "N")
       ) {
         return;
       }
@@ -4546,7 +4316,7 @@ function writeStyleResourceAttributeInJS(
       if (__DEV__) {
         checkAttributeStringCoercion(value, attributeName);
       }
-      attributeValue = '' + (value     );
+      attributeValue = "" + value;
     }
   }
   writeChunk(destination, arrayInterstitial);
@@ -4565,15 +4335,12 @@ function writeStyleResourceAttributeInJS(
 // value and read with JSON.parse in ReactDOMServerExternalRuntime.js
 // E.g.
 //  [[&quot;JSON_escaped_string1&quot;, &quot;JSON_escaped_string2&quot;]]
-function writeStyleResourceDependenciesInAttr(
-  destination             ,
-  boundaryResources                   ,
-)       {
+function writeStyleResourceDependenciesInAttr(destination, boundaryResources) {
   writeChunk(destination, arrayFirstOpenBracket);
 
   let nextArrayOpenBrackChunk = arrayFirstOpenBracket;
-  boundaryResources.forEach(resource => {
-    if (resource.type === 'style') {
+  boundaryResources.forEach((resource) => {
+    if (resource.type === "style") {
       // Style dependencies don't require coordinated reveal and can be omitted
     } else if (resource.state & FlushedInPreamble) {
       // We can elide this dependency because it was flushed in the shell and
@@ -4589,13 +4356,13 @@ function writeStyleResourceDependenciesInAttr(
       );
       writeChunk(destination, arrayCloseBracket);
       nextArrayOpenBrackChunk = arraySubsequentOpenBracket;
-    } else if (resource.type === 'stylesheet') {
+    } else if (resource.type === "stylesheet") {
       // We need to emit the whole resource for insertion on the client
       writeChunk(destination, nextArrayOpenBrackChunk);
       writeStyleResourceDependencyInAttr(
         destination,
         resource.props.href,
-        resource.props['data-precedence'],
+        resource.props["data-precedence"],
         resource.props,
       );
       writeChunk(destination, arrayCloseBracket);
@@ -4608,16 +4375,13 @@ function writeStyleResourceDependenciesInAttr(
 }
 
 /* Helper functions */
-function writeStyleResourceDependencyHrefOnlyInAttr(
-  destination             ,
-  href        ,
-) {
+function writeStyleResourceDependencyHrefOnlyInAttr(destination, href) {
   // We should actually enforce this earlier when the resource is created but for
   // now we make sure we are actually dealing with a string here.
   if (__DEV__) {
-    checkAttributeStringCoercion(href, 'href');
+    checkAttributeStringCoercion(href, "href");
   }
-  const coercedHref = '' + (href     );
+  const coercedHref = "" + href;
   writeChunk(
     destination,
     stringToChunk(escapeTextForBrowser(JSON.stringify(coercedHref))),
@@ -4625,22 +4389,22 @@ function writeStyleResourceDependencyHrefOnlyInAttr(
 }
 
 function writeStyleResourceDependencyInAttr(
-  destination             ,
-  href       ,
-  precedence       ,
-  props        ,
+  destination,
+  href,
+  precedence,
+  props,
 ) {
   // eslint-disable-next-line react-internal/safe-string-coercion
-  const coercedHref = sanitizeURL('' + (href     ));
+  const coercedHref = sanitizeURL("" + href);
   writeChunk(
     destination,
     stringToChunk(escapeTextForBrowser(JSON.stringify(coercedHref))),
   );
 
   if (__DEV__) {
-    checkAttributeStringCoercion(precedence, 'precedence');
+    checkAttributeStringCoercion(precedence, "precedence");
   }
-  const coercedPrecedence = '' + (precedence     );
+  const coercedPrecedence = "" + precedence;
   writeChunk(destination, arrayInterstitial);
   writeChunk(
     destination,
@@ -4654,17 +4418,17 @@ function writeStyleResourceDependencyInAttr(
         continue;
       }
       switch (propKey) {
-        case 'href':
-        case 'rel':
-        case 'precedence':
-        case 'data-precedence': {
+        case "href":
+        case "rel":
+        case "precedence":
+        case "data-precedence": {
           break;
         }
-        case 'children':
-        case 'dangerouslySetInnerHTML':
+        case "children":
+        case "dangerouslySetInnerHTML":
           throw new Error(
-            `${'link'} is a self-closing tag and must neither have \`children\` nor ` +
-              'use `dangerouslySetInnerHTML`.',
+            `${"link"} is a self-closing tag and must neither have \`children\` nor ` +
+              "use `dangerouslySetInnerHTML`.",
           );
         default:
           writeStyleResourceAttributeInAttr(destination, propKey, propValue);
@@ -4676,55 +4440,55 @@ function writeStyleResourceDependencyInAttr(
 }
 
 function writeStyleResourceAttributeInAttr(
-  destination             ,
-  name        ,
-  value                                               , // not null or undefined
-)       {
+  destination,
+  name,
+  value, // not null or undefined
+) {
   let attributeName = name.toLowerCase();
   let attributeValue;
   switch (typeof value) {
-    case 'function':
-    case 'symbol':
+    case "function":
+    case "symbol":
       return;
   }
 
   switch (name) {
     // Reserved names
-    case 'innerHTML':
-    case 'dangerouslySetInnerHTML':
-    case 'suppressContentEditableWarning':
-    case 'suppressHydrationWarning':
-    case 'style':
+    case "innerHTML":
+    case "dangerouslySetInnerHTML":
+    case "suppressContentEditableWarning":
+    case "suppressHydrationWarning":
+    case "style":
       // Ignored
       return;
 
     // Attribute renames
-    case 'className': {
-      attributeName = 'class';
+    case "className": {
+      attributeName = "class";
       if (__DEV__) {
         checkAttributeStringCoercion(value, attributeName);
       }
-      attributeValue = '' + (value     );
+      attributeValue = "" + value;
       break;
     }
 
     // Booleans
-    case 'hidden': {
+    case "hidden": {
       if (value === false) {
         return;
       }
-      attributeValue = '';
+      attributeValue = "";
       break;
     }
 
     // Santized URLs
-    case 'src':
-    case 'href': {
+    case "src":
+    case "href": {
       value = sanitizeURL(value);
       if (__DEV__) {
         checkAttributeStringCoercion(value, attributeName);
       }
-      attributeValue = '' + (value     );
+      attributeValue = "" + value;
       break;
     }
     default: {
@@ -4732,8 +4496,8 @@ function writeStyleResourceAttributeInAttr(
         // unrecognized event handlers are not SSR'd and we (apparently)
         // use on* as hueristic for these handler props
         name.length > 2 &&
-        (name[0] === 'o' || name[0] === 'O') &&
-        (name[1] === 'n' || name[1] === 'N')
+        (name[0] === "o" || name[0] === "O") &&
+        (name[1] === "n" || name[1] === "N")
       ) {
         return;
       }
@@ -4743,7 +4507,7 @@ function writeStyleResourceAttributeInAttr(
       if (__DEV__) {
         checkAttributeStringCoercion(value, attributeName);
       }
-      attributeValue = '' + (value     );
+      attributeValue = "" + value;
     }
   }
   writeChunk(destination, arrayInterstitial);
@@ -4762,7 +4526,6 @@ function writeStyleResourceAttributeInAttr(
  * Resources
  */
 
-                               
 const NoState /*            */ = 0b0000;
 // These tags indicate whether the Resource was flushed and in which phase
 const FlushedInPreamble /*  */ = 0b0001;
@@ -4775,116 +4538,16 @@ const Blocked /*            */ = 0b0100;
 // This generally only makes sense for Resources other than PreloadResource
 const PreloadFlushed /*     */ = 0b1000;
 
-               
-                                                                  
-    
-     
-          
-                                          
-                          
-           
-  
 // Dev extensions.
 // Stylesheets and Scripts rendered with jsx
-                            
-                           
-                       
-  
+
 // Preloads, Stylesheets, and Scripts from ReactDOM.preload or ReactDOM.preinit
-                              
-                                      
-                         
-                         
-                         
-  
+
 // Preloads created for normal components we rendered but know we can preload early such as
 // sync Scripts and stylesheets without precedence or with onLoad/onError handlers
-                            
-                           
-                         
-                      
-  
-                  
-                       
-                         
-                        
-
-                        
-                                     
-               
-                  
-  
-                                                        
-
-                       
-                 
-             
-                
-                  
-  
-                           
-                       
-                
-                  
-  
-                                                        
-                                                          
-
-                        
-                    
-               
-                            
-                  
-  
-                                                                   
-
-                      
-                       
-                     
-  
-                                                          
-
-                                                           
-
-                    
-              
-              
-                  
-  
-                                                
-
-               
-                 
-                  
-                   
-                       
-
-                         
-                        
-                                            
-                                                  
-                                        
-                                          
-
-                                              
-                                       
-                                     
-                                             
-                                               
-                                                  
-                               
-                                                   
-                                                 
-                                               
-                                              
-
-                                                                
-                                        
-     
-  
 
 // @TODO add bootstrap script to implicit preloads
-export function createResources()            {
+export function createResources() {
   return {
     // persistent
     preloadsMap: new Map(),
@@ -4909,24 +4572,22 @@ export function createResources()            {
   };
 }
 
-                                                   
-
-export function createBoundaryResources()                    {
+export function createBoundaryResources() {
   return new Set();
 }
 
 export function setCurrentlyRenderingBoundaryResourcesTarget(
-  resources           ,
-  boundaryResources                          ,
+  resources,
+  boundaryResources,
 ) {
   resources.boundaryResources = boundaryResources;
 }
 
-function getResourceKey(as        , href        )         {
+function getResourceKey(as, href) {
   return `[${as}]${href}`;
 }
 
-export function prefetchDNS(href        , options                      ) {
+export function prefetchDNS(href, options) {
   if (!enableFloat) {
     return;
   }
@@ -4941,51 +4602,48 @@ export function prefetchDNS(href        , options                      ) {
   }
   const resources = getResources(request);
   if (__DEV__) {
-    if (typeof href !== 'string' || !href) {
+    if (typeof href !== "string" || !href) {
       console.error(
-        'ReactDOM.prefetchDNS(): Expected the `href` argument (first) to be a non-empty string but encountered %s instead.',
+        "ReactDOM.prefetchDNS(): Expected the `href` argument (first) to be a non-empty string but encountered %s instead.",
         getValueDescriptorExpectingObjectForWarning(href),
       );
     } else if (options != null) {
       if (
-        typeof options === 'object' &&
-        options.hasOwnProperty('crossOrigin')
+        typeof options === "object" &&
+        options.hasOwnProperty("crossOrigin")
       ) {
         console.error(
-          'ReactDOM.prefetchDNS(): Expected only one argument, `href`, but encountered %s as a second argument instead. This argument is reserved for future options and is currently disallowed. It looks like the you are attempting to set a crossOrigin property for this DNS lookup hint. Browsers do not perform DNS queries using CORS and setting this attribute on the resource hint has no effect. Try calling ReactDOM.prefetchDNS() with just a single string argument, `href`.',
+          "ReactDOM.prefetchDNS(): Expected only one argument, `href`, but encountered %s as a second argument instead. This argument is reserved for future options and is currently disallowed. It looks like the you are attempting to set a crossOrigin property for this DNS lookup hint. Browsers do not perform DNS queries using CORS and setting this attribute on the resource hint has no effect. Try calling ReactDOM.prefetchDNS() with just a single string argument, `href`.",
           getValueDescriptorExpectingEnumForWarning(options),
         );
       } else {
         console.error(
-          'ReactDOM.prefetchDNS(): Expected only one argument, `href`, but encountered %s as a second argument instead. This argument is reserved for future options and is currently disallowed. Try calling ReactDOM.prefetchDNS() with just a single string argument, `href`.',
+          "ReactDOM.prefetchDNS(): Expected only one argument, `href`, but encountered %s as a second argument instead. This argument is reserved for future options and is currently disallowed. Try calling ReactDOM.prefetchDNS() with just a single string argument, `href`.",
           getValueDescriptorExpectingEnumForWarning(options),
         );
       }
     }
   }
 
-  if (typeof href === 'string' && href) {
-    const key = getResourceKey('prefetchDNS', href);
+  if (typeof href === "string" && href) {
+    const key = getResourceKey("prefetchDNS", href);
     let resource = resources.preconnectsMap.get(key);
     if (!resource) {
       resource = {
-        type: 'preconnect',
+        type: "preconnect",
         chunks: [],
         state: NoState,
         props: null,
       };
       resources.preconnectsMap.set(key, resource);
-      pushLinkImpl(
-        resource.chunks,
-        ({href, rel: 'dns-prefetch'}                 ),
-      );
+      pushLinkImpl(resource.chunks, { href, rel: "dns-prefetch" });
     }
     resources.preconnects.add(resource);
     flushResources(request);
   }
 }
 
-export function preconnect(href        , options                     ) {
+export function preconnect(href, options) {
   if (!enableFloat) {
     return;
   }
@@ -5000,55 +4658,52 @@ export function preconnect(href        , options                     ) {
   }
   const resources = getResources(request);
   if (__DEV__) {
-    if (typeof href !== 'string' || !href) {
+    if (typeof href !== "string" || !href) {
       console.error(
-        'ReactDOM.preconnect(): Expected the `href` argument (first) to be a non-empty string but encountered %s instead.',
+        "ReactDOM.preconnect(): Expected the `href` argument (first) to be a non-empty string but encountered %s instead.",
         getValueDescriptorExpectingObjectForWarning(href),
       );
-    } else if (options != null && typeof options !== 'object') {
+    } else if (options != null && typeof options !== "object") {
       console.error(
-        'ReactDOM.preconnect(): Expected the `options` argument (second) to be an object but encountered %s instead. The only supported option at this time is `crossOrigin` which accepts a string.',
+        "ReactDOM.preconnect(): Expected the `options` argument (second) to be an object but encountered %s instead. The only supported option at this time is `crossOrigin` which accepts a string.",
         getValueDescriptorExpectingEnumForWarning(options),
       );
-    } else if (options != null && typeof options.crossOrigin !== 'string') {
+    } else if (options != null && typeof options.crossOrigin !== "string") {
       console.error(
-        'ReactDOM.preconnect(): Expected the `crossOrigin` option (second argument) to be a string but encountered %s instead. Try removing this option or passing a string value instead.',
+        "ReactDOM.preconnect(): Expected the `crossOrigin` option (second argument) to be a string but encountered %s instead. Try removing this option or passing a string value instead.",
         getValueDescriptorExpectingObjectForWarning(options.crossOrigin),
       );
     }
   }
 
-  if (typeof href === 'string' && href) {
+  if (typeof href === "string" && href) {
     const crossOrigin =
-      options == null || typeof options.crossOrigin !== 'string'
+      options == null || typeof options.crossOrigin !== "string"
         ? null
-        : options.crossOrigin === 'use-credentials'
-        ? 'use-credentials'
-        : '';
+        : options.crossOrigin === "use-credentials"
+          ? "use-credentials"
+          : "";
 
     const key = `[preconnect][${
-      crossOrigin === null ? 'null' : crossOrigin
+      crossOrigin === null ? "null" : crossOrigin
     }]${href}`;
     let resource = resources.preconnectsMap.get(key);
     if (!resource) {
       resource = {
-        type: 'preconnect',
+        type: "preconnect",
         chunks: [],
         state: NoState,
         props: null,
       };
       resources.preconnectsMap.set(key, resource);
-      pushLinkImpl(
-        resource.chunks,
-        ({rel: 'preconnect', href, crossOrigin}                 ),
-      );
+      pushLinkImpl(resource.chunks, { rel: "preconnect", href, crossOrigin });
     }
     resources.preconnects.add(resource);
     flushResources(request);
   }
 }
 
-export function preload(href        , options                ) {
+export function preload(href, options) {
   if (!enableFloat) {
     return;
   }
@@ -5063,17 +4718,17 @@ export function preload(href        , options                ) {
   }
   const resources = getResources(request);
   if (__DEV__) {
-    let encountered = '';
-    if (typeof href !== 'string' || !href) {
+    let encountered = "";
+    if (typeof href !== "string" || !href) {
       encountered += ` The \`href\` argument encountered was ${getValueDescriptorExpectingObjectForWarning(
         href,
       )}.`;
     }
-    if (options == null || typeof options !== 'object') {
+    if (options == null || typeof options !== "object") {
       encountered += ` The \`options\` argument encountered was ${getValueDescriptorExpectingObjectForWarning(
         options,
       )}.`;
-    } else if (typeof options.as !== 'string' || !options.as) {
+    } else if (typeof options.as !== "string" || !options.as) {
       encountered += ` The \`as\` option encountered was ${getValueDescriptorExpectingObjectForWarning(
         options.as,
       )}.`;
@@ -5086,28 +4741,28 @@ export function preload(href        , options                ) {
     }
   }
   if (
-    typeof href === 'string' &&
+    typeof href === "string" &&
     href &&
-    typeof options === 'object' &&
+    typeof options === "object" &&
     options !== null &&
-    typeof options.as === 'string' &&
+    typeof options.as === "string" &&
     options.as
   ) {
     const as = options.as;
-    let key        ;
-    if (as === 'image') {
+    let key;
+    if (as === "image") {
       // For image preloads the key contains either the imageSrcSet + imageSizes or the href but not
       // both. This is to prevent identical calls with the same srcSet and sizes to be duplicated
       // by varying the href. this is an edge case but it is the most correct behavior.
-      const {imageSrcSet, imageSizes} = options;
-      let uniquePart = '';
-      if (typeof imageSrcSet === 'string' && imageSrcSet !== '') {
-        uniquePart += '[' + imageSrcSet + ']';
-        if (typeof imageSizes === 'string') {
-          uniquePart += '[' + imageSizes + ']';
+      const { imageSrcSet, imageSizes } = options;
+      let uniquePart = "";
+      if (typeof imageSrcSet === "string" && imageSrcSet !== "") {
+        uniquePart += "[" + imageSrcSet + "]";
+        if (typeof imageSizes === "string") {
+          uniquePart += "[" + imageSizes + "]";
         }
       } else {
-        uniquePart += '[][]' + href;
+        uniquePart += "[][]" + href;
       }
       key = getResourceKey(as, uniquePart);
     } else {
@@ -5118,7 +4773,7 @@ export function preload(href        , options                ) {
       const devResource = getAsResourceDEV(resource);
       if (devResource) {
         switch (devResource.__provenance) {
-          case 'preload': {
+          case "preload": {
             const differenceDescription = describeDifferencesForPreloads(
               options,
               devResource.__originalOptions,
@@ -5126,8 +4781,8 @@ export function preload(href        , options                ) {
             if (differenceDescription) {
               console.error(
                 'ReactDOM.preload(): The options provided conflict with another call to `ReactDOM.preload("%s", { as: "%s", ...})`.' +
-                  ' React will always use the options it first encounters when preloading a resource for a given `href` and `as` type, and any later options will be ignored if different.' +
-                  ' Try updating all calls to `ReactDOM.preload()` with the same `href` and `as` type to use the same options, or eliminate one of the calls.%s',
+                  " React will always use the options it first encounters when preloading a resource for a given `href` and `as` type, and any later options will be ignored if different." +
+                  " Try updating all calls to `ReactDOM.preload()` with the same `href` and `as` type to use the same options, or eliminate one of the calls.%s",
                 href,
                 as,
                 differenceDescription,
@@ -5135,7 +4790,7 @@ export function preload(href        , options                ) {
             }
             break;
           }
-          case 'implicit': {
+          case "implicit": {
             const differenceDescription =
               describeDifferencesForPreloadOverImplicitPreload(
                 options,
@@ -5143,20 +4798,20 @@ export function preload(href        , options                ) {
               );
             if (differenceDescription) {
               const elementDescription =
-                as === 'style'
+                as === "style"
                   ? '<link rel="stylesheet" ... />'
-                  : as === 'script'
-                  ? '<script ... />'
-                  : null;
+                  : as === "script"
+                    ? "<script ... />"
+                    : null;
               if (elementDescription) {
                 console.error(
                   'ReactDOM.preload(): For `href` "%s", The options provided conflict with props on a matching %s element. When the preload' +
-                    ' options disagree with the underlying resource it usually means the browser will not be able to use the preload when the resource' +
-                    ' is fetched, negating any benefit the preload would provide. React will preload the resource using props derived from the resource instead' +
-                    ' and ignore the options provided to the `ReactDOM.preload()` call. In general, preloading is useful when you expect to' +
-                    ' render a resource soon but have not yet done so. In this case since the underlying resource was already rendered the preload call' +
-                    ' may be extraneous. Try removing the call, otherwise try adjusting both the props on the %s and the options' +
-                    ' passed to `ReactDOM.preload()` to agree.%s',
+                    " options disagree with the underlying resource it usually means the browser will not be able to use the preload when the resource" +
+                    " is fetched, negating any benefit the preload would provide. React will preload the resource using props derived from the resource instead" +
+                    " and ignore the options provided to the `ReactDOM.preload()` call. In general, preloading is useful when you expect to" +
+                    " render a resource soon but have not yet done so. In this case since the underlying resource was already rendered the preload call" +
+                    " may be extraneous. Try removing the call, otherwise try adjusting both the props on the %s and the options" +
+                    " passed to `ReactDOM.preload()` to agree.%s",
                   href,
                   elementDescription,
                   elementDescription,
@@ -5171,7 +4826,7 @@ export function preload(href        , options                ) {
     }
     if (!resource) {
       resource = {
-        type: 'preload',
+        type: "preload",
         chunks: [],
         state: NoState,
         props: preloadPropsFromPreloadOptions(href, as, options),
@@ -5180,7 +4835,7 @@ export function preload(href        , options                ) {
       if (__DEV__) {
         markAsImperativeResourceDEV(
           resource,
-          'preload',
+          "preload",
           href,
           options,
           resource.props,
@@ -5190,15 +4845,15 @@ export function preload(href        , options                ) {
       pushLinkImpl(resource.chunks, resource.props);
     }
     switch (as) {
-      case 'font': {
+      case "font": {
         resources.fontPreloads.add(resource);
         break;
       }
-      case 'style': {
+      case "style": {
         resources.explicitStylesheetPreloads.add(resource);
         break;
       }
-      case 'script': {
+      case "script": {
         resources.explicitScriptPreloads.add(resource);
         break;
       }
@@ -5210,7 +4865,7 @@ export function preload(href        , options                ) {
   }
 }
 
-function preinit(href        , options                )       {
+function preinit(href, options) {
   if (!enableFloat) {
     return;
   }
@@ -5225,17 +4880,17 @@ function preinit(href        , options                )       {
   }
   const resources = getResources(request);
   if (__DEV__) {
-    if (typeof href !== 'string' || !href) {
+    if (typeof href !== "string" || !href) {
       console.error(
-        'ReactDOM.preinit(): Expected the `href` argument (first) to be a non-empty string but encountered %s instead.',
+        "ReactDOM.preinit(): Expected the `href` argument (first) to be a non-empty string but encountered %s instead.",
         getValueDescriptorExpectingObjectForWarning(href),
       );
-    } else if (options == null || typeof options !== 'object') {
+    } else if (options == null || typeof options !== "object") {
       console.error(
-        'ReactDOM.preinit(): Expected the `options` argument (second) to be an object with an `as` property describing the type of resource to be preinitialized but encountered %s instead.',
+        "ReactDOM.preinit(): Expected the `options` argument (second) to be an object with an `as` property describing the type of resource to be preinitialized but encountered %s instead.",
         getValueDescriptorExpectingEnumForWarning(options),
       );
-    } else if (options.as !== 'style' && options.as !== 'script') {
+    } else if (options.as !== "style" && options.as !== "script") {
       console.error(
         'ReactDOM.preinit(): Expected the `as` property in the `options` argument (second) to contain a valid value describing the type of resource to be preinitialized but encountered %s instead. Valid values for `as` are "style" and "script".',
         getValueDescriptorExpectingEnumForWarning(options.as),
@@ -5243,17 +4898,17 @@ function preinit(href        , options                )       {
     }
   }
   if (
-    typeof href === 'string' &&
+    typeof href === "string" &&
     href &&
-    typeof options === 'object' &&
+    typeof options === "object" &&
     options !== null
   ) {
     const as = options.as;
     switch (as) {
-      case 'style': {
+      case "style": {
         const key = getResourceKey(as, href);
         let resource = resources.stylesMap.get(key);
-        const precedence = options.precedence || 'default';
+        const precedence = options.precedence || "default";
         if (__DEV__) {
           const devResource = getAsResourceDEV(resource);
           if (devResource) {
@@ -5265,10 +4920,10 @@ function preinit(href        , options                )       {
             const propsEquivalent = {
               ...resourceProps,
               precedence: options.precedence,
-              ['data-precedence']: null,
+              ["data-precedence"]: null,
             };
             switch (devResource.__provenance) {
-              case 'rendered': {
+              case "rendered": {
                 const differenceDescription =
                   describeDifferencesForPreinitOverStylesheet(
                     // Diff the props from the JSX element, not the derived resource props
@@ -5278,11 +4933,11 @@ function preinit(href        , options                )       {
                 if (differenceDescription) {
                   console.error(
                     'ReactDOM.preinit(): For `href` "%s", the options provided conflict with props found on a <link rel="stylesheet" precedence="%s" href="%s" .../> that was already rendered.' +
-                      ' React will always use the props or options it first encounters for a hoistable stylesheet for a given `href` and any later props or options will be ignored if different.' +
-                      ' Generally, ReactDOM.preinit() is useful when you are not yet rendering a stylesheet but you anticipate it will be used soon.' +
-                      ' In this case the stylesheet was already rendered so preinitializing it does not provide any additional benefit.' +
+                      " React will always use the props or options it first encounters for a hoistable stylesheet for a given `href` and any later props or options will be ignored if different." +
+                      " Generally, ReactDOM.preinit() is useful when you are not yet rendering a stylesheet but you anticipate it will be used soon." +
+                      " In this case the stylesheet was already rendered so preinitializing it does not provide any additional benefit." +
                       ' To resolve, try making the props and options agree between the <link rel="stylesheet" .../> and the `ReactDOM.preinit()` call or' +
-                      ' remove the `ReactDOM.preinit()` call.%s',
+                      " remove the `ReactDOM.preinit()` call.%s",
                     href,
                     devResource.__originalProps.precedence,
                     href,
@@ -5291,7 +4946,7 @@ function preinit(href        , options                )       {
                 }
                 break;
               }
-              case 'preinit': {
+              case "preinit": {
                 const differenceDescription = describeDifferencesForPreinits(
                   // Diff the props from the JSX element, not the derived resource props
                   propsEquivalent,
@@ -5300,8 +4955,8 @@ function preinit(href        , options                )       {
                 if (differenceDescription) {
                   console.error(
                     'ReactDOM.preinit(): For `href` "%s", the options provided conflict with another call to `ReactDOM.preinit("%s", { as: "style", ... })`.' +
-                      ' React will always use the options it first encounters when preinitializing a hoistable stylesheet for a given `href` and any later options will be ignored if different.' +
-                      ' Try updating all calls to `ReactDOM.preinit()` for a given `href` to use the same options, or only call `ReactDOM.preinit()` once per `href`.%s',
+                      " React will always use the options it first encounters when preinitializing a hoistable stylesheet for a given `href` and any later options will be ignored if different." +
+                      " Try updating all calls to `ReactDOM.preinit()` for a given `href` to use the same options, or only call `ReactDOM.preinit()` once per `href`.%s",
                     href,
                     href,
                     differenceDescription,
@@ -5319,17 +4974,17 @@ function preinit(href        , options                )       {
             state = PreloadFlushed;
           }
           resource = {
-            type: 'stylesheet',
-            chunks: ([]                                 ),
+            type: "stylesheet",
+            chunks: [],
             state,
             props: stylesheetPropsFromPreinitOptions(href, precedence, options),
           };
           resources.stylesMap.set(key, resource);
           if (__DEV__) {
-            markAsImperativeResourceDEV(resource, 'preinit', href, options, {
+            markAsImperativeResourceDEV(resource, "preinit", href, options, {
               ...resource.props,
               precedence,
-              ['data-precedence']: undefined,
+              ["data-precedence"]: undefined,
             });
           }
           let precedenceSet = resources.precedences.get(precedence);
@@ -5337,12 +4992,12 @@ function preinit(href        , options                )       {
             precedenceSet = new Set();
             resources.precedences.set(precedence, precedenceSet);
             const emptyStyleResource = {
-              type: 'style',
-              chunks: ([]                                 ),
+              type: "style",
+              chunks: [],
               state: NoState,
               props: {
                 precedence,
-                hrefs: ([]               ),
+                hrefs: [],
               },
             };
             precedenceSet.add(emptyStyleResource);
@@ -5361,7 +5016,7 @@ function preinit(href        , options                )       {
         }
         return;
       }
-      case 'script': {
+      case "script": {
         const src = href;
         const key = getResourceKey(as, src);
         let resource = resources.scriptsMap.get(key);
@@ -5370,7 +5025,7 @@ function preinit(href        , options                )       {
           if (devResource) {
             const propsEquivalent = scriptPropsFromPreinitOptions(src, options);
             switch (devResource.__provenance) {
-              case 'rendered': {
+              case "rendered": {
                 const differenceDescription =
                   describeDifferencesForPreinitOverScript(
                     // Diff the props from the JSX element, not the derived resource props
@@ -5380,10 +5035,10 @@ function preinit(href        , options                )       {
                 if (differenceDescription) {
                   console.error(
                     'ReactDOM.preinit(): For `href` "%s", the options provided conflict with props found on a <script async={true} src="%s" .../> that was already rendered.' +
-                      ' React will always use the props or options it first encounters for a hoistable script for a given `href` and any later props or options will be ignored if different.' +
-                      ' Generally, ReactDOM.preinit() is useful when you are not yet rendering a script but you anticipate it will be used soon and want to go beyond preloading it and have it' +
-                      ' execute early. In this case the script was already rendered so preinitializing it does not provide any additional benefit.' +
-                      ' To resolve, try making the props and options agree between the <script .../> and the `ReactDOM.preinit()` call or remove the `ReactDOM.preinit()` call.%s',
+                      " React will always use the props or options it first encounters for a hoistable script for a given `href` and any later props or options will be ignored if different." +
+                      " Generally, ReactDOM.preinit() is useful when you are not yet rendering a script but you anticipate it will be used soon and want to go beyond preloading it and have it" +
+                      " execute early. In this case the script was already rendered so preinitializing it does not provide any additional benefit." +
+                      " To resolve, try making the props and options agree between the <script .../> and the `ReactDOM.preinit()` call or remove the `ReactDOM.preinit()` call.%s",
                     href,
                     href,
                     differenceDescription,
@@ -5391,7 +5046,7 @@ function preinit(href        , options                )       {
                 }
                 break;
               }
-              case 'preinit': {
+              case "preinit": {
                 const differenceDescription = describeDifferencesForPreinits(
                   // Diff the props from the JSX element, not the derived resource props
                   propsEquivalent,
@@ -5400,8 +5055,8 @@ function preinit(href        , options                )       {
                 if (differenceDescription) {
                   console.error(
                     'ReactDOM.preinit(): For `href` "%s", the options provided conflict with another call to `ReactDOM.preinit("%s", { as: "script", ... })`.' +
-                      ' React will always use the options it first encounters when preinitializing a hoistable script for a given `href` and any later options will be ignored if different.' +
-                      ' Try updating all calls to `ReactDOM.preinit()` for a given `href` to use the same options, or only call `ReactDOM.preinit()` once per `href`.%s',
+                      " React will always use the options it first encounters when preinitializing a hoistable script for a given `href` and any later options will be ignored if different." +
+                      " Try updating all calls to `ReactDOM.preinit()` for a given `href` to use the same options, or only call `ReactDOM.preinit()` once per `href`.%s",
                     href,
                     href,
                     differenceDescription,
@@ -5414,7 +5069,7 @@ function preinit(href        , options                )       {
         }
         if (!resource) {
           resource = {
-            type: 'script',
+            type: "script",
             chunks: [],
             state: NoState,
             props: null,
@@ -5424,7 +5079,7 @@ function preinit(href        , options                )       {
           if (__DEV__) {
             markAsImperativeResourceDEV(
               resource,
-              'preinit',
+              "preinit",
               href,
               options,
               resourceProps,
@@ -5444,14 +5099,8 @@ function preinit(href        , options                )       {
 // that each script has not already been preloaded. If we find a need to preload
 // scripts at any other point in time we will need to check whether the preload
 // already exists and not assume it
-function preloadBootstrapScript(
-  resources           ,
-  src        ,
-  nonce         ,
-  integrity         ,
-  crossOrigin         ,
-)       {
-  const key = getResourceKey('script', src);
+function preloadBootstrapScript(resources, src, nonce, integrity, crossOrigin) {
+  const key = getResourceKey("script", src);
   if (__DEV__) {
     if (resources.preloadsMap.has(key)) {
       // This is coded as a React error because it should be impossible for a userspace preload to preempt this call
@@ -5463,16 +5112,16 @@ function preloadBootstrapScript(
       );
     }
   }
-  const props               = {
-    rel: 'preload',
+  const props = {
+    rel: "preload",
     href: src,
-    as: 'script',
+    as: "script",
     nonce,
     integrity,
     crossOrigin,
   };
-  const resource                  = {
-    type: 'preload',
+  const resource = {
+    type: "preload",
     chunks: [],
     state: NoState,
     props,
@@ -5486,14 +5135,8 @@ function preloadBootstrapScript(
 // that each module has not already been preloaded. If we find a need to preload
 // scripts at any other point in time we will need to check whether the preload
 // already exists and not assume it
-function preloadBootstrapModule(
-  resources           ,
-  src        ,
-  nonce         ,
-  integrity         ,
-  crossOrigin         ,
-)       {
-  const key = getResourceKey('script', src);
+function preloadBootstrapModule(resources, src, nonce, integrity, crossOrigin) {
+  const key = getResourceKey("script", src);
   if (__DEV__) {
     if (resources.preloadsMap.has(key)) {
       // This is coded as a React error because it should be impossible for a userspace preload to preempt this call
@@ -5505,15 +5148,15 @@ function preloadBootstrapModule(
       );
     }
   }
-  const props                     = {
-    rel: 'modulepreload',
+  const props = {
+    rel: "modulepreload",
     href: src,
     nonce,
     integrity,
     crossOrigin,
   };
-  const resource                  = {
-    type: 'preload',
+  const resource = {
+    type: "preload",
     chunks: [],
     state: NoState,
     props,
@@ -5524,16 +5167,12 @@ function preloadBootstrapModule(
   return;
 }
 
-function internalPreinitScript(
-  resources           ,
-  src        ,
-  chunks                                 ,
-)       {
-  const key = getResourceKey('script', src);
+function internalPreinitScript(resources, src, chunks) {
+  const key = getResourceKey("script", src);
   let resource = resources.scriptsMap.get(key);
   if (!resource) {
     resource = {
-      type: 'script',
+      type: "script",
       chunks,
       state: NoState,
       props: null,
@@ -5544,20 +5183,16 @@ function internalPreinitScript(
   return;
 }
 
-function preloadPropsFromPreloadOptions(
-  href        ,
-  as        ,
-  options                ,
-)               {
+function preloadPropsFromPreloadOptions(href, as, options) {
   return {
-    rel: 'preload',
+    rel: "preload",
     as,
     // There is a bug in Safari where imageSrcSet is not respected on preload links
     // so we omit the href here if we have imageSrcSet b/c safari will load the wrong image.
     // This harms older browers that do not support imageSrcSet by making their preloads not work
     // but this population is shrinking fast and is already small so we accept this tradeoff.
-    href: as === 'image' && options.imageSrcSet ? undefined : href,
-    crossOrigin: as === 'font' ? '' : options.crossOrigin,
+    href: as === "image" && options.imageSrcSet ? undefined : href,
+    crossOrigin: as === "font" ? "" : options.crossOrigin,
     integrity: options.integrity,
     type: options.type,
     nonce: options.nonce,
@@ -5568,10 +5203,10 @@ function preloadPropsFromPreloadOptions(
   };
 }
 
-function preloadAsStylePropsFromProps(href        , props     )               {
+function preloadAsStylePropsFromProps(href, props) {
   return {
-    rel: 'preload',
-    as: 'style',
+    rel: "preload",
+    as: "style",
     href: href,
     crossOrigin: props.crossOrigin,
     fetchPriority: props.fetchPriority,
@@ -5582,43 +5217,33 @@ function preloadAsStylePropsFromProps(href        , props     )               {
   };
 }
 
-function stylesheetPropsFromPreinitOptions(
-  href        ,
-  precedence        ,
-  options                ,
-)                  {
+function stylesheetPropsFromPreinitOptions(href, precedence, options) {
   return {
-    rel: 'stylesheet',
+    rel: "stylesheet",
     href,
-    'data-precedence': precedence,
+    "data-precedence": precedence,
     crossOrigin: options.crossOrigin,
     integrity: options.integrity,
     fetchPriority: options.fetchPriority,
   };
 }
 
-function stylesheetPropsFromRawProps(rawProps     )                  {
+function stylesheetPropsFromRawProps(rawProps) {
   return {
     ...rawProps,
-    'data-precedence': rawProps.precedence,
+    "data-precedence": rawProps.precedence,
     precedence: null,
   };
 }
 
-function adoptPreloadPropsForStylesheetProps(
-  resourceProps                 ,
-  preloadProps              ,
-)       {
+function adoptPreloadPropsForStylesheetProps(resourceProps, preloadProps) {
   if (resourceProps.crossOrigin == null)
     resourceProps.crossOrigin = preloadProps.crossOrigin;
   if (resourceProps.integrity == null)
     resourceProps.integrity = preloadProps.integrity;
 }
 
-function scriptPropsFromPreinitOptions(
-  src        ,
-  options                ,
-)              {
+function scriptPropsFromPreinitOptions(src, options) {
   return {
     src,
     async: true,
@@ -5629,63 +5254,54 @@ function scriptPropsFromPreinitOptions(
   };
 }
 
-function adoptPreloadPropsForScriptProps(
-  resourceProps             ,
-  preloadProps              ,
-)       {
+function adoptPreloadPropsForScriptProps(resourceProps, preloadProps) {
   if (resourceProps.crossOrigin == null)
     resourceProps.crossOrigin = preloadProps.crossOrigin;
   if (resourceProps.integrity == null)
     resourceProps.integrity = preloadProps.integrity;
 }
 
-function hoistStyleResource(                         resource               ) {
+function hoistStyleResource(resource) {
   this.add(resource);
 }
 
-export function hoistResources(
-  resources           ,
-  source                   ,
-)       {
+export function hoistResources(resources, source) {
   const currentBoundaryResources = resources.boundaryResources;
   if (currentBoundaryResources) {
     source.forEach(hoistStyleResource, currentBoundaryResources);
   }
 }
 
-function markAsRenderedResourceDEV(
-  resource          ,
-  originalProps     ,
-)       {
+function markAsRenderedResourceDEV(resource, originalProps) {
   if (__DEV__) {
-    const devResource                      = (resource     );
-    if (typeof devResource.__provenance === 'string') {
+    const devResource = resource;
+    if (typeof devResource.__provenance === "string") {
       console.error(
-        'Resource already marked for DEV type. This is a bug in React.',
+        "Resource already marked for DEV type. This is a bug in React.",
       );
     }
-    devResource.__provenance = 'rendered';
+    devResource.__provenance = "rendered";
     devResource.__originalProps = originalProps;
   } else {
     // eslint-disable-next-line react-internal/prod-error-codes
     throw new Error(
-      'markAsRenderedResourceDEV was included in a production build. This is a bug in React.',
+      "markAsRenderedResourceDEV was included in a production build. This is a bug in React.",
     );
   }
 }
 
 function markAsImperativeResourceDEV(
-  resource          ,
-  provenance                       ,
-  originalHref        ,
-  originalOptions     ,
-  propsEquivalent     ,
-)       {
+  resource,
+  provenance,
+  originalHref,
+  originalOptions,
+  propsEquivalent,
+) {
   if (__DEV__) {
-    const devResource                        = (resource     );
-    if (typeof devResource.__provenance === 'string') {
+    const devResource = resource;
+    if (typeof devResource.__provenance === "string") {
       console.error(
-        'Resource already marked for DEV type. This is a bug in React.',
+        "Resource already marked for DEV type. This is a bug in React.",
       );
     }
     devResource.__provenance = provenance;
@@ -5695,31 +5311,28 @@ function markAsImperativeResourceDEV(
   } else {
     // eslint-disable-next-line react-internal/prod-error-codes
     throw new Error(
-      'markAsImperativeResourceDEV was included in a production build. This is a bug in React.',
+      "markAsImperativeResourceDEV was included in a production build. This is a bug in React.",
     );
   }
 }
 
-function getAsResourceDEV(
-  resource                        ,
-)                     {
+function getAsResourceDEV(resource) {
   if (__DEV__) {
     if (resource) {
-      if (typeof (resource     ).__provenance === 'string') {
-        return (resource     );
+      if (typeof resource.__provenance === "string") {
+        return resource;
       }
       console.error(
-        'Resource was not marked for DEV type. This is a bug in React.',
+        "Resource was not marked for DEV type. This is a bug in React.",
       );
     }
     return null;
   } else {
     // eslint-disable-next-line react-internal/prod-error-codes
     throw new Error(
-      'getAsResourceDEV was included in a production build. This is a bug in React.',
+      "getAsResourceDEV was included in a production build. This is a bug in React.",
     );
   }
 }
 
-                                          
-export const NotPendingTransition                   = NotPending;
+export const NotPendingTransition = NotPending;

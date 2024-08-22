@@ -4,22 +4,19 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                    
-                                                                   
+import { enableCache } from "shared/ReactFeatureFlags";
+import { REACT_CONTEXT_TYPE } from "shared/ReactSymbols";
 
-import {enableCache} from 'shared/ReactFeatureFlags';
-import {REACT_CONTEXT_TYPE} from 'shared/ReactSymbols';
-
-import {pushProvider, popProvider} from './ReactFiberNewContext';
-import * as Scheduler from 'scheduler';
+import { pushProvider, popProvider } from "./ReactFiberNewContext";
+import * as Scheduler from "scheduler";
 
 // In environments without AbortController (e.g. tests)
 // replace it with a lightweight shim that only has the features we use.
-const AbortControllerLocal                         = enableCache
-  ? typeof AbortController !== 'undefined'
+const AbortControllerLocal = enableCache
+  ? typeof AbortController !== "undefined"
     ? AbortController
     : // $FlowFixMe[missing-this-annot]
       // $FlowFixMe[prop-missing]
@@ -34,27 +31,11 @@ const AbortControllerLocal                         = enableCache
 
         this.abort = () => {
           signal.aborted = true;
-          listeners.forEach(listener => listener());
+          listeners.forEach((listener) => listener());
         };
       }
   : // $FlowFixMe[incompatible-type]
     null;
-
-                     
-                              
-                                
-                   
-  
-
-                                   
-                 
-                
-  
-
-                                
-                 
-               
-  
 
 // Intentionally not named imports because Rollup would
 // use dynamic dispatch for CommonJS interop named imports.
@@ -63,20 +44,20 @@ const {
   unstable_NormalPriority: NormalPriority,
 } = Scheduler;
 
-export const CacheContext                      = enableCache
+export const CacheContext = enableCache
   ? {
       $$typeof: REACT_CONTEXT_TYPE,
       // We don't use Consumer/Provider for Cache components. So we'll cheat.
-      Consumer: (null     ),
-      Provider: (null     ),
+      Consumer: null,
+      Provider: null,
       // We'll initialize these at the root.
-      _currentValue: (null     ),
-      _currentValue2: (null     ),
+      _currentValue: null,
+      _currentValue2: null,
       _threadCount: 0,
-      _defaultValue: (null     ),
-      _globalName: (null     ),
+      _defaultValue: null,
+      _globalName: null,
     }
-  : (null     );
+  : null;
 
 if (__DEV__ && enableCache) {
   CacheContext._currentRenderer = null;
@@ -86,11 +67,11 @@ if (__DEV__ && enableCache) {
 // Creates a new empty Cache instance with a ref-count of 0. The caller is responsible
 // for retaining the cache once it is in use (retainCache), and releasing the cache
 // once it is no longer needed (releaseCache).
-export function createCache()        {
+export function createCache() {
   if (!enableCache) {
-    return (null     );
+    return null;
   }
-  const cache        = {
+  const cache = {
     controller: new AbortControllerLocal(),
     data: new Map(),
     refCount: 0,
@@ -99,15 +80,15 @@ export function createCache()        {
   return cache;
 }
 
-export function retainCache(cache       ) {
+export function retainCache(cache) {
   if (!enableCache) {
     return;
   }
   if (__DEV__) {
     if (cache.controller.signal.aborted) {
       console.warn(
-        'A cache instance was retained after it was already freed. ' +
-          'This likely indicates a bug in React.',
+        "A cache instance was retained after it was already freed. " +
+          "This likely indicates a bug in React.",
       );
     }
   }
@@ -115,7 +96,7 @@ export function retainCache(cache       ) {
 }
 
 // Cleanup a cache instance, potentially freeing it if there are no more references
-export function releaseCache(cache       ) {
+export function releaseCache(cache) {
   if (!enableCache) {
     return;
   }
@@ -123,8 +104,8 @@ export function releaseCache(cache       ) {
   if (__DEV__) {
     if (cache.refCount < 0) {
       console.warn(
-        'A cache instance was released after it was already freed. ' +
-          'This likely indicates a bug in React.',
+        "A cache instance was released after it was already freed. " +
+          "This likely indicates a bug in React.",
       );
     }
   }
@@ -135,14 +116,14 @@ export function releaseCache(cache       ) {
   }
 }
 
-export function pushCacheProvider(workInProgress       , cache       ) {
+export function pushCacheProvider(workInProgress, cache) {
   if (!enableCache) {
     return;
   }
   pushProvider(workInProgress, CacheContext, cache);
 }
 
-export function popCacheProvider(workInProgress       , cache       ) {
+export function popCacheProvider(workInProgress, cache) {
   if (!enableCache) {
     return;
   }

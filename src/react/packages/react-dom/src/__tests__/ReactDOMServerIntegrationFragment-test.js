@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -20,10 +20,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -33,29 +33,29 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  describe('React.Fragment', () => {
-    itRenders('a fragment with one child', async render => {
+  describe("React.Fragment", () => {
+    itRenders("a fragment with one child", async (render) => {
       const e = await render(
         <>
           <div>text1</div>
         </>,
       );
       const parent = e.parentNode;
-      expect(parent.childNodes[0].tagName).toBe('DIV');
+      expect(parent.childNodes[0].tagName).toBe("DIV");
     });
 
-    itRenders('a fragment with several children', async render => {
-      const Header = props => {
+    itRenders("a fragment with several children", async (render) => {
+      const Header = (props) => {
         return <p>header</p>;
       };
-      const Footer = props => {
+      const Footer = (props) => {
         return (
           <>
             <h2>footer</h2>
@@ -72,14 +72,14 @@ describe('ReactDOMServerIntegration', () => {
         </>,
       );
       const parent = e.parentNode;
-      expect(parent.childNodes[0].tagName).toBe('DIV');
-      expect(parent.childNodes[1].tagName).toBe('SPAN');
-      expect(parent.childNodes[2].tagName).toBe('P');
-      expect(parent.childNodes[3].tagName).toBe('H2');
-      expect(parent.childNodes[4].tagName).toBe('H3');
+      expect(parent.childNodes[0].tagName).toBe("DIV");
+      expect(parent.childNodes[1].tagName).toBe("SPAN");
+      expect(parent.childNodes[2].tagName).toBe("P");
+      expect(parent.childNodes[3].tagName).toBe("H2");
+      expect(parent.childNodes[4].tagName).toBe("H3");
     });
 
-    itRenders('a nested fragment', async render => {
+    itRenders("a nested fragment", async (render) => {
       const e = await render(
         <>
           <>
@@ -98,12 +98,12 @@ describe('ReactDOMServerIntegration', () => {
         </>,
       );
       const parent = e.parentNode;
-      expect(parent.childNodes[0].tagName).toBe('DIV');
-      expect(parent.childNodes[1].tagName).toBe('SPAN');
-      expect(parent.childNodes[2].tagName).toBe('P');
+      expect(parent.childNodes[0].tagName).toBe("DIV");
+      expect(parent.childNodes[1].tagName).toBe("SPAN");
+      expect(parent.childNodes[2].tagName).toBe("P");
     });
 
-    itRenders('an empty fragment', async render => {
+    itRenders("an empty fragment", async (render) => {
       expect(
         (
           await render(

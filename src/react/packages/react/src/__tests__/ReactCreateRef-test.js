@@ -7,21 +7,21 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactTestRenderer;
 
-describe('ReactCreateRef', () => {
+describe("ReactCreateRef", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactTestRenderer = require('react-test-renderer');
+    React = require("react");
+    ReactTestRenderer = require("react-test-renderer");
   });
 
-  it('should warn in dev if an invalid ref object is provided', () => {
-    function Wrapper({children}) {
+  it("should warn in dev if an invalid ref object is provided", () => {
+    function Wrapper({ children }) {
       return children;
     }
 
@@ -38,10 +38,10 @@ describe('ReactCreateRef', () => {
         </Wrapper>,
       ),
     ).toErrorDev(
-      'Unexpected ref object provided for div. ' +
-        'Use either a ref-setter function or React.createRef().\n' +
-        '    in div (at **)\n' +
-        '    in Wrapper (at **)',
+      "Unexpected ref object provided for div. " +
+        "Use either a ref-setter function or React.createRef().\n" +
+        "    in div (at **)\n" +
+        "    in Wrapper (at **)",
     );
 
     expect(() =>
@@ -51,10 +51,10 @@ describe('ReactCreateRef', () => {
         </Wrapper>,
       ),
     ).toErrorDev(
-      'Unexpected ref object provided for ExampleComponent. ' +
-        'Use either a ref-setter function or React.createRef().\n' +
-        '    in ExampleComponent (at **)\n' +
-        '    in Wrapper (at **)',
+      "Unexpected ref object provided for ExampleComponent. " +
+        "Use either a ref-setter function or React.createRef().\n" +
+        "    in ExampleComponent (at **)\n" +
+        "    in Wrapper (at **)",
     );
   });
 });

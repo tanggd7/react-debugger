@@ -4,16 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                                    
-                                                                    
 
 // NOTE: There are no flags, currently. Uncomment the stuff below if we add one.
 // Re-export dynamic flags from the internal module. Intentionally using *
 // because this import is compiled to a `require` call.
-import * as dynamicFlags from 'ReactNativeInternalFeatureFlags';
+import * as dynamicFlags from "ReactNativeInternalFeatureFlags";
 
 // We destructure each value before re-exporting to avoid a dynamic look-up on
 // the exports object every time a flag is read.
@@ -88,4 +85,4 @@ export const diffInCommitPhase = true;
 export const enableAsyncActions = false;
 
 // Flow magic to verify the exports of this file match the original version.
-((((null     )             )                  )             );
+null;

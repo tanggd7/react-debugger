@@ -4,30 +4,27 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                          
-                                                      
+import { enableCache } from "shared/ReactFeatureFlags";
+import { readContext } from "./ReactFiberNewContext";
+import { CacheContext } from "./ReactFiberCacheComponent";
 
-import {enableCache} from 'shared/ReactFeatureFlags';
-import {readContext} from './ReactFiberNewContext';
-import {CacheContext} from './ReactFiberCacheComponent';
-
-function getCacheSignal()              {
+function getCacheSignal() {
   if (!enableCache) {
-    throw new Error('Not implemented.');
+    throw new Error("Not implemented.");
   }
-  const cache        = readContext(CacheContext);
+  const cache = readContext(CacheContext);
   return cache.controller.signal;
 }
 
-function getCacheForType   (resourceType         )    {
+function getCacheForType(resourceType) {
   if (!enableCache) {
-    throw new Error('Not implemented.');
+    throw new Error("Not implemented.");
   }
-  const cache        = readContext(CacheContext);
-  let cacheForType           = (cache.data.get(resourceType)     );
+  const cache = readContext(CacheContext);
+  let cacheForType = cache.data.get(resourceType);
   if (cacheForType === undefined) {
     cacheForType = resourceType();
     cache.data.set(resourceType, cacheForType);
@@ -35,7 +32,7 @@ function getCacheForType   (resourceType         )    {
   return cacheForType;
 }
 
-export const DefaultCacheDispatcher                  = {
+export const DefaultCacheDispatcher = {
   getCacheSignal,
   getCacheForType,
 };

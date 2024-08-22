@@ -10,32 +10,32 @@ let waitFor;
 let waitForPaint;
 let assertLog;
 
-describe('ReactUpdatePriority', () => {
+describe("ReactUpdatePriority", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     ContinuousEventPriority =
-      require('react-reconciler/constants').ContinuousEventPriority;
+      require("react-reconciler/constants").ContinuousEventPriority;
     startTransition = React.startTransition;
     useState = React.useState;
     useEffect = React.useEffect;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitFor = InternalTestUtils.waitFor;
     waitForPaint = InternalTestUtils.waitForPaint;
     assertLog = InternalTestUtils.assertLog;
   });
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
 
-  test('setState inside passive effect triggered by sync update should have default priority', async () => {
+  test("setState inside passive effect triggered by sync update should have default priority", async () => {
     const root = ReactNoop.createRoot();
 
     function App() {
@@ -56,7 +56,7 @@ describe('ReactUpdatePriority', () => {
     assertLog([2]);
   });
 
-  test('setState inside passive effect triggered by idle update should have idle priority', async () => {
+  test("setState inside passive effect triggered by idle update should have idle priority", async () => {
     const root = ReactNoop.createRoot();
 
     let setDefaultState;
@@ -65,7 +65,7 @@ describe('ReactUpdatePriority', () => {
       const [defaultState, _setDefaultState] = useState(1);
       setDefaultState = _setDefaultState;
       useEffect(() => {
-        Scheduler.log('Idle update');
+        Scheduler.log("Idle update");
         setIdleState(2);
       }, []);
       return <Text text={`Idle: ${idleState}, Default: ${defaultState}`} />;
@@ -76,7 +76,7 @@ describe('ReactUpdatePriority', () => {
         root.render(<App />);
       });
       // Should not have flushed the effect update yet
-      await waitForPaint(['Idle: 1, Default: 1']);
+      await waitForPaint(["Idle: 1, Default: 1"]);
 
       // Schedule another update at default priority
       setDefaultState(2);
@@ -84,17 +84,17 @@ describe('ReactUpdatePriority', () => {
       // The default update flushes first, because
       await waitForPaint([
         // Idle update is scheduled
-        'Idle update',
+        "Idle update",
 
         // The default update flushes first, without including the idle update
-        'Idle: 1, Default: 2',
+        "Idle: 1, Default: 2",
       ]);
     });
     // Now the idle update has flushed
-    assertLog(['Idle: 2, Default: 2']);
+    assertLog(["Idle: 2, Default: 2"]);
   });
 
-  test('continuous updates should interrupt transitions', async () => {
+  test("continuous updates should interrupt transitions", async () => {
     const root = ReactNoop.createRoot();
 
     let setCounter;
@@ -105,13 +105,13 @@ describe('ReactUpdatePriority', () => {
       setCounter = _setCounter;
       setIsHidden = _setIsHidden;
       if (isHidden) {
-        return <Text text={'(hidden)'} />;
+        return <Text text={"(hidden)"} />;
       }
       return (
         <>
-          <Text text={'A' + counter} />
-          <Text text={'B' + counter} />
-          <Text text={'C' + counter} />
+          <Text text={"A" + counter} />
+          <Text text={"B" + counter} />
+          <Text text={"C" + counter} />
         </>
       );
     }
@@ -119,14 +119,14 @@ describe('ReactUpdatePriority', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A1', 'B1', 'C1']);
-    expect(root).toMatchRenderedOutput('A1B1C1');
+    assertLog(["A1", "B1", "C1"]);
+    expect(root).toMatchRenderedOutput("A1B1C1");
 
     await act(async () => {
       startTransition(() => {
         setCounter(2);
       });
-      await waitFor(['A2']);
+      await waitFor(["A2"]);
       ReactNoop.unstable_runWithPriority(ContinuousEventPriority, () => {
         setIsHidden(true);
       });
@@ -134,11 +134,11 @@ describe('ReactUpdatePriority', () => {
     assertLog([
       // Because the hide update has continuous priority, it should interrupt the
       // in-progress transition
-      '(hidden)',
+      "(hidden)",
       // When the transition resumes, it's a no-op because the children are
       // now hidden.
-      '(hidden)',
+      "(hidden)",
     ]);
-    expect(root).toMatchRenderedOutput('(hidden)');
+    expect(root).toMatchRenderedOutput("(hidden)");
   });
 });

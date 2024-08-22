@@ -4,36 +4,33 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                                             
-                                                               
-                                                                              
-                                                                               
-                                                          
 
 import {
   isDiscreteEventThatRequiresHydration,
   clearIfContinuousEvent,
   queueIfContinuousEvent,
-} from './ReactDOMEventReplaying';
-import {attemptSynchronousHydration} from 'react-reconciler/src/ReactFiberReconciler';
+} from "./ReactDOMEventReplaying";
+import { attemptSynchronousHydration } from "react-reconciler/src/ReactFiberReconciler";
 import {
   getNearestMountedFiber,
   getContainerFromFiber,
   getSuspenseInstanceFromFiber,
-} from 'react-reconciler/src/ReactFiberTreeReflection';
-import {HostRoot, SuspenseComponent} from 'react-reconciler/src/ReactWorkTags';
-import {                       IS_CAPTURE_PHASE} from './EventSystemFlags';
+} from "react-reconciler/src/ReactFiberTreeReflection";
+import {
+  HostRoot,
+  SuspenseComponent,
+} from "react-reconciler/src/ReactWorkTags";
+import { IS_CAPTURE_PHASE } from "./EventSystemFlags";
 
-import getEventTarget from './getEventTarget';
+import getEventTarget from "./getEventTarget";
 import {
   getInstanceFromNode,
   getClosestInstanceFromNode,
-} from '../client/ReactDOMComponentTree';
+} from "../client/ReactDOMComponentTree";
 
-import {dispatchEventForPluginEventSystem} from './DOMPluginEventSystem';
+import { dispatchEventForPluginEventSystem } from "./DOMPluginEventSystem";
 
 import {
   getCurrentPriorityLevel as getCurrentSchedulerPriorityLevel,
@@ -42,7 +39,7 @@ import {
   LowPriority as LowSchedulerPriority,
   NormalPriority as NormalSchedulerPriority,
   UserBlockingPriority as UserBlockingSchedulerPriority,
-} from 'react-reconciler/src/Scheduler';
+} from "react-reconciler/src/Scheduler";
 import {
   DiscreteEventPriority,
   ContinuousEventPriority,
@@ -50,30 +47,30 @@ import {
   IdleEventPriority,
   getCurrentUpdatePriority,
   setCurrentUpdatePriority,
-} from 'react-reconciler/src/ReactEventPriorities';
-import ReactSharedInternals from 'shared/ReactSharedInternals';
-import {isRootDehydrated} from 'react-reconciler/src/ReactFiberShellHydration';
+} from "react-reconciler/src/ReactEventPriorities";
+import ReactSharedInternals from "shared/ReactSharedInternals";
+import { isRootDehydrated } from "react-reconciler/src/ReactFiberShellHydration";
 
-const {ReactCurrentBatchConfig} = ReactSharedInternals;
+const { ReactCurrentBatchConfig } = ReactSharedInternals;
 
 // TODO: can we stop exporting these?
-let _enabled          = true;
+let _enabled = true;
 
 // This is exported in FB builds for use by legacy FB layer infra.
 // We'd like to remove this but it's not clear if this is safe.
-export function setEnabled(enabled          )       {
+export function setEnabled(enabled) {
   _enabled = !!enabled;
 }
 
-export function isEnabled()          {
+export function isEnabled() {
   return _enabled;
 }
 
 export function createEventListenerWrapper(
-  targetContainer             ,
-  domEventName              ,
-  eventSystemFlags                  ,
-)           {
+  targetContainer,
+  domEventName,
+  eventSystemFlags,
+) {
   return dispatchEvent.bind(
     null,
     domEventName,
@@ -83,10 +80,10 @@ export function createEventListenerWrapper(
 }
 
 export function createEventListenerWrapperWithPriority(
-  targetContainer             ,
-  domEventName              ,
-  eventSystemFlags                  ,
-)           {
+  targetContainer,
+  domEventName,
+  eventSystemFlags,
+) {
   const eventPriority = getEventPriority(domEventName);
   let listenerWrapper;
   switch (eventPriority) {
@@ -110,10 +107,10 @@ export function createEventListenerWrapperWithPriority(
 }
 
 function dispatchDiscreteEvent(
-  domEventName              ,
-  eventSystemFlags                  ,
-  container             ,
-  nativeEvent                ,
+  domEventName,
+  eventSystemFlags,
+  container,
+  nativeEvent,
 ) {
   const previousPriority = getCurrentUpdatePriority();
   const prevTransition = ReactCurrentBatchConfig.transition;
@@ -128,10 +125,10 @@ function dispatchDiscreteEvent(
 }
 
 function dispatchContinuousEvent(
-  domEventName              ,
-  eventSystemFlags                  ,
-  container             ,
-  nativeEvent                ,
+  domEventName,
+  eventSystemFlags,
+  container,
+  nativeEvent,
 ) {
   const previousPriority = getCurrentUpdatePriority();
   const prevTransition = ReactCurrentBatchConfig.transition;
@@ -146,11 +143,11 @@ function dispatchContinuousEvent(
 }
 
 export function dispatchEvent(
-  domEventName              ,
-  eventSystemFlags                  ,
-  targetContainer             ,
-  nativeEvent                ,
-)       {
+  domEventName,
+  eventSystemFlags,
+  targetContainer,
+  nativeEvent,
+) {
   if (!_enabled) {
     return;
   }
@@ -225,20 +222,16 @@ export function dispatchEvent(
   );
 }
 
-export function findInstanceBlockingEvent(
-  nativeEvent                ,
-)                                      {
+export function findInstanceBlockingEvent(nativeEvent) {
   const nativeEventTarget = getEventTarget(nativeEvent);
   return findInstanceBlockingTarget(nativeEventTarget);
 }
 
-export let return_targetInst               = null;
+export let return_targetInst = null;
 
 // Returns a SuspenseInstance or Container if it's blocked.
 // The return_targetInst field above is conceptually part of the return value.
-export function findInstanceBlockingTarget(
-  targetNode      ,
-)                                      {
+export function findInstanceBlockingTarget(targetNode) {
   // TODO: Warn if _enabled is false.
 
   return_targetInst = null;
@@ -266,7 +259,7 @@ export function findInstanceBlockingTarget(
         // TODO: Warn.
         targetInst = null;
       } else if (tag === HostRoot) {
-        const root            = nearestMounted.stateNode;
+        const root = nearestMounted.stateNode;
         if (isRootDehydrated(root)) {
           // If this happens during a replay something went wrong and it might block
           // the whole system.
@@ -287,86 +280,86 @@ export function findInstanceBlockingTarget(
   return null;
 }
 
-export function getEventPriority(domEventName              )                {
+export function getEventPriority(domEventName) {
   switch (domEventName) {
     // Used by SimpleEventPlugin:
-    case 'cancel':
-    case 'click':
-    case 'close':
-    case 'contextmenu':
-    case 'copy':
-    case 'cut':
-    case 'auxclick':
-    case 'dblclick':
-    case 'dragend':
-    case 'dragstart':
-    case 'drop':
-    case 'focusin':
-    case 'focusout':
-    case 'input':
-    case 'invalid':
-    case 'keydown':
-    case 'keypress':
-    case 'keyup':
-    case 'mousedown':
-    case 'mouseup':
-    case 'paste':
-    case 'pause':
-    case 'play':
-    case 'pointercancel':
-    case 'pointerdown':
-    case 'pointerup':
-    case 'ratechange':
-    case 'reset':
-    case 'resize':
-    case 'seeked':
-    case 'submit':
-    case 'touchcancel':
-    case 'touchend':
-    case 'touchstart':
-    case 'volumechange':
+    case "cancel":
+    case "click":
+    case "close":
+    case "contextmenu":
+    case "copy":
+    case "cut":
+    case "auxclick":
+    case "dblclick":
+    case "dragend":
+    case "dragstart":
+    case "drop":
+    case "focusin":
+    case "focusout":
+    case "input":
+    case "invalid":
+    case "keydown":
+    case "keypress":
+    case "keyup":
+    case "mousedown":
+    case "mouseup":
+    case "paste":
+    case "pause":
+    case "play":
+    case "pointercancel":
+    case "pointerdown":
+    case "pointerup":
+    case "ratechange":
+    case "reset":
+    case "resize":
+    case "seeked":
+    case "submit":
+    case "touchcancel":
+    case "touchend":
+    case "touchstart":
+    case "volumechange":
     // Used by polyfills: (fall through)
-    case 'change':
-    case 'selectionchange':
-    case 'textInput':
-    case 'compositionstart':
-    case 'compositionend':
-    case 'compositionupdate':
+    case "change":
+    case "selectionchange":
+    case "textInput":
+    case "compositionstart":
+    case "compositionend":
+    case "compositionupdate":
     // Only enableCreateEventHandleAPI: (fall through)
-    case 'beforeblur':
-    case 'afterblur':
+    case "beforeblur":
+    case "afterblur":
     // Not used by React but could be by user code: (fall through)
-    case 'beforeinput':
-    case 'blur':
-    case 'fullscreenchange':
-    case 'focus':
-    case 'hashchange':
-    case 'popstate':
-    case 'select':
-    case 'selectstart':
+    case "beforeinput":
+    case "blur":
+    case "fullscreenchange":
+    case "focus":
+    case "hashchange":
+    case "popstate":
+    case "select":
+    case "selectstart":
       return DiscreteEventPriority;
-    case 'drag':
-    case 'dragenter':
-    case 'dragexit':
-    case 'dragleave':
-    case 'dragover':
-    case 'mousemove':
-    case 'mouseout':
-    case 'mouseover':
-    case 'pointermove':
-    case 'pointerout':
-    case 'pointerover':
-    case 'scroll':
-    case 'toggle':
-    case 'touchmove':
-    case 'wheel':
+    case "drag":
+    case "dragenter":
+    case "dragexit":
+    case "dragleave":
+    case "dragover":
+    case "mousemove":
+    case "mouseout":
+    case "mouseover":
+    case "pointermove":
+    case "pointerout":
+    case "pointerover":
+    case "scroll":
+    case "toggle":
+    case "touchmove":
+    case "wheel":
     // Not used by React but could be by user code: (fall through)
-    case 'mouseenter':
-    case 'mouseleave':
-    case 'pointerenter':
-    case 'pointerleave':
+    case "mouseenter":
+    case "mouseleave":
+    case "pointerenter":
+    case "pointerleave":
       return ContinuousEventPriority;
-    case 'message': {
+    case "message": {
       // We might be in the Scheduler callback.
       // Eventually this mechanism will be replaced by a check
       // of the current priority on the native scheduler.

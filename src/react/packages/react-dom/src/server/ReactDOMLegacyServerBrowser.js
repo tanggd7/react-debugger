@@ -4,21 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                     
+import { version, renderToStringImpl } from "./ReactDOMLegacyServerImpl";
 
-import {version, renderToStringImpl} from './ReactDOMLegacyServerImpl';
-
-                      
-                            
-  
-
-function renderToString(
-  children               ,
-  options                ,
-)         {
+function renderToString(children, options) {
   return renderToStringImpl(
     children,
     options,
@@ -27,10 +18,7 @@ function renderToString(
   );
 }
 
-function renderToStaticMarkup(
-  children               ,
-  options                ,
-)         {
+function renderToStaticMarkup(children, options) {
   return renderToStringImpl(
     children,
     options,
@@ -41,15 +29,15 @@ function renderToStaticMarkup(
 
 function renderToNodeStream() {
   throw new Error(
-    'ReactDOMServer.renderToNodeStream(): The streaming API is not available ' +
-      'in the browser. Use ReactDOMServer.renderToString() instead.',
+    "ReactDOMServer.renderToNodeStream(): The streaming API is not available " +
+      "in the browser. Use ReactDOMServer.renderToString() instead.",
   );
 }
 
 function renderToStaticNodeStream() {
   throw new Error(
-    'ReactDOMServer.renderToStaticNodeStream(): The streaming API is not available ' +
-      'in the browser. Use ReactDOMServer.renderToStaticMarkup() instead.',
+    "ReactDOMServer.renderToStaticNodeStream(): The streaming API is not available " +
+      "in the browser. Use ReactDOMServer.renderToStaticMarkup() instead.",
   );
 }
 

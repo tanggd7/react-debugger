@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -19,23 +19,23 @@ let ReactDOMServer;
 // This function "Normalizes" childNodes lists to avoid the presence of comments
 // and make the child list identical in standard React and Fiber
 function filterOutComments(nodeList) {
-  return [].slice.call(nodeList).filter(node => !(node instanceof Comment));
+  return [].slice.call(nodeList).filter((node) => !(node instanceof Comment));
 }
 
-describe('ReactDOMTextComponent', () => {
+describe("ReactDOMTextComponent", () => {
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMServer = require('react-dom/server');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMServer = require("react-dom/server");
   });
 
-  it('updates a mounted text component in place', () => {
-    const el = document.createElement('div');
+  it("updates a mounted text component in place", () => {
+    const el = document.createElement("div");
     let inst = ReactDOM.render(
       <div>
         <span />
-        {'foo'}
-        {'bar'}
+        {"foo"}
+        {"bar"}
       </div>,
       el,
     );
@@ -43,14 +43,14 @@ describe('ReactDOMTextComponent', () => {
 
     const foo = nodes[1];
     const bar = nodes[2];
-    expect(foo.data).toBe('foo');
-    expect(bar.data).toBe('bar');
+    expect(foo.data).toBe("foo");
+    expect(bar.data).toBe("bar");
 
     inst = ReactDOM.render(
       <div>
         <span />
-        {'baz'}
-        {'qux'}
+        {"baz"}
+        {"qux"}
       </div>,
       el,
     );
@@ -59,17 +59,17 @@ describe('ReactDOMTextComponent', () => {
     nodes = filterOutComments(inst.childNodes);
     expect(nodes[1]).toBe(foo);
     expect(nodes[2]).toBe(bar);
-    expect(foo.data).toBe('baz');
-    expect(bar.data).toBe('qux');
+    expect(foo.data).toBe("baz");
+    expect(bar.data).toBe("qux");
   });
 
-  it('can be toggled in and out of the markup', () => {
-    const el = document.createElement('div');
+  it("can be toggled in and out of the markup", () => {
+    const el = document.createElement("div");
     let inst = ReactDOM.render(
       <div>
-        {'foo'}
+        {"foo"}
         <div />
-        {'bar'}
+        {"bar"}
       </div>,
       el,
     );
@@ -91,17 +91,17 @@ describe('ReactDOMTextComponent', () => {
 
     inst = ReactDOM.render(
       <div>
-        {'foo'}
+        {"foo"}
         <div />
-        {'bar'}
+        {"bar"}
       </div>,
       el,
     );
     childNodes = filterOutComments(inst.childNodes);
     expect(childNodes.length).toBe(3);
-    expect(childNodes[0].data).toBe('foo');
+    expect(childNodes[0].data).toBe("foo");
     expect(childNodes[1]).toBe(childDiv);
-    expect(childNodes[2].data).toBe('bar');
+    expect(childNodes[2].data).toBe("bar");
   });
 
   /**
@@ -109,15 +109,15 @@ describe('ReactDOMTextComponent', () => {
    * See #9836 tracking whether we'll need to fix this or if it's unnecessary.
    */
 
-  xit('can reconcile text merged by Node.normalize() alongside other elements', () => {
-    const el = document.createElement('div');
+  xit("can reconcile text merged by Node.normalize() alongside other elements", () => {
+    const el = document.createElement("div");
     let inst = ReactDOM.render(
       <div>
-        {'foo'}
-        {'bar'}
-        {'baz'}
+        {"foo"}
+        {"bar"}
+        {"baz"}
         <span />
-        {'qux'}
+        {"qux"}
       </div>,
       el,
     );
@@ -126,24 +126,24 @@ describe('ReactDOMTextComponent', () => {
 
     inst = ReactDOM.render(
       <div>
-        {'bar'}
-        {'baz'}
-        {'qux'}
+        {"bar"}
+        {"baz"}
+        {"qux"}
         <span />
-        {'foo'}
+        {"foo"}
       </div>,
       el,
     );
-    expect(inst.textContent).toBe('barbazquxfoo');
+    expect(inst.textContent).toBe("barbazquxfoo");
   });
 
-  xit('can reconcile text merged by Node.normalize()', () => {
-    const el = document.createElement('div');
+  xit("can reconcile text merged by Node.normalize()", () => {
+    const el = document.createElement("div");
     let inst = ReactDOM.render(
       <div>
-        {'foo'}
-        {'bar'}
-        {'baz'}
+        {"foo"}
+        {"bar"}
+        {"baz"}
       </div>,
       el,
     );
@@ -152,86 +152,86 @@ describe('ReactDOMTextComponent', () => {
 
     inst = ReactDOM.render(
       <div>
-        {'bar'}
-        {'baz'}
-        {'qux'}
+        {"bar"}
+        {"baz"}
+        {"qux"}
       </div>,
       el,
     );
-    expect(inst.textContent).toBe('barbazqux');
+    expect(inst.textContent).toBe("barbazqux");
   });
 
-  it('can reconcile text from pre-rendered markup', () => {
-    const el = document.createElement('div');
+  it("can reconcile text from pre-rendered markup", () => {
+    const el = document.createElement("div");
     let reactEl = (
       <div>
-        {'foo'}
-        {'bar'}
-        {'baz'}
+        {"foo"}
+        {"bar"}
+        {"baz"}
       </div>
     );
     el.innerHTML = ReactDOMServer.renderToString(reactEl);
 
     ReactDOM.hydrate(reactEl, el);
-    expect(el.textContent).toBe('foobarbaz');
+    expect(el.textContent).toBe("foobarbaz");
 
     ReactDOM.unmountComponentAtNode(el);
 
     reactEl = (
       <div>
-        {''}
-        {''}
-        {''}
+        {""}
+        {""}
+        {""}
       </div>
     );
     el.innerHTML = ReactDOMServer.renderToString(reactEl);
 
     ReactDOM.hydrate(reactEl, el);
-    expect(el.textContent).toBe('');
+    expect(el.textContent).toBe("");
   });
 
-  xit('can reconcile text arbitrarily split into multiple nodes', () => {
-    const el = document.createElement('div');
+  xit("can reconcile text arbitrarily split into multiple nodes", () => {
+    const el = document.createElement("div");
     let inst = ReactDOM.render(
       <div>
         <span />
-        {'foobarbaz'}
+        {"foobarbaz"}
       </div>,
       el,
     );
 
     const childNodes = filterOutComments(inst.childNodes);
     const textNode = childNodes[1];
-    textNode.textContent = 'foo';
+    textNode.textContent = "foo";
     inst.insertBefore(
-      document.createTextNode('bar'),
+      document.createTextNode("bar"),
       childNodes[1].nextSibling,
     );
     inst.insertBefore(
-      document.createTextNode('baz'),
+      document.createTextNode("baz"),
       childNodes[1].nextSibling,
     );
 
     inst = ReactDOM.render(
       <div>
         <span />
-        {'barbazqux'}
+        {"barbazqux"}
       </div>,
       el,
     );
-    expect(inst.textContent).toBe('barbazqux');
+    expect(inst.textContent).toBe("barbazqux");
   });
 
-  xit('can reconcile text arbitrarily split into multiple nodes on some substitutions only', () => {
-    const el = document.createElement('div');
+  xit("can reconcile text arbitrarily split into multiple nodes on some substitutions only", () => {
+    const el = document.createElement("div");
     let inst = ReactDOM.render(
       <div>
         <span />
-        {'bar'}
+        {"bar"}
         <span />
-        {'foobarbaz'}
-        {'foo'}
-        {'barfoo'}
+        {"foobarbaz"}
+        {"foo"}
+        {"barfoo"}
         <span />
       </div>,
       el,
@@ -239,70 +239,70 @@ describe('ReactDOMTextComponent', () => {
 
     const childNodes = filterOutComments(inst.childNodes);
     const textNode = childNodes[3];
-    textNode.textContent = 'foo';
+    textNode.textContent = "foo";
     inst.insertBefore(
-      document.createTextNode('bar'),
+      document.createTextNode("bar"),
       childNodes[3].nextSibling,
     );
     inst.insertBefore(
-      document.createTextNode('baz'),
+      document.createTextNode("baz"),
       childNodes[3].nextSibling,
     );
     const secondTextNode = childNodes[5];
-    secondTextNode.textContent = 'bar';
+    secondTextNode.textContent = "bar";
     inst.insertBefore(
-      document.createTextNode('foo'),
+      document.createTextNode("foo"),
       childNodes[5].nextSibling,
     );
 
     inst = ReactDOM.render(
       <div>
         <span />
-        {'baz'}
+        {"baz"}
         <span />
-        {'barbazqux'}
-        {'bar'}
-        {'bazbar'}
+        {"barbazqux"}
+        {"bar"}
+        {"bazbar"}
         <span />
       </div>,
       el,
     );
-    expect(inst.textContent).toBe('bazbarbazquxbarbazbar');
+    expect(inst.textContent).toBe("bazbarbazquxbarbazbar");
   });
 
-  xit('can unmount normalized text nodes', () => {
-    const el = document.createElement('div');
+  xit("can unmount normalized text nodes", () => {
+    const el = document.createElement("div");
     ReactDOM.render(
       <div>
-        {''}
-        {'foo'}
-        {'bar'}
+        {""}
+        {"foo"}
+        {"bar"}
       </div>,
       el,
     );
     el.normalize();
     ReactDOM.render(<div />, el);
-    expect(el.innerHTML).toBe('<div></div>');
+    expect(el.innerHTML).toBe("<div></div>");
   });
 
-  it('throws for Temporal-like text nodes', () => {
-    const el = document.createElement('div');
+  it("throws for Temporal-like text nodes", () => {
+    const el = document.createElement("div");
     class TemporalLike {
       valueOf() {
         // Throwing here is the behavior of ECMAScript "Temporal" date/time API.
         // See https://tc39.es/proposal-temporal/docs/plaindate.html#valueOf
-        throw new TypeError('prod message');
+        throw new TypeError("prod message");
       }
       toString() {
-        return '2020-01-01';
+        return "2020-01-01";
       }
     }
     expect(() =>
       ReactDOM.render(<div>{new TemporalLike()}</div>, el),
     ).toThrowError(
       new Error(
-        'Objects are not valid as a React child (found: object with keys {}).' +
-          ' If you meant to render a collection of children, use an array instead.',
+        "Objects are not valid as a React child (found: object with keys {})." +
+          " If you meant to render a collection of children, use an array instead.",
       ),
     );
   });

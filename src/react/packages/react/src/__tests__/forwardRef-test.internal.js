@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('forwardRef', () => {
+describe("forwardRef", () => {
   let React;
   let ReactFeatureFlags;
   let ReactNoop;
@@ -18,18 +18,18 @@ describe('forwardRef', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
 
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
   });
 
-  it('should work without a ref to be forwarded', async () => {
+  it("should work without a ref to be forwarded", async () => {
     class Child extends React.Component {
       render() {
         Scheduler.log(this.props.value);
@@ -49,7 +49,7 @@ describe('forwardRef', () => {
     await waitForAll([123]);
   });
 
-  it('should forward a ref for a single child', async () => {
+  it("should forward a ref for a single child", async () => {
     class Child extends React.Component {
       render() {
         Scheduler.log(this.props.value);
@@ -72,7 +72,7 @@ describe('forwardRef', () => {
     expect(ref.current instanceof Child).toBe(true);
   });
 
-  it('should forward a ref for multiple children', async () => {
+  it("should forward a ref for multiple children", async () => {
     class Child extends React.Component {
       render() {
         Scheduler.log(this.props.value);
@@ -101,7 +101,7 @@ describe('forwardRef', () => {
     expect(ref.current instanceof Child).toBe(true);
   });
 
-  it('should maintain child instance and ref through updates', async () => {
+  it("should maintain child instance and ref through updates", async () => {
     class Child extends React.Component {
       constructor(props) {
         super(props);
@@ -123,7 +123,7 @@ describe('forwardRef', () => {
     let setRefCount = 0;
     let ref;
 
-    const setRef = r => {
+    const setRef = (r) => {
       setRefCount++;
       ref = r;
     };
@@ -138,33 +138,33 @@ describe('forwardRef', () => {
     expect(setRefCount).toBe(1);
   });
 
-  it('should not break lifecycle error handling', async () => {
+  it("should not break lifecycle error handling", async () => {
     class ErrorBoundary extends React.Component {
-      state = {error: null};
+      state = { error: null };
       componentDidCatch(error) {
-        Scheduler.log('ErrorBoundary.componentDidCatch');
-        this.setState({error});
+        Scheduler.log("ErrorBoundary.componentDidCatch");
+        this.setState({ error });
       }
       render() {
         if (this.state.error) {
-          Scheduler.log('ErrorBoundary.render: catch');
+          Scheduler.log("ErrorBoundary.render: catch");
           return null;
         }
-        Scheduler.log('ErrorBoundary.render: try');
+        Scheduler.log("ErrorBoundary.render: try");
         return this.props.children;
       }
     }
 
     class BadRender extends React.Component {
       render() {
-        Scheduler.log('BadRender throw');
-        throw new Error('oops!');
+        Scheduler.log("BadRender throw");
+        throw new Error("oops!");
       }
     }
 
     function Wrapper(props) {
       const forwardedRef = props.forwardedRef;
-      Scheduler.log('Wrapper');
+      Scheduler.log("Wrapper");
       return <BadRender {...props} ref={forwardedRef} />;
     }
 
@@ -180,52 +180,52 @@ describe('forwardRef', () => {
       </ErrorBoundary>,
     );
     await waitForAll([
-      'ErrorBoundary.render: try',
-      'Wrapper',
-      'BadRender throw',
+      "ErrorBoundary.render: try",
+      "Wrapper",
+      "BadRender throw",
 
       // React retries one more time
-      'ErrorBoundary.render: try',
-      'Wrapper',
-      'BadRender throw',
+      "ErrorBoundary.render: try",
+      "Wrapper",
+      "BadRender throw",
 
       // Errored again on retry. Now handle it.
-      'ErrorBoundary.componentDidCatch',
-      'ErrorBoundary.render: catch',
+      "ErrorBoundary.componentDidCatch",
+      "ErrorBoundary.render: catch",
     ]);
     expect(ref.current).toBe(null);
   });
 
-  it('should not re-run the render callback on a deep setState', async () => {
+  it("should not re-run the render callback on a deep setState", async () => {
     let inst;
 
     class Inner extends React.Component {
       render() {
-        Scheduler.log('Inner');
+        Scheduler.log("Inner");
         inst = this;
         return <div ref={this.props.forwardedRef} />;
       }
     }
 
     function Middle(props) {
-      Scheduler.log('Middle');
+      Scheduler.log("Middle");
       return <Inner {...props} />;
     }
 
     const Forward = React.forwardRef((props, ref) => {
-      Scheduler.log('Forward');
+      Scheduler.log("Forward");
       return <Middle {...props} forwardedRef={ref} />;
     });
 
     function App() {
-      Scheduler.log('App');
+      Scheduler.log("App");
       return <Forward />;
     }
 
     ReactNoop.render(<App />);
-    await waitForAll(['App', 'Forward', 'Middle', 'Inner']);
+    await waitForAll(["App", "Forward", "Middle", "Inner"]);
 
     inst.setState({});
-    await waitForAll(['Inner']);
+    await waitForAll(["Inner"]);
   });
 });

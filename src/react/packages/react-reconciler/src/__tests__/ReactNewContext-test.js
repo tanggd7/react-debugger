@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-let React = require('react');
+let React = require("react");
 let useContext;
 let ReactNoop;
 let Scheduler;
@@ -18,17 +18,17 @@ let waitForAll;
 let waitFor;
 let waitForThrow;
 
-describe('ReactNewContext', () => {
+describe("ReactNewContext", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
+    React = require("react");
     useContext = React.useContext;
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    gen = require('random-seed');
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    gen = require("random-seed");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     waitFor = InternalTestUtils.waitFor;
     waitForThrow = InternalTestUtils.waitForThrow;
@@ -44,7 +44,7 @@ describe('ReactNewContext', () => {
   }
 
   function span(prop) {
-    return {type: 'span', children: [], prop, hidden: false};
+    return { type: "span", children: [], prop, hidden: false };
   }
 
   function readContext(Context) {
@@ -56,11 +56,12 @@ describe('ReactNewContext', () => {
 
   // Note: This is based on a similar component we use in www. We can delete
   // once the extra div wrapper is no longer necessary.
-  function LegacyHiddenDiv({children, mode}) {
+  function LegacyHiddenDiv({ children, mode }) {
     return (
-      <div hidden={mode === 'hidden'}>
+      <div hidden={mode === "hidden"}>
         <React.unstable_LegacyHidden
-          mode={mode === 'hidden' ? 'unstable-defer-without-hiding' : mode}>
+          mode={mode === "hidden" ? "unstable-defer-without-hiding" : mode}
+        >
           {children}
         </React.unstable_LegacyHidden>
       </div>
@@ -69,33 +70,35 @@ describe('ReactNewContext', () => {
 
   // We have several ways of reading from context. sharedContextTests runs
   // a suite of tests for a given context consumer implementation.
-  sharedContextTests('Context.Consumer', Context => Context.Consumer);
+  sharedContextTests("Context.Consumer", (Context) => Context.Consumer);
   sharedContextTests(
-    'useContext inside function component',
-    Context =>
+    "useContext inside function component",
+    (Context) =>
       function Consumer(props) {
         const contextValue = useContext(Context);
         const render = props.children;
         return render(contextValue);
       },
   );
-  sharedContextTests('useContext inside forwardRef component', Context =>
+  sharedContextTests("useContext inside forwardRef component", (Context) =>
     React.forwardRef(function Consumer(props, ref) {
       const contextValue = useContext(Context);
       const render = props.children;
       return render(contextValue);
     }),
   );
-  sharedContextTests('useContext inside memoized function component', Context =>
-    React.memo(function Consumer(props) {
-      const contextValue = useContext(Context);
-      const render = props.children;
-      return render(contextValue);
-    }),
+  sharedContextTests(
+    "useContext inside memoized function component",
+    (Context) =>
+      React.memo(function Consumer(props) {
+        const contextValue = useContext(Context);
+        const render = props.children;
+        return render(contextValue);
+      }),
   );
   sharedContextTests(
-    'readContext(Context) inside class component',
-    Context =>
+    "readContext(Context) inside class component",
+    (Context) =>
       class Consumer extends React.Component {
         render() {
           const contextValue = readContext(Context);
@@ -105,8 +108,8 @@ describe('ReactNewContext', () => {
       },
   );
   sharedContextTests(
-    'readContext(Context) inside pure class component',
-    Context =>
+    "readContext(Context) inside pure class component",
+    (Context) =>
       class Consumer extends React.PureComponent {
         render() {
           const contextValue = readContext(Context);
@@ -118,7 +121,7 @@ describe('ReactNewContext', () => {
 
   function sharedContextTests(label, getConsumer) {
     describe(`reading context with ${label}`, () => {
-      it('simple mount and update', async () => {
+      it("simple mount and update", async () => {
         const Context = React.createContext(1);
         const Consumer = getConsumer(Context);
 
@@ -130,7 +133,7 @@ describe('ReactNewContext', () => {
               <Indirection>
                 <Indirection>
                   <Consumer>
-                    {value => <span prop={'Result: ' + value} />}
+                    {(value) => <span prop={"Result: " + value} />}
                   </Consumer>
                 </Indirection>
               </Indirection>
@@ -148,12 +151,12 @@ describe('ReactNewContext', () => {
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: 3" />);
       });
 
-      it('propagates through shouldComponentUpdate false', async () => {
+      it("propagates through shouldComponentUpdate false", async () => {
         const Context = React.createContext(1);
         const ContextConsumer = getConsumer(Context);
 
         function Provider(props) {
-          Scheduler.log('Provider');
+          Scheduler.log("Provider");
           return (
             <Context.Provider value={props.value}>
               {props.children}
@@ -162,12 +165,12 @@ describe('ReactNewContext', () => {
         }
 
         function Consumer(props) {
-          Scheduler.log('Consumer');
+          Scheduler.log("Consumer");
           return (
             <ContextConsumer>
-              {value => {
-                Scheduler.log('Consumer render prop');
-                return <span prop={'Result: ' + value} />;
+              {(value) => {
+                Scheduler.log("Consumer render prop");
+                return <span prop={"Result: " + value} />;
               }}
             </ContextConsumer>
           );
@@ -178,13 +181,13 @@ describe('ReactNewContext', () => {
             return false;
           }
           render() {
-            Scheduler.log('Indirection');
+            Scheduler.log("Indirection");
             return this.props.children;
           }
         }
 
         function App(props) {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Provider value={props.value}>
               <Indirection>
@@ -198,27 +201,27 @@ describe('ReactNewContext', () => {
 
         ReactNoop.render(<App value={2} />);
         await waitForAll([
-          'App',
-          'Provider',
-          'Indirection',
-          'Indirection',
-          'Consumer',
-          'Consumer render prop',
+          "App",
+          "Provider",
+          "Indirection",
+          "Indirection",
+          "Consumer",
+          "Consumer render prop",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: 2" />);
 
         // Update
         ReactNoop.render(<App value={3} />);
-        await waitForAll(['App', 'Provider', 'Consumer render prop']);
+        await waitForAll(["App", "Provider", "Consumer render prop"]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: 3" />);
       });
 
-      it('consumers bail out if context value is the same', async () => {
+      it("consumers bail out if context value is the same", async () => {
         const Context = React.createContext(1);
         const ContextConsumer = getConsumer(Context);
 
         function Provider(props) {
-          Scheduler.log('Provider');
+          Scheduler.log("Provider");
           return (
             <Context.Provider value={props.value}>
               {props.children}
@@ -227,12 +230,12 @@ describe('ReactNewContext', () => {
         }
 
         function Consumer(props) {
-          Scheduler.log('Consumer');
+          Scheduler.log("Consumer");
           return (
             <ContextConsumer>
-              {value => {
-                Scheduler.log('Consumer render prop');
-                return <span prop={'Result: ' + value} />;
+              {(value) => {
+                Scheduler.log("Consumer render prop");
+                return <span prop={"Result: " + value} />;
               }}
             </ContextConsumer>
           );
@@ -243,13 +246,13 @@ describe('ReactNewContext', () => {
             return false;
           }
           render() {
-            Scheduler.log('Indirection');
+            Scheduler.log("Indirection");
             return this.props.children;
           }
         }
 
         function App(props) {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Provider value={props.value}>
               <Indirection>
@@ -263,33 +266,33 @@ describe('ReactNewContext', () => {
 
         ReactNoop.render(<App value={2} />);
         await waitForAll([
-          'App',
-          'Provider',
-          'Indirection',
-          'Indirection',
-          'Consumer',
-          'Consumer render prop',
+          "App",
+          "Provider",
+          "Indirection",
+          "Indirection",
+          "Consumer",
+          "Consumer render prop",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: 2" />);
 
         // Update with the same context value
         ReactNoop.render(<App value={2} />);
         await waitForAll([
-          'App',
-          'Provider',
+          "App",
+          "Provider",
           // Don't call render prop again
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: 2" />);
       });
 
-      it('nested providers', async () => {
+      it("nested providers", async () => {
         const Context = React.createContext(1);
         const Consumer = getConsumer(Context);
 
         function Provider(props) {
           return (
             <Consumer>
-              {contextValue => (
+              {(contextValue) => (
                 // Multiply previous context value by 2, unless prop overrides
                 <Context.Provider value={props.value || contextValue * 2}>
                   {props.children}
@@ -317,7 +320,7 @@ describe('ReactNewContext', () => {
                     <Provider>
                       <Indirection>
                         <Consumer>
-                          {value => <span prop={'Result: ' + value} />}
+                          {(value) => <span prop={"Result: " + value} />}
                         </Consumer>
                       </Indirection>
                     </Provider>
@@ -338,27 +341,29 @@ describe('ReactNewContext', () => {
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: 12" />);
       });
 
-      it('should provide the correct (default) values to consumers outside of a provider', async () => {
-        const FooContext = React.createContext({value: 'foo-initial'});
-        const BarContext = React.createContext({value: 'bar-initial'});
+      it("should provide the correct (default) values to consumers outside of a provider", async () => {
+        const FooContext = React.createContext({ value: "foo-initial" });
+        const BarContext = React.createContext({ value: "bar-initial" });
         const FooConsumer = getConsumer(FooContext);
         const BarConsumer = getConsumer(BarContext);
 
-        const Verify = ({actual, expected}) => {
+        const Verify = ({ actual, expected }) => {
           expect(expected).toBe(actual);
           return null;
         };
 
         ReactNoop.render(
           <>
-            <BarContext.Provider value={{value: 'bar-updated'}}>
+            <BarContext.Provider value={{ value: "bar-updated" }}>
               <BarConsumer>
-                {({value}) => <Verify actual={value} expected="bar-updated" />}
+                {({ value }) => (
+                  <Verify actual={value} expected="bar-updated" />
+                )}
               </BarConsumer>
 
-              <FooContext.Provider value={{value: 'foo-updated'}}>
+              <FooContext.Provider value={{ value: "foo-updated" }}>
                 <FooConsumer>
-                  {({value}) => (
+                  {({ value }) => (
                     <Verify actual={value} expected="foo-updated" />
                   )}
                 </FooConsumer>
@@ -366,24 +371,24 @@ describe('ReactNewContext', () => {
             </BarContext.Provider>
 
             <FooConsumer>
-              {({value}) => <Verify actual={value} expected="foo-initial" />}
+              {({ value }) => <Verify actual={value} expected="foo-initial" />}
             </FooConsumer>
             <BarConsumer>
-              {({value}) => <Verify actual={value} expected="bar-initial" />}
+              {({ value }) => <Verify actual={value} expected="bar-initial" />}
             </BarConsumer>
           </>,
         );
         await waitForAll([]);
       });
 
-      it('multiple consumers in different branches', async () => {
+      it("multiple consumers in different branches", async () => {
         const Context = React.createContext(1);
         const Consumer = getConsumer(Context);
 
         function Provider(props) {
           return (
             <Context.Consumer>
-              {contextValue => (
+              {(contextValue) => (
                 // Multiply previous context value by 2, unless prop overrides
                 <Context.Provider value={props.value || contextValue * 2}>
                   {props.children}
@@ -409,13 +414,13 @@ describe('ReactNewContext', () => {
                 <Indirection>
                   <Provider>
                     <Consumer>
-                      {value => <span prop={'Result: ' + value} />}
+                      {(value) => <span prop={"Result: " + value} />}
                     </Consumer>
                   </Provider>
                 </Indirection>
                 <Indirection>
                   <Consumer>
-                    {value => <span prop={'Result: ' + value} />}
+                    {(value) => <span prop={"Result: " + value} />}
                   </Consumer>
                 </Indirection>
               </Indirection>
@@ -453,12 +458,12 @@ describe('ReactNewContext', () => {
         );
       });
 
-      it('compares context values with Object.is semantics', async () => {
+      it("compares context values with Object.is semantics", async () => {
         const Context = React.createContext(1);
         const ContextConsumer = getConsumer(Context);
 
         function Provider(props) {
-          Scheduler.log('Provider');
+          Scheduler.log("Provider");
           return (
             <Context.Provider value={props.value}>
               {props.children}
@@ -467,12 +472,12 @@ describe('ReactNewContext', () => {
         }
 
         function Consumer(props) {
-          Scheduler.log('Consumer');
+          Scheduler.log("Consumer");
           return (
             <ContextConsumer>
-              {value => {
-                Scheduler.log('Consumer render prop');
-                return <span prop={'Result: ' + value} />;
+              {(value) => {
+                Scheduler.log("Consumer render prop");
+                return <span prop={"Result: " + value} />;
               }}
             </ContextConsumer>
           );
@@ -483,13 +488,13 @@ describe('ReactNewContext', () => {
             return false;
           }
           render() {
-            Scheduler.log('Indirection');
+            Scheduler.log("Indirection");
             return this.props.children;
           }
         }
 
         function App(props) {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Provider value={props.value}>
               <Indirection>
@@ -503,46 +508,46 @@ describe('ReactNewContext', () => {
 
         ReactNoop.render(<App value={NaN} />);
         await waitForAll([
-          'App',
-          'Provider',
-          'Indirection',
-          'Indirection',
-          'Consumer',
-          'Consumer render prop',
+          "App",
+          "Provider",
+          "Indirection",
+          "Indirection",
+          "Consumer",
+          "Consumer render prop",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: NaN" />);
 
         // Update
         ReactNoop.render(<App value={NaN} />);
         await waitForAll([
-          'App',
-          'Provider',
+          "App",
+          "Provider",
           // Consumer should not re-render again
           // 'Consumer render prop',
         ]);
         expect(ReactNoop).toMatchRenderedOutput(<span prop="Result: NaN" />);
       });
 
-      it('context unwinds when interrupted', async () => {
-        const Context = React.createContext('Default');
+      it("context unwinds when interrupted", async () => {
+        const Context = React.createContext("Default");
         const ContextConsumer = getConsumer(Context);
 
         function Consumer(props) {
           return (
             <ContextConsumer>
-              {value => <span prop={'Result: ' + value} />}
+              {(value) => <span prop={"Result: " + value} />}
             </ContextConsumer>
           );
         }
 
         function BadRender() {
-          throw new Error('Bad render');
+          throw new Error("Bad render");
         }
 
         class ErrorBoundary extends React.Component {
-          state = {error: null};
+          state = { error: null };
           componentDidCatch(error) {
-            this.setState({error});
+            this.setState({ error });
           }
           render() {
             if (this.state.error) {
@@ -581,9 +586,9 @@ describe('ReactNewContext', () => {
 
         let child;
         class Child extends React.Component {
-          state = {step: 0};
+          state = { step: 0 };
           render() {
-            Scheduler.log('Child');
+            Scheduler.log("Child");
             return (
               <span
                 prop={`Context: ${this.props.context}, Step: ${this.state.step}`}
@@ -596,9 +601,11 @@ describe('ReactNewContext', () => {
           return (
             <Context.Provider value={props.value}>
               <Consumer>
-                {value => {
-                  Scheduler.log('Consumer render prop');
-                  return <Child ref={inst => (child = inst)} context={value} />;
+                {(value) => {
+                  Scheduler.log("Consumer render prop");
+                  return (
+                    <Child ref={(inst) => (child = inst)} context={value} />
+                  );
                 }}
               </Consumer>
             </Context.Provider>
@@ -607,41 +614,41 @@ describe('ReactNewContext', () => {
 
         // Initial mount
         ReactNoop.render(<App value={1} />);
-        await waitForAll(['Consumer render prop', 'Child']);
+        await waitForAll(["Consumer render prop", "Child"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <span prop="Context: 1, Step: 0" />,
         );
 
-        child.setState({step: 1});
-        await waitForAll(['Child']);
+        child.setState({ step: 1 });
+        await waitForAll(["Child"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <span prop="Context: 1, Step: 1" />,
         );
       });
 
-      it('consumer bails out if value is unchanged and something above bailed out', async () => {
+      it("consumer bails out if value is unchanged and something above bailed out", async () => {
         const Context = React.createContext(0);
         const Consumer = getConsumer(Context);
 
         function renderChildValue(value) {
-          Scheduler.log('Consumer');
+          Scheduler.log("Consumer");
           return <span prop={value} />;
         }
 
         function ChildWithInlineRenderCallback() {
-          Scheduler.log('ChildWithInlineRenderCallback');
+          Scheduler.log("ChildWithInlineRenderCallback");
           // Note: we are intentionally passing an inline arrow. Don't refactor.
-          return <Consumer>{value => renderChildValue(value)}</Consumer>;
+          return <Consumer>{(value) => renderChildValue(value)}</Consumer>;
         }
 
         function ChildWithCachedRenderCallback() {
-          Scheduler.log('ChildWithCachedRenderCallback');
+          Scheduler.log("ChildWithCachedRenderCallback");
           return <Consumer>{renderChildValue}</Consumer>;
         }
 
         class PureIndirection extends React.PureComponent {
           render() {
-            Scheduler.log('PureIndirection');
+            Scheduler.log("PureIndirection");
             return (
               <>
                 <ChildWithInlineRenderCallback />
@@ -653,7 +660,7 @@ describe('ReactNewContext', () => {
 
         class App extends React.Component {
           render() {
-            Scheduler.log('App');
+            Scheduler.log("App");
             return (
               <Context.Provider value={this.props.value}>
                 <PureIndirection />
@@ -665,12 +672,12 @@ describe('ReactNewContext', () => {
         // Initial mount
         ReactNoop.render(<App value={1} />);
         await waitForAll([
-          'App',
-          'PureIndirection',
-          'ChildWithInlineRenderCallback',
-          'Consumer',
-          'ChildWithCachedRenderCallback',
-          'Consumer',
+          "App",
+          "PureIndirection",
+          "ChildWithInlineRenderCallback",
+          "Consumer",
+          "ChildWithCachedRenderCallback",
+          "Consumer",
         ]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
@@ -681,7 +688,7 @@ describe('ReactNewContext', () => {
 
         // Update (bailout)
         ReactNoop.render(<App value={1} />);
-        await waitForAll(['App']);
+        await waitForAll(["App"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop={1} />
@@ -691,7 +698,7 @@ describe('ReactNewContext', () => {
 
         // Update (no bailout)
         ReactNoop.render(<App value={2} />);
-        await waitForAll(['App', 'Consumer', 'Consumer']);
+        await waitForAll(["App", "Consumer", "Consumer"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop={2} />
@@ -702,21 +709,21 @@ describe('ReactNewContext', () => {
 
       // @gate www
       it("context consumer doesn't bail out inside hidden subtree", async () => {
-        const Context = React.createContext('dark');
+        const Context = React.createContext("dark");
         const Consumer = getConsumer(Context);
 
-        function App({theme}) {
+        function App({ theme }) {
           return (
             <Context.Provider value={theme}>
               <LegacyHiddenDiv mode="hidden">
-                <Consumer>{value => <Text text={value} />}</Consumer>
+                <Consumer>{(value) => <Text text={value} />}</Consumer>
               </LegacyHiddenDiv>
             </Context.Provider>
           );
         }
 
         ReactNoop.render(<App theme="dark" />);
-        await waitForAll(['dark']);
+        await waitForAll(["dark"]);
         expect(ReactNoop.getChildrenAsJSX()).toEqual(
           <div hidden={true}>
             <span prop="dark" />
@@ -724,7 +731,7 @@ describe('ReactNewContext', () => {
         );
 
         ReactNoop.render(<App theme="light" />);
-        await waitForAll(['light']);
+        await waitForAll(["light"]);
         expect(ReactNoop.getChildrenAsJSX()).toEqual(
           <div hidden={true}>
             <span prop="light" />
@@ -733,7 +740,7 @@ describe('ReactNewContext', () => {
       });
 
       // This is a regression case for https://github.com/facebook/react/issues/12389.
-      it('does not run into an infinite loop', async () => {
+      it("does not run into an infinite loop", async () => {
         const Context = React.createContext(null);
         const Consumer = getConsumer(Context);
 
@@ -747,7 +754,7 @@ describe('ReactNewContext', () => {
             );
           }
           renderList() {
-            const list = [1, 2].map(id => this.renderItem(id));
+            const list = [1, 2].map((id) => this.renderItem(id));
             if (this.props.reverse) {
               list.reverse();
             }
@@ -771,7 +778,7 @@ describe('ReactNewContext', () => {
       });
 
       // This is a regression case for https://github.com/facebook/react/issues/12686
-      it('does not skip some siblings', async () => {
+      it("does not skip some siblings", async () => {
         const Context = React.createContext(0);
         const ContextConsumer = getConsumer(Context);
 
@@ -781,7 +788,7 @@ describe('ReactNewContext', () => {
           };
 
           render() {
-            Scheduler.log('App');
+            Scheduler.log("App");
             return (
               <Context.Provider value={this.state.step}>
                 <StaticContent />
@@ -808,8 +815,8 @@ describe('ReactNewContext', () => {
           render() {
             return (
               <ContextConsumer>
-                {value => {
-                  Scheduler.log('Consumer');
+                {(value) => {
+                  Scheduler.log("Consumer");
                   return <span prop={value} />;
                 }}
               </ContextConsumer>
@@ -819,8 +826,8 @@ describe('ReactNewContext', () => {
 
         // Initial mount
         let inst;
-        ReactNoop.render(<App ref={ref => (inst = ref)} />);
-        await waitForAll(['App']);
+        ReactNoop.render(<App ref={(ref) => (inst = ref)} />);
+        await waitForAll(["App"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop="static 1" />
@@ -828,8 +835,8 @@ describe('ReactNewContext', () => {
           </>,
         );
         // Update the first time
-        inst.setState({step: 1});
-        await waitForAll(['App', 'Consumer']);
+        inst.setState({ step: 1 });
+        await waitForAll(["App", "Consumer"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop="static 1" />
@@ -838,8 +845,8 @@ describe('ReactNewContext', () => {
           </>,
         );
         // Update the second time
-        inst.setState({step: 2});
-        await waitForAll(['App', 'Consumer']);
+        inst.setState({ step: 2 });
+        await waitForAll(["App", "Consumer"]);
         expect(ReactNoop).toMatchRenderedOutput(
           <>
             <span prop="static 1" />
@@ -851,8 +858,8 @@ describe('ReactNewContext', () => {
     });
   }
 
-  describe('Context.Provider', () => {
-    it('warns if no value prop provided', async () => {
+  describe("Context.Provider", () => {
+    it("warns if no value prop provided", async () => {
       const Context = React.createContext();
 
       ReactNoop.render(
@@ -860,19 +867,19 @@ describe('ReactNewContext', () => {
       );
 
       await expect(async () => await waitForAll([])).toErrorDev(
-        'The `value` prop is required for the `<Context.Provider>`. Did you misspell it or forget to pass it?',
+        "The `value` prop is required for the `<Context.Provider>`. Did you misspell it or forget to pass it?",
         {
           withoutStack: true,
         },
       );
     });
 
-    it('warns if multiple renderers concurrently render the same context', async () => {
-      spyOnDev(console, 'error').mockImplementation(() => {});
+    it("warns if multiple renderers concurrently render the same context", async () => {
+      spyOnDev(console, "error").mockImplementation(() => {});
       const Context = React.createContext(0);
 
       function Foo(props) {
-        Scheduler.log('Foo');
+        Scheduler.log("Foo");
         return null;
       }
 
@@ -889,35 +896,35 @@ describe('ReactNewContext', () => {
         ReactNoop.render(<App value={1} />);
       });
       // Render past the Provider, but don't commit yet
-      await waitFor(['Foo']);
+      await waitFor(["Foo"]);
 
       // Get a new copy of ReactNoop
       jest.resetModules();
-      React = require('react');
-      ReactNoop = require('react-noop-renderer');
-      Scheduler = require('scheduler');
-      const InternalTestUtils = require('internal-test-utils');
+      React = require("react");
+      ReactNoop = require("react-noop-renderer");
+      Scheduler = require("scheduler");
+      const InternalTestUtils = require("internal-test-utils");
       waitForAll = InternalTestUtils.waitForAll;
       waitFor = InternalTestUtils.waitFor;
 
       // Render the provider again using a different renderer
       ReactNoop.render(<App value={1} />);
-      await waitForAll(['Foo', 'Foo']);
+      await waitForAll(["Foo", "Foo"]);
 
       if (__DEV__) {
         expect(console.error.mock.calls[0][0]).toContain(
-          'Detected multiple renderers concurrently rendering the same ' +
-            'context provider. This is currently unsupported',
+          "Detected multiple renderers concurrently rendering the same " +
+            "context provider. This is currently unsupported",
         );
       }
     });
 
-    it('does not warn if multiple renderers use the same context sequentially', async () => {
-      spyOnDev(console, 'error');
+    it("does not warn if multiple renderers use the same context sequentially", async () => {
+      spyOnDev(console, "error");
       const Context = React.createContext(0);
 
       function Foo(props) {
-        Scheduler.log('Foo');
+        Scheduler.log("Foo");
         return null;
       }
 
@@ -933,38 +940,38 @@ describe('ReactNewContext', () => {
       React.startTransition(() => {
         ReactNoop.render(<App value={1} />);
       });
-      await waitForAll(['Foo', 'Foo']);
+      await waitForAll(["Foo", "Foo"]);
 
       // Get a new copy of ReactNoop
       jest.resetModules();
-      React = require('react');
-      ReactNoop = require('react-noop-renderer');
-      Scheduler = require('scheduler');
-      const InternalTestUtils = require('internal-test-utils');
+      React = require("react");
+      ReactNoop = require("react-noop-renderer");
+      Scheduler = require("scheduler");
+      const InternalTestUtils = require("internal-test-utils");
       waitForAll = InternalTestUtils.waitForAll;
       waitFor = InternalTestUtils.waitFor;
 
       // Render the provider again using a different renderer
       ReactNoop.render(<App value={1} />);
-      await waitForAll(['Foo', 'Foo']);
+      await waitForAll(["Foo", "Foo"]);
 
       if (__DEV__) {
         expect(console.error).not.toHaveBeenCalled();
       }
     });
 
-    it('provider bails out if children and value are unchanged (like sCU)', async () => {
+    it("provider bails out if children and value are unchanged (like sCU)", async () => {
       const Context = React.createContext(0);
 
       function Child() {
-        Scheduler.log('Child');
+        Scheduler.log("Child");
         return <span prop="Child" />;
       }
 
       const children = <Child />;
 
       function App(props) {
-        Scheduler.log('App');
+        Scheduler.log("App");
         return (
           <Context.Provider value={props.value}>{children}</Context.Provider>
         );
@@ -972,24 +979,24 @@ describe('ReactNewContext', () => {
 
       // Initial mount
       ReactNoop.render(<App value={1} />);
-      await waitForAll(['App', 'Child']);
+      await waitForAll(["App", "Child"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Child" />);
 
       // Update
       ReactNoop.render(<App value={1} />);
       await waitForAll([
-        'App',
+        "App",
         // Child does not re-render
       ]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Child" />);
     });
 
     // @gate !disableLegacyContext
-    it('provider does not bail out if legacy context changed above', async () => {
+    it("provider does not bail out if legacy context changed above", async () => {
       const Context = React.createContext(0);
 
       function Child() {
-        Scheduler.log('Child');
+        Scheduler.log("Child");
         return <span prop="Child" />;
       }
 
@@ -999,20 +1006,20 @@ describe('ReactNewContext', () => {
         static childContextTypes = {
           legacyValue: () => {},
         };
-        state = {legacyValue: 1};
+        state = { legacyValue: 1 };
         getChildContext() {
-          return {legacyValue: this.state.legacyValue};
+          return { legacyValue: this.state.legacyValue };
         }
         render() {
-          Scheduler.log('LegacyProvider');
+          Scheduler.log("LegacyProvider");
           return this.props.children;
         }
       }
 
       class App extends React.Component {
-        state = {value: 1};
+        state = { value: 1 };
         render() {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Context.Provider value={this.state.value}>
               {this.props.children}
@@ -1032,48 +1039,48 @@ describe('ReactNewContext', () => {
           </App>
         </LegacyProvider>,
       );
-      await waitForAll(['LegacyProvider', 'App', 'Child']);
+      await waitForAll(["LegacyProvider", "App", "Child"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Child" />);
 
       // Update App with same value (should bail out)
-      appRef.current.setState({value: 1});
-      await waitForAll(['App']);
+      appRef.current.setState({ value: 1 });
+      await waitForAll(["App"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Child" />);
 
       // Update LegacyProvider (should not bail out)
-      legacyProviderRef.current.setState({value: 1});
-      await waitForAll(['LegacyProvider', 'App', 'Child']);
+      legacyProviderRef.current.setState({ value: 1 });
+      await waitForAll(["LegacyProvider", "App", "Child"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Child" />);
 
       // Update App with same value (should bail out)
-      appRef.current.setState({value: 1});
-      await waitForAll(['App']);
+      appRef.current.setState({ value: 1 });
+      await waitForAll(["App"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Child" />);
     });
   });
 
-  describe('Context.Consumer', () => {
-    it('warns if child is not a function', async () => {
-      spyOnDev(console, 'error').mockImplementation(() => {});
+  describe("Context.Consumer", () => {
+    it("warns if child is not a function", async () => {
+      spyOnDev(console, "error").mockImplementation(() => {});
       const Context = React.createContext(0);
       ReactNoop.render(<Context.Consumer />);
-      await waitForThrow('is not a function');
+      await waitForThrow("is not a function");
       if (__DEV__) {
         expect(console.error.mock.calls[0][0]).toContain(
-          'A context consumer was rendered with multiple children, or a child ' +
+          "A context consumer was rendered with multiple children, or a child " +
             "that isn't a function",
         );
       }
     });
 
-    it('can read other contexts inside consumer render prop', async () => {
+    it("can read other contexts inside consumer render prop", async () => {
       const FooContext = React.createContext(0);
       const BarContext = React.createContext(0);
 
       function FooAndBar() {
         return (
           <FooContext.Consumer>
-            {foo => {
+            {(foo) => {
               const bar = readContext(BarContext);
               return <Text text={`Foo: ${foo}, Bar: ${bar}`} />;
             }}
@@ -1103,17 +1110,17 @@ describe('ReactNewContext', () => {
       }
 
       ReactNoop.render(<App foo={1} bar={1} />);
-      await waitForAll(['Foo: 1, Bar: 1']);
+      await waitForAll(["Foo: 1, Bar: 1"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Foo: 1, Bar: 1" />);
 
       // Update foo
       ReactNoop.render(<App foo={2} bar={1} />);
-      await waitForAll(['Foo: 2, Bar: 1']);
+      await waitForAll(["Foo: 2, Bar: 1"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Foo: 2, Bar: 1" />);
 
       // Update bar
       ReactNoop.render(<App foo={2} bar={2} />);
-      await waitForAll(['Foo: 2, Bar: 2']);
+      await waitForAll(["Foo: 2, Bar: 2"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="Foo: 2, Bar: 2" />);
     });
 
@@ -1122,22 +1129,22 @@ describe('ReactNewContext', () => {
     // If we bailed out on referential equality, it would be confusing that you
     // can call this.setState(), but an autobound render callback "blocked" the update.
     // https://github.com/facebook/react/pull/12470#issuecomment-376917711
-    it('consumer does not bail out if there were no bailouts above it', async () => {
+    it("consumer does not bail out if there were no bailouts above it", async () => {
       const Context = React.createContext(0);
       const Consumer = Context.Consumer;
 
       class App extends React.Component {
         state = {
-          text: 'hello',
+          text: "hello",
         };
 
-        renderConsumer = context => {
-          Scheduler.log('App#renderConsumer');
+        renderConsumer = (context) => {
+          Scheduler.log("App#renderConsumer");
           return <span prop={this.state.text} />;
         };
 
         render() {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Context.Provider value={this.props.value}>
               <Consumer>{this.renderConsumer}</Consumer>
@@ -1148,54 +1155,58 @@ describe('ReactNewContext', () => {
 
       // Initial mount
       let inst;
-      ReactNoop.render(<App value={1} ref={ref => (inst = ref)} />);
-      await waitForAll(['App', 'App#renderConsumer']);
+      ReactNoop.render(<App value={1} ref={(ref) => (inst = ref)} />);
+      await waitForAll(["App", "App#renderConsumer"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="hello" />);
 
       // Update
-      inst.setState({text: 'goodbye'});
-      await waitForAll(['App', 'App#renderConsumer']);
+      inst.setState({ text: "goodbye" });
+      await waitForAll(["App", "App#renderConsumer"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="goodbye" />);
     });
   });
 
-  describe('readContext', () => {
+  describe("readContext", () => {
     // Unstable changedBits API was removed. Port this test to context selectors
     // once that exists.
     // @gate FIXME
-    it('can read the same context multiple times in the same function', async () => {
-      const Context = React.createContext({foo: 0, bar: 0, baz: 0}, (a, b) => {
-        let result = 0;
-        if (a.foo !== b.foo) {
-          result |= 0b001;
-        }
-        if (a.bar !== b.bar) {
-          result |= 0b010;
-        }
-        if (a.baz !== b.baz) {
-          result |= 0b100;
-        }
-        return result;
-      });
+    it("can read the same context multiple times in the same function", async () => {
+      const Context = React.createContext(
+        { foo: 0, bar: 0, baz: 0 },
+        (a, b) => {
+          let result = 0;
+          if (a.foo !== b.foo) {
+            result |= 0b001;
+          }
+          if (a.bar !== b.bar) {
+            result |= 0b010;
+          }
+          if (a.baz !== b.baz) {
+            result |= 0b100;
+          }
+          return result;
+        },
+      );
 
       function Provider(props) {
         return (
           <Context.Provider
-            value={{foo: props.foo, bar: props.bar, baz: props.baz}}>
+            value={{ foo: props.foo, bar: props.bar, baz: props.baz }}
+          >
             {props.children}
           </Context.Provider>
         );
       }
 
       function FooAndBar() {
-        const {foo} = readContext(Context, 0b001);
-        const {bar} = readContext(Context, 0b010);
+        const { foo } = readContext(Context, 0b001);
+        const { bar } = readContext(Context, 0b010);
         return <Text text={`Foo: ${foo}, Bar: ${bar}`} />;
       }
 
       function Baz() {
-        const {baz} = readContext(Context, 0b100);
-        return <Text text={'Baz: ' + baz} />;
+        const { baz } = readContext(Context, 0b100);
+        return <Text text={"Baz: " + baz} />;
       }
 
       class Indirection extends React.Component {
@@ -1223,7 +1234,7 @@ describe('ReactNewContext', () => {
       }
 
       ReactNoop.render(<App foo={1} bar={1} baz={1} />);
-      await waitForAll(['Foo: 1, Bar: 1', 'Baz: 1']);
+      await waitForAll(["Foo: 1, Bar: 1", "Baz: 1"]);
       expect(ReactNoop).toMatchRenderedOutput([
         <span prop="Foo: 1, Bar: 1" />,
         <span prop="Baz: 1" />,
@@ -1231,7 +1242,7 @@ describe('ReactNewContext', () => {
 
       // Update only foo
       ReactNoop.render(<App foo={2} bar={1} baz={1} />);
-      await waitForAll(['Foo: 2, Bar: 1']);
+      await waitForAll(["Foo: 2, Bar: 1"]);
       expect(ReactNoop).toMatchRenderedOutput([
         <span prop="Foo: 2, Bar: 1" />,
         <span prop="Baz: 1" />,
@@ -1239,7 +1250,7 @@ describe('ReactNewContext', () => {
 
       // Update only bar
       ReactNoop.render(<App foo={2} bar={2} baz={1} />);
-      await waitForAll(['Foo: 2, Bar: 2']);
+      await waitForAll(["Foo: 2, Bar: 2"]);
       expect(ReactNoop).toMatchRenderedOutput([
         <span prop="Foo: 2, Bar: 2" />,
         <span prop="Baz: 1" />,
@@ -1247,7 +1258,7 @@ describe('ReactNewContext', () => {
 
       // Update only baz
       ReactNoop.render(<App foo={2} bar={2} baz={2} />);
-      await waitForAll(['Baz: 2']);
+      await waitForAll(["Baz: 2"]);
       expect(ReactNoop).toMatchRenderedOutput([
         <span prop="Foo: 2, Bar: 2" />,
         <span prop="Baz: 2" />,
@@ -1259,7 +1270,7 @@ describe('ReactNewContext', () => {
     // If we bailed out on referential equality, it would be confusing that you
     // can call this.setState(), but an autobound render callback "blocked" the update.
     // https://github.com/facebook/react/pull/12470#issuecomment-376917711
-    it('does not bail out if there were no bailouts above it', async () => {
+    it("does not bail out if there were no bailouts above it", async () => {
       const Context = React.createContext(0);
 
       class Consumer extends React.Component {
@@ -1271,16 +1282,16 @@ describe('ReactNewContext', () => {
 
       class App extends React.Component {
         state = {
-          text: 'hello',
+          text: "hello",
         };
 
-        renderConsumer = context => {
-          Scheduler.log('App#renderConsumer');
+        renderConsumer = (context) => {
+          Scheduler.log("App#renderConsumer");
           return <span prop={this.state.text} />;
         };
 
         render() {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Context.Provider value={this.props.value}>
               <Consumer>{this.renderConsumer}</Consumer>
@@ -1291,18 +1302,18 @@ describe('ReactNewContext', () => {
 
       // Initial mount
       let inst;
-      ReactNoop.render(<App value={1} ref={ref => (inst = ref)} />);
-      await waitForAll(['App', 'App#renderConsumer']);
+      ReactNoop.render(<App value={1} ref={(ref) => (inst = ref)} />);
+      await waitForAll(["App", "App#renderConsumer"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="hello" />);
 
       // Update
-      inst.setState({text: 'goodbye'});
-      await waitForAll(['App', 'App#renderConsumer']);
+      inst.setState({ text: "goodbye" });
+      await waitForAll(["App", "App#renderConsumer"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="goodbye" />);
     });
 
-    it('warns when reading context inside render phase class setState updater', async () => {
-      const ThemeContext = React.createContext('light');
+    it("warns when reading context inside render phase class setState updater", async () => {
+      const ThemeContext = React.createContext("light");
 
       class Cls extends React.Component {
         state = {};
@@ -1316,14 +1327,14 @@ describe('ReactNewContext', () => {
 
       ReactNoop.render(<Cls />);
       await expect(async () => await waitForAll([])).toErrorDev([
-        'Context can only be read while React is rendering',
-        'Cannot update during an existing state transition',
+        "Context can only be read while React is rendering",
+        "Cannot update during an existing state transition",
       ]);
     });
   });
 
-  describe('useContext', () => {
-    it('throws when used in a class component', async () => {
+  describe("useContext", () => {
+    it("throws when used in a class component", async () => {
       const Context = React.createContext(0);
       class Foo extends React.Component {
         render() {
@@ -1332,29 +1343,29 @@ describe('ReactNewContext', () => {
       }
       ReactNoop.render(<Foo />);
       await waitForThrow(
-        'Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen' +
-          ' for one of the following reasons:\n' +
-          '1. You might have mismatching versions of React and the renderer (such as React DOM)\n' +
-          '2. You might be breaking the Rules of Hooks\n' +
-          '3. You might have more than one copy of React in the same app\n' +
-          'See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.',
+        "Invalid hook call. Hooks can only be called inside of the body of a function component. This could happen" +
+          " for one of the following reasons:\n" +
+          "1. You might have mismatching versions of React and the renderer (such as React DOM)\n" +
+          "2. You might be breaking the Rules of Hooks\n" +
+          "3. You might have more than one copy of React in the same app\n" +
+          "See https://reactjs.org/link/invalid-hook-call for tips about how to debug and fix this problem.",
       );
     });
 
-    it('warns when passed a consumer', async () => {
+    it("warns when passed a consumer", async () => {
       const Context = React.createContext(0);
       function Foo() {
         return useContext(Context.Consumer);
       }
       ReactNoop.render(<Foo />);
       await expect(async () => await waitForAll([])).toErrorDev(
-        'Calling useContext(Context.Consumer) is not supported, may cause bugs, ' +
-          'and will be removed in a future major release. ' +
-          'Did you mean to call useContext(Context) instead?',
+        "Calling useContext(Context.Consumer) is not supported, may cause bugs, " +
+          "and will be removed in a future major release. " +
+          "Did you mean to call useContext(Context) instead?",
       );
     });
 
-    it('warns when passed a provider', async () => {
+    it("warns when passed a provider", async () => {
       const Context = React.createContext(0);
       function Foo() {
         useContext(Context.Provider);
@@ -1362,8 +1373,8 @@ describe('ReactNewContext', () => {
       }
       ReactNoop.render(<Foo />);
       await expect(async () => await waitForAll([])).toErrorDev(
-        'Calling useContext(Context.Provider) is not supported. ' +
-          'Did you mean to call useContext(Context) instead?',
+        "Calling useContext(Context.Provider) is not supported. " +
+          "Did you mean to call useContext(Context) instead?",
       );
     });
 
@@ -1372,26 +1383,26 @@ describe('ReactNewContext', () => {
     // If we bailed out on referential equality, it would be confusing that you
     // can call this.setState(), but an autobound render callback "blocked" the update.
     // https://github.com/facebook/react/pull/12470#issuecomment-376917711
-    it('does not bail out if there were no bailouts above it', async () => {
+    it("does not bail out if there were no bailouts above it", async () => {
       const Context = React.createContext(0);
 
-      function Consumer({children}) {
+      function Consumer({ children }) {
         const contextValue = useContext(Context);
         return children(contextValue);
       }
 
       class App extends React.Component {
         state = {
-          text: 'hello',
+          text: "hello",
         };
 
-        renderConsumer = context => {
-          Scheduler.log('App#renderConsumer');
+        renderConsumer = (context) => {
+          Scheduler.log("App#renderConsumer");
           return <span prop={this.state.text} />;
         };
 
         render() {
-          Scheduler.log('App');
+          Scheduler.log("App");
           return (
             <Context.Provider value={this.props.value}>
               <Consumer>{this.renderConsumer}</Consumer>
@@ -1402,18 +1413,18 @@ describe('ReactNewContext', () => {
 
       // Initial mount
       let inst;
-      ReactNoop.render(<App value={1} ref={ref => (inst = ref)} />);
-      await waitForAll(['App', 'App#renderConsumer']);
+      ReactNoop.render(<App value={1} ref={(ref) => (inst = ref)} />);
+      await waitForAll(["App", "App#renderConsumer"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="hello" />);
 
       // Update
-      inst.setState({text: 'goodbye'});
-      await waitForAll(['App', 'App#renderConsumer']);
+      inst.setState({ text: "goodbye" });
+      await waitForAll(["App", "App#renderConsumer"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="goodbye" />);
     });
   });
 
-  it('unwinds after errors in complete phase', async () => {
+  it("unwinds after errors in complete phase", async () => {
     const Context = React.createContext(0);
 
     // This is a regression test for stack misalignment
@@ -1423,21 +1434,21 @@ describe('ReactNewContext', () => {
         <Context.Provider value={null} />
       </errorInCompletePhase>,
     );
-    await waitForThrow('Error in host config.');
+    await waitForThrow("Error in host config.");
 
     ReactNoop.render(
       <Context.Provider value={10}>
-        <Context.Consumer>{value => <span prop={value} />}</Context.Consumer>
+        <Context.Consumer>{(value) => <span prop={value} />}</Context.Consumer>
       </Context.Provider>,
     );
     await waitForAll([]);
     expect(ReactNoop).toMatchRenderedOutput(<span prop={10} />);
   });
 
-  describe('fuzz test', () => {
-    const contextKeys = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+  describe("fuzz test", () => {
+    const contextKeys = ["A", "B", "C", "D", "E", "F", "G"];
 
-    const FLUSH_ALL = 'FLUSH_ALL';
+    const FLUSH_ALL = "FLUSH_ALL";
     function flushAll() {
       return {
         type: FLUSH_ALL,
@@ -1447,7 +1458,7 @@ describe('ReactNewContext', () => {
       };
     }
 
-    const FLUSH = 'FLUSH';
+    const FLUSH = "FLUSH";
     function flush(unitsOfWork) {
       return {
         type: FLUSH,
@@ -1458,7 +1469,7 @@ describe('ReactNewContext', () => {
       };
     }
 
-    const UPDATE = 'UPDATE';
+    const UPDATE = "UPDATE";
     function update(key, value) {
       return {
         type: UPDATE,
@@ -1487,7 +1498,7 @@ describe('ReactNewContext', () => {
           const value = randomInteger(1, 10);
           return update(key, value);
         default:
-          throw new Error('Switch statement should be exhaustive');
+          throw new Error("Switch statement should be exhaustive");
       }
     }
 
@@ -1501,9 +1512,9 @@ describe('ReactNewContext', () => {
 
     function ContextSimulator(maxDepth) {
       const contexts = new Map(
-        contextKeys.map(key => {
+        contextKeys.map((key) => {
           const Context = React.createContext(0);
-          Context.displayName = 'Context' + key;
+          Context.displayName = "Context" + key;
           return [key, Context];
         }),
       );
@@ -1517,7 +1528,7 @@ describe('ReactNewContext', () => {
           if (this.props.depth >= this.props.maxDepth) {
             return null;
           }
-          const consumers = [0, 1, 2].map(i => {
+          const consumers = [0, 1, 2].map((i) => {
             const randomKey =
               contextKeys[
                 this.props.rand.intBetween(0, contextKeys.length - 1)
@@ -1525,7 +1536,7 @@ describe('ReactNewContext', () => {
             const Context = contexts.get(randomKey);
             return (
               <Context.Consumer key={i}>
-                {value => (
+                {(value) => (
                   <>
                     <span prop={`${randomKey}:${value}`} />
                     <ConsumerTree
@@ -1543,22 +1554,31 @@ describe('ReactNewContext', () => {
       }
 
       function Root(props) {
-        return contextKeys.reduceRight((children, key) => {
-          const Context = contexts.get(key);
-          const value = props.values[key];
-          return <Context.Provider value={value}>{children}</Context.Provider>;
-        }, <ConsumerTree rand={props.rand} depth={0} maxDepth={props.maxDepth} />);
+        return contextKeys.reduceRight(
+          (children, key) => {
+            const Context = contexts.get(key);
+            const value = props.values[key];
+            return (
+              <Context.Provider value={value}>{children}</Context.Provider>
+            );
+          },
+          <ConsumerTree
+            rand={props.rand}
+            depth={0}
+            maxDepth={props.maxDepth}
+          />,
+        );
       }
 
       const initialValues = contextKeys.reduce(
-        (result, key, i) => ({...result, [key]: i + 1}),
+        (result, key, i) => ({ ...result, [key]: i + 1 }),
         {},
       );
 
       function assertConsistentTree(expectedValues = {}) {
         const jsx = ReactNoop.getChildrenAsJSX();
         const children = jsx === null ? [] : jsx.props.children;
-        children.forEach(child => {
+        children.forEach((child) => {
           const text = child.props.prop;
           const key = text[0];
           const value = parseInt(text[2], 10);
@@ -1589,7 +1609,7 @@ describe('ReactNewContext', () => {
         }
         updateRoot();
 
-        actions.forEach(action => {
+        actions.forEach((action) => {
           switch (action.type) {
             case FLUSH_ALL:
               Scheduler.unstable_flushAllWithoutAsserting();
@@ -1605,7 +1625,7 @@ describe('ReactNewContext', () => {
               updateRoot();
               break;
             default:
-              throw new Error('Switch statement should be exhaustive');
+              throw new Error("Switch statement should be exhaustive");
           }
           assertConsistentTree();
         });
@@ -1614,16 +1634,16 @@ describe('ReactNewContext', () => {
         assertConsistentTree(finalExpectedValues);
       }
 
-      return {simulate};
+      return { simulate };
     }
 
-    it('hard-coded tests', () => {
-      const {simulate} = ContextSimulator(5);
-      simulate('randomSeed', [flush(3), update('A', 4)]);
+    it("hard-coded tests", () => {
+      const { simulate } = ContextSimulator(5);
+      simulate("randomSeed", [flush(3), update("A", 4)]);
     });
 
-    it('generated tests', () => {
-      const {simulate} = ContextSimulator(5);
+    it("generated tests", () => {
+      const { simulate } = ContextSimulator(5);
 
       const LIMIT = 100;
       for (let i = 0; i < LIMIT; i++) {
@@ -1634,7 +1654,7 @@ describe('ReactNewContext', () => {
         } catch (error) {
           console.error(`
 Context fuzz tester error! Copy and paste the following line into the test suite:
-  simulate('${seed}', ${actions.join(', ')});
+  simulate('${seed}', ${actions.join(", ")});
 `);
           throw error;
         }
@@ -1642,16 +1662,16 @@ Context fuzz tester error! Copy and paste the following line into the test suite
     });
   });
 
-  it('should warn with an error message when using context as a consumer in DEV', async () => {
-    const BarContext = React.createContext({value: 'bar-initial'});
+  it("should warn with an error message when using context as a consumer in DEV", async () => {
+    const BarContext = React.createContext({ value: "bar-initial" });
     const BarConsumer = BarContext;
 
     function Component() {
       return (
         <>
-          <BarContext.Provider value={{value: 'bar-updated'}}>
+          <BarContext.Provider value={{ value: "bar-updated" }}>
             <BarConsumer>
-              {({value}) => <div actual={value} expected="bar-updated" />}
+              {({ value }) => <div actual={value} expected="bar-updated" />}
             </BarConsumer>
           </BarContext.Provider>
         </>
@@ -1662,23 +1682,23 @@ Context fuzz tester error! Copy and paste the following line into the test suite
       ReactNoop.render(<Component />);
       await waitForAll([]);
     }).toErrorDev(
-      'Rendering <Context> directly is not supported and will be removed in ' +
-        'a future major release. Did you mean to render <Context.Consumer> instead?',
+      "Rendering <Context> directly is not supported and will be removed in " +
+        "a future major release. Did you mean to render <Context.Consumer> instead?",
     );
   });
 
   // False positive regression test.
-  it('should not warn when using Consumer from React < 16.6 with newer renderer', async () => {
-    const BarContext = React.createContext({value: 'bar-initial'});
+  it("should not warn when using Consumer from React < 16.6 with newer renderer", async () => {
+    const BarContext = React.createContext({ value: "bar-initial" });
     // React 16.5 and earlier didn't have a separate object.
     BarContext.Consumer = BarContext;
 
     function Component() {
       return (
         <>
-          <BarContext.Provider value={{value: 'bar-updated'}}>
+          <BarContext.Provider value={{ value: "bar-updated" }}>
             <BarContext.Consumer>
-              {({value}) => <div actual={value} expected="bar-updated" />}
+              {({ value }) => <div actual={value} expected="bar-updated" />}
             </BarContext.Consumer>
           </BarContext.Provider>
         </>
@@ -1689,16 +1709,16 @@ Context fuzz tester error! Copy and paste the following line into the test suite
     await waitForAll([]);
   });
 
-  it('should warn with an error message when using nested context consumers in DEV', async () => {
-    const BarContext = React.createContext({value: 'bar-initial'});
+  it("should warn with an error message when using nested context consumers in DEV", async () => {
+    const BarContext = React.createContext({ value: "bar-initial" });
     const BarConsumer = BarContext;
 
     function Component() {
       return (
         <>
-          <BarContext.Provider value={{value: 'bar-updated'}}>
+          <BarContext.Provider value={{ value: "bar-updated" }}>
             <BarConsumer.Consumer.Consumer>
-              {({value}) => <div actual={value} expected="bar-updated" />}
+              {({ value }) => <div actual={value} expected="bar-updated" />}
             </BarConsumer.Consumer.Consumer>
           </BarContext.Provider>
         </>
@@ -1709,20 +1729,20 @@ Context fuzz tester error! Copy and paste the following line into the test suite
       ReactNoop.render(<Component />);
       await waitForAll([]);
     }).toErrorDev(
-      'Rendering <Context.Consumer.Consumer> is not supported and will be removed in ' +
-        'a future major release. Did you mean to render <Context.Consumer> instead?',
+      "Rendering <Context.Consumer.Consumer> is not supported and will be removed in " +
+        "a future major release. Did you mean to render <Context.Consumer> instead?",
     );
   });
 
-  it('should warn with an error message when using Context.Consumer.Provider DEV', async () => {
-    const BarContext = React.createContext({value: 'bar-initial'});
+  it("should warn with an error message when using Context.Consumer.Provider DEV", async () => {
+    const BarContext = React.createContext({ value: "bar-initial" });
 
     function Component() {
       return (
         <>
-          <BarContext.Consumer.Provider value={{value: 'bar-updated'}}>
+          <BarContext.Consumer.Provider value={{ value: "bar-updated" }}>
             <BarContext.Consumer>
-              {({value}) => <div actual={value} expected="bar-updated" />}
+              {({ value }) => <div actual={value} expected="bar-updated" />}
             </BarContext.Consumer>
           </BarContext.Consumer.Provider>
         </>
@@ -1733,8 +1753,8 @@ Context fuzz tester error! Copy and paste the following line into the test suite
       ReactNoop.render(<Component />);
       await waitForAll([]);
     }).toErrorDev(
-      'Rendering <Context.Consumer.Provider> is not supported and will be removed in ' +
-        'a future major release. Did you mean to render <Context.Provider> instead?',
+      "Rendering <Context.Consumer.Provider> is not supported and will be removed in " +
+        "a future major release. Did you mean to render <Context.Provider> instead?",
     );
   });
 });

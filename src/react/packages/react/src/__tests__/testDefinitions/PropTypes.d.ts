@@ -12,6 +12,6 @@
  * just helpers for the unit test.
  */
 
-declare module 'prop-types' {
-  export let string : any;
+declare module "prop-types" {
+  export let string: any;
 }

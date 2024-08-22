@@ -4,60 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                     
-                                                                                                
-
-import ReactVersion from 'shared/ReactVersion';
+import ReactVersion from "shared/ReactVersion";
 
 import {
   createRequest,
   startWork,
   startFlowing,
   abort,
-} from 'react-server/src/ReactFizzServer';
+} from "react-server/src/ReactFizzServer";
 
 import {
   createResources,
   createResponseState,
   createRootFormatContext,
-} from 'react-dom-bindings/src/server/ReactFizzConfigDOM';
+} from "react-dom-bindings/src/server/ReactFizzConfigDOM";
 
-                
-                            
-                        
-                                  
-                                                               
-                                                               
-                                
-                       
-                                      
-                                                                   
-  
-
-                     
-                          
-  
-
-function prerender(
-  children               ,
-  options          ,
-)                        {
+function prerender(children, options) {
   return new Promise((resolve, reject) => {
     const onFatalError = reject;
 
     function onAllReady() {
       const stream = new ReadableStream(
         {
-          type: 'bytes',
-          pull: (controller)                 => {
+          type: "bytes",
+          pull: (controller) => {
             startFlowing(request, controller);
           },
         },
         // $FlowFixMe[prop-missing] size() methods are not allowed on byte streams.
-        {highWaterMark: 0},
+        { highWaterMark: 0 },
       );
 
       const result = {
@@ -89,17 +67,17 @@ function prerender(
     if (options && options.signal) {
       const signal = options.signal;
       if (signal.aborted) {
-        abort(request, (signal     ).reason);
+        abort(request, signal.reason);
       } else {
         const listener = () => {
-          abort(request, (signal     ).reason);
-          signal.removeEventListener('abort', listener);
+          abort(request, signal.reason);
+          signal.removeEventListener("abort", listener);
         };
-        signal.addEventListener('abort', listener);
+        signal.addEventListener("abort", listener);
       }
     }
     startWork(request);
   });
 }
 
-export {prerender, ReactVersion as version};
+export { prerender, ReactVersion as version };

@@ -4,13 +4,13 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *        
+ *
  */
 
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import {findCurrentFiberUsingSlowPath} from 'react-reconciler/src/ReactFiberTreeReflection';
-import {get as getInstance} from 'shared/ReactInstanceMap';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
+import { findCurrentFiberUsingSlowPath } from "react-reconciler/src/ReactFiberTreeReflection";
+import { get as getInstance } from "shared/ReactInstanceMap";
 import {
   ClassComponent,
   FunctionComponent,
@@ -18,16 +18,16 @@ import {
   HostHoistable,
   HostSingleton,
   HostText,
-} from 'react-reconciler/src/ReactWorkTags';
-import {SyntheticEvent} from 'react-dom-bindings/src/events/SyntheticEvent';
-import {ELEMENT_NODE} from 'react-dom-bindings/src/client/HTMLNodeType';
+} from "react-reconciler/src/ReactWorkTags";
+import { SyntheticEvent } from "react-dom-bindings/src/events/SyntheticEvent";
+import { ELEMENT_NODE } from "react-dom-bindings/src/client/HTMLNodeType";
 import {
   rethrowCaughtError,
   invokeGuardedCallbackAndCatchFirstError,
-} from 'shared/ReactErrorUtils';
-import {enableFloat, enableHostSingletons} from 'shared/ReactFeatureFlags';
-import assign from 'shared/assign';
-import isArray from 'shared/isArray';
+} from "shared/ReactErrorUtils";
+import { enableFloat, enableHostSingletons } from "shared/ReactFeatureFlags";
+import assign from "shared/assign";
+import isArray from "shared/isArray";
 
 // Keep in sync with ReactDOM.js:
 const SecretInternals =
@@ -104,11 +104,11 @@ function validateClassInstance(inst, methodName) {
   let received;
   const stringified = String(inst);
   if (isArray(inst)) {
-    received = 'an array';
+    received = "an array";
   } else if (inst && inst.nodeType === ELEMENT_NODE && inst.tagName) {
-    received = 'a DOM node';
-  } else if (stringified === '[object Object]') {
-    received = 'object with keys {' + Object.keys(inst).join(', ') + '}';
+    received = "a DOM node";
+  } else if (stringified === "[object Object]") {
+    received = "object with keys {" + Object.keys(inst).join(", ") + "}";
   } else {
     received = stringified;
   }
@@ -129,7 +129,7 @@ function validateClassInstance(inst, methodName) {
  * @lends ReactTestUtils
  */
 function renderIntoDocument(element) {
-  const div = document.createElement('div');
+  const div = document.createElement("div");
   // None of our tests actually require attaching the container to the
   // DOM, and doing so creates a mess that we rely on test isolation to
   // clean up, so we're going to stop honoring the name of this method
@@ -162,8 +162,8 @@ function isCompositeComponent(inst) {
   }
   return (
     inst != null &&
-    typeof inst.render === 'function' &&
-    typeof inst.setState === 'function'
+    typeof inst.render === "function" &&
+    typeof inst.setState === "function"
   );
 }
 
@@ -177,7 +177,7 @@ function isCompositeComponentWithType(inst, type) {
 }
 
 function findAllInRenderedTree(inst, test) {
-  validateClassInstance(inst, 'findAllInRenderedTree');
+  validateClassInstance(inst, "findAllInRenderedTree");
   if (!inst) {
     return [];
   }
@@ -191,21 +191,21 @@ function findAllInRenderedTree(inst, test) {
  * @return {array} an array of all the matches.
  */
 function scryRenderedDOMComponentsWithClass(root, classNames) {
-  validateClassInstance(root, 'scryRenderedDOMComponentsWithClass');
+  validateClassInstance(root, "scryRenderedDOMComponentsWithClass");
   return findAllInRenderedTree(root, function (inst) {
     if (isDOMComponent(inst)) {
       let className = inst.className;
-      if (typeof className !== 'string') {
+      if (typeof className !== "string") {
         // SVG, probably.
-        className = inst.getAttribute('class') || '';
+        className = inst.getAttribute("class") || "";
       }
       const classList = className.split(/\s+/);
 
       if (!isArray(classNames)) {
         if (classNames === undefined) {
           throw new Error(
-            'TestUtils.scryRenderedDOMComponentsWithClass expects a ' +
-              'className as a second argument.',
+            "TestUtils.scryRenderedDOMComponentsWithClass expects a " +
+              "className as a second argument.",
           );
         }
 
@@ -226,14 +226,14 @@ function scryRenderedDOMComponentsWithClass(root, classNames) {
  * @return {!ReactDOMComponent} The one match.
  */
 function findRenderedDOMComponentWithClass(root, className) {
-  validateClassInstance(root, 'findRenderedDOMComponentWithClass');
+  validateClassInstance(root, "findRenderedDOMComponentWithClass");
   const all = scryRenderedDOMComponentsWithClass(root, className);
   if (all.length !== 1) {
     throw new Error(
-      'Did not find exactly one match (found: ' +
+      "Did not find exactly one match (found: " +
         all.length +
-        ') ' +
-        'for class:' +
+        ") " +
+        "for class:" +
         className,
     );
   }
@@ -246,7 +246,7 @@ function findRenderedDOMComponentWithClass(root, className) {
  * @return {array} an array of all the matches.
  */
 function scryRenderedDOMComponentsWithTag(root, tagName) {
-  validateClassInstance(root, 'scryRenderedDOMComponentsWithTag');
+  validateClassInstance(root, "scryRenderedDOMComponentsWithTag");
   return findAllInRenderedTree(root, function (inst) {
     return (
       isDOMComponent(inst) &&
@@ -262,14 +262,14 @@ function scryRenderedDOMComponentsWithTag(root, tagName) {
  * @return {!ReactDOMComponent} The one match.
  */
 function findRenderedDOMComponentWithTag(root, tagName) {
-  validateClassInstance(root, 'findRenderedDOMComponentWithTag');
+  validateClassInstance(root, "findRenderedDOMComponentWithTag");
   const all = scryRenderedDOMComponentsWithTag(root, tagName);
   if (all.length !== 1) {
     throw new Error(
-      'Did not find exactly one match (found: ' +
+      "Did not find exactly one match (found: " +
         all.length +
-        ') ' +
-        'for tag:' +
+        ") " +
+        "for tag:" +
         tagName,
     );
   }
@@ -281,7 +281,7 @@ function findRenderedDOMComponentWithTag(root, tagName) {
  * @return {array} an array of all the matches.
  */
 function scryRenderedComponentsWithType(root, componentType) {
-  validateClassInstance(root, 'scryRenderedComponentsWithType');
+  validateClassInstance(root, "scryRenderedComponentsWithType");
   return findAllInRenderedTree(root, function (inst) {
     return isCompositeComponentWithType(inst, componentType);
   });
@@ -294,14 +294,14 @@ function scryRenderedComponentsWithType(root, componentType) {
  * @return {!ReactComponent} The one match.
  */
 function findRenderedComponentWithType(root, componentType) {
-  validateClassInstance(root, 'findRenderedComponentWithType');
+  validateClassInstance(root, "findRenderedComponentWithType");
   const all = scryRenderedComponentsWithType(root, componentType);
   if (all.length !== 1) {
     throw new Error(
-      'Did not find exactly one match (found: ' +
+      "Did not find exactly one match (found: " +
         all.length +
-        ') ' +
-        'for componentType:' +
+        ") " +
+        "for componentType:" +
         componentType,
     );
   }
@@ -326,14 +326,14 @@ function mockComponent(module, mockTagName) {
     if (!hasWarnedAboutDeprecatedMockComponent) {
       hasWarnedAboutDeprecatedMockComponent = true;
       console.warn(
-        'ReactTestUtils.mockComponent() is deprecated. ' +
-          'Use shallow rendering or jest.mock() instead.\n\n' +
-          'See https://reactjs.org/link/test-utils-mock-component for more information.',
+        "ReactTestUtils.mockComponent() is deprecated. " +
+          "Use shallow rendering or jest.mock() instead.\n\n" +
+          "See https://reactjs.org/link/test-utils-mock-component for more information.",
       );
     }
   }
 
-  mockTagName = mockTagName || module.mockTagName || 'div';
+  mockTagName = mockTagName || module.mockTagName || "div";
 
   module.prototype.render.mockImplementation(function () {
     return React.createElement(mockTagName, null, this.props.children);
@@ -344,7 +344,7 @@ function mockComponent(module, mockTagName) {
 
 function nativeTouchData(x, y) {
   return {
-    touches: [{pageX: x, pageY: y}],
+    touches: [{ pageX: x, pageY: y }],
   };
 }
 
@@ -359,7 +359,7 @@ function nativeTouchData(x, y) {
  * @param {*} inst Internal component instance
  */
 function executeDispatch(event, listener, inst) {
-  const type = event.type || 'unknown-event';
+  const type = event.type || "unknown-event";
   event.currentTarget = getNodeFromInstance(inst);
   invokeGuardedCallbackAndCatchFirstError(type, listener, undefined, event);
   event.currentTarget = null;
@@ -404,10 +404,10 @@ function executeDispatchesAndRelease(event /* ReactSyntheticEvent */) {
 
 function isInteractive(tag) {
   return (
-    tag === 'button' ||
-    tag === 'input' ||
-    tag === 'select' ||
-    tag === 'textarea'
+    tag === "button" ||
+    tag === "input" ||
+    tag === "select" ||
+    tag === "textarea"
   );
 }
 
@@ -441,26 +441,26 @@ export function traverseTwoPhase(inst, fn, arg) {
   }
   let i;
   for (i = path.length; i-- > 0; ) {
-    fn(path[i], 'captured', arg);
+    fn(path[i], "captured", arg);
   }
   for (i = 0; i < path.length; i++) {
-    fn(path[i], 'bubbled', arg);
+    fn(path[i], "bubbled", arg);
   }
 }
 
 function shouldPreventMouseEvent(name, type, props) {
   switch (name) {
-    case 'onClick':
-    case 'onClickCapture':
-    case 'onDoubleClick':
-    case 'onDoubleClickCapture':
-    case 'onMouseDown':
-    case 'onMouseDownCapture':
-    case 'onMouseMove':
-    case 'onMouseMoveCapture':
-    case 'onMouseUp':
-    case 'onMouseUpCapture':
-    case 'onMouseEnter':
+    case "onClick":
+    case "onClickCapture":
+    case "onDoubleClick":
+    case "onDoubleClickCapture":
+    case "onMouseDown":
+    case "onMouseDownCapture":
+    case "onMouseMove":
+    case "onMouseMoveCapture":
+    case "onMouseUp":
+    case "onMouseUpCapture":
+    case "onMouseEnter":
       return !!(props.disabled && isInteractive(type));
     default:
       return false;
@@ -472,7 +472,7 @@ function shouldPreventMouseEvent(name, type, props) {
  * @param {string} registrationName Name of listener (e.g. `onClick`).
  * @return {?function} The stored callback.
  */
-function getListener(inst /* Fiber */, registrationName        ) {
+function getListener(inst /* Fiber */, registrationName) {
   // TODO: shouldPreventMouseEvent is DOM-specific and definitely should not
   // live here; needs to be moved to a better place soon
   const stateNode = inst.stateNode;
@@ -490,7 +490,7 @@ function getListener(inst /* Fiber */, registrationName        ) {
     return null;
   }
 
-  if (listener && typeof listener !== 'function') {
+  if (listener && typeof listener !== "function") {
     throw new Error(
       `Expected \`${registrationName}\` listener to be a function, instead got a value of \`${typeof listener}\` type.`,
     );
@@ -499,10 +499,10 @@ function getListener(inst /* Fiber */, registrationName        ) {
   return listener;
 }
 
-function listenerAtPhase(inst, event, propagationPhase                   ) {
+function listenerAtPhase(inst, event, propagationPhase) {
   let registrationName = event._reactName;
-  if (propagationPhase === 'captured') {
-    registrationName += 'Capture';
+  if (propagationPhase === "captured") {
+    registrationName += "Capture";
   }
   return getListener(inst, registrationName);
 }
@@ -527,7 +527,7 @@ function accumulateDispatches(inst, ignoredDirection, event) {
 function accumulateDirectionalDispatches(inst, phase, event) {
   if (__DEV__) {
     if (!inst) {
-      console.error('Dispatching inst must not be null');
+      console.error("Dispatching inst must not be null");
     }
   }
   const listener = listenerAtPhase(inst, event, phase);
@@ -560,10 +560,10 @@ function accumulateTwoPhaseDispatchesSingle(event) {
 const Simulate = {};
 
 const directDispatchEventTypes = new Set([
-  'mouseEnter',
-  'mouseLeave',
-  'pointerEnter',
-  'pointerLeave',
+  "mouseEnter",
+  "mouseLeave",
+  "pointerEnter",
+  "pointerLeave",
 ]);
 
 /**
@@ -578,20 +578,20 @@ function makeSimulator(eventType) {
   return function (domNode, eventData) {
     if (React.isValidElement(domNode)) {
       throw new Error(
-        'TestUtils.Simulate expected a DOM node as the first argument but received ' +
-          'a React element. Pass the DOM node you wish to simulate the event on instead. ' +
-          'Note that TestUtils.Simulate will not work if you are using shallow rendering.',
+        "TestUtils.Simulate expected a DOM node as the first argument but received " +
+          "a React element. Pass the DOM node you wish to simulate the event on instead. " +
+          "Note that TestUtils.Simulate will not work if you are using shallow rendering.",
       );
     }
 
     if (isCompositeComponent(domNode)) {
       throw new Error(
-        'TestUtils.Simulate expected a DOM node as the first argument but received ' +
-          'a component instance. Pass the DOM node you wish to simulate the event on instead.',
+        "TestUtils.Simulate expected a DOM node as the first argument but received " +
+          "a component instance. Pass the DOM node you wish to simulate the event on instead.",
       );
     }
 
-    const reactName = 'on' + eventType[0].toUpperCase() + eventType.slice(1);
+    const reactName = "on" + eventType[0].toUpperCase() + eventType.slice(1);
     const fakeNativeEvent = new Event();
     fakeNativeEvent.target = domNode;
     fakeNativeEvent.type = eventType.toLowerCase();
@@ -629,94 +629,94 @@ function makeSimulator(eventType) {
 
 // A one-time snapshot with no plans to update. We'll probably want to deprecate Simulate API.
 const simulatedEventTypes = [
-  'blur',
-  'cancel',
-  'click',
-  'close',
-  'contextMenu',
-  'copy',
-  'cut',
-  'auxClick',
-  'doubleClick',
-  'dragEnd',
-  'dragStart',
-  'drop',
-  'focus',
-  'input',
-  'invalid',
-  'keyDown',
-  'keyPress',
-  'keyUp',
-  'mouseDown',
-  'mouseUp',
-  'paste',
-  'pause',
-  'play',
-  'pointerCancel',
-  'pointerDown',
-  'pointerUp',
-  'rateChange',
-  'reset',
-  'resize',
-  'seeked',
-  'submit',
-  'touchCancel',
-  'touchEnd',
-  'touchStart',
-  'volumeChange',
-  'drag',
-  'dragEnter',
-  'dragExit',
-  'dragLeave',
-  'dragOver',
-  'mouseMove',
-  'mouseOut',
-  'mouseOver',
-  'pointerMove',
-  'pointerOut',
-  'pointerOver',
-  'scroll',
-  'toggle',
-  'touchMove',
-  'wheel',
-  'abort',
-  'animationEnd',
-  'animationIteration',
-  'animationStart',
-  'canPlay',
-  'canPlayThrough',
-  'durationChange',
-  'emptied',
-  'encrypted',
-  'ended',
-  'error',
-  'gotPointerCapture',
-  'load',
-  'loadedData',
-  'loadedMetadata',
-  'loadStart',
-  'lostPointerCapture',
-  'playing',
-  'progress',
-  'seeking',
-  'stalled',
-  'suspend',
-  'timeUpdate',
-  'transitionEnd',
-  'waiting',
-  'mouseEnter',
-  'mouseLeave',
-  'pointerEnter',
-  'pointerLeave',
-  'change',
-  'select',
-  'beforeInput',
-  'compositionEnd',
-  'compositionStart',
-  'compositionUpdate',
+  "blur",
+  "cancel",
+  "click",
+  "close",
+  "contextMenu",
+  "copy",
+  "cut",
+  "auxClick",
+  "doubleClick",
+  "dragEnd",
+  "dragStart",
+  "drop",
+  "focus",
+  "input",
+  "invalid",
+  "keyDown",
+  "keyPress",
+  "keyUp",
+  "mouseDown",
+  "mouseUp",
+  "paste",
+  "pause",
+  "play",
+  "pointerCancel",
+  "pointerDown",
+  "pointerUp",
+  "rateChange",
+  "reset",
+  "resize",
+  "seeked",
+  "submit",
+  "touchCancel",
+  "touchEnd",
+  "touchStart",
+  "volumeChange",
+  "drag",
+  "dragEnter",
+  "dragExit",
+  "dragLeave",
+  "dragOver",
+  "mouseMove",
+  "mouseOut",
+  "mouseOver",
+  "pointerMove",
+  "pointerOut",
+  "pointerOver",
+  "scroll",
+  "toggle",
+  "touchMove",
+  "wheel",
+  "abort",
+  "animationEnd",
+  "animationIteration",
+  "animationStart",
+  "canPlay",
+  "canPlayThrough",
+  "durationChange",
+  "emptied",
+  "encrypted",
+  "ended",
+  "error",
+  "gotPointerCapture",
+  "load",
+  "loadedData",
+  "loadedMetadata",
+  "loadStart",
+  "lostPointerCapture",
+  "playing",
+  "progress",
+  "seeking",
+  "stalled",
+  "suspend",
+  "timeUpdate",
+  "transitionEnd",
+  "waiting",
+  "mouseEnter",
+  "mouseLeave",
+  "pointerEnter",
+  "pointerLeave",
+  "change",
+  "select",
+  "beforeInput",
+  "compositionEnd",
+  "compositionStart",
+  "compositionUpdate",
 ];
 function buildSimulators() {
-  simulatedEventTypes.forEach(eventType => {
+  simulatedEventTypes.forEach((eventType) => {
     Simulate[eventType] = makeSimulator(eventType);
   });
 }

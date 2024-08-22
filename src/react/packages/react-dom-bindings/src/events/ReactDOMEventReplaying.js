@@ -4,129 +4,108 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                               
-                                                                               
-                                                          
-                                                         
-                                                                       
-                                                                             
 
 import {
   unstable_scheduleCallback as scheduleCallback,
   unstable_NormalPriority as NormalPriority,
-} from 'scheduler';
+} from "scheduler";
 import {
   getNearestMountedFiber,
   getContainerFromFiber,
   getSuspenseInstanceFromFiber,
-} from 'react-reconciler/src/ReactFiberTreeReflection';
+} from "react-reconciler/src/ReactFiberTreeReflection";
 import {
   findInstanceBlockingEvent,
   findInstanceBlockingTarget,
-} from './ReactDOMEventListener';
-import {setReplayingEvent, resetReplayingEvent} from './CurrentReplayingEvent';
+} from "./ReactDOMEventListener";
+import {
+  setReplayingEvent,
+  resetReplayingEvent,
+} from "./CurrentReplayingEvent";
 import {
   getInstanceFromNode,
   getClosestInstanceFromNode,
   getFiberCurrentPropsFromNode,
-} from '../client/ReactDOMComponentTree';
-import {HostRoot, SuspenseComponent} from 'react-reconciler/src/ReactWorkTags';
-import {isHigherEventPriority} from 'react-reconciler/src/ReactEventPriorities';
-import {isRootDehydrated} from 'react-reconciler/src/ReactFiberShellHydration';
-import {dispatchReplayedFormAction} from './plugins/FormActionEventPlugin';
+} from "../client/ReactDOMComponentTree";
+import {
+  HostRoot,
+  SuspenseComponent,
+} from "react-reconciler/src/ReactWorkTags";
+import { isHigherEventPriority } from "react-reconciler/src/ReactEventPriorities";
+import { isRootDehydrated } from "react-reconciler/src/ReactFiberShellHydration";
+import { dispatchReplayedFormAction } from "./plugins/FormActionEventPlugin";
 
 import {
   attemptContinuousHydration,
   attemptHydrationAtCurrentPriority,
-} from 'react-reconciler/src/ReactFiberReconciler';
+} from "react-reconciler/src/ReactFiberReconciler";
 import {
   runWithPriority as attemptHydrationAtPriority,
   getCurrentUpdatePriority,
-} from 'react-reconciler/src/ReactEventPriorities';
-import {enableFormActions} from 'shared/ReactFeatureFlags';
+} from "react-reconciler/src/ReactEventPriorities";
+import { enableFormActions } from "shared/ReactFeatureFlags";
 
 // TODO: Upgrade this definition once we're on a newer version of Flow that
 // has this definition built-in.
-                             
-                    
-                                    
-     
-  
-
-                              
-                                                 
-                             
-                                     
-                              
-                                       
-  
 
 let hasScheduledReplayAttempt = false;
 
 // The last of each continuous event type. We only need to replay the last one
 // if the last target was dehydrated.
-let queuedFocus                               = null;
-let queuedDrag                               = null;
-let queuedMouse                               = null;
+let queuedFocus = null;
+let queuedDrag = null;
+let queuedMouse = null;
 // For pointer events there can be one latest event per pointerId.
-const queuedPointers                                     = new Map();
-const queuedPointerCaptures                                     = new Map();
+const queuedPointers = new Map();
+const queuedPointerCaptures = new Map();
 // We could consider replaying selectionchange and touchmoves too.
 
-                              
-                                                 
-               
-                          
-  
-const queuedExplicitHydrationTargets                               = [];
+const queuedExplicitHydrationTargets = [];
 
-const discreteReplayableEvents                      = [
-  'mousedown',
-  'mouseup',
-  'touchcancel',
-  'touchend',
-  'touchstart',
-  'auxclick',
-  'dblclick',
-  'pointercancel',
-  'pointerdown',
-  'pointerup',
-  'dragend',
-  'dragstart',
-  'drop',
-  'compositionend',
-  'compositionstart',
-  'keydown',
-  'keypress',
-  'keyup',
-  'input',
-  'textInput', // Intentionally camelCase
-  'copy',
-  'cut',
-  'paste',
-  'click',
-  'change',
-  'contextmenu',
-  'reset',
+const discreteReplayableEvents = [
+  "mousedown",
+  "mouseup",
+  "touchcancel",
+  "touchend",
+  "touchstart",
+  "auxclick",
+  "dblclick",
+  "pointercancel",
+  "pointerdown",
+  "pointerup",
+  "dragend",
+  "dragstart",
+  "drop",
+  "compositionend",
+  "compositionstart",
+  "keydown",
+  "keypress",
+  "keyup",
+  "input",
+  "textInput", // Intentionally camelCase
+  "copy",
+  "cut",
+  "paste",
+  "click",
+  "change",
+  "contextmenu",
+  "reset",
   // 'submit', // stopPropagation blocks the replay mechanism
 ];
 
-export function isDiscreteEventThatRequiresHydration(
-  eventType              ,
-)          {
+export function isDiscreteEventThatRequiresHydration(eventType) {
   return discreteReplayableEvents.indexOf(eventType) > -1;
 }
 
 function createQueuedReplayableEvent(
-  blockedOn                                     ,
-  domEventName              ,
-  eventSystemFlags                  ,
-  targetContainer             ,
-  nativeEvent                ,
-)                        {
+  blockedOn,
+  domEventName,
+  eventSystemFlags,
+  targetContainer,
+  nativeEvent,
+) {
   return {
     blockedOn,
     domEventName,
@@ -137,32 +116,29 @@ function createQueuedReplayableEvent(
 }
 
 // Resets the replaying for this type of continuous event to no event.
-export function clearIfContinuousEvent(
-  domEventName              ,
-  nativeEvent                ,
-)       {
+export function clearIfContinuousEvent(domEventName, nativeEvent) {
   switch (domEventName) {
-    case 'focusin':
-    case 'focusout':
+    case "focusin":
+    case "focusout":
       queuedFocus = null;
       break;
-    case 'dragenter':
-    case 'dragleave':
+    case "dragenter":
+    case "dragleave":
       queuedDrag = null;
       break;
-    case 'mouseover':
-    case 'mouseout':
+    case "mouseover":
+    case "mouseout":
       queuedMouse = null;
       break;
-    case 'pointerover':
-    case 'pointerout': {
-      const pointerId = ((nativeEvent     )              ).pointerId;
+    case "pointerover":
+    case "pointerout": {
+      const pointerId = nativeEvent.pointerId;
       queuedPointers.delete(pointerId);
       break;
     }
-    case 'gotpointercapture':
-    case 'lostpointercapture': {
-      const pointerId = ((nativeEvent     )              ).pointerId;
+    case "gotpointercapture":
+    case "lostpointercapture": {
+      const pointerId = nativeEvent.pointerId;
       queuedPointerCaptures.delete(pointerId);
       break;
     }
@@ -170,13 +146,13 @@ export function clearIfContinuousEvent(
 }
 
 function accumulateOrCreateContinuousQueuedReplayableEvent(
-  existingQueuedEvent                              ,
-  blockedOn                                     ,
-  domEventName              ,
-  eventSystemFlags                  ,
-  targetContainer             ,
-  nativeEvent                ,
-)                        {
+  existingQueuedEvent,
+  blockedOn,
+  domEventName,
+  eventSystemFlags,
+  targetContainer,
+  nativeEvent,
+) {
   if (
     existingQueuedEvent === null ||
     existingQueuedEvent.nativeEvent !== nativeEvent
@@ -213,18 +189,18 @@ function accumulateOrCreateContinuousQueuedReplayableEvent(
 }
 
 export function queueIfContinuousEvent(
-  blockedOn                                     ,
-  domEventName              ,
-  eventSystemFlags                  ,
-  targetContainer             ,
-  nativeEvent                ,
-)          {
+  blockedOn,
+  domEventName,
+  eventSystemFlags,
+  targetContainer,
+  nativeEvent,
+) {
   // These set relatedTarget to null because the replayed event will be treated as if we
   // moved from outside the window (no target) onto the target once it hydrates.
   // Instead of mutating we could clone the event.
   switch (domEventName) {
-    case 'focusin': {
-      const focusEvent = ((nativeEvent     )            );
+    case "focusin": {
+      const focusEvent = nativeEvent;
       queuedFocus = accumulateOrCreateContinuousQueuedReplayableEvent(
         queuedFocus,
         blockedOn,
@@ -235,8 +211,8 @@ export function queueIfContinuousEvent(
       );
       return true;
     }
-    case 'dragenter': {
-      const dragEvent = ((nativeEvent     )           );
+    case "dragenter": {
+      const dragEvent = nativeEvent;
       queuedDrag = accumulateOrCreateContinuousQueuedReplayableEvent(
         queuedDrag,
         blockedOn,
@@ -247,8 +223,8 @@ export function queueIfContinuousEvent(
       );
       return true;
     }
-    case 'mouseover': {
-      const mouseEvent = ((nativeEvent     )            );
+    case "mouseover": {
+      const mouseEvent = nativeEvent;
       queuedMouse = accumulateOrCreateContinuousQueuedReplayableEvent(
         queuedMouse,
         blockedOn,
@@ -259,8 +235,8 @@ export function queueIfContinuousEvent(
       );
       return true;
     }
-    case 'pointerover': {
-      const pointerEvent = ((nativeEvent     )              );
+    case "pointerover": {
+      const pointerEvent = nativeEvent;
       const pointerId = pointerEvent.pointerId;
       queuedPointers.set(
         pointerId,
@@ -275,8 +251,8 @@ export function queueIfContinuousEvent(
       );
       return true;
     }
-    case 'gotpointercapture': {
-      const pointerEvent = ((nativeEvent     )              );
+    case "gotpointercapture": {
+      const pointerEvent = nativeEvent;
       const pointerId = pointerEvent.pointerId;
       queuedPointerCaptures.set(
         pointerId,
@@ -296,9 +272,7 @@ export function queueIfContinuousEvent(
 }
 
 // Check if this target is unblocked. Returns true if it's unblocked.
-function attemptExplicitHydrationTarget(
-  queuedTarget                       ,
-)       {
+function attemptExplicitHydrationTarget(queuedTarget) {
   // TODO: This function shares a lot of logic with findInstanceBlockingEvent.
   // Try to unify them. It's a bit tricky since it would require two return
   // values.
@@ -320,7 +294,7 @@ function attemptExplicitHydrationTarget(
           return;
         }
       } else if (tag === HostRoot) {
-        const root            = nearestMounted.stateNode;
+        const root = nearestMounted.stateNode;
         if (isRootDehydrated(root)) {
           queuedTarget.blockedOn = getContainerFromFiber(nearestMounted);
           // We don't currently have a way to increase the priority of
@@ -333,12 +307,12 @@ function attemptExplicitHydrationTarget(
   queuedTarget.blockedOn = null;
 }
 
-export function queueExplicitHydrationTarget(target      )       {
+export function queueExplicitHydrationTarget(target) {
   // TODO: This will read the priority if it's dispatched by the React
   // event system but not native events. Should read window.event.type, like
   // we do for updates (getCurrentEventPriority).
   const updatePriority = getCurrentUpdatePriority();
-  const queuedTarget                        = {
+  const queuedTarget = {
     blockedOn: null,
     target: target,
     priority: updatePriority,
@@ -361,9 +335,7 @@ export function queueExplicitHydrationTarget(target      )       {
   }
 }
 
-function attemptReplayContinuousQueuedEvent(
-  queuedEvent                       ,
-)          {
+function attemptReplayContinuousQueuedEvent(queuedEvent) {
   if (queuedEvent.blockedOn !== null) {
     return false;
   }
@@ -374,7 +346,7 @@ function attemptReplayContinuousQueuedEvent(
       const nativeEvent = queuedEvent.nativeEvent;
       const nativeEventClone = new nativeEvent.constructor(
         nativeEvent.type,
-        (nativeEvent     ),
+        nativeEvent,
       );
       setReplayingEvent(nativeEventClone);
       nativeEvent.target.dispatchEvent(nativeEventClone);
@@ -394,11 +366,7 @@ function attemptReplayContinuousQueuedEvent(
   return true;
 }
 
-function attemptReplayContinuousQueuedEventInMap(
-  queuedEvent                       ,
-  key        ,
-  map                                    ,
-)       {
+function attemptReplayContinuousQueuedEventInMap(queuedEvent, key, map) {
   if (attemptReplayContinuousQueuedEvent(queuedEvent)) {
     map.delete(key);
   }
@@ -420,10 +388,7 @@ function replayUnblockedEvents() {
   queuedPointerCaptures.forEach(attemptReplayContinuousQueuedEventInMap);
 }
 
-function scheduleCallbackIfUnblocked(
-  queuedEvent                       ,
-  unblocked                              ,
-) {
+function scheduleCallbackIfUnblocked(queuedEvent, unblocked) {
   if (queuedEvent.blockedOn === unblocked) {
     queuedEvent.blockedOn = null;
     if (!hasScheduledReplayAttempt) {
@@ -436,25 +401,19 @@ function scheduleCallbackIfUnblocked(
   }
 }
 
-                                                   
+// [form, submitter or action, formData...]
 
-                                      // [form, submitter or action, formData...]
+let lastScheduledReplayQueue = null;
 
-let lastScheduledReplayQueue                            = null;
-
-function replayUnblockedFormActions(formReplayingQueue                    ) {
+function replayUnblockedFormActions(formReplayingQueue) {
   if (lastScheduledReplayQueue === formReplayingQueue) {
     lastScheduledReplayQueue = null;
   }
   for (let i = 0; i < formReplayingQueue.length; i += 3) {
-    const form                  = formReplayingQueue[i];
-    const submitterOrAction 
-            
-                        
-                         
-                   = formReplayingQueue[i + 1];
-    const formData           = formReplayingQueue[i + 2];
-    if (typeof submitterOrAction !== 'function') {
+    const form = formReplayingQueue[i];
+    const submitterOrAction = formReplayingQueue[i + 1];
+    const formData = formReplayingQueue[i + 2];
+    if (typeof submitterOrAction !== "function") {
       // This action is not hydrated yet. This might be because it's blocked on
       // a different React instance or higher up our tree.
       const blockedOn = findInstanceBlockingTarget(submitterOrAction || form);
@@ -484,7 +443,7 @@ function replayUnblockedFormActions(formReplayingQueue                    ) {
   }
 }
 
-function scheduleReplayQueueIfNeeded(formReplayingQueue                    ) {
+function scheduleReplayQueueIfNeeded(formReplayingQueue) {
   // Schedule a callback to execute any unblocked form actions in.
   // We only keep track of the last queue which means that if multiple React oscillate
   // commits, we could schedule more callbacks than necessary but it's not a big deal
@@ -497,9 +456,7 @@ function scheduleReplayQueueIfNeeded(formReplayingQueue                    ) {
   }
 }
 
-export function retryIfBlockedOn(
-  unblocked                              ,
-)       {
+export function retryIfBlockedOn(unblocked) {
   if (queuedFocus !== null) {
     scheduleCallbackIfUnblocked(queuedFocus, unblocked);
   }
@@ -509,7 +466,7 @@ export function retryIfBlockedOn(
   if (queuedMouse !== null) {
     scheduleCallbackIfUnblocked(queuedMouse, unblocked);
   }
-  const unblock = (queuedEvent                       ) =>
+  const unblock = (queuedEvent) =>
     scheduleCallbackIfUnblocked(queuedEvent, unblocked);
   queuedPointers.forEach(unblock);
   queuedPointerCaptures.forEach(unblock);
@@ -538,18 +495,13 @@ export function retryIfBlockedOn(
   if (enableFormActions) {
     // Check the document if there are any queued form actions.
     const root = unblocked.getRootNode();
-    const formReplayingQueue                            = (root     )
-      .$$reactFormReplay;
+    const formReplayingQueue = root.$$reactFormReplay;
     if (formReplayingQueue != null) {
       for (let i = 0; i < formReplayingQueue.length; i += 3) {
-        const form                  = formReplayingQueue[i];
-        const submitterOrAction 
-                
-                            
-                             
-                       = formReplayingQueue[i + 1];
+        const form = formReplayingQueue[i];
+        const submitterOrAction = formReplayingQueue[i + 1];
         const formProps = getFiberCurrentPropsFromNode(form);
-        if (typeof submitterOrAction === 'function') {
+        if (typeof submitterOrAction === "function") {
           // This action has already resolved. We're just waiting to dispatch it.
           if (!formProps) {
             // This was not part of this React instance. It might have been recently
@@ -559,19 +511,19 @@ export function retryIfBlockedOn(
           }
           continue;
         }
-        let target       = form;
+        let target = form;
         if (formProps) {
           // This form belongs to this React instance but the submitter might
           // not be done yet.
-          let action                    = null;
+          let action = null;
           const submitter = submitterOrAction;
-          if (submitter && submitter.hasAttribute('formAction')) {
+          if (submitter && submitter.hasAttribute("formAction")) {
             // The submitter is the one that is responsible for the action.
             target = submitter;
             const submitterProps = getFiberCurrentPropsFromNode(submitter);
             if (submitterProps) {
               // The submitter is part of this instance.
-              action = (submitterProps     ).formAction;
+              action = submitterProps.formAction;
             } else {
               const blockedOn = findInstanceBlockingTarget(target);
               if (blockedOn !== null) {
@@ -582,9 +534,9 @@ export function retryIfBlockedOn(
               // Except the form isn't. We don't dispatch actions in this scenario.
             }
           } else {
-            action = (formProps     ).action;
+            action = formProps.action;
           }
-          if (typeof action === 'function') {
+          if (typeof action === "function") {
             formReplayingQueue[i + 1] = action;
           } else {
             // Something went wrong so let's just delete this action.

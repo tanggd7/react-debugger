@@ -4,23 +4,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                  
-
-import {registerTwoPhaseEvent} from './EventRegistry';
+import { registerTwoPhaseEvent } from "./EventRegistry";
 import {
   ANIMATION_END,
   ANIMATION_ITERATION,
   ANIMATION_START,
   TRANSITION_END,
-} from './DOMEventNames';
+} from "./DOMEventNames";
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
+import { enableCreateEventHandleAPI } from "shared/ReactFeatureFlags";
 
-export const topLevelEventsToReactNames                                   =
-  new Map();
+export const topLevelEventsToReactNames = new Map();
 
 // NOTE: Capitalization is important in this list!
 //
@@ -105,28 +102,28 @@ const simpleEventPluginEvents = [
 if (enableCreateEventHandleAPI) {
   // Special case: these two events don't have on* React handler
   // and are only accessible via the createEventHandle API.
-  topLevelEventsToReactNames.set('beforeblur', null);
-  topLevelEventsToReactNames.set('afterblur', null);
+  topLevelEventsToReactNames.set("beforeblur", null);
+  topLevelEventsToReactNames.set("afterblur", null);
 }
 
-function registerSimpleEvent(domEventName              , reactName        ) {
+function registerSimpleEvent(domEventName, reactName) {
   topLevelEventsToReactNames.set(domEventName, reactName);
   registerTwoPhaseEvent(reactName, [domEventName]);
 }
 
 export function registerSimpleEvents() {
   for (let i = 0; i < simpleEventPluginEvents.length; i++) {
-    const eventName = ((simpleEventPluginEvents[i]     )        );
-    const domEventName = ((eventName.toLowerCase()     )              );
+    const eventName = simpleEventPluginEvents[i];
+    const domEventName = eventName.toLowerCase();
     const capitalizedEvent = eventName[0].toUpperCase() + eventName.slice(1);
-    registerSimpleEvent(domEventName, 'on' + capitalizedEvent);
+    registerSimpleEvent(domEventName, "on" + capitalizedEvent);
   }
   // Special cases where event names don't match.
-  registerSimpleEvent(ANIMATION_END, 'onAnimationEnd');
-  registerSimpleEvent(ANIMATION_ITERATION, 'onAnimationIteration');
-  registerSimpleEvent(ANIMATION_START, 'onAnimationStart');
-  registerSimpleEvent('dblclick', 'onDoubleClick');
-  registerSimpleEvent('focusin', 'onFocus');
-  registerSimpleEvent('focusout', 'onBlur');
-  registerSimpleEvent(TRANSITION_END, 'onTransitionEnd');
+  registerSimpleEvent(ANIMATION_END, "onAnimationEnd");
+  registerSimpleEvent(ANIMATION_ITERATION, "onAnimationIteration");
+  registerSimpleEvent(ANIMATION_START, "onAnimationStart");
+  registerSimpleEvent("dblclick", "onDoubleClick");
+  registerSimpleEvent("focusin", "onFocus");
+  registerSimpleEvent("focusout", "onBlur");
+  registerSimpleEvent(TRANSITION_END, "onTransitionEnd");
 }

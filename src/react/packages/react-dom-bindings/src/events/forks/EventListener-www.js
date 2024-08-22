@@ -4,36 +4,25 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-const EventListenerWWW = require('EventListener');
+const EventListenerWWW = require("EventListener");
 
-                                                             
-                                                                    
-
-export function addEventBubbleListener(
-  target             ,
-  eventType        ,
-  listener          ,
-)        {
+export function addEventBubbleListener(target, eventType, listener) {
   return EventListenerWWW.listen(target, eventType, listener);
 }
 
-export function addEventCaptureListener(
-  target             ,
-  eventType        ,
-  listener          ,
-)        {
+export function addEventCaptureListener(target, eventType, listener) {
   return EventListenerWWW.capture(target, eventType, listener);
 }
 
 export function addEventCaptureListenerWithPassiveFlag(
-  target             ,
-  eventType        ,
-  listener          ,
-  passive         ,
-)        {
+  target,
+  eventType,
+  listener,
+  passive,
+) {
   return EventListenerWWW.captureWithPassiveFlag(
     target,
     eventType,
@@ -43,11 +32,11 @@ export function addEventCaptureListenerWithPassiveFlag(
 }
 
 export function addEventBubbleListenerWithPassiveFlag(
-  target             ,
-  eventType        ,
-  listener          ,
-  passive         ,
-)        {
+  target,
+  eventType,
+  listener,
+  passive,
+) {
   return EventListenerWWW.bubbleWithPassiveFlag(
     target,
     eventType,
@@ -56,14 +45,9 @@ export function addEventBubbleListenerWithPassiveFlag(
   );
 }
 
-export function removeEventListener(
-  target             ,
-  eventType        ,
-  listener          ,
-  capture         ,
-) {
+export function removeEventListener(target, eventType, listener, capture) {
   listener.remove();
 }
 
 // Flow magic to verify the exports of this file match the original version.
-((((null     )                   )                       )                   );
+null;

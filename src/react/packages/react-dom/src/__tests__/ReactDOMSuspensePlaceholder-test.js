@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -16,17 +16,17 @@ let Scheduler;
 let act;
 let textCache;
 
-describe('ReactDOMSuspensePlaceholder', () => {
+describe("ReactDOMSuspensePlaceholder", () => {
   let container;
 
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOM = require('react-dom');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactDOM = require("react-dom");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     Suspense = React.Suspense;
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
 
     textCache = new Map();
@@ -40,15 +40,15 @@ describe('ReactDOMSuspensePlaceholder', () => {
     const record = textCache.get(text);
     if (record === undefined) {
       const newRecord = {
-        status: 'resolved',
+        status: "resolved",
         value: text,
       };
       textCache.set(text, newRecord);
-    } else if (record.status === 'pending') {
+    } else if (record.status === "pending") {
       const thenable = record.value;
-      record.status = 'resolved';
+      record.status = "resolved";
       record.value = text;
-      thenable.pings.forEach(t => t());
+      thenable.pings.forEach((t) => t());
     }
   }
 
@@ -56,12 +56,12 @@ describe('ReactDOMSuspensePlaceholder', () => {
     const record = textCache.get(text);
     if (record !== undefined) {
       switch (record.status) {
-        case 'pending':
+        case "pending":
           Scheduler.log(`Suspend! [${text}]`);
           throw record.value;
-        case 'rejected':
+        case "rejected":
           throw record.value;
-        case 'resolved':
+        case "resolved":
           return record.value;
       }
     } else {
@@ -69,7 +69,7 @@ describe('ReactDOMSuspensePlaceholder', () => {
       const thenable = {
         pings: [],
         then(resolve) {
-          if (newRecord.status === 'pending') {
+          if (newRecord.status === "pending") {
             thenable.pings.push(resolve);
           } else {
             Promise.resolve().then(() => resolve(newRecord.value));
@@ -78,7 +78,7 @@ describe('ReactDOMSuspensePlaceholder', () => {
       };
 
       const newRecord = {
-        status: 'pending',
+        status: "pending",
         value: thenable,
       };
       textCache.set(text, newRecord);
@@ -87,18 +87,18 @@ describe('ReactDOMSuspensePlaceholder', () => {
     }
   }
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
 
-  function AsyncText({text}) {
+  function AsyncText({ text }) {
     readText(text);
     Scheduler.log(text);
     return text;
   }
 
-  it('hides and unhides timed out DOM elements', async () => {
+  it("hides and unhides timed out DOM elements", async () => {
     const divs = [
       React.createRef(null),
       React.createRef(null),
@@ -113,28 +113,28 @@ describe('ReactDOMSuspensePlaceholder', () => {
           <div ref={divs[1]}>
             <AsyncText text="B" />
           </div>
-          <div style={{display: 'inline'}} ref={divs[2]}>
+          <div style={{ display: "inline" }} ref={divs[2]}>
             <Text text="C" />
           </div>
         </Suspense>
       );
     }
     ReactDOM.render(<App />, container);
-    expect(window.getComputedStyle(divs[0].current).display).toEqual('none');
-    expect(window.getComputedStyle(divs[1].current).display).toEqual('none');
-    expect(window.getComputedStyle(divs[2].current).display).toEqual('none');
+    expect(window.getComputedStyle(divs[0].current).display).toEqual("none");
+    expect(window.getComputedStyle(divs[1].current).display).toEqual("none");
+    expect(window.getComputedStyle(divs[2].current).display).toEqual("none");
 
     await act(async () => {
-      await resolveText('B');
+      await resolveText("B");
     });
 
-    expect(window.getComputedStyle(divs[0].current).display).toEqual('block');
-    expect(window.getComputedStyle(divs[1].current).display).toEqual('block');
+    expect(window.getComputedStyle(divs[0].current).display).toEqual("block");
+    expect(window.getComputedStyle(divs[1].current).display).toEqual("block");
     // This div's display was set with a prop.
-    expect(window.getComputedStyle(divs[2].current).display).toEqual('inline');
+    expect(window.getComputedStyle(divs[2].current).display).toEqual("inline");
   });
 
-  it('hides and unhides timed out text nodes', async () => {
+  it("hides and unhides timed out text nodes", async () => {
     function App() {
       return (
         <Suspense fallback={<Text text="Loading..." />}>
@@ -145,27 +145,27 @@ describe('ReactDOMSuspensePlaceholder', () => {
       );
     }
     ReactDOM.render(<App />, container);
-    expect(container.textContent).toEqual('Loading...');
+    expect(container.textContent).toEqual("Loading...");
 
     await act(async () => {
-      await resolveText('B');
+      await resolveText("B");
     });
 
-    expect(container.textContent).toEqual('ABC');
+    expect(container.textContent).toEqual("ABC");
   });
 
   it(
-    'outside concurrent mode, re-hides children if their display is updated ' +
-      'but the boundary is still showing the fallback',
+    "outside concurrent mode, re-hides children if their display is updated " +
+      "but the boundary is still showing the fallback",
     async () => {
-      const {useState} = React;
+      const { useState } = React;
 
       let setIsVisible;
-      function Sibling({children}) {
+      function Sibling({ children }) {
         const [isVisible, _setIsVisible] = useState(false);
         setIsVisible = _setIsVisible;
         return (
-          <span style={{display: isVisible ? 'inline' : 'none'}}>
+          <span style={{ display: isVisible ? "inline" : "none" }}>
             {children}
           </span>
         );
@@ -199,7 +199,7 @@ describe('ReactDOMSuspensePlaceholder', () => {
       );
 
       // Unsuspend. The style should now match the inline prop.
-      await act(() => resolveText('Async'));
+      await act(() => resolveText("Async"));
       expect(container.innerHTML).toEqual(
         '<span style="display: inline;">Sibling</span><span style="">Async</span>',
       );
@@ -207,14 +207,14 @@ describe('ReactDOMSuspensePlaceholder', () => {
   );
 
   // Regression test for https://github.com/facebook/react/issues/14188
-  it('can call findDOMNode() in a suspended component commit phase', async () => {
+  it("can call findDOMNode() in a suspended component commit phase", async () => {
     const log = [];
     const Lazy = React.lazy(
       () =>
-        new Promise(resolve =>
+        new Promise((resolve) =>
           resolve({
             default() {
-              return 'lazy';
+              return "lazy";
             },
           }),
         ),
@@ -222,15 +222,15 @@ describe('ReactDOMSuspensePlaceholder', () => {
 
     class Child extends React.Component {
       componentDidMount() {
-        log.push('cDM ' + this.props.id);
+        log.push("cDM " + this.props.id);
         ReactDOM.findDOMNode(this);
       }
       componentDidUpdate() {
-        log.push('cDU ' + this.props.id);
+        log.push("cDU " + this.props.id);
         ReactDOM.findDOMNode(this);
       }
       render() {
-        return 'child';
+        return "child";
       }
     }
 
@@ -240,7 +240,7 @@ describe('ReactDOMSuspensePlaceholder', () => {
         suspend: false,
       };
       handleClick = () => {
-        this.setState({suspend: true});
+        this.setState({ suspend: true });
       };
       render() {
         return (
@@ -258,16 +258,16 @@ describe('ReactDOMSuspensePlaceholder', () => {
 
     ReactDOM.render(<App />, container);
 
-    expect(log).toEqual(['cDM first', 'cDM second']);
+    expect(log).toEqual(["cDM first", "cDM second"]);
     log.length = 0;
 
-    buttonRef.current.dispatchEvent(new MouseEvent('click', {bubbles: true}));
+    buttonRef.current.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     await Lazy;
-    expect(log).toEqual(['cDU first', 'cDU second']);
+    expect(log).toEqual(["cDU first", "cDU second"]);
   });
 
   // Regression test for https://github.com/facebook/react/issues/14188
-  it('can call findDOMNode() in a suspended component commit phase (#2)', () => {
+  it("can call findDOMNode() in a suspended component commit phase (#2)", () => {
     let suspendOnce = Promise.resolve();
     function Suspend() {
       if (suspendOnce) {
@@ -281,12 +281,12 @@ describe('ReactDOMSuspensePlaceholder', () => {
     const log = [];
     class Child extends React.Component {
       componentDidMount() {
-        log.push('cDM');
+        log.push("cDM");
         ReactDOM.findDOMNode(this);
       }
 
       componentDidUpdate() {
-        log.push('cDU');
+        log.push("cDU");
         ReactDOM.findDOMNode(this);
       }
 
@@ -305,8 +305,8 @@ describe('ReactDOMSuspensePlaceholder', () => {
     }
 
     ReactDOM.render(<App />, container);
-    expect(log).toEqual(['cDM']);
+    expect(log).toEqual(["cDM"]);
     ReactDOM.render(<App />, container);
-    expect(log).toEqual(['cDM', 'cDU']);
+    expect(log).toEqual(["cDM", "cDU"]);
   });
 });

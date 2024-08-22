@@ -5,13 +5,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import {shorthandToLonghand} from './CSSShorthandProperty';
+import { shorthandToLonghand } from "./CSSShorthandProperty";
 
-import hyphenateStyleName from '../shared/hyphenateStyleName';
-import warnValidStyle from '../shared/warnValidStyle';
-import isUnitlessNumber from '../shared/isUnitlessNumber';
-import {checkCSSPropertyStringCoercion} from 'shared/CheckStringCoercion';
-import {diffInCommitPhase} from 'shared/ReactFeatureFlags';
+import hyphenateStyleName from "../shared/hyphenateStyleName";
+import warnValidStyle from "../shared/warnValidStyle";
+import isUnitlessNumber from "../shared/isUnitlessNumber";
+import { checkCSSPropertyStringCoercion } from "shared/CheckStringCoercion";
+import { diffInCommitPhase } from "shared/ReactFeatureFlags";
 
 /**
  * Operations for dealing with CSS properties.
@@ -25,28 +25,28 @@ import {diffInCommitPhase} from 'shared/ReactFeatureFlags';
  */
 export function createDangerousStringForStyles(styles) {
   if (__DEV__) {
-    let serialized = '';
-    let delimiter = '';
+    let serialized = "";
+    let delimiter = "";
     for (const styleName in styles) {
       if (!styles.hasOwnProperty(styleName)) {
         continue;
       }
       const value = styles[styleName];
-      if (value != null && typeof value !== 'boolean' && value !== '') {
-        const isCustomProperty = styleName.indexOf('--') === 0;
+      if (value != null && typeof value !== "boolean" && value !== "") {
+        const isCustomProperty = styleName.indexOf("--") === 0;
         if (isCustomProperty) {
           if (__DEV__) {
             checkCSSPropertyStringCoercion(value, styleName);
           }
-          serialized += delimiter + styleName + ':' + ('' + value).trim();
+          serialized += delimiter + styleName + ":" + ("" + value).trim();
         } else {
           if (
-            typeof value === 'number' &&
+            typeof value === "number" &&
             value !== 0 &&
             !isUnitlessNumber(styleName)
           ) {
             serialized +=
-              delimiter + hyphenateStyleName(styleName) + ':' + value + 'px';
+              delimiter + hyphenateStyleName(styleName) + ":" + value + "px";
           } else {
             if (__DEV__) {
               checkCSSPropertyStringCoercion(value, styleName);
@@ -54,11 +54,11 @@ export function createDangerousStringForStyles(styles) {
             serialized +=
               delimiter +
               hyphenateStyleName(styleName) +
-              ':' +
-              ('' + value).trim();
+              ":" +
+              ("" + value).trim();
           }
         }
-        delimiter = ';';
+        delimiter = ";";
       }
     }
     return serialized || null;
@@ -66,37 +66,37 @@ export function createDangerousStringForStyles(styles) {
 }
 
 function setValueForStyle(style, styleName, value) {
-  const isCustomProperty = styleName.indexOf('--') === 0;
+  const isCustomProperty = styleName.indexOf("--") === 0;
   if (__DEV__) {
     if (!isCustomProperty) {
       warnValidStyle(styleName, value);
     }
   }
 
-  if (value == null || typeof value === 'boolean' || value === '') {
+  if (value == null || typeof value === "boolean" || value === "") {
     if (isCustomProperty) {
-      style.setProperty(styleName, '');
-    } else if (styleName === 'float') {
-      style.cssFloat = '';
+      style.setProperty(styleName, "");
+    } else if (styleName === "float") {
+      style.cssFloat = "";
     } else {
-      style[styleName] = '';
+      style[styleName] = "";
     }
   } else if (isCustomProperty) {
     style.setProperty(styleName, value);
   } else if (
-    typeof value === 'number' &&
+    typeof value === "number" &&
     value !== 0 &&
     !isUnitlessNumber(styleName)
   ) {
-    style[styleName] = value + 'px'; // Presumes implicit 'px' suffix for unitless numbers
+    style[styleName] = value + "px"; // Presumes implicit 'px' suffix for unitless numbers
   } else {
-    if (styleName === 'float') {
+    if (styleName === "float") {
       style.cssFloat = value;
     } else {
       if (__DEV__) {
         checkCSSPropertyStringCoercion(value, styleName);
       }
-      style[styleName] = ('' + value).trim();
+      style[styleName] = ("" + value).trim();
     }
   }
 }
@@ -109,11 +109,11 @@ function setValueForStyle(style, styleName, value) {
  * @param {object} styles
  */
 export function setValueForStyles(node, styles, prevStyles) {
-  if (styles != null && typeof styles !== 'object') {
+  if (styles != null && typeof styles !== "object") {
     throw new Error(
-      'The `style` prop expects a mapping from style properties to values, ' +
+      "The `style` prop expects a mapping from style properties to values, " +
         "not a string. For example, style={{marginRight: spacing + 'em'}} when " +
-        'using JSX.',
+        "using JSX.",
     );
   }
   if (__DEV__) {
@@ -137,13 +137,13 @@ export function setValueForStyles(node, styles, prevStyles) {
         (styles == null || !styles.hasOwnProperty(styleName))
       ) {
         // Clear style
-        const isCustomProperty = styleName.indexOf('--') === 0;
+        const isCustomProperty = styleName.indexOf("--") === 0;
         if (isCustomProperty) {
-          style.setProperty(styleName, '');
-        } else if (styleName === 'float') {
-          style.cssFloat = '';
+          style.setProperty(styleName, "");
+        } else if (styleName === "float") {
+          style.cssFloat = "";
         } else {
-          style[styleName] = '';
+          style[styleName] = "";
         }
       }
     }
@@ -164,7 +164,7 @@ export function setValueForStyles(node, styles, prevStyles) {
 }
 
 function isValueEmpty(value) {
-  return value == null || typeof value === 'boolean' || value === '';
+  return value == null || typeof value === "boolean" || value === "";
 }
 
 /**
@@ -239,18 +239,18 @@ export function validateShorthandPropertyCollisionInDev(
       const originalKey = expandedUpdates[key];
       const correctOriginalKey = expandedStyles[key];
       if (correctOriginalKey && originalKey !== correctOriginalKey) {
-        const warningKey = originalKey + ',' + correctOriginalKey;
+        const warningKey = originalKey + "," + correctOriginalKey;
         if (warnedAbout[warningKey]) {
           continue;
         }
         warnedAbout[warningKey] = true;
         console.error(
-          '%s a style property during rerender (%s) when a ' +
-            'conflicting property is set (%s) can lead to styling bugs. To ' +
+          "%s a style property during rerender (%s) when a " +
+            "conflicting property is set (%s) can lead to styling bugs. To " +
             "avoid this, don't mix shorthand and non-shorthand properties " +
-            'for the same value; instead, replace the shorthand with ' +
-            'separate values.',
-          isValueEmpty(nextStyles[originalKey]) ? 'Removing' : 'Updating',
+            "for the same value; instead, replace the shorthand with " +
+            "separate values.",
+          isValueEmpty(nextStyles[originalKey]) ? "Removing" : "Updating",
           originalKey,
           correctOriginalKey,
         );

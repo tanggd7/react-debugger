@@ -19,16 +19,16 @@ let seededCache;
 let assertLog;
 
 beforeEach(() => {
-  React = require('react');
-  ReactNoop = require('react-noop-renderer');
-  Scheduler = require('scheduler');
-  act = require('internal-test-utils').act;
+  React = require("react");
+  ReactNoop = require("react-noop-renderer");
+  Scheduler = require("scheduler");
+  act = require("internal-test-utils").act;
 
-  const InternalTestUtils = require('internal-test-utils');
+  const InternalTestUtils = require("internal-test-utils");
   assertLog = InternalTestUtils.assertLog;
 
   Suspense = React.Suspense;
-  if (gate(flags => flags.enableSuspenseList)) {
+  if (gate((flags) => flags.enableSuspenseList)) {
     SuspenseList = React.unstable_SuspenseList;
   }
 
@@ -57,30 +57,30 @@ function createTextCache() {
       const record = data.get(text);
       if (record === undefined) {
         const newRecord = {
-          status: 'resolved',
+          status: "resolved",
           value: text,
         };
         data.set(text, newRecord);
-      } else if (record.status === 'pending') {
+      } else if (record.status === "pending") {
         const thenable = record.value;
-        record.status = 'resolved';
+        record.status = "resolved";
         record.value = text;
-        thenable.pings.forEach(t => t());
+        thenable.pings.forEach((t) => t());
       }
     },
     reject(text, error) {
       const record = data.get(text);
       if (record === undefined) {
         const newRecord = {
-          status: 'rejected',
+          status: "rejected",
           value: error,
         };
         data.set(text, newRecord);
-      } else if (record.status === 'pending') {
+      } else if (record.status === "pending") {
         const thenable = record.value;
-        record.status = 'rejected';
+        record.status = "rejected";
         record.value = error;
-        thenable.pings.forEach(t => t());
+        thenable.pings.forEach((t) => t());
       }
     },
   };
@@ -93,13 +93,13 @@ function readText(text) {
   const record = textCache.data.get(text);
   if (record !== undefined) {
     switch (record.status) {
-      case 'pending':
+      case "pending":
         Scheduler.log(`Suspend! [${text}]`);
         throw record.value;
-      case 'rejected':
+      case "rejected":
         Scheduler.log(`Error! [${text}]`);
         throw record.value;
-      case 'resolved':
+      case "resolved":
         return textCache.version;
     }
   } else {
@@ -108,7 +108,7 @@ function readText(text) {
     const thenable = {
       pings: [],
       then(resolve) {
-        if (newRecord.status === 'pending') {
+        if (newRecord.status === "pending") {
           thenable.pings.push(resolve);
         } else {
           Promise.resolve().then(() => resolve(newRecord.value));
@@ -117,7 +117,7 @@ function readText(text) {
     };
 
     const newRecord = {
-      status: 'pending',
+      status: "pending",
       value: thenable,
     };
     textCache.data.set(text, newRecord);
@@ -126,12 +126,12 @@ function readText(text) {
   }
 }
 
-function Text({text}) {
+function Text({ text }) {
   Scheduler.log(text);
   return <span prop={text} />;
 }
 
-function AsyncText({text, showVersion}) {
+function AsyncText({ text, showVersion }) {
   const version = readText(text);
   const fullText = showVersion ? `${text} [v${version}]` : text;
   Scheduler.log(fullText);
@@ -147,7 +147,7 @@ function AsyncText({text, showVersion}) {
 
 function resolveMostRecentTextCache(text) {
   if (caches.length === 0) {
-    throw Error('Cache does not exist.');
+    throw Error("Cache does not exist.");
   } else {
     // Resolve the most recently created cache. An older cache can by
     // resolved with `caches[index].resolve(text)`.
@@ -159,7 +159,7 @@ const resolveText = resolveMostRecentTextCache;
 
 // @gate enableLegacyCache
 // @gate enableSuspenseList
-test('regression (#20932): return pointer is correct before entering deleted tree', async () => {
+test("regression (#20932): return pointer is correct before entering deleted tree", async () => {
   // Based on a production bug. Designed to trigger a very specific
   // implementation path.
   function Tail() {
@@ -192,18 +192,18 @@ test('regression (#20932): return pointer is correct before entering deleted tre
   await act(() => {
     root.render(<App />);
   });
-  assertLog(['Suspend! [0]', 'Loading Async...', 'Loading Tail...']);
+  assertLog(["Suspend! [0]", "Loading Async...", "Loading Tail..."]);
   await act(() => {
     resolveText(0);
   });
-  assertLog([0, 'Tail']);
+  assertLog([0, "Tail"]);
   await act(() => {
-    setAsyncText(x => x + 1);
+    setAsyncText((x) => x + 1);
   });
   assertLog([
-    'Suspend! [1]',
-    'Loading Async...',
-    'Suspend! [1]',
-    'Loading Async...',
+    "Suspend! [1]",
+    "Loading Async...",
+    "Suspend! [1]",
+    "Loading Async...",
   ]);
 });

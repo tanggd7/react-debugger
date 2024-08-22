@@ -1,7 +1,7 @@
-'use strict';
+"use strict";
 
-var m = require('react-dom');
-if (process.env.NODE_ENV === 'production') {
+var m = require("react-dom");
+if (process.env.NODE_ENV === "production") {
   exports.createRoot = m.createRoot;
   exports.hydrateRoot = m.hydrateRoot;
 } else {

@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 // Helpers to patch console.logs to avoid logging during side-effect free
@@ -24,7 +24,7 @@ let prevGroupEnd;
 function disabledLog() {}
 disabledLog.__reactDisabledLog = true;
 
-export function disableLogs()       {
+export function disableLogs() {
   if (__DEV__) {
     if (disabledDepth === 0) {
       /* eslint-disable react-internal/no-production-logging */
@@ -58,7 +58,7 @@ export function disableLogs()       {
   }
 }
 
-export function reenableLogs()       {
+export function reenableLogs() {
   if (__DEV__) {
     disabledDepth--;
     if (disabledDepth === 0) {
@@ -70,20 +70,20 @@ export function reenableLogs()       {
       };
       // $FlowFixMe[cannot-write] Flow thinks console is immutable.
       Object.defineProperties(console, {
-        log: {...props, value: prevLog},
-        info: {...props, value: prevInfo},
-        warn: {...props, value: prevWarn},
-        error: {...props, value: prevError},
-        group: {...props, value: prevGroup},
-        groupCollapsed: {...props, value: prevGroupCollapsed},
-        groupEnd: {...props, value: prevGroupEnd},
+        log: { ...props, value: prevLog },
+        info: { ...props, value: prevInfo },
+        warn: { ...props, value: prevWarn },
+        error: { ...props, value: prevError },
+        group: { ...props, value: prevGroup },
+        groupCollapsed: { ...props, value: prevGroupCollapsed },
+        groupEnd: { ...props, value: prevGroupEnd },
       });
       /* eslint-enable react-internal/no-production-logging */
     }
     if (disabledDepth < 0) {
       console.error(
-        'disabledDepth fell below zero. ' +
-          'This is a bug in React. Please file an issue.',
+        "disabledDepth fell below zero. " +
+          "This is a bug in React. Please file an issue.",
       );
     }
   }

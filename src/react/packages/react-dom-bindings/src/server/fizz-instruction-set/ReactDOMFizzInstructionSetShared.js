@@ -4,10 +4,10 @@
 // runtime instruction sets.
 
 export const COMMENT_NODE = 8;
-export const SUSPENSE_START_DATA = '$';
-export const SUSPENSE_END_DATA = '/$';
-export const SUSPENSE_PENDING_START_DATA = '$?';
-export const SUSPENSE_FALLBACK_START_DATA = '$!';
+export const SUSPENSE_START_DATA = "$";
+export const SUSPENSE_END_DATA = "/$";
+export const SUSPENSE_PENDING_START_DATA = "$?";
+export const SUSPENSE_FALLBACK_START_DATA = "$!";
 
 // TODO: Symbols that are referenced outside this module use dynamic accessor
 // notation instead of dot notation to prevent Closure's advanced compilation
@@ -34,12 +34,12 @@ export function clientRenderBoundary(
   suspenseNode.data = SUSPENSE_FALLBACK_START_DATA;
   // assign error metadata to first sibling
   const dataset = suspenseIdNode.dataset;
-  if (errorDigest) dataset['dgst'] = errorDigest;
-  if (errorMsg) dataset['msg'] = errorMsg;
-  if (errorComponentStack) dataset['stck'] = errorComponentStack;
+  if (errorDigest) dataset["dgst"] = errorDigest;
+  if (errorMsg) dataset["msg"] = errorMsg;
+  if (errorComponentStack) dataset["stck"] = errorComponentStack;
   // Tell React to retry it if the parent already hydrated.
-  if (suspenseNode['_reactRetry']) {
-    suspenseNode['_reactRetry']();
+  if (suspenseNode["_reactRetry"]) {
+    suspenseNode["_reactRetry"]();
   }
 }
 
@@ -102,11 +102,11 @@ export function completeBoundary(suspenseBoundaryID, contentID, errorDigest) {
     suspenseNode.data = SUSPENSE_START_DATA;
   } else {
     suspenseNode.data = SUSPENSE_FALLBACK_START_DATA;
-    suspenseIdNode.setAttribute('data-dgst', errorDigest);
+    suspenseIdNode.setAttribute("data-dgst", errorDigest);
   }
 
-  if (suspenseNode['_reactRetry']) {
-    suspenseNode['_reactRetry']();
+  if (suspenseNode["_reactRetry"]) {
+    suspenseNode["_reactRetry"]();
   }
 }
 
@@ -140,17 +140,17 @@ export function listenToFormSubmissionsForReplaying() {
   // from queing it. Since React listens to the root and the top most
   // container you can use is the document, the window is fine.
   // eslint-disable-next-line no-restricted-globals
-  addEventListener('submit', event => {
+  addEventListener("submit", (event) => {
     if (event.defaultPrevented) {
       // We let earlier events to prevent the action from submitting.
       return;
     }
     const form = event.target;
-    const submitter = event['submitter'];
+    const submitter = event["submitter"];
     let action = form.action;
     let formDataSubmitter = submitter;
     if (submitter) {
-      const submitterAction = submitter.getAttribute('formAction');
+      const submitterAction = submitter.getAttribute("formAction");
       if (submitterAction != null) {
         // The submitter overrides the action.
         action = submitterAction;
@@ -180,7 +180,7 @@ export function listenToFormSubmissionsForReplaying() {
       // TODO: FormData takes a second argument that it's the submitter but this
       // is fairly new so not all browsers support it yet. Switch to that technique
       // when available.
-      const temp = document.createElement('input');
+      const temp = document.createElement("input");
       temp.name = formDataSubmitter.name;
       temp.value = formDataSubmitter.value;
       formDataSubmitter.parentNode.insertBefore(temp, formDataSubmitter);
@@ -199,7 +199,7 @@ export function listenToFormSubmissionsForReplaying() {
     // In practice, this is just the same as document but we might support shadow trees
     // in the future.
     const root = form.getRootNode();
-    (root['$$reactFormReplay'] = root['$$reactFormReplay'] || []).push(
+    (root["$$reactFormReplay"] = root["$$reactFormReplay"] || []).push(
       form,
       submitter,
       formData,

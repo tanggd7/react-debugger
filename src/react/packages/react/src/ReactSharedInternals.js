@@ -5,14 +5,14 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import ReactCurrentDispatcher from './ReactCurrentDispatcher';
-import ReactCurrentCache from './ReactCurrentCache';
-import ReactCurrentBatchConfig from './ReactCurrentBatchConfig';
-import ReactCurrentActQueue from './ReactCurrentActQueue';
-import ReactCurrentOwner from './ReactCurrentOwner';
-import ReactDebugCurrentFrame from './ReactDebugCurrentFrame';
-import {enableServerContext} from 'shared/ReactFeatureFlags';
-import {ContextRegistry} from './ReactServerContextRegistry';
+import ReactCurrentDispatcher from "./ReactCurrentDispatcher";
+import ReactCurrentCache from "./ReactCurrentCache";
+import ReactCurrentBatchConfig from "./ReactCurrentBatchConfig";
+import ReactCurrentActQueue from "./ReactCurrentActQueue";
+import ReactCurrentOwner from "./ReactCurrentOwner";
+import ReactDebugCurrentFrame from "./ReactDebugCurrentFrame";
+import { enableServerContext } from "shared/ReactFeatureFlags";
+import { ContextRegistry } from "./ReactServerContextRegistry";
 
 const ReactSharedInternals = {
   ReactCurrentDispatcher,

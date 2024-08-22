@@ -7,19 +7,19 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('SelectEventPlugin', () => {
+describe("SelectEventPlugin", () => {
   let container;
 
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
 
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -29,11 +29,11 @@ describe('SelectEventPlugin', () => {
   });
 
   // See https://github.com/facebook/react/pull/3639 for details.
-  it('does not get confused when dependent events are registered independently', () => {
+  it("does not get confused when dependent events are registered independently", () => {
     const select = jest.fn();
-    const onSelect = event => {
-      expect(typeof event).toBe('object');
-      expect(event.type).toBe('select');
+    const onSelect = (event) => {
+      expect(typeof event).toBe("object");
+      expect(event.type).toBe("select");
       expect(event.target).toBe(node);
       select(event.currentTarget);
     };
@@ -47,13 +47,13 @@ describe('SelectEventPlugin', () => {
     // Trigger `mousedown` and `mouseup`. Note that
     // React is not currently listening to `mouseup`.
     node.dispatchEvent(
-      new MouseEvent('mousedown', {
+      new MouseEvent("mousedown", {
         bubbles: true,
         cancelable: true,
       }),
     );
     node.dispatchEvent(
-      new MouseEvent('mouseup', {
+      new MouseEvent("mouseup", {
         bubbles: true,
         cancelable: true,
       }),
@@ -65,7 +65,7 @@ describe('SelectEventPlugin', () => {
 
     // This triggers a `select` event in our polyfill.
     node.dispatchEvent(
-      new KeyboardEvent('keydown', {bubbles: true, cancelable: true}),
+      new KeyboardEvent("keydown", { bubbles: true, cancelable: true }),
     );
 
     // Verify that it doesn't get "stuck" waiting for
@@ -74,11 +74,11 @@ describe('SelectEventPlugin', () => {
     expect(select).toHaveBeenCalledTimes(1);
   });
 
-  it('should fire `onSelect` when a listener is present', () => {
+  it("should fire `onSelect` when a listener is present", () => {
     const select = jest.fn();
-    const onSelect = event => {
-      expect(typeof event).toBe('object');
-      expect(event.type).toBe('select');
+    const onSelect = (event) => {
+      expect(typeof event).toBe("object");
+      expect(event.type).toBe("select");
       expect(event.target).toBe(node);
       select(event.currentTarget);
     };
@@ -89,30 +89,33 @@ describe('SelectEventPlugin', () => {
     );
     node.focus();
 
-    let nativeEvent = new MouseEvent('focus', {
+    let nativeEvent = new MouseEvent("focus", {
       bubbles: true,
       cancelable: true,
     });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(0);
 
-    nativeEvent = new MouseEvent('mousedown', {
+    nativeEvent = new MouseEvent("mousedown", {
       bubbles: true,
       cancelable: true,
     });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(0);
 
-    nativeEvent = new MouseEvent('mouseup', {bubbles: true, cancelable: true});
+    nativeEvent = new MouseEvent("mouseup", {
+      bubbles: true,
+      cancelable: true,
+    });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(1);
   });
 
-  it('should fire `onSelectCapture` when a listener is present', () => {
+  it("should fire `onSelectCapture` when a listener is present", () => {
     const select = jest.fn();
-    const onSelectCapture = event => {
-      expect(typeof event).toBe('object');
-      expect(event.type).toBe('select');
+    const onSelectCapture = (event) => {
+      expect(typeof event).toBe("object");
+      expect(event.type).toBe("select");
       expect(event.target).toBe(node);
       select(event.currentTarget);
     };
@@ -123,31 +126,34 @@ describe('SelectEventPlugin', () => {
     );
     node.focus();
 
-    let nativeEvent = new MouseEvent('focus', {
+    let nativeEvent = new MouseEvent("focus", {
       bubbles: true,
       cancelable: true,
     });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(0);
 
-    nativeEvent = new MouseEvent('mousedown', {
+    nativeEvent = new MouseEvent("mousedown", {
       bubbles: true,
       cancelable: true,
     });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(0);
 
-    nativeEvent = new MouseEvent('mouseup', {bubbles: true, cancelable: true});
+    nativeEvent = new MouseEvent("mouseup", {
+      bubbles: true,
+      cancelable: true,
+    });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(1);
   });
 
   // Regression test for https://github.com/facebook/react/issues/11379
-  it('should not wait for `mouseup` after receiving `dragend`', () => {
+  it("should not wait for `mouseup` after receiving `dragend`", () => {
     const select = jest.fn();
-    const onSelect = event => {
-      expect(typeof event).toBe('object');
-      expect(event.type).toBe('select');
+    const onSelect = (event) => {
+      expect(typeof event).toBe("object");
+      expect(event.type).toBe("select");
       expect(event.target).toBe(node);
       select(event.currentTarget);
     };
@@ -158,26 +164,29 @@ describe('SelectEventPlugin', () => {
     );
     node.focus();
 
-    let nativeEvent = new MouseEvent('focus', {
+    let nativeEvent = new MouseEvent("focus", {
       bubbles: true,
       cancelable: true,
     });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(0);
 
-    nativeEvent = new MouseEvent('mousedown', {
+    nativeEvent = new MouseEvent("mousedown", {
       bubbles: true,
       cancelable: true,
     });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(0);
 
-    nativeEvent = new MouseEvent('dragend', {bubbles: true, cancelable: true});
+    nativeEvent = new MouseEvent("dragend", {
+      bubbles: true,
+      cancelable: true,
+    });
     node.dispatchEvent(nativeEvent);
     expect(select).toHaveBeenCalledTimes(1);
   });
 
-  it('should handle selectionchange events', function () {
+  it("should handle selectionchange events", function () {
     const onSelect = jest.fn();
     const node = ReactDOM.render(
       <input type="text" onSelect={onSelect} />,
@@ -190,7 +199,7 @@ describe('SelectEventPlugin', () => {
 
     // This is dispatched e.g. when using CMD+a on macOS
     document.dispatchEvent(
-      new Event('selectionchange', {bubbles: false, cancelable: false}),
+      new Event("selectionchange", { bubbles: false, cancelable: false }),
     );
 
     expect(onSelect).toHaveBeenCalledTimes(1);

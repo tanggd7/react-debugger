@@ -4,14 +4,14 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 // TODO: direct imports like some-package/src/* are bad. Fix me.
-import {getCurrentFiberOwnerNameInDevOrNull} from 'react-reconciler/src/ReactCurrentFiber';
+import { getCurrentFiberOwnerNameInDevOrNull } from "react-reconciler/src/ReactCurrentFiber";
 
-import {getToStringValue, toString} from './ToStringValue';
-import isArray from 'shared/isArray';
+import { getToStringValue, toString } from "./ToStringValue";
+import isArray from "shared/isArray";
 
 let didWarnValueDefaultValue;
 
@@ -22,17 +22,17 @@ if (__DEV__) {
 function getDeclarationErrorAddendum() {
   const ownerName = getCurrentFiberOwnerNameInDevOrNull();
   if (ownerName) {
-    return '\n\nCheck the render method of `' + ownerName + '`.';
+    return "\n\nCheck the render method of `" + ownerName + "`.";
   }
-  return '';
+  return "";
 }
 
-const valuePropNames = ['value', 'defaultValue'];
+const valuePropNames = ["value", "defaultValue"];
 
 /**
  * Validation function for `value` and `defaultValue`.
  */
-function checkSelectPropTypes(props     ) {
+function checkSelectPropTypes(props) {
   if (__DEV__) {
     for (let i = 0; i < valuePropNames.length; i++) {
       const propName = valuePropNames[i];
@@ -42,15 +42,15 @@ function checkSelectPropTypes(props     ) {
       const propNameIsArray = isArray(props[propName]);
       if (props.multiple && !propNameIsArray) {
         console.error(
-          'The `%s` prop supplied to <select> must be an array if ' +
-            '`multiple` is true.%s',
+          "The `%s` prop supplied to <select> must be an array if " +
+            "`multiple` is true.%s",
           propName,
           getDeclarationErrorAddendum(),
         );
       } else if (!props.multiple && propNameIsArray) {
         console.error(
-          'The `%s` prop supplied to <select> must be a scalar ' +
-            'value if `multiple` is false.%s',
+          "The `%s` prop supplied to <select> must be a scalar " +
+            "value if `multiple` is false.%s",
           propName,
           getDeclarationErrorAddendum(),
         );
@@ -59,23 +59,18 @@ function checkSelectPropTypes(props     ) {
   }
 }
 
-function updateOptions(
-  node                   ,
-  multiple         ,
-  propValue     ,
-  setDefaultSelected         ,
-) {
-  const options                        = node.options;
+function updateOptions(node, multiple, propValue, setDefaultSelected) {
+  const options = node.options;
 
   if (multiple) {
-    const selectedValues = (propValue               );
-    const selectedValue                      = {};
+    const selectedValues = propValue;
+    const selectedValue = {};
     for (let i = 0; i < selectedValues.length; i++) {
       // Prefix to avoid chaos with special keys.
-      selectedValue['$' + selectedValues[i]] = true;
+      selectedValue["$" + selectedValues[i]] = true;
     }
     for (let i = 0; i < options.length; i++) {
-      const selected = selectedValue.hasOwnProperty('$' + options[i].value);
+      const selected = selectedValue.hasOwnProperty("$" + options[i].value);
       if (options[i].selected !== selected) {
         options[i].selected = selected;
       }
@@ -86,7 +81,7 @@ function updateOptions(
   } else {
     // Do not set `select.value` as exact behavior isn't consistent across all
     // browsers for all cases.
-    const selectedValue = toString(getToStringValue((propValue     )));
+    const selectedValue = toString(getToStringValue(propValue));
     let defaultSelected = null;
     for (let i = 0; i < options.length; i++) {
       if (options[i].value === selectedValue) {
@@ -122,7 +117,7 @@ function updateOptions(
  * selected.
  */
 
-export function validateSelectProps(element         , props        ) {
+export function validateSelectProps(element, props) {
   if (__DEV__) {
     checkSelectPropTypes(props);
     if (
@@ -131,24 +126,19 @@ export function validateSelectProps(element         , props        ) {
       !didWarnValueDefaultValue
     ) {
       console.error(
-        'Select elements must be either controlled or uncontrolled ' +
-          '(specify either the value prop, or the defaultValue prop, but not ' +
-          'both). Decide between using a controlled or uncontrolled select ' +
-          'element and remove one of these props. More info: ' +
-          'https://reactjs.org/link/controlled-components',
+        "Select elements must be either controlled or uncontrolled " +
+          "(specify either the value prop, or the defaultValue prop, but not " +
+          "both). Decide between using a controlled or uncontrolled select " +
+          "element and remove one of these props. More info: " +
+          "https://reactjs.org/link/controlled-components",
       );
       didWarnValueDefaultValue = true;
     }
   }
 }
 
-export function initSelect(
-  element         ,
-  value         ,
-  defaultValue         ,
-  multiple          ,
-) {
-  const node                    = (element     );
+export function initSelect(element, value, defaultValue, multiple) {
+  const node = element;
   node.multiple = !!multiple;
   if (value != null) {
     updateOptions(node, !!multiple, value, false);
@@ -158,13 +148,13 @@ export function initSelect(
 }
 
 export function updateSelect(
-  element         ,
-  value         ,
-  defaultValue         ,
-  multiple          ,
-  wasMultiple          ,
+  element,
+  value,
+  defaultValue,
+  multiple,
+  wasMultiple,
 ) {
-  const node                    = (element     );
+  const node = element;
 
   if (value != null) {
     updateOptions(node, !!multiple, value, false);
@@ -174,13 +164,13 @@ export function updateSelect(
       updateOptions(node, !!multiple, defaultValue, true);
     } else {
       // Revert the select back to its default unselected state.
-      updateOptions(node, !!multiple, multiple ? [] : '', false);
+      updateOptions(node, !!multiple, multiple ? [] : "", false);
     }
   }
 }
 
-export function restoreControlledSelectState(element         , props        ) {
-  const node                    = (element     );
+export function restoreControlledSelectState(element, props) {
+  const node = element;
   const value = props.value;
 
   if (value != null) {

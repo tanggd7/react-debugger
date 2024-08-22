@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -16,22 +16,22 @@ let TogglingComponent;
 
 let log;
 
-describe('ReactEmptyComponent', () => {
+describe("ReactEmptyComponent", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactTestUtils = require('react-dom/test-utils');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactTestUtils = require("react-dom/test-utils");
 
     log = jest.fn();
 
     TogglingComponent = class extends React.Component {
-      state = {component: this.props.firstComponent};
+      state = { component: this.props.firstComponent };
 
       componentDidMount() {
         log(ReactDOM.findDOMNode(this));
-        this.setState({component: this.props.secondComponent});
+        this.setState({ component: this.props.secondComponent });
       }
 
       componentDidUpdate() {
@@ -45,8 +45,8 @@ describe('ReactEmptyComponent', () => {
     };
   });
 
-  describe.each([null, undefined])('when %s', nullORUndefined => {
-    it('should not throw when rendering', () => {
+  describe.each([null, undefined])("when %s", (nullORUndefined) => {
+    it("should not throw when rendering", () => {
       class Component extends React.Component {
         render() {
           return nullORUndefined;
@@ -58,7 +58,7 @@ describe('ReactEmptyComponent', () => {
       }).not.toThrowError();
     });
 
-    it('should not produce child DOM nodes for nullish and false', () => {
+    it("should not produce child DOM nodes for nullish and false", () => {
       class Component1 extends React.Component {
         render() {
           return nullORUndefined;
@@ -71,25 +71,25 @@ describe('ReactEmptyComponent', () => {
         }
       }
 
-      const container1 = document.createElement('div');
+      const container1 = document.createElement("div");
       ReactDOM.render(<Component1 />, container1);
       expect(container1.children.length).toBe(0);
 
-      const container2 = document.createElement('div');
+      const container2 = document.createElement("div");
       ReactDOM.render(<Component2 />, container2);
       expect(container2.children.length).toBe(0);
     });
 
-    it('should be able to switch between rendering nullish and a normal tag', () => {
+    it("should be able to switch between rendering nullish and a normal tag", () => {
       const instance1 = (
         <TogglingComponent
           firstComponent={nullORUndefined}
-          secondComponent={'div'}
+          secondComponent={"div"}
         />
       );
       const instance2 = (
         <TogglingComponent
-          firstComponent={'div'}
+          firstComponent={"div"}
           secondComponent={nullORUndefined}
         />
       );
@@ -101,20 +101,20 @@ describe('ReactEmptyComponent', () => {
       expect(log).toHaveBeenNthCalledWith(1, null);
       expect(log).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({tagName: 'DIV'}),
+        expect.objectContaining({ tagName: "DIV" }),
       );
       expect(log).toHaveBeenNthCalledWith(
         3,
-        expect.objectContaining({tagName: 'DIV'}),
+        expect.objectContaining({ tagName: "DIV" }),
       );
       expect(log).toHaveBeenNthCalledWith(4, null);
     });
 
-    it('should be able to switch in a list of children', () => {
+    it("should be able to switch in a list of children", () => {
       const instance1 = (
         <TogglingComponent
           firstComponent={nullORUndefined}
-          secondComponent={'div'}
+          secondComponent={"div"}
         />
       );
 
@@ -132,28 +132,28 @@ describe('ReactEmptyComponent', () => {
       expect(log).toHaveBeenNthCalledWith(3, null);
       expect(log).toHaveBeenNthCalledWith(
         4,
-        expect.objectContaining({tagName: 'DIV'}),
+        expect.objectContaining({ tagName: "DIV" }),
       );
       expect(log).toHaveBeenNthCalledWith(
         5,
-        expect.objectContaining({tagName: 'DIV'}),
+        expect.objectContaining({ tagName: "DIV" }),
       );
       expect(log).toHaveBeenNthCalledWith(
         6,
-        expect.objectContaining({tagName: 'DIV'}),
+        expect.objectContaining({ tagName: "DIV" }),
       );
     });
 
-    it('should distinguish between a script placeholder and an actual script tag', () => {
+    it("should distinguish between a script placeholder and an actual script tag", () => {
       const instance1 = (
         <TogglingComponent
           firstComponent={nullORUndefined}
-          secondComponent={'script'}
+          secondComponent={"script"}
         />
       );
       const instance2 = (
         <TogglingComponent
-          firstComponent={'script'}
+          firstComponent={"script"}
           secondComponent={nullORUndefined}
         />
       );
@@ -169,18 +169,18 @@ describe('ReactEmptyComponent', () => {
       expect(log).toHaveBeenNthCalledWith(1, null);
       expect(log).toHaveBeenNthCalledWith(
         2,
-        expect.objectContaining({tagName: 'SCRIPT'}),
+        expect.objectContaining({ tagName: "SCRIPT" }),
       );
       expect(log).toHaveBeenNthCalledWith(
         3,
-        expect.objectContaining({tagName: 'SCRIPT'}),
+        expect.objectContaining({ tagName: "SCRIPT" }),
       );
       expect(log).toHaveBeenNthCalledWith(4, null);
     });
 
     it(
-      'should have findDOMNode return null when multiple layers of composite ' +
-        'components render to the same nullish placeholder',
+      "should have findDOMNode return null when multiple layers of composite " +
+        "components render to the same nullish placeholder",
       () => {
         class GrandChild extends React.Component {
           render() {
@@ -195,10 +195,10 @@ describe('ReactEmptyComponent', () => {
         }
 
         const instance1 = (
-          <TogglingComponent firstComponent={'div'} secondComponent={Child} />
+          <TogglingComponent firstComponent={"div"} secondComponent={Child} />
         );
         const instance2 = (
-          <TogglingComponent firstComponent={Child} secondComponent={'div'} />
+          <TogglingComponent firstComponent={Child} secondComponent={"div"} />
         );
 
         expect(function () {
@@ -211,18 +211,18 @@ describe('ReactEmptyComponent', () => {
         expect(log).toHaveBeenCalledTimes(4);
         expect(log).toHaveBeenNthCalledWith(
           1,
-          expect.objectContaining({tagName: 'DIV'}),
+          expect.objectContaining({ tagName: "DIV" }),
         );
         expect(log).toHaveBeenNthCalledWith(2, null);
         expect(log).toHaveBeenNthCalledWith(3, null);
         expect(log).toHaveBeenNthCalledWith(
           4,
-          expect.objectContaining({tagName: 'DIV'}),
+          expect.objectContaining({ tagName: "DIV" }),
         );
       },
     );
 
-    it('works when switching components', () => {
+    it("works when switching components", () => {
       let assertions = 0;
 
       class Inner extends React.Component {
@@ -251,7 +251,7 @@ describe('ReactEmptyComponent', () => {
         }
       }
 
-      const el = document.createElement('div');
+      const el = document.createElement("div");
       let component;
 
       // Render the <Inner /> component...
@@ -269,13 +269,13 @@ describe('ReactEmptyComponent', () => {
       expect(assertions).toBe(3);
     });
 
-    it('can render nullish at the top level', () => {
-      const div = document.createElement('div');
+    it("can render nullish at the top level", () => {
+      const div = document.createElement("div");
       ReactDOM.render(nullORUndefined, div);
-      expect(div.innerHTML).toBe('');
+      expect(div.innerHTML).toBe("");
     });
 
-    it('does not break when updating during mount', () => {
+    it("does not break when updating during mount", () => {
       class Child extends React.Component {
         componentDidMount() {
           if (this.props.onMount) {
@@ -313,14 +313,14 @@ describe('ReactEmptyComponent', () => {
       }).not.toThrow();
     });
 
-    it('preserves the dom node during updates', () => {
+    it("preserves the dom node during updates", () => {
       class Empty extends React.Component {
         render() {
           return nullORUndefined;
         }
       }
 
-      const container = document.createElement('div');
+      const container = document.createElement("div");
 
       ReactDOM.render(<Empty />, container);
       const noscript1 = container.firstChild;
@@ -332,7 +332,7 @@ describe('ReactEmptyComponent', () => {
       expect(noscript2).toBe(null);
     });
 
-    it('should not warn about React.forwardRef that returns nullish', () => {
+    it("should not warn about React.forwardRef that returns nullish", () => {
       const Empty = () => {
         return nullORUndefined;
       };
@@ -343,7 +343,7 @@ describe('ReactEmptyComponent', () => {
       }).not.toThrowError();
     });
 
-    it('should not warn about React.memo that returns nullish', () => {
+    it("should not warn about React.memo that returns nullish", () => {
       const Empty = () => {
         return nullORUndefined;
       };

@@ -7,34 +7,34 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 let ReactDOMServer;
 
 function getTestDocument(markup) {
-  const doc = document.implementation.createHTMLDocument('');
+  const doc = document.implementation.createHTMLDocument("");
   doc.open();
   doc.write(
     markup ||
-      '<!doctype html><html><meta charset=utf-8><title>test doc</title>',
+      "<!doctype html><html><meta charset=utf-8><title>test doc</title>",
   );
   doc.close();
   return doc;
 }
 
-describe('rendering React components at document', () => {
+describe("rendering React components at document", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMServer = require('react-dom/server');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMServer = require("react-dom/server");
   });
 
-  describe('with new explicit hydration API', () => {
-    it('should be able to adopt server markup', () => {
+  describe("with new explicit hydration API", () => {
+    it("should be able to adopt server markup", () => {
       class Root extends React.Component {
         render() {
           return (
@@ -42,28 +42,28 @@ describe('rendering React components at document', () => {
               <head>
                 <title>Hello World</title>
               </head>
-              <body>{'Hello ' + this.props.hello}</body>
+              <body>{"Hello " + this.props.hello}</body>
             </html>
           );
         }
       }
 
       const markup = ReactDOMServer.renderToString(<Root hello="world" />);
-      expect(markup).not.toContain('DOCTYPE');
+      expect(markup).not.toContain("DOCTYPE");
       const testDocument = getTestDocument(markup);
       const body = testDocument.body;
 
       ReactDOM.hydrate(<Root hello="world" />, testDocument);
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
 
       ReactDOM.hydrate(<Root hello="moon" />, testDocument);
-      expect(testDocument.body.innerHTML).toBe('Hello moon');
+      expect(testDocument.body.innerHTML).toBe("Hello moon");
 
       expect(body === testDocument.body).toBe(true);
     });
 
     // @gate enableHostSingletons
-    it('should be able to unmount component from document node, but leaves singleton nodes intact', () => {
+    it("should be able to unmount component from document node, but leaves singleton nodes intact", () => {
       class Root extends React.Component {
         render() {
           return (
@@ -80,7 +80,7 @@ describe('rendering React components at document', () => {
       const markup = ReactDOMServer.renderToString(<Root />);
       const testDocument = getTestDocument(markup);
       ReactDOM.hydrate(<Root />, testDocument);
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
 
       const originalDocEl = testDocument.documentElement;
       const originalHead = testDocument.head;
@@ -96,7 +96,7 @@ describe('rendering React components at document', () => {
     });
 
     // @gate !enableHostSingletons
-    it('should be able to unmount component from document node', () => {
+    it("should be able to unmount component from document node", () => {
       class Root extends React.Component {
         render() {
           return (
@@ -113,14 +113,14 @@ describe('rendering React components at document', () => {
       const markup = ReactDOMServer.renderToString(<Root />);
       const testDocument = getTestDocument(markup);
       ReactDOM.hydrate(<Root />, testDocument);
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
 
       // When we unmount everything is removed except the persistent nodes of html, head, and body
       ReactDOM.unmountComponentAtNode(testDocument);
       expect(testDocument.firstChild).toBe(null);
     });
 
-    it('should not be able to switch root constructors', () => {
+    it("should not be able to switch root constructors", () => {
       class Component extends React.Component {
         render() {
           return (
@@ -152,15 +152,15 @@ describe('rendering React components at document', () => {
 
       ReactDOM.hydrate(<Component />, testDocument);
 
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
 
       // This works but is probably a bad idea.
       ReactDOM.hydrate(<Component2 />, testDocument);
 
-      expect(testDocument.body.innerHTML).toBe('Goodbye world');
+      expect(testDocument.body.innerHTML).toBe("Goodbye world");
     });
 
-    it('should be able to mount into document', () => {
+    it("should be able to mount into document", () => {
       class Component extends React.Component {
         render() {
           return (
@@ -181,23 +181,23 @@ describe('rendering React components at document', () => {
 
       ReactDOM.hydrate(<Component text="Hello world" />, testDocument);
 
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
     });
 
-    it('cannot render over an existing text child at the root', () => {
-      const container = document.createElement('div');
-      container.textContent = 'potato';
+    it("cannot render over an existing text child at the root", () => {
+      const container = document.createElement("div");
+      container.textContent = "potato";
       expect(() => ReactDOM.hydrate(<div>parsnip</div>, container)).toErrorDev(
-        'Expected server HTML to contain a matching <div> in <div>.',
+        "Expected server HTML to contain a matching <div> in <div>.",
       );
       // This creates an unfortunate double text case.
-      expect(container.textContent).toBe('potatoparsnip');
+      expect(container.textContent).toBe("potatoparsnip");
     });
 
-    it('renders over an existing nested text child without throwing', () => {
-      const container = document.createElement('div');
-      const wrapper = document.createElement('div');
-      wrapper.textContent = 'potato';
+    it("renders over an existing nested text child without throwing", () => {
+      const container = document.createElement("div");
+      const wrapper = document.createElement("div");
+      wrapper.textContent = "potato";
       container.appendChild(wrapper);
       expect(() =>
         ReactDOM.hydrate(
@@ -207,12 +207,12 @@ describe('rendering React components at document', () => {
           container,
         ),
       ).toErrorDev(
-        'Expected server HTML to contain a matching <div> in <div>.',
+        "Expected server HTML to contain a matching <div> in <div>.",
       );
-      expect(container.textContent).toBe('parsnip');
+      expect(container.textContent).toBe("parsnip");
     });
 
-    it('should give helpful errors on state desync', () => {
+    it("should give helpful errors on state desync", () => {
       class Component extends React.Component {
         render() {
           return (
@@ -233,11 +233,11 @@ describe('rendering React components at document', () => {
 
       expect(() =>
         ReactDOM.hydrate(<Component text="Hello world" />, testDocument),
-      ).toErrorDev('Warning: Text content did not match.');
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      ).toErrorDev("Warning: Text content did not match.");
+      expect(testDocument.body.innerHTML).toBe("Hello world");
     });
 
-    it('should render w/ no markup to full document', () => {
+    it("should render w/ no markup to full document", () => {
       const testDocument = getTestDocument();
 
       class Component extends React.Component {
@@ -253,7 +253,7 @@ describe('rendering React components at document', () => {
         }
       }
 
-      if (gate(flags => flags.enableFloat)) {
+      if (gate((flags) => flags.enableFloat)) {
         // with float the title no longer is a hydration mismatch so we get an error on the body mismatch
         expect(() =>
           ReactDOM.hydrate(<Component text="Hello world" />, testDocument),
@@ -265,13 +265,13 @@ describe('rendering React components at document', () => {
         expect(() =>
           ReactDOM.hydrate(<Component text="Hello world" />, testDocument),
         ).toErrorDev(
-          'Did not expect server HTML to contain a <meta> in <head>.',
+          "Did not expect server HTML to contain a <meta> in <head>.",
         );
       }
-      expect(testDocument.body.innerHTML).toBe('Hello world');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
     });
 
-    it('supports findDOMNode on full-page components', () => {
+    it("supports findDOMNode on full-page components", () => {
       const tree = (
         <html>
           <head>
@@ -284,8 +284,8 @@ describe('rendering React components at document', () => {
       const markup = ReactDOMServer.renderToString(tree);
       const testDocument = getTestDocument(markup);
       const component = ReactDOM.hydrate(tree, testDocument);
-      expect(testDocument.body.innerHTML).toBe('Hello world');
-      expect(ReactDOM.findDOMNode(component).tagName).toBe('HTML');
+      expect(testDocument.body.innerHTML).toBe("Hello world");
+      expect(ReactDOM.findDOMNode(component).tagName).toBe("HTML");
     });
   });
 });

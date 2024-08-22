@@ -4,15 +4,8 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-
-                                                    
-                                                           
-                                            
-                                                                 
-                                                      
-                                                                              
 
 import {
   ClassComponent,
@@ -28,42 +21,38 @@ import {
   LegacyHiddenComponent,
   CacheComponent,
   TracingMarkerComponent,
-} from './ReactWorkTags';
-import {DidCapture, NoFlags, ShouldCapture} from './ReactFiberFlags';
-import {NoMode, ProfileMode} from './ReactTypeOfMode';
+} from "./ReactWorkTags";
+import { DidCapture, NoFlags, ShouldCapture } from "./ReactFiberFlags";
+import { NoMode, ProfileMode } from "./ReactTypeOfMode";
 import {
   enableProfilerTimer,
   enableCache,
   enableTransitionTracing,
-} from 'shared/ReactFeatureFlags';
+} from "shared/ReactFeatureFlags";
 
-import {popHostContainer, popHostContext} from './ReactFiberHostContext';
+import { popHostContainer, popHostContext } from "./ReactFiberHostContext";
 import {
   popSuspenseListContext,
   popSuspenseHandler,
-} from './ReactFiberSuspenseContext';
-import {popHiddenContext} from './ReactFiberHiddenContext';
-import {resetHydrationState} from './ReactFiberHydrationContext';
+} from "./ReactFiberSuspenseContext";
+import { popHiddenContext } from "./ReactFiberHiddenContext";
+import { resetHydrationState } from "./ReactFiberHydrationContext";
 import {
   isContextProvider as isLegacyContextProvider,
   popContext as popLegacyContext,
   popTopLevelContextObject as popTopLevelLegacyContextObject,
-} from './ReactFiberContext';
-import {popProvider} from './ReactFiberNewContext';
-import {popCacheProvider} from './ReactFiberCacheComponent';
-import {transferActualDuration} from './ReactProfilerTimer';
-import {popTreeContext} from './ReactFiberTreeContext';
-import {popRootTransition, popTransition} from './ReactFiberTransition';
+} from "./ReactFiberContext";
+import { popProvider } from "./ReactFiberNewContext";
+import { popCacheProvider } from "./ReactFiberCacheComponent";
+import { transferActualDuration } from "./ReactProfilerTimer";
+import { popTreeContext } from "./ReactFiberTreeContext";
+import { popRootTransition, popTransition } from "./ReactFiberTransition";
 import {
   popMarkerInstance,
   popRootMarkerInstance,
-} from './ReactFiberTracingMarkerComponent';
+} from "./ReactFiberTracingMarkerComponent";
 
-function unwindWork(
-  current              ,
-  workInProgress       ,
-  renderLanes       ,
-)               {
+function unwindWork(current, workInProgress, renderLanes) {
   // Note: This intentionally doesn't check if we're hydrating because comparing
   // to the current tree provider fiber is just as fast and less error-prone.
   // Ideally we would have a special version of the work loop only
@@ -89,9 +78,9 @@ function unwindWork(
       return null;
     }
     case HostRoot: {
-      const root            = workInProgress.stateNode;
+      const root = workInProgress.stateNode;
       if (enableCache) {
-        const cache        = workInProgress.memoizedState.cache;
+        const cache = workInProgress.memoizedState.cache;
         popCacheProvider(workInProgress, cache);
       }
 
@@ -124,12 +113,12 @@ function unwindWork(
     }
     case SuspenseComponent: {
       popSuspenseHandler(workInProgress);
-      const suspenseState                       = workInProgress.memoizedState;
+      const suspenseState = workInProgress.memoizedState;
       if (suspenseState !== null && suspenseState.dehydrated !== null) {
         if (workInProgress.alternate === null) {
           throw new Error(
-            'Threw in newly mounted dehydrated component. This is likely a bug in ' +
-              'React. Please file an issue.',
+            "Threw in newly mounted dehydrated component. This is likely a bug in " +
+              "React. Please file an issue.",
           );
         }
 
@@ -160,7 +149,7 @@ function unwindWork(
       popHostContainer(workInProgress);
       return null;
     case ContextProvider:
-      const context                    = workInProgress.type._context;
+      const context = workInProgress.type._context;
       popProvider(context, workInProgress);
       return null;
     case OffscreenComponent:
@@ -184,7 +173,7 @@ function unwindWork(
     }
     case CacheComponent:
       if (enableCache) {
-        const cache        = workInProgress.memoizedState.cache;
+        const cache = workInProgress.memoizedState.cache;
         popCacheProvider(workInProgress, cache);
       }
       return null;
@@ -200,11 +189,7 @@ function unwindWork(
   }
 }
 
-function unwindInterruptedWork(
-  current              ,
-  interruptedWork       ,
-  renderLanes       ,
-) {
+function unwindInterruptedWork(current, interruptedWork, renderLanes) {
   // Note: This intentionally doesn't check if we're hydrating because comparing
   // to the current tree provider fiber is just as fast and less error-prone.
   // Ideally we would have a special version of the work loop only
@@ -219,9 +204,9 @@ function unwindInterruptedWork(
       break;
     }
     case HostRoot: {
-      const root            = interruptedWork.stateNode;
+      const root = interruptedWork.stateNode;
       if (enableCache) {
-        const cache        = interruptedWork.memoizedState.cache;
+        const cache = interruptedWork.memoizedState.cache;
         popCacheProvider(interruptedWork, cache);
       }
 
@@ -250,7 +235,7 @@ function unwindInterruptedWork(
       popSuspenseListContext(interruptedWork);
       break;
     case ContextProvider:
-      const context                    = interruptedWork.type._context;
+      const context = interruptedWork.type._context;
       popProvider(context, interruptedWork);
       break;
     case OffscreenComponent:
@@ -261,14 +246,13 @@ function unwindInterruptedWork(
       break;
     case CacheComponent:
       if (enableCache) {
-        const cache        = interruptedWork.memoizedState.cache;
+        const cache = interruptedWork.memoizedState.cache;
         popCacheProvider(interruptedWork, cache);
       }
       break;
     case TracingMarkerComponent:
       if (enableTransitionTracing) {
-        const instance                               =
-          interruptedWork.stateNode;
+        const instance = interruptedWork.stateNode;
         if (instance !== null) {
           popMarkerInstance(interruptedWork);
         }
@@ -279,4 +263,4 @@ function unwindInterruptedWork(
   }
 }
 
-export {unwindWork, unwindInterruptedWork};
+export { unwindWork, unwindInterruptedWork };

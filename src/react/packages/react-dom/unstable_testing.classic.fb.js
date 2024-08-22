@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-export * from './index.classic.fb.js';
+export * from "./index.classic.fb.js";
 export {
   createComponentSelector,
   createHasPseudoClassSelector,
@@ -19,4 +19,4 @@ export {
   findBoundingRects,
   focusWithin,
   observeVisibleRects,
-} from 'react-reconciler/src/ReactFiberReconciler';
+} from "react-reconciler/src/ReactFiberReconciler";

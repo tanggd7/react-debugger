@@ -8,27 +8,27 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
 let waitForAll;
 let waitForThrow;
 
-describe('ReactIncrementalErrorReplay', () => {
+describe("ReactIncrementalErrorReplay", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     waitForThrow = InternalTestUtils.waitForThrow;
   });
 
-  it('should fail gracefully on error in the host environment', async () => {
+  it("should fail gracefully on error in the host environment", async () => {
     ReactNoop.render(<errorInBeginPhase />);
-    await waitForThrow('Error in host config.');
+    await waitForThrow("Error in host config.");
   });
 
   it("should ignore error if it doesn't throw on retry", async () => {
@@ -38,7 +38,7 @@ describe('ReactIncrementalErrorReplay', () => {
       const needsInit = !didInit;
       didInit = true;
       if (needsInit) {
-        throw new Error('Hi');
+        throw new Error("Hi");
       }
     }
 

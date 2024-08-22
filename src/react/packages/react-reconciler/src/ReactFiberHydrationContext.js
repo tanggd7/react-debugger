@@ -4,22 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
-import {NoMode, ConcurrentMode} from './ReactTypeOfMode';
-             
-           
-               
-                     
-                   
-            
-              
-                            
-                                                                 
-                                                         
-                                                        
+import { NoMode, ConcurrentMode } from "./ReactTypeOfMode";
 
 import {
   HostComponent,
@@ -27,24 +15,24 @@ import {
   HostText,
   HostRoot,
   SuspenseComponent,
-} from './ReactWorkTags';
+} from "./ReactWorkTags";
 import {
   ChildDeletion,
   Placement,
   Hydrating,
   NoFlags,
   DidCapture,
-} from './ReactFiberFlags';
+} from "./ReactFiberFlags";
 import {
   enableHostSingletons,
   enableClientRenderFallbackOnTextMismatch,
   diffInCommitPhase,
-} from 'shared/ReactFeatureFlags';
+} from "shared/ReactFeatureFlags";
 
 import {
   createFiberFromHostInstanceForDeletion,
   createFiberFromDehydratedFragment,
-} from './ReactFiber';
+} from "./ReactFiber";
 import {
   shouldSetTextContent,
   supportsHydration,
@@ -77,27 +65,27 @@ import {
   canHydrateTextInstance,
   canHydrateSuspenseInstance,
   isHydratableText,
-} from './ReactFiberConfig';
-import {OffscreenLane} from './ReactFiberLane';
+} from "./ReactFiberConfig";
+import { OffscreenLane } from "./ReactFiberLane";
 import {
   getSuspendedTreeContext,
   restoreSuspendedTreeContext,
-} from './ReactFiberTreeContext';
-import {queueRecoverableErrors} from './ReactFiberWorkLoop';
-import {getRootHostContainer, getHostContext} from './ReactFiberHostContext';
+} from "./ReactFiberTreeContext";
+import { queueRecoverableErrors } from "./ReactFiberWorkLoop";
+import { getRootHostContainer, getHostContext } from "./ReactFiberHostContext";
 
 // The deepest Fiber on the stack involved in a hydration context.
 // This may have been an insertion or a hydration.
-let hydrationParentFiber               = null;
-let nextHydratableInstance                            = null;
-let isHydrating          = false;
+let hydrationParentFiber = null;
+let nextHydratableInstance = null;
+let isHydrating = false;
 
 // This flag allows for warning supression when we expect there to be mismatches
 // due to earlier mismatches or a suspended fiber.
-let didSuspendOrErrorDEV          = false;
+let didSuspendOrErrorDEV = false;
 
 // Hydration errors that were thrown inside this boundary
-let hydrationErrors                                     = null;
+let hydrationErrors = null;
 
 let rootOrSingletonContext = false;
 
@@ -105,7 +93,7 @@ function warnIfHydrating() {
   if (__DEV__) {
     if (isHydrating) {
       console.error(
-        'We should not be hydrating here. This is a bug in React. Please file a bug.',
+        "We should not be hydrating here. This is a bug in React. Please file a bug.",
       );
     }
   }
@@ -117,19 +105,19 @@ export function markDidThrowWhileHydratingDEV() {
   }
 }
 
-export function didSuspendOrErrorWhileHydratingDEV()          {
+export function didSuspendOrErrorWhileHydratingDEV() {
   if (__DEV__) {
     return didSuspendOrErrorDEV;
   }
   return false;
 }
 
-function enterHydrationState(fiber       )          {
+function enterHydrationState(fiber) {
   if (!supportsHydration) {
     return false;
   }
 
-  const parentInstance            = fiber.stateNode.containerInfo;
+  const parentInstance = fiber.stateNode.containerInfo;
   nextHydratableInstance =
     getFirstHydratableChildWithinContainer(parentInstance);
   hydrationParentFiber = fiber;
@@ -141,10 +129,10 @@ function enterHydrationState(fiber       )          {
 }
 
 function reenterHydrationStateFromDehydratedSuspenseInstance(
-  fiber       ,
-  suspenseInstance                  ,
-  treeContext                    ,
-)          {
+  fiber,
+  suspenseInstance,
+  treeContext,
+) {
   if (!supportsHydration) {
     return false;
   }
@@ -161,10 +149,7 @@ function reenterHydrationStateFromDehydratedSuspenseInstance(
   return true;
 }
 
-function warnUnhydratedInstance(
-  returnFiber       ,
-  instance                    ,
-) {
+function warnUnhydratedInstance(returnFiber, instance) {
   if (__DEV__) {
     switch (returnFiber.tag) {
       case HostRoot: {
@@ -188,7 +173,7 @@ function warnUnhydratedInstance(
         break;
       }
       case SuspenseComponent: {
-        const suspenseState                = returnFiber.memoizedState;
+        const suspenseState = returnFiber.memoizedState;
         if (suspenseState.dehydrated !== null)
           didNotHydrateInstanceWithinSuspenseInstance(
             suspenseState.dehydrated,
@@ -200,10 +185,7 @@ function warnUnhydratedInstance(
   }
 }
 
-function deleteHydratableInstance(
-  returnFiber       ,
-  instance                    ,
-) {
+function deleteHydratableInstance(returnFiber, instance) {
   warnUnhydratedInstance(returnFiber, instance);
   const childToDelete = createFiberFromHostInstanceForDeletion();
   childToDelete.stateNode = instance;
@@ -218,7 +200,7 @@ function deleteHydratableInstance(
   }
 }
 
-function warnNonhydratedInstance(returnFiber       , fiber       ) {
+function warnNonhydratedInstance(returnFiber, fiber) {
   if (__DEV__) {
     if (didSuspendOrErrorDEV) {
       // Inside a boundary that already suspended. We're currently rendering the
@@ -305,7 +287,7 @@ function warnNonhydratedInstance(returnFiber       , fiber       ) {
         break;
       }
       case SuspenseComponent: {
-        const suspenseState                = returnFiber.memoizedState;
+        const suspenseState = returnFiber.memoizedState;
         const parentInstance = suspenseState.dehydrated;
         if (parentInstance !== null)
           switch (fiber.tag) {
@@ -339,12 +321,12 @@ function warnNonhydratedInstance(returnFiber       , fiber       ) {
     }
   }
 }
-function insertNonHydratedInstance(returnFiber       , fiber       ) {
+function insertNonHydratedInstance(returnFiber, fiber) {
   fiber.flags = (fiber.flags & ~Hydrating) | Placement;
   warnNonhydratedInstance(returnFiber, fiber);
 }
 
-function tryHydrateInstance(fiber       , nextInstance     ) {
+function tryHydrateInstance(fiber, nextInstance) {
   // fiber is a HostComponent Fiber
   const instance = canHydrateInstance(
     nextInstance,
@@ -353,7 +335,7 @@ function tryHydrateInstance(fiber       , nextInstance     ) {
     rootOrSingletonContext,
   );
   if (instance !== null) {
-    fiber.stateNode = (instance          );
+    fiber.stateNode = instance;
     hydrationParentFiber = fiber;
     nextHydratableInstance = getFirstHydratableChild(instance);
     rootOrSingletonContext = false;
@@ -362,7 +344,7 @@ function tryHydrateInstance(fiber       , nextInstance     ) {
   return false;
 }
 
-function tryHydrateText(fiber       , nextInstance     ) {
+function tryHydrateText(fiber, nextInstance) {
   // fiber is a HostText Fiber
   const text = fiber.pendingProps;
   const textInstance = canHydrateTextInstance(
@@ -371,7 +353,7 @@ function tryHydrateText(fiber       , nextInstance     ) {
     rootOrSingletonContext,
   );
   if (textInstance !== null) {
-    fiber.stateNode = (textInstance              );
+    fiber.stateNode = textInstance;
     hydrationParentFiber = fiber;
     // Text Instances don't have children so there's nothing to hydrate.
     nextHydratableInstance = null;
@@ -380,14 +362,14 @@ function tryHydrateText(fiber       , nextInstance     ) {
   return false;
 }
 
-function tryHydrateSuspense(fiber       , nextInstance     ) {
+function tryHydrateSuspense(fiber, nextInstance) {
   // fiber is a SuspenseComponent Fiber
   const suspenseInstance = canHydrateSuspenseInstance(
     nextInstance,
     rootOrSingletonContext,
   );
   if (suspenseInstance !== null) {
-    const suspenseState                = {
+    const suspenseState = {
       dehydrated: suspenseInstance,
       treeContext: getSuspendedTreeContext(),
       retryLane: OffscreenLane,
@@ -410,21 +392,21 @@ function tryHydrateSuspense(fiber       , nextInstance     ) {
   return false;
 }
 
-function shouldClientRenderOnMismatch(fiber       ) {
+function shouldClientRenderOnMismatch(fiber) {
   return (
     (fiber.mode & ConcurrentMode) !== NoMode &&
     (fiber.flags & DidCapture) === NoFlags
   );
 }
 
-function throwOnHydrationMismatch(fiber       ) {
+function throwOnHydrationMismatch(fiber) {
   throw new Error(
-    'Hydration failed because the initial UI does not match what was ' +
-      'rendered on the server.',
+    "Hydration failed because the initial UI does not match what was " +
+      "rendered on the server.",
   );
 }
 
-function claimHydratableSingleton(fiber       )       {
+function claimHydratableSingleton(fiber) {
   if (enableHostSingletons && supportsSingletons) {
     if (!isHydrating) {
       return;
@@ -444,7 +426,7 @@ function claimHydratableSingleton(fiber       )       {
   }
 }
 
-function tryToClaimNextHydratableInstance(fiber       )       {
+function tryToClaimNextHydratableInstance(fiber) {
   if (!isHydrating) {
     return;
   }
@@ -452,11 +434,11 @@ function tryToClaimNextHydratableInstance(fiber       )       {
   const nextInstance = nextHydratableInstance;
   if (!nextInstance) {
     if (shouldClientRenderOnMismatch(fiber)) {
-      warnNonhydratedInstance((hydrationParentFiber     ), fiber);
+      warnNonhydratedInstance(hydrationParentFiber, fiber);
       throwOnHydrationMismatch(fiber);
     }
     // Nothing to hydrate. Make it an insertion.
-    insertNonHydratedInstance((hydrationParentFiber     ), fiber);
+    insertNonHydratedInstance(hydrationParentFiber, fiber);
     isHydrating = false;
     hydrationParentFiber = fiber;
     nextHydratableInstance = initialInstance;
@@ -465,20 +447,20 @@ function tryToClaimNextHydratableInstance(fiber       )       {
   const firstAttemptedInstance = nextInstance;
   if (!tryHydrateInstance(fiber, nextInstance)) {
     if (shouldClientRenderOnMismatch(fiber)) {
-      warnNonhydratedInstance((hydrationParentFiber     ), fiber);
+      warnNonhydratedInstance(hydrationParentFiber, fiber);
       throwOnHydrationMismatch(fiber);
     }
     // If we can't hydrate this instance let's try the next one.
     // We use this as a heuristic. It's based on intuition and not data so it
     // might be flawed or unnecessary.
     nextHydratableInstance = getNextHydratableSibling(nextInstance);
-    const prevHydrationParentFiber        = (hydrationParentFiber     );
+    const prevHydrationParentFiber = hydrationParentFiber;
     if (
       !nextHydratableInstance ||
       !tryHydrateInstance(fiber, nextHydratableInstance)
     ) {
       // Nothing to hydrate. Make it an insertion.
-      insertNonHydratedInstance((hydrationParentFiber     ), fiber);
+      insertNonHydratedInstance(hydrationParentFiber, fiber);
       isHydrating = false;
       hydrationParentFiber = fiber;
       nextHydratableInstance = initialInstance;
@@ -492,7 +474,7 @@ function tryToClaimNextHydratableInstance(fiber       )       {
   }
 }
 
-function tryToClaimNextHydratableTextInstance(fiber       )       {
+function tryToClaimNextHydratableTextInstance(fiber) {
   if (!isHydrating) {
     return;
   }
@@ -505,11 +487,11 @@ function tryToClaimNextHydratableTextInstance(fiber       )       {
     // We exclude non hydrabable text because we know there are no matching hydratables.
     // We either throw or insert depending on the render mode.
     if (shouldClientRenderOnMismatch(fiber)) {
-      warnNonhydratedInstance((hydrationParentFiber     ), fiber);
+      warnNonhydratedInstance(hydrationParentFiber, fiber);
       throwOnHydrationMismatch(fiber);
     }
     // Nothing to hydrate. Make it an insertion.
-    insertNonHydratedInstance((hydrationParentFiber     ), fiber);
+    insertNonHydratedInstance(hydrationParentFiber, fiber);
     isHydrating = false;
     hydrationParentFiber = fiber;
     nextHydratableInstance = initialInstance;
@@ -518,21 +500,21 @@ function tryToClaimNextHydratableTextInstance(fiber       )       {
   const firstAttemptedInstance = nextInstance;
   if (!tryHydrateText(fiber, nextInstance)) {
     if (shouldClientRenderOnMismatch(fiber)) {
-      warnNonhydratedInstance((hydrationParentFiber     ), fiber);
+      warnNonhydratedInstance(hydrationParentFiber, fiber);
       throwOnHydrationMismatch(fiber);
     }
     // If we can't hydrate this instance let's try the next one.
     // We use this as a heuristic. It's based on intuition and not data so it
     // might be flawed or unnecessary.
     nextHydratableInstance = getNextHydratableSibling(nextInstance);
-    const prevHydrationParentFiber        = (hydrationParentFiber     );
+    const prevHydrationParentFiber = hydrationParentFiber;
 
     if (
       !nextHydratableInstance ||
       !tryHydrateText(fiber, nextHydratableInstance)
     ) {
       // Nothing to hydrate. Make it an insertion.
-      insertNonHydratedInstance((hydrationParentFiber     ), fiber);
+      insertNonHydratedInstance(hydrationParentFiber, fiber);
       isHydrating = false;
       hydrationParentFiber = fiber;
       nextHydratableInstance = initialInstance;
@@ -546,7 +528,7 @@ function tryToClaimNextHydratableTextInstance(fiber       )       {
   }
 }
 
-function tryToClaimNextHydratableSuspenseInstance(fiber       )       {
+function tryToClaimNextHydratableSuspenseInstance(fiber) {
   if (!isHydrating) {
     return;
   }
@@ -554,11 +536,11 @@ function tryToClaimNextHydratableSuspenseInstance(fiber       )       {
   const nextInstance = nextHydratableInstance;
   if (!nextInstance) {
     if (shouldClientRenderOnMismatch(fiber)) {
-      warnNonhydratedInstance((hydrationParentFiber     ), fiber);
+      warnNonhydratedInstance(hydrationParentFiber, fiber);
       throwOnHydrationMismatch(fiber);
     }
     // Nothing to hydrate. Make it an insertion.
-    insertNonHydratedInstance((hydrationParentFiber     ), fiber);
+    insertNonHydratedInstance(hydrationParentFiber, fiber);
     isHydrating = false;
     hydrationParentFiber = fiber;
     nextHydratableInstance = initialInstance;
@@ -567,21 +549,21 @@ function tryToClaimNextHydratableSuspenseInstance(fiber       )       {
   const firstAttemptedInstance = nextInstance;
   if (!tryHydrateSuspense(fiber, nextInstance)) {
     if (shouldClientRenderOnMismatch(fiber)) {
-      warnNonhydratedInstance((hydrationParentFiber     ), fiber);
+      warnNonhydratedInstance(hydrationParentFiber, fiber);
       throwOnHydrationMismatch(fiber);
     }
     // If we can't hydrate this instance let's try the next one.
     // We use this as a heuristic. It's based on intuition and not data so it
     // might be flawed or unnecessary.
     nextHydratableInstance = getNextHydratableSibling(nextInstance);
-    const prevHydrationParentFiber        = (hydrationParentFiber     );
+    const prevHydrationParentFiber = hydrationParentFiber;
 
     if (
       !nextHydratableInstance ||
       !tryHydrateSuspense(fiber, nextHydratableInstance)
     ) {
       // Nothing to hydrate. Make it an insertion.
-      insertNonHydratedInstance((hydrationParentFiber     ), fiber);
+      insertNonHydratedInstance(hydrationParentFiber, fiber);
       isHydrating = false;
       hydrationParentFiber = fiber;
       nextHydratableInstance = initialInstance;
@@ -595,18 +577,15 @@ function tryToClaimNextHydratableSuspenseInstance(fiber       )       {
   }
 }
 
-function prepareToHydrateHostInstance(
-  fiber       ,
-  hostContext             ,
-)          {
+function prepareToHydrateHostInstance(fiber, hostContext) {
   if (!supportsHydration) {
     throw new Error(
-      'Expected prepareToHydrateHostInstance() to never be called. ' +
-        'This error is likely caused by a bug in React. Please file an issue.',
+      "Expected prepareToHydrateHostInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue.",
     );
   }
 
-  const instance           = fiber.stateNode;
+  const instance = fiber.stateNode;
   const shouldWarnIfMismatchDev = !didSuspendOrErrorDEV;
   const updatePayload = hydrateInstance(
     instance,
@@ -619,7 +598,7 @@ function prepareToHydrateHostInstance(
 
   // TODO: Type this specific to this type of component.
   if (!diffInCommitPhase) {
-    fiber.updateQueue = (updatePayload     );
+    fiber.updateQueue = updatePayload;
     // If the update payload indicates that there is a change or if there
     // is a new ref we mark this as an update.
     if (updatePayload !== null) {
@@ -629,16 +608,16 @@ function prepareToHydrateHostInstance(
   return false;
 }
 
-function prepareToHydrateHostTextInstance(fiber       )          {
+function prepareToHydrateHostTextInstance(fiber) {
   if (!supportsHydration) {
     throw new Error(
-      'Expected prepareToHydrateHostTextInstance() to never be called. ' +
-        'This error is likely caused by a bug in React. Please file an issue.',
+      "Expected prepareToHydrateHostTextInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue.",
     );
   }
 
-  const textInstance               = fiber.stateNode;
-  const textContent         = fiber.memoizedProps;
+  const textInstance = fiber.stateNode;
+  const textContent = fiber.memoizedProps;
   const shouldWarnIfMismatchDev = !didSuspendOrErrorDEV;
   const shouldUpdate = hydrateTextInstance(
     textInstance,
@@ -701,52 +680,50 @@ function prepareToHydrateHostTextInstance(fiber       )          {
   return shouldUpdate;
 }
 
-function prepareToHydrateHostSuspenseInstance(fiber       )       {
+function prepareToHydrateHostSuspenseInstance(fiber) {
   if (!supportsHydration) {
     throw new Error(
-      'Expected prepareToHydrateHostSuspenseInstance() to never be called. ' +
-        'This error is likely caused by a bug in React. Please file an issue.',
+      "Expected prepareToHydrateHostSuspenseInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue.",
     );
   }
 
-  const suspenseState                       = fiber.memoizedState;
-  const suspenseInstance                          =
+  const suspenseState = fiber.memoizedState;
+  const suspenseInstance =
     suspenseState !== null ? suspenseState.dehydrated : null;
 
   if (!suspenseInstance) {
     throw new Error(
-      'Expected to have a hydrated suspense instance. ' +
-        'This error is likely caused by a bug in React. Please file an issue.',
+      "Expected to have a hydrated suspense instance. " +
+        "This error is likely caused by a bug in React. Please file an issue.",
     );
   }
 
   hydrateSuspenseInstance(suspenseInstance, fiber);
 }
 
-function skipPastDehydratedSuspenseInstance(
-  fiber       ,
-)                            {
+function skipPastDehydratedSuspenseInstance(fiber) {
   if (!supportsHydration) {
     throw new Error(
-      'Expected skipPastDehydratedSuspenseInstance() to never be called. ' +
-        'This error is likely caused by a bug in React. Please file an issue.',
+      "Expected skipPastDehydratedSuspenseInstance() to never be called. " +
+        "This error is likely caused by a bug in React. Please file an issue.",
     );
   }
-  const suspenseState                       = fiber.memoizedState;
-  const suspenseInstance                          =
+  const suspenseState = fiber.memoizedState;
+  const suspenseInstance =
     suspenseState !== null ? suspenseState.dehydrated : null;
 
   if (!suspenseInstance) {
     throw new Error(
-      'Expected to have a hydrated suspense instance. ' +
-        'This error is likely caused by a bug in React. Please file an issue.',
+      "Expected to have a hydrated suspense instance. " +
+        "This error is likely caused by a bug in React. Please file an issue.",
     );
   }
 
   return getNextHydratableInstanceAfterSuspenseInstance(suspenseInstance);
 }
 
-function popToNextHostParent(fiber       )       {
+function popToNextHostParent(fiber) {
   hydrationParentFiber = fiber.return;
   while (hydrationParentFiber) {
     switch (hydrationParentFiber.tag) {
@@ -764,7 +741,7 @@ function popToNextHostParent(fiber       )       {
   }
 }
 
-function popHydrationState(fiber       )          {
+function popHydrationState(fiber) {
   if (!supportsHydration) {
     return false;
   }
@@ -836,11 +813,11 @@ function popHydrationState(fiber       )          {
   return true;
 }
 
-function hasUnhydratedTailNodes()          {
+function hasUnhydratedTailNodes() {
   return isHydrating && nextHydratableInstance !== null;
 }
 
-function warnIfUnhydratedTailNodes(fiber       ) {
+function warnIfUnhydratedTailNodes(fiber) {
   let nextInstance = nextHydratableInstance;
   while (nextInstance) {
     warnUnhydratedInstance(fiber, nextInstance);
@@ -848,7 +825,7 @@ function warnIfUnhydratedTailNodes(fiber       ) {
   }
 }
 
-function resetHydrationState()       {
+function resetHydrationState() {
   if (!supportsHydration) {
     return;
   }
@@ -859,7 +836,7 @@ function resetHydrationState()       {
   didSuspendOrErrorDEV = false;
 }
 
-export function upgradeHydrationErrorsToRecoverable()       {
+export function upgradeHydrationErrorsToRecoverable() {
   if (hydrationErrors !== null) {
     // Successfully completed a forced client render. The errors that occurred
     // during the hydration attempt are now recovered. We will log them in
@@ -869,11 +846,11 @@ export function upgradeHydrationErrorsToRecoverable()       {
   }
 }
 
-function getIsHydrating()          {
+function getIsHydrating() {
   return isHydrating;
 }
 
-export function queueHydrationError(error                      )       {
+export function queueHydrationError(error) {
   if (hydrationErrors === null) {
     hydrationErrors = [error];
   } else {

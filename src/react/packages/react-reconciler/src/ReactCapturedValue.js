@@ -4,24 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
+import { getStackByFiberInDevAndProd } from "./ReactFiberComponentStack";
 
-import {getStackByFiberInDevAndProd} from './ReactFiberComponentStack';
-
-                                
-           
-                       
-                       
-                        
-  
-
-export function createCapturedValueAtFiber   (
-  value   ,
-  source       ,
-)                   {
+export function createCapturedValueAtFiber(value, source) {
   // If the value is an error, call this function immediately after it is thrown
   // so the stack is accurate.
   return {
@@ -32,11 +20,7 @@ export function createCapturedValueAtFiber   (
   };
 }
 
-export function createCapturedValue   (
-  value   ,
-  digest         ,
-  stack         ,
-)                   {
+export function createCapturedValue(value, digest, stack) {
   return {
     value,
     source: null,

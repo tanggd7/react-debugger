@@ -9,7 +9,7 @@ let flushFakeMicrotasks;
 
 // TODO: Migrate tests to React DOM instead of React Noop
 
-describe('ReactFlushSync (AggregateError not available)', () => {
+describe("ReactFlushSync (AggregateError not available)", () => {
   beforeEach(() => {
     jest.resetModules();
 
@@ -21,7 +21,7 @@ describe('ReactFlushSync (AggregateError not available)', () => {
     const originalQueueMicrotask = queueMicrotask;
     overrideQueueMicrotask = false;
     const fakeMicrotaskQueue = [];
-    global.queueMicrotask = cb => {
+    global.queueMicrotask = (cb) => {
       if (overrideQueueMicrotask) {
         fakeMicrotaskQueue.push(cb);
       } else {
@@ -35,22 +35,22 @@ describe('ReactFlushSync (AggregateError not available)', () => {
       }
     };
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
   });
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
 
-  test('completely exhausts synchronous work queue even if something throws', async () => {
-    function Throws({error}) {
+  test("completely exhausts synchronous work queue even if something throws", async () => {
+    function Throws({ error }) {
       throw error;
     }
 
@@ -63,10 +63,10 @@ describe('ReactFlushSync (AggregateError not available)', () => {
       root2.render(<Text text="Andrew" />);
       root3.render(<Text text="!" />);
     });
-    assertLog(['Hi', 'Andrew', '!']);
+    assertLog(["Hi", "Andrew", "!"]);
 
-    const aahh = new Error('AAHH!');
-    const nooo = new Error('Noooooooooo!');
+    const aahh = new Error("AAHH!");
+    const nooo = new Error("Noooooooooo!");
 
     // Override the global queueMicrotask so we can test the behavior.
     overrideQueueMicrotask = true;
@@ -83,11 +83,11 @@ describe('ReactFlushSync (AggregateError not available)', () => {
 
     // The update to root 3 should have finished synchronously, even though the
     // earlier updates errored.
-    assertLog(['aww']);
+    assertLog(["aww"]);
     // Roots 1 and 2 were unmounted.
     expect(root1).toMatchRenderedOutput(null);
     expect(root2).toMatchRenderedOutput(null);
-    expect(root3).toMatchRenderedOutput('aww');
+    expect(root3).toMatchRenderedOutput("aww");
 
     // In modern environments, React would throw an AggregateError. Because
     // AggregateError is not available, React throws the first error, then

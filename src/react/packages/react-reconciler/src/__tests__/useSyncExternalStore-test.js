@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let useSyncExternalStore;
 let React;
@@ -29,13 +29,13 @@ let assertLog;
 // into useSyncExternalStoreShared-test.js. The reason they are separate is
 // because at some point we may start running the shared tests against vendored
 // React DOM versions (16, 17, etc) instead of React Noop.
-describe('useSyncExternalStore', () => {
+describe("useSyncExternalStore", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
     useLayoutEffect = React.useLayoutEffect;
     useImperativeHandle = React.useImperativeHandle;
     forwardRef = React.forwardRef;
@@ -44,15 +44,15 @@ describe('useSyncExternalStore', () => {
     useSyncExternalStore = React.useSyncExternalStore;
     startTransition = React.startTransition;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitFor = InternalTestUtils.waitFor;
     waitForAll = InternalTestUtils.waitForAll;
     assertLog = InternalTestUtils.assertLog;
 
-    act = require('internal-test-utils').act;
+    act = require("internal-test-utils").act;
   });
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
@@ -64,7 +64,7 @@ describe('useSyncExternalStore', () => {
       set(text) {
         currentState = text;
         ReactNoop.batchedUpdates(() => {
-          listeners.forEach(listener => listener());
+          listeners.forEach((listener) => listener());
         });
       },
       subscribe(listener) {
@@ -81,25 +81,21 @@ describe('useSyncExternalStore', () => {
   }
 
   test(
-    'detects interleaved mutations during a concurrent read before ' +
-      'layout effects fire',
+    "detects interleaved mutations during a concurrent read before " +
+      "layout effects fire",
     async () => {
       const store1 = createExternalStore(0);
       const store2 = createExternalStore(0);
 
-      const Child = forwardRef(({store, label}, ref) => {
+      const Child = forwardRef(({ store, label }, ref) => {
         const value = useSyncExternalStore(store.subscribe, store.getState);
-        useImperativeHandle(
-          ref,
-          () => {
-            return value;
-          },
-          [],
-        );
+        useImperativeHandle(ref, () => {
+          return value;
+        }, []);
         return <Text text={label + value} />;
       });
 
-      function App({store}) {
+      function App({ store }) {
         const refA = useRef(null);
         const refB = useRef(null);
         const refC = useRef(null);
@@ -130,7 +126,7 @@ describe('useSyncExternalStore', () => {
           root.render(<App store={store1} />);
         });
 
-        await waitFor(['A0', 'B0']);
+        await waitFor(["A0", "B0"]);
 
         // During an interleaved event, the store is mutated.
         store1.set(1);
@@ -139,16 +135,16 @@ describe('useSyncExternalStore', () => {
         await waitForAll([
           // C reads a newer value from the store than A or B, which means they
           // are inconsistent.
-          'C1',
+          "C1",
 
           // Before committing the layout effects, React detects that the store
           // has been mutated. So it throws out the entire completed tree and
           // re-renders the new values.
-          'A1',
-          'B1',
-          'C1',
+          "A1",
+          "B1",
+          "C1",
           // The layout effects reads consistent children.
-          'Children observed during layout: A1B1C1',
+          "Children observed during layout: A1B1C1",
         ]);
       });
 
@@ -160,7 +156,7 @@ describe('useSyncExternalStore', () => {
         });
 
         // Start a concurrent render that reads from the store, then yield.
-        await waitFor(['A0', 'B0']);
+        await waitFor(["A0", "B0"]);
 
         // During an interleaved event, the store is mutated.
         store2.set(1);
@@ -169,23 +165,23 @@ describe('useSyncExternalStore', () => {
         await waitForAll([
           // C reads a newer value from the store than A or B, which means they
           // are inconsistent.
-          'C1',
+          "C1",
 
           // Before committing the layout effects, React detects that the store
           // has been mutated. So it throws out the entire completed tree and
           // re-renders the new values.
-          'A1',
-          'B1',
-          'C1',
+          "A1",
+          "B1",
+          "C1",
           // The layout effects reads consistent children.
-          'Children observed during layout: A1B1C1',
+          "Children observed during layout: A1B1C1",
         ]);
       });
     },
   );
 
-  test('next value is correctly cached when state is dispatched in render phase', async () => {
-    const store = createExternalStore('value:initial');
+  test("next value is correctly cached when state is dispatched in render phase", async () => {
+    const store = createExternalStore("value:initial");
 
     function App() {
       const value = useSyncExternalStore(store.subscribe, store.getState);
@@ -199,17 +195,17 @@ describe('useSyncExternalStore', () => {
       // Start a render that reads from the store and yields value
       root.render(<App />);
     });
-    assertLog(['value:initial']);
+    assertLog(["value:initial"]);
 
     await act(() => {
-      store.set('value:changed');
+      store.set("value:changed");
     });
-    assertLog(['value:changed']);
+    assertLog(["value:changed"]);
 
     // If cached value was updated, we expect a re-render
     await act(() => {
-      store.set('value:initial');
+      store.set("value:initial");
     });
-    assertLog(['value:initial']);
+    assertLog(["value:initial"]);
   });
 });

@@ -7,22 +7,22 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('ReactEventIndependence', () => {
+describe("ReactEventIndependence", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
   });
 
-  it('does not crash with other react inside', () => {
+  it("does not crash with other react inside", () => {
     let clicks = 0;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
     try {
       const div = ReactDOM.render(
@@ -42,12 +42,12 @@ describe('ReactEventIndependence', () => {
     }
   });
 
-  it('does not crash with other react outside', () => {
+  it("does not crash with other react outside", () => {
     let clicks = 0;
-    const outer = document.createElement('div');
+    const outer = document.createElement("div");
     document.body.appendChild(outer);
     try {
-      outer.setAttribute('data-reactid', '.z');
+      outer.setAttribute("data-reactid", ".z");
       const inner = ReactDOM.render(
         <button onClick={() => clicks++}>click me</button>,
         outer,
@@ -59,9 +59,9 @@ describe('ReactEventIndependence', () => {
     }
   });
 
-  it('does not when event fired on unmounted tree', () => {
+  it("does not when event fired on unmounted tree", () => {
     let clicks = 0;
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     document.body.appendChild(container);
     try {
       const button = ReactDOM.render(

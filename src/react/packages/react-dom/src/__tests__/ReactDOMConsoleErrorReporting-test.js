@@ -5,9 +5,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
+"use strict";
 
-describe('ReactDOMConsoleErrorReporting', () => {
+describe("ReactDOMConsoleErrorReporting", () => {
   let act;
   let React;
   let ReactDOM;
@@ -21,18 +21,18 @@ describe('ReactDOMConsoleErrorReporting', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    act = require('internal-test-utils').act;
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMClient = require('react-dom/client');
+    act = require("internal-test-utils").act;
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMClient = require("react-dom/client");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForThrow = InternalTestUtils.waitForThrow;
 
     ErrorBoundary = class extends React.Component {
-      state = {error: null};
+      state = { error: null };
       static getDerivedStateFromError(error) {
-        return {error};
+        return { error };
       }
       render() {
         if (this.state.error) {
@@ -44,28 +44,29 @@ describe('ReactDOMConsoleErrorReporting', () => {
     NoError = function () {
       return <h1>OK</h1>;
     };
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
     windowOnError = jest.fn();
-    window.addEventListener('error', windowOnError);
+    window.addEventListener("error", windowOnError);
   });
 
   afterEach(() => {
     document.body.removeChild(container);
-    window.removeEventListener('error', windowOnError);
+    window.removeEventListener("error", windowOnError);
     jest.restoreAllMocks();
   });
 
-  describe('ReactDOMClient.createRoot', () => {
-    it('logs errors during event handlers', async () => {
-      spyOnDevAndProd(console, 'error');
+  describe("ReactDOMClient.createRoot", () => {
+    it("logs errors during event handlers", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         return (
           <button
             onClick={() => {
-              throw Error('Boom');
-            }}>
+              throw Error("Boom");
+            }}
+          >
             click me
           </button>
         );
@@ -78,7 +79,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
 
       await act(() => {
         container.firstChild.dispatchEvent(
-          new MouseEvent('click', {
+          new MouseEvent("click", {
             bubbles: true,
           }),
         );
@@ -89,14 +90,14 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported because we're in a browser click event:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
           [
             // This one is jsdom-only. Real browser deduplicates it.
             // (In DEV, we have a nested event due to guarded callback.)
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -105,9 +106,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported because we're in a browser click event:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
@@ -115,9 +116,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // (In DEV, we have a nested event due to guarded callback.)
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
         ]);
@@ -126,7 +127,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported because we're in a browser click event:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -135,9 +136,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported because we're in a browser click event:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
         ]);
@@ -149,24 +150,24 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
       }
     });
 
-    it('logs render errors without an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs render errors without an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
-        throw Error('Boom');
+        throw Error("Boom");
       }
 
       const root = ReactDOMClient.createRoot(container);
       await act(async () => {
         root.render(<Foo />);
-        await waitForThrow('Boom');
+        await waitForThrow("Boom");
       });
 
       if (__DEV__) {
@@ -174,14 +175,14 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
           [
             // This is only duplicated with createRoot
             // because it retries once with a sync render.
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -190,9 +191,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
@@ -200,15 +201,15 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // because it retries once with a sync render.
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -220,7 +221,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -232,18 +233,18 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
       }
     });
 
-    it('logs render errors with an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs render errors with an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
-        throw Error('Boom');
+        throw Error("Boom");
       }
 
       const root = ReactDOMClient.createRoot(container);
@@ -260,14 +261,14 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
           [
             // This is only duplicated with createRoot
             // because it retries once with a sync render.
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -276,9 +277,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported by jsdom due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
@@ -286,15 +287,15 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // because it retries once with a sync render.
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -306,7 +307,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -318,19 +319,19 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
       }
     });
 
-    it('logs layout effect errors without an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs layout effect errors without an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useLayoutEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
@@ -338,7 +339,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
       const root = ReactDOMClient.createRoot(container);
       await act(async () => {
         root.render(<Foo />);
-        await waitForThrow('Boom');
+        await waitForThrow("Boom");
       });
 
       if (__DEV__) {
@@ -346,7 +347,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -355,15 +356,15 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -375,7 +376,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -387,19 +388,19 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
       }
     });
 
-    it('logs layout effect errors with an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs layout effect errors with an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useLayoutEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
@@ -418,7 +419,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -427,15 +428,15 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported by jsdom due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -447,7 +448,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -459,19 +460,19 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
       }
     });
 
-    it('logs passive effect errors without an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs passive effect errors without an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
@@ -479,7 +480,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
       const root = ReactDOMClient.createRoot(container);
       await act(async () => {
         root.render(<Foo />);
-        await waitForThrow('Boom');
+        await waitForThrow("Boom");
       });
 
       if (__DEV__) {
@@ -487,7 +488,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -496,15 +497,15 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -516,7 +517,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -528,19 +529,19 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
       }
     });
 
-    it('logs passive effect errors with an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs passive effect errors with an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
@@ -559,7 +560,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -568,15 +569,15 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported by jsdom due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -588,7 +589,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -600,7 +601,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         root.render(<NoError />);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([]);
@@ -608,16 +609,17 @@ describe('ReactDOMConsoleErrorReporting', () => {
     });
   });
 
-  describe('ReactDOM.render', () => {
-    it('logs errors during event handlers', async () => {
-      spyOnDevAndProd(console, 'error');
+  describe("ReactDOM.render", () => {
+    it("logs errors during event handlers", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         return (
           <button
             onClick={() => {
-              throw Error('Boom');
-            }}>
+              throw Error("Boom");
+            }}
+          >
             click me
           </button>
         );
@@ -629,7 +631,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
 
       await act(() => {
         container.firstChild.dispatchEvent(
-          new MouseEvent('click', {
+          new MouseEvent("click", {
             bubbles: true,
           }),
         );
@@ -640,26 +642,26 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported because we're in a browser click event:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
           [
             // This one is jsdom-only. Real browser deduplicates it.
             // (In DEV, we have a nested event due to guarded callback.)
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported because we're in a browser click event:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
@@ -667,9 +669,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // (In DEV, we have a nested event due to guarded callback.)
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
         ]);
@@ -678,7 +680,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported because we're in a browser click event:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -687,9 +689,9 @@ describe('ReactDOMConsoleErrorReporting', () => {
             // Reported because we're in a browser click event:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
         ]);
@@ -701,50 +703,50 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });
 
-    it('logs render errors without an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs render errors without an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
-        throw Error('Boom');
+        throw Error("Boom");
       }
 
       expect(() => {
         ReactDOM.render(<Foo />, container);
-      }).toThrow('Boom');
+      }).toThrow("Boom");
 
       if (__DEV__) {
         expect(windowOnError.mock.calls).toEqual([
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -756,7 +758,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -768,20 +770,20 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });
 
-    it('logs render errors with an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs render errors with an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
-        throw Error('Boom');
+        throw Error("Boom");
       }
 
       await act(() => {
@@ -798,25 +800,25 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported by jsdom due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -828,7 +830,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -840,53 +842,53 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });
 
-    it('logs layout effect errors without an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs layout effect errors without an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useLayoutEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
 
       expect(() => {
         ReactDOM.render(<Foo />, container);
-      }).toThrow('Boom');
+      }).toThrow("Boom");
 
       if (__DEV__) {
         expect(windowOnError.mock.calls).toEqual([
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -898,7 +900,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -910,21 +912,21 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });
 
-    it('logs layout effect errors with an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs layout effect errors with an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useLayoutEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
@@ -943,25 +945,25 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported by jsdom due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -973,7 +975,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -985,28 +987,28 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });
 
-    it('logs passive effect errors without an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs passive effect errors without an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
 
       await act(async () => {
         ReactDOM.render(<Foo />, container);
-        await waitForThrow('Boom');
+        await waitForThrow("Boom");
       });
 
       if (__DEV__) {
@@ -1014,25 +1016,25 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported due to guarded callback:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -1044,7 +1046,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -1056,21 +1058,21 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });
 
-    it('logs passive effect errors with an error boundary', async () => {
-      spyOnDevAndProd(console, 'error');
+    it("logs passive effect errors with an error boundary", async () => {
+      spyOnDevAndProd(console, "error");
 
       function Foo() {
         React.useEffect(() => {
-          throw Error('Boom');
+          throw Error("Boom");
         }, []);
         return null;
       }
@@ -1089,25 +1091,25 @@ describe('ReactDOMConsoleErrorReporting', () => {
         expect(windowOnError.mock.calls).toEqual([
           [
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
           [
             // Reported by jsdom due to the guarded callback:
             expect.objectContaining({
               detail: expect.objectContaining({
-                message: 'Boom',
+                message: "Boom",
               }),
-              type: 'unhandled exception',
+              type: "unhandled exception",
             }),
           ],
           [
             // Addendum by React:
             expect.stringContaining(
-              'The above error occurred in the <Foo> component',
+              "The above error occurred in the <Foo> component",
             ),
           ],
         ]);
@@ -1119,7 +1121,7 @@ describe('ReactDOMConsoleErrorReporting', () => {
           [
             // Reported by React with no extra message:
             expect.objectContaining({
-              message: 'Boom',
+              message: "Boom",
             }),
           ],
         ]);
@@ -1131,11 +1133,11 @@ describe('ReactDOMConsoleErrorReporting', () => {
       await act(() => {
         ReactDOM.render(<NoError />, container);
       });
-      expect(container.textContent).toBe('OK');
+      expect(container.textContent).toBe("OK");
       expect(windowOnError.mock.calls).toEqual([]);
       if (__DEV__) {
         expect(console.error.mock.calls).toEqual([
-          [expect.stringContaining('ReactDOM.render is no longer supported')],
+          [expect.stringContaining("ReactDOM.render is no longer supported")],
         ]);
       }
     });

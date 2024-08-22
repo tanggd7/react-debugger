@@ -7,27 +7,27 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('ReactDOMEventListener', () => {
+describe("ReactDOMEventListener", () => {
   let React;
   let ReactDOM;
   let ReactDOMServer;
 
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMServer = require('react-dom/server');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMServer = require("react-dom/server");
   });
 
-  describe('Propagation', () => {
-    it('should propagate events one level down', () => {
+  describe("Propagation", () => {
+    it("should propagate events one level down", () => {
       const mouseOut = jest.fn();
-      const onMouseOut = event => mouseOut(event.currentTarget);
+      const onMouseOut = (event) => mouseOut(event.currentTarget);
 
-      const childContainer = document.createElement('div');
-      const parentContainer = document.createElement('div');
+      const childContainer = document.createElement("div");
+      const parentContainer = document.createElement("div");
       const childNode = ReactDOM.render(
         <div onMouseOut={onMouseOut}>Child</div>,
         childContainer,
@@ -40,8 +40,8 @@ describe('ReactDOMEventListener', () => {
       document.body.appendChild(parentContainer);
 
       try {
-        const nativeEvent = document.createEvent('Event');
-        nativeEvent.initEvent('mouseout', true, true);
+        const nativeEvent = document.createEvent("Event");
+        nativeEvent.initEvent("mouseout", true, true);
         childNode.dispatchEvent(nativeEvent);
 
         expect(mouseOut).toBeCalled();
@@ -53,13 +53,13 @@ describe('ReactDOMEventListener', () => {
       }
     });
 
-    it('should propagate events two levels down', () => {
+    it("should propagate events two levels down", () => {
       const mouseOut = jest.fn();
-      const onMouseOut = event => mouseOut(event.currentTarget);
+      const onMouseOut = (event) => mouseOut(event.currentTarget);
 
-      const childContainer = document.createElement('div');
-      const parentContainer = document.createElement('div');
-      const grandParentContainer = document.createElement('div');
+      const childContainer = document.createElement("div");
+      const parentContainer = document.createElement("div");
+      const grandParentContainer = document.createElement("div");
       const childNode = ReactDOM.render(
         <div onMouseOut={onMouseOut}>Child</div>,
         childContainer,
@@ -78,8 +78,8 @@ describe('ReactDOMEventListener', () => {
       document.body.appendChild(grandParentContainer);
 
       try {
-        const nativeEvent = document.createEvent('Event');
-        nativeEvent.initEvent('mouseout', true, true);
+        const nativeEvent = document.createEvent("Event");
+        nativeEvent.initEvent("mouseout", true, true);
         childNode.dispatchEvent(nativeEvent);
 
         expect(mouseOut).toBeCalled();
@@ -93,15 +93,15 @@ describe('ReactDOMEventListener', () => {
     });
 
     // Regression test for https://github.com/facebook/react/issues/1105
-    it('should not get confused by disappearing elements', () => {
-      const container = document.createElement('div');
+    it("should not get confused by disappearing elements", () => {
+      const container = document.createElement("div");
       document.body.appendChild(container);
 
       try {
         class MyComponent extends React.Component {
-          state = {clicked: false};
+          state = { clicked: false };
           handleClick = () => {
-            this.setState({clicked: true});
+            this.setState({ clicked: true });
           };
           componentDidMount() {
             expect(ReactDOM.findDOMNode(this)).toBe(container.firstChild);
@@ -121,26 +121,26 @@ describe('ReactDOMEventListener', () => {
         }
         ReactDOM.render(<MyComponent />, container);
         container.firstChild.dispatchEvent(
-          new MouseEvent('click', {
+          new MouseEvent("click", {
             bubbles: true,
           }),
         );
-        expect(container.firstChild.textContent).toBe('clicked!');
+        expect(container.firstChild.textContent).toBe("clicked!");
       } finally {
         document.body.removeChild(container);
       }
     });
 
-    it('should batch between handlers from different roots', () => {
+    it("should batch between handlers from different roots", () => {
       const mock = jest.fn();
 
-      const childContainer = document.createElement('div');
+      const childContainer = document.createElement("div");
       const handleChildMouseOut = () => {
         ReactDOM.render(<div>1</div>, childContainer);
         mock(childNode.textContent);
       };
 
-      const parentContainer = document.createElement('div');
+      const parentContainer = document.createElement("div");
       const handleParentMouseOut = () => {
         ReactDOM.render(<div>2</div>, childContainer);
         mock(childNode.textContent);
@@ -158,15 +158,15 @@ describe('ReactDOMEventListener', () => {
       document.body.appendChild(parentContainer);
 
       try {
-        const nativeEvent = document.createEvent('Event');
-        nativeEvent.initEvent('mouseout', true, true);
+        const nativeEvent = document.createEvent("Event");
+        nativeEvent.initEvent("mouseout", true, true);
         childNode.dispatchEvent(nativeEvent);
 
         // Child and parent should both call from event handlers.
         expect(mock).toHaveBeenCalledTimes(2);
         // The first call schedules a render of '1' into the 'Child'.
         // However, we're batching so it isn't flushed yet.
-        expect(mock.mock.calls[0][0]).toBe('Child');
+        expect(mock.mock.calls[0][0]).toBe("Child");
         // As we have two roots, it means we have two event listeners.
         // This also means we enter the event batching phase twice,
         // flushing the child to be 1.
@@ -179,18 +179,18 @@ describe('ReactDOMEventListener', () => {
         // change anyway. We can maybe revisit this later as part of
         // the work to refine this in the scheduler (maybe by leveraging
         // isInputPending?).
-        expect(mock.mock.calls[1][0]).toBe('1');
+        expect(mock.mock.calls[1][0]).toBe("1");
         // By the time we leave the handler, the second update is flushed.
-        expect(childNode.textContent).toBe('2');
+        expect(childNode.textContent).toBe("2");
       } finally {
         document.body.removeChild(parentContainer);
       }
     });
   });
 
-  it('should not fire duplicate events for a React DOM tree', () => {
+  it("should not fire duplicate events for a React DOM tree", () => {
     const mouseOut = jest.fn();
-    const onMouseOut = event => mouseOut(event.target);
+    const onMouseOut = (event) => mouseOut(event.target);
 
     class Wrapper extends React.Component {
       innerRef = React.createRef();
@@ -210,14 +210,14 @@ describe('ReactDOMEventListener', () => {
       }
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     const instance = ReactDOM.render(<Wrapper />, container);
 
     document.body.appendChild(container);
 
     try {
-      const nativeEvent = document.createEvent('Event');
-      nativeEvent.initEvent('mouseout', true, true);
+      const nativeEvent = document.createEvent("Event");
+      nativeEvent.initEvent("mouseout", true, true);
       instance.getInner().dispatchEvent(nativeEvent);
 
       expect(mouseOut).toBeCalled();
@@ -229,8 +229,8 @@ describe('ReactDOMEventListener', () => {
   });
 
   // Regression test for https://github.com/facebook/react/pull/12877
-  it('should not fire form events twice', () => {
-    const container = document.createElement('div');
+  it("should not fire form events twice", () => {
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     const formRef = React.createRef();
@@ -247,7 +247,7 @@ describe('ReactDOMEventListener', () => {
     );
 
     inputRef.current.dispatchEvent(
-      new Event('invalid', {
+      new Event("invalid", {
         // https://developer.mozilla.org/en-US/docs/Web/Events/invalid
         bubbles: false,
       }),
@@ -255,7 +255,7 @@ describe('ReactDOMEventListener', () => {
     expect(handleInvalid).toHaveBeenCalledTimes(1);
 
     formRef.current.dispatchEvent(
-      new Event('reset', {
+      new Event("reset", {
         // https://developer.mozilla.org/en-US/docs/Web/Events/reset
         bubbles: true,
       }),
@@ -263,7 +263,7 @@ describe('ReactDOMEventListener', () => {
     expect(handleReset).toHaveBeenCalledTimes(1);
 
     formRef.current.dispatchEvent(
-      new Event('submit', {
+      new Event("submit", {
         // https://developer.mozilla.org/en-US/docs/Web/Events/submit
         bubbles: true,
       }),
@@ -271,7 +271,7 @@ describe('ReactDOMEventListener', () => {
     expect(handleSubmit).toHaveBeenCalledTimes(1);
 
     formRef.current.dispatchEvent(
-      new Event('submit', {
+      new Event("submit", {
         // Might happen on older browsers.
         bubbles: true,
       }),
@@ -284,8 +284,8 @@ describe('ReactDOMEventListener', () => {
   // This tests an implementation detail that submit/reset events are listened to
   // at the document level, which is necessary for event replaying to work.
   // They bubble in all modern browsers.
-  it('should not receive submit events if native, interim DOM handler prevents it', () => {
-    const container = document.createElement('div');
+  it("should not receive submit events if native, interim DOM handler prevents it", () => {
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     try {
@@ -301,19 +301,20 @@ describe('ReactDOMEventListener', () => {
         container,
       );
 
-      interimRef.current.onsubmit = nativeEvent =>
+      interimRef.current.onsubmit = (nativeEvent) =>
         nativeEvent.stopPropagation();
-      interimRef.current.onreset = nativeEvent => nativeEvent.stopPropagation();
+      interimRef.current.onreset = (nativeEvent) =>
+        nativeEvent.stopPropagation();
 
       formRef.current.dispatchEvent(
-        new Event('submit', {
+        new Event("submit", {
           // https://developer.mozilla.org/en-US/docs/Web/Events/submit
           bubbles: true,
         }),
       );
 
       formRef.current.dispatchEvent(
-        new Event('reset', {
+        new Event("reset", {
           // https://developer.mozilla.org/en-US/docs/Web/Events/reset
           bubbles: true,
         }),
@@ -326,8 +327,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should dispatch loadstart only for media elements', () => {
-    const container = document.createElement('div');
+  it("should dispatch loadstart only for media elements", () => {
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     try {
@@ -347,14 +348,14 @@ describe('ReactDOMEventListener', () => {
       // Note for debugging: loadstart currently doesn't fire in Chrome.
       // https://bugs.chromium.org/p/chromium/issues/detail?id=458851
       imgRef.current.dispatchEvent(
-        new ProgressEvent('loadstart', {
+        new ProgressEvent("loadstart", {
           bubbles: false,
         }),
       );
       expect(handleImgLoadStart).toHaveBeenCalledTimes(0);
 
       videoRef.current.dispatchEvent(
-        new ProgressEvent('loadstart', {
+        new ProgressEvent("loadstart", {
           bubbles: false,
         }),
       );
@@ -364,8 +365,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should not attempt to listen to unnecessary events on the top level', () => {
-    const container = document.createElement('div');
+  it("should not attempt to listen to unnecessary events on the top level", () => {
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     const videoRef = React.createRef();
@@ -403,7 +404,7 @@ describe('ReactDOMEventListener', () => {
     const originalRootAddEventListener = container.addEventListener;
     document.addEventListener = function (type) {
       switch (type) {
-        case 'selectionchange':
+        case "selectionchange":
           break;
         default:
           throw new Error(
@@ -416,30 +417,30 @@ describe('ReactDOMEventListener', () => {
         return;
       }
       switch (type) {
-        case 'abort':
-        case 'canplay':
-        case 'canplaythrough':
-        case 'durationchange':
-        case 'emptied':
-        case 'encrypted':
-        case 'ended':
-        case 'error':
-        case 'loadeddata':
-        case 'loadedmetadata':
-        case 'loadstart':
-        case 'pause':
-        case 'play':
-        case 'playing':
-        case 'progress':
-        case 'ratechange':
-        case 'resize':
-        case 'seeked':
-        case 'seeking':
-        case 'stalled':
-        case 'suspend':
-        case 'timeupdate':
-        case 'volumechange':
-        case 'waiting':
+        case "abort":
+        case "canplay":
+        case "canplaythrough":
+        case "durationchange":
+        case "emptied":
+        case "encrypted":
+        case "ended":
+        case "error":
+        case "loadeddata":
+        case "loadedmetadata":
+        case "loadstart":
+        case "pause":
+        case "play":
+        case "playing":
+        case "progress":
+        case "ratechange":
+        case "resize":
+        case "seeked":
+        case "seeking":
+        case "stalled":
+        case "suspend":
+        case "timeupdate":
+        case "volumechange":
+        case "waiting":
           throw new Error(
             `Did not expect to add a root-level listener for the "${type}" event.`,
           );
@@ -463,7 +464,7 @@ describe('ReactDOMEventListener', () => {
 
       // Also verify dispatching one of them works
       videoRef.current.dispatchEvent(
-        new Event('play', {
+        new Event("play", {
           bubbles: false,
         }),
       );
@@ -478,8 +479,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should dispatch load for embed elements', () => {
-    const container = document.createElement('div');
+  it("should dispatch load for embed elements", () => {
+    const container = document.createElement("div");
     document.body.appendChild(container);
 
     try {
@@ -494,7 +495,7 @@ describe('ReactDOMEventListener', () => {
       );
 
       ref.current.dispatchEvent(
-        new ProgressEvent('load', {
+        new ProgressEvent("load", {
           bubbles: false,
         }),
       );
@@ -507,8 +508,8 @@ describe('ReactDOMEventListener', () => {
 
   // Unlike browsers, we delegate media events.
   // (This doesn't make a lot of sense but it would be a breaking change not to.)
-  it('should delegate media events even without a direct listener', () => {
-    const container = document.createElement('div');
+  it("should delegate media events even without a direct listener", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const handleVideoPlayDelegated = jest.fn();
     document.body.appendChild(container);
@@ -521,7 +522,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('play', {
+        new Event("play", {
           bubbles: false,
         }),
       );
@@ -533,8 +534,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should delegate dialog events even without a direct listener', () => {
-    const container = document.createElement('div');
+  it("should delegate dialog events even without a direct listener", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const onCancel = jest.fn();
     const onClose = jest.fn();
@@ -548,12 +549,12 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('close', {
+        new Event("close", {
           bubbles: false,
         }),
       );
       ref.current.dispatchEvent(
-        new Event('cancel', {
+        new Event("cancel", {
           bubbles: false,
         }),
       );
@@ -566,8 +567,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should bubble non-native bubbling toggle events', () => {
-    const container = document.createElement('div');
+  it("should bubble non-native bubbling toggle events", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const onToggle = jest.fn();
     document.body.appendChild(container);
@@ -579,7 +580,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('toggle', {
+        new Event("toggle", {
           bubbles: false,
         }),
       );
@@ -589,8 +590,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should bubble non-native bubbling cancel/close events', () => {
-    const container = document.createElement('div');
+  it("should bubble non-native bubbling cancel/close events", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const onCancel = jest.fn();
     const onClose = jest.fn();
@@ -603,12 +604,12 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('cancel', {
+        new Event("cancel", {
           bubbles: false,
         }),
       );
       ref.current.dispatchEvent(
-        new Event('close', {
+        new Event("close", {
           bubbles: false,
         }),
       );
@@ -619,8 +620,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should bubble non-native bubbling media events events', () => {
-    const container = document.createElement('div');
+  it("should bubble non-native bubbling media events events", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const onPlay = jest.fn();
     document.body.appendChild(container);
@@ -632,7 +633,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('play', {
+        new Event("play", {
           bubbles: false,
         }),
       );
@@ -642,8 +643,8 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should bubble non-native bubbling invalid events', () => {
-    const container = document.createElement('div');
+  it("should bubble non-native bubbling invalid events", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const onInvalid = jest.fn();
     document.body.appendChild(container);
@@ -655,7 +656,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('invalid', {
+        new Event("invalid", {
           bubbles: false,
         }),
       );
@@ -665,11 +666,11 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should handle non-bubbling capture events correctly', () => {
-    const container = document.createElement('div');
+  it("should handle non-bubbling capture events correctly", () => {
+    const container = document.createElement("div");
     const innerRef = React.createRef();
     const outerRef = React.createRef();
-    const onPlayCapture = jest.fn(e => log.push(e.currentTarget));
+    const onPlayCapture = jest.fn((e) => log.push(e.currentTarget));
     const log = [];
     document.body.appendChild(container);
     try {
@@ -682,7 +683,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       innerRef.current.dispatchEvent(
-        new Event('play', {
+        new Event("play", {
           bubbles: false,
         }),
       );
@@ -693,7 +694,7 @@ describe('ReactDOMEventListener', () => {
         innerRef.current,
       ]);
       outerRef.current.dispatchEvent(
-        new Event('play', {
+        new Event("play", {
           bubbles: false,
         }),
       );
@@ -712,15 +713,15 @@ describe('ReactDOMEventListener', () => {
   // We're moving towards aligning more closely with the browser.
   // Currently we emulate bubbling for all non-bubbling events except scroll.
   // We may expand this list in the future, removing emulated bubbling altogether.
-  it('should not emulate bubbling of scroll events', () => {
-    const container = document.createElement('div');
+  it("should not emulate bubbling of scroll events", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const log = [];
-    const onScroll = jest.fn(e =>
-      log.push(['bubble', e.currentTarget.className]),
+    const onScroll = jest.fn((e) =>
+      log.push(["bubble", e.currentTarget.className]),
     );
-    const onScrollCapture = jest.fn(e =>
-      log.push(['capture', e.currentTarget.className]),
+    const onScrollCapture = jest.fn((e) =>
+      log.push(["capture", e.currentTarget.className]),
     );
     document.body.appendChild(container);
     try {
@@ -728,11 +729,13 @@ describe('ReactDOMEventListener', () => {
         <div
           className="grand"
           onScroll={onScroll}
-          onScrollCapture={onScrollCapture}>
+          onScrollCapture={onScrollCapture}
+        >
           <div
             className="parent"
             onScroll={onScroll}
-            onScrollCapture={onScrollCapture}>
+            onScrollCapture={onScrollCapture}
+          >
             <div
               className="child"
               onScroll={onScroll}
@@ -744,15 +747,15 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
       expect(log).toEqual([
-        ['capture', 'grand'],
-        ['capture', 'parent'],
-        ['capture', 'child'],
-        ['bubble', 'child'],
+        ["capture", "grand"],
+        ["capture", "parent"],
+        ["capture", "child"],
+        ["bubble", "child"],
       ]);
     } finally {
       document.body.removeChild(container);
@@ -762,15 +765,15 @@ describe('ReactDOMEventListener', () => {
   // We're moving towards aligning more closely with the browser.
   // Currently we emulate bubbling for all non-bubbling events except scroll.
   // We may expand this list in the future, removing emulated bubbling altogether.
-  it('should not emulate bubbling of scroll events (no own handler)', () => {
-    const container = document.createElement('div');
+  it("should not emulate bubbling of scroll events (no own handler)", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const log = [];
-    const onScroll = jest.fn(e =>
-      log.push(['bubble', e.currentTarget.className]),
+    const onScroll = jest.fn((e) =>
+      log.push(["bubble", e.currentTarget.className]),
     );
-    const onScrollCapture = jest.fn(e =>
-      log.push(['capture', e.currentTarget.className]),
+    const onScrollCapture = jest.fn((e) =>
+      log.push(["capture", e.currentTarget.className]),
     );
     document.body.appendChild(container);
     try {
@@ -778,11 +781,13 @@ describe('ReactDOMEventListener', () => {
         <div
           className="grand"
           onScroll={onScroll}
-          onScrollCapture={onScrollCapture}>
+          onScrollCapture={onScrollCapture}
+        >
           <div
             className="parent"
             onScroll={onScroll}
-            onScrollCapture={onScrollCapture}>
+            onScrollCapture={onScrollCapture}
+          >
             {/* Intentionally no handler on the child: */}
             <div className="child" ref={ref} />
           </div>
@@ -790,28 +795,28 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
       expect(log).toEqual([
-        ['capture', 'grand'],
-        ['capture', 'parent'],
+        ["capture", "grand"],
+        ["capture", "parent"],
       ]);
     } finally {
       document.body.removeChild(container);
     }
   });
 
-  it('should subscribe to scroll during updates', () => {
-    const container = document.createElement('div');
+  it("should subscribe to scroll during updates", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const log = [];
-    const onScroll = jest.fn(e =>
-      log.push(['bubble', e.currentTarget.className]),
+    const onScroll = jest.fn((e) =>
+      log.push(["bubble", e.currentTarget.className]),
     );
-    const onScrollCapture = jest.fn(e =>
-      log.push(['capture', e.currentTarget.className]),
+    const onScrollCapture = jest.fn((e) =>
+      log.push(["capture", e.currentTarget.className]),
     );
     document.body.appendChild(container);
     try {
@@ -828,16 +833,18 @@ describe('ReactDOMEventListener', () => {
       ReactDOM.render(
         <div
           className="grand"
-          onScroll={e => onScroll(e)}
-          onScrollCapture={e => onScrollCapture(e)}>
+          onScroll={(e) => onScroll(e)}
+          onScrollCapture={(e) => onScrollCapture(e)}
+        >
           <div
             className="parent"
-            onScroll={e => onScroll(e)}
-            onScrollCapture={e => onScrollCapture(e)}>
+            onScroll={(e) => onScroll(e)}
+            onScrollCapture={(e) => onScrollCapture(e)}
+          >
             <div
               className="child"
-              onScroll={e => onScroll(e)}
-              onScrollCapture={e => onScrollCapture(e)}
+              onScroll={(e) => onScroll(e)}
+              onScrollCapture={(e) => onScrollCapture(e)}
               ref={ref}
             />
           </div>
@@ -845,15 +852,15 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
       expect(log).toEqual([
-        ['capture', 'grand'],
-        ['capture', 'parent'],
-        ['capture', 'child'],
-        ['bubble', 'child'],
+        ["capture", "grand"],
+        ["capture", "parent"],
+        ["capture", "child"],
+        ["bubble", "child"],
       ]);
 
       // Update to verify deduplication.
@@ -863,16 +870,18 @@ describe('ReactDOMEventListener', () => {
           className="grand"
           // Note: these are intentionally inline functions so that
           // we hit the reattachment codepath instead of bailing out.
-          onScroll={e => onScroll(e)}
-          onScrollCapture={e => onScrollCapture(e)}>
+          onScroll={(e) => onScroll(e)}
+          onScrollCapture={(e) => onScrollCapture(e)}
+        >
           <div
             className="parent"
-            onScroll={e => onScroll(e)}
-            onScrollCapture={e => onScrollCapture(e)}>
+            onScroll={(e) => onScroll(e)}
+            onScrollCapture={(e) => onScrollCapture(e)}
+          >
             <div
               className="child"
-              onScroll={e => onScroll(e)}
-              onScrollCapture={e => onScrollCapture(e)}
+              onScroll={(e) => onScroll(e)}
+              onScrollCapture={(e) => onScrollCapture(e)}
               ref={ref}
             />
           </div>
@@ -880,15 +889,15 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
       expect(log).toEqual([
-        ['capture', 'grand'],
-        ['capture', 'parent'],
-        ['capture', 'child'],
-        ['bubble', 'child'],
+        ["capture", "grand"],
+        ["capture", "parent"],
+        ["capture", "child"],
+        ["bubble", "child"],
       ]);
 
       // Update to detach.
@@ -902,7 +911,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
@@ -913,25 +922,27 @@ describe('ReactDOMEventListener', () => {
   });
 
   // Regression test.
-  it('should subscribe to scroll during hydration', () => {
-    const container = document.createElement('div');
+  it("should subscribe to scroll during hydration", () => {
+    const container = document.createElement("div");
     const ref = React.createRef();
     const log = [];
-    const onScroll = jest.fn(e =>
-      log.push(['bubble', e.currentTarget.className]),
+    const onScroll = jest.fn((e) =>
+      log.push(["bubble", e.currentTarget.className]),
     );
-    const onScrollCapture = jest.fn(e =>
-      log.push(['capture', e.currentTarget.className]),
+    const onScrollCapture = jest.fn((e) =>
+      log.push(["capture", e.currentTarget.className]),
     );
     const tree = (
       <div
         className="grand"
         onScroll={onScroll}
-        onScrollCapture={onScrollCapture}>
+        onScrollCapture={onScrollCapture}
+      >
         <div
           className="parent"
           onScroll={onScroll}
-          onScrollCapture={onScrollCapture}>
+          onScrollCapture={onScrollCapture}
+        >
           <div
             className="child"
             onScroll={onScroll}
@@ -946,15 +957,15 @@ describe('ReactDOMEventListener', () => {
       container.innerHTML = ReactDOMServer.renderToString(tree);
       ReactDOM.hydrate(tree, container);
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
       expect(log).toEqual([
-        ['capture', 'grand'],
-        ['capture', 'parent'],
-        ['capture', 'child'],
-        ['bubble', 'child'],
+        ["capture", "grand"],
+        ["capture", "parent"],
+        ["capture", "child"],
+        ["bubble", "child"],
       ]);
 
       log.length = 0;
@@ -967,7 +978,7 @@ describe('ReactDOMEventListener', () => {
         container,
       );
       ref.current.dispatchEvent(
-        new Event('scroll', {
+        new Event("scroll", {
           bubbles: false,
         }),
       );
@@ -977,13 +988,13 @@ describe('ReactDOMEventListener', () => {
     }
   });
 
-  it('should not subscribe to selectionchange twice', () => {
+  it("should not subscribe to selectionchange twice", () => {
     const log = [];
 
     const originalDocAddEventListener = document.addEventListener;
     document.addEventListener = function (type, fn, options) {
       switch (type) {
-        case 'selectionchange':
+        case "selectionchange":
           log.push(options);
           break;
         default:
@@ -993,8 +1004,8 @@ describe('ReactDOMEventListener', () => {
       }
     };
     try {
-      ReactDOM.render(<input />, document.createElement('div'));
-      ReactDOM.render(<input />, document.createElement('div'));
+      ReactDOM.render(<input />, document.createElement("div"));
+      ReactDOM.render(<input />, document.createElement("div"));
     } finally {
       document.addEventListener = originalDocAddEventListener;
     }

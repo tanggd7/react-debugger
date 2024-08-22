@@ -8,7 +8,7 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
@@ -16,27 +16,27 @@ let waitForAll;
 
 // This is a new feature in Fiber so I put it in its own test file. It could
 // probably move to one of the other test files once it is official.
-describe('ReactTopLevelText', () => {
+describe("ReactTopLevelText", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
   });
 
-  it('should render a component returning strings directly from render', async () => {
-    const Text = ({value}) => value;
+  it("should render a component returning strings directly from render", async () => {
+    const Text = ({ value }) => value;
     ReactNoop.render(<Text value="foo" />);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('foo');
+    expect(ReactNoop).toMatchRenderedOutput("foo");
   });
 
-  it('should render a component returning numbers directly from render', async () => {
-    const Text = ({value}) => value;
+  it("should render a component returning numbers directly from render", async () => {
+    const Text = ({ value }) => value;
     ReactNoop.render(<Text value={10} />);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('10');
+    expect(ReactNoop).toMatchRenderedOutput("10");
   });
 });

@@ -4,20 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
-                                                                                                 
-                                                              
 
-import ReactCurrentBatchConfig from './ReactCurrentBatchConfig';
-import {enableTransitionTracing} from 'shared/ReactFeatureFlags';
+import ReactCurrentBatchConfig from "./ReactCurrentBatchConfig";
+import { enableTransitionTracing } from "shared/ReactFeatureFlags";
 
-export function startTransition(
-  scope            ,
-  options                         ,
-) {
+export function startTransition(scope, options) {
   const prevTransition = ReactCurrentBatchConfig.transition;
-  ReactCurrentBatchConfig.transition = ({}                       );
+  ReactCurrentBatchConfig.transition = {};
   const currentTransition = ReactCurrentBatchConfig.transition;
 
   if (__DEV__) {
@@ -44,9 +39,9 @@ export function startTransition(
         currentTransition._updatedFibers.clear();
         if (updatedFibersCount > 10) {
           console.warn(
-            'Detected a large number of updates inside startTransition. ' +
-              'If this is due to a subscription please re-write it to use React provided hooks. ' +
-              'Otherwise concurrent mode guarantees are off the table.',
+            "Detected a large number of updates inside startTransition. " +
+              "If this is due to a subscription please re-write it to use React provided hooks. " +
+              "Otherwise concurrent mode guarantees are off the table.",
           );
         }
       }

@@ -14,17 +14,17 @@
 
 declare let global: any;
 
-declare module 'react' {
+declare module "react" {
   export class Component {
     props: any;
     state: any;
     context: any;
     static name: string;
     constructor(props?, context?);
-    setState(partial : any, callback ?: any) : void;
-    forceUpdate(callback ?: any) : void;
+    setState(partial: any, callback?: any): void;
+    forceUpdate(callback?: any): void;
   }
-  export let PropTypes : any;
-  export function createElement(tag : any, props ?: any, ...children : any[]) : any
+  export let PropTypes: any;
+  export function createElement(tag: any, props?: any, ...children: any[]): any;
   export function createRef(): any;
 }

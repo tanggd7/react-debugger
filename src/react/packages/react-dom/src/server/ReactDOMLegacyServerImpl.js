@@ -4,45 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import ReactVersion from 'shared/ReactVersion';
-
-                                                     
-                                                                                                
+import ReactVersion from "shared/ReactVersion";
 
 import {
   createRequest,
   startWork,
   startFlowing,
   abort,
-} from 'react-server/src/ReactFizzServer';
+} from "react-server/src/ReactFizzServer";
 
 import {
   createResources,
   createResponseState,
   createRootFormatContext,
-} from 'react-dom-bindings/src/server/ReactFizzConfigDOMLegacy';
-
-                      
-                            
-  
+} from "react-dom-bindings/src/server/ReactFizzConfigDOMLegacy";
 
 function onError() {
   // Non-fatal errors are ignored.
 }
 
 function renderToStringImpl(
-  children               ,
-  options                      ,
-  generateStaticMarkup         ,
-  abortReason        ,
-  unstable_externalRuntimeSrc                                     ,
-)         {
+  children,
+  options,
+  generateStaticMarkup,
+  abortReason,
+  unstable_externalRuntimeSrc,
+) {
   let didFatal = false;
   let fatalError = null;
-  let result = '';
+  let result = "";
   const destination = {
     // $FlowFixMe[missing-local-annot]
     push(chunk) {
@@ -94,13 +87,13 @@ function renderToStringImpl(
     // really make sense here. But this is the legacy server renderer, anyway.
     // We're going to delete it soon.
     throw new Error(
-      'A component suspended while responding to synchronous input. This ' +
-        'will cause the UI to be replaced with a loading indicator. To fix, ' +
-        'updates that suspend should be wrapped with startTransition.',
+      "A component suspended while responding to synchronous input. This " +
+        "will cause the UI to be replaced with a loading indicator. To fix, " +
+        "updates that suspend should be wrapped with startTransition.",
     );
   }
 
   return result;
 }
 
-export {renderToStringImpl, ReactVersion as version};
+export { renderToStringImpl, ReactVersion as version };

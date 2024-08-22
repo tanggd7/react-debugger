@@ -4,18 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                           
-                                                  
-                                                        
-                                                         
-                                                
-                                                                   
-                                                              
-
-import getComponentNameFromFiber from 'react-reconciler/src/getComponentNameFromFiber';
+import getComponentNameFromFiber from "react-reconciler/src/getComponentNameFromFiber";
 import {
   ClassComponent,
   HostRoot,
@@ -25,7 +17,7 @@ import {
   SimpleMemoComponent,
   SuspenseComponent,
   OffscreenComponent,
-} from './ReactWorkTags';
+} from "./ReactWorkTags";
 import {
   DidCapture,
   Incomplete,
@@ -35,26 +27,26 @@ import {
   ForceUpdateForLegacySuspense,
   ForceClientRender,
   ScheduleRetry,
-} from './ReactFiberFlags';
-import {NoMode, ConcurrentMode, DebugTracingMode} from './ReactTypeOfMode';
+} from "./ReactFiberFlags";
+import { NoMode, ConcurrentMode, DebugTracingMode } from "./ReactTypeOfMode";
 import {
   enableDebugTracing,
   enableLazyContextPropagation,
   enableUpdaterTracking,
-} from 'shared/ReactFeatureFlags';
-import {createCapturedValueAtFiber} from './ReactCapturedValue';
+} from "shared/ReactFeatureFlags";
+import { createCapturedValueAtFiber } from "./ReactCapturedValue";
 import {
   enqueueCapturedUpdate,
   createUpdate,
   CaptureUpdate,
   ForceUpdate,
   enqueueUpdate,
-} from './ReactFiberClassUpdateQueue';
-import {markFailedErrorBoundaryForHotReloading} from './ReactFiberHotReloading';
+} from "./ReactFiberClassUpdateQueue";
+import { markFailedErrorBoundaryForHotReloading } from "./ReactFiberHotReloading";
 import {
   getShellBoundary,
   getSuspenseHandler,
-} from './ReactFiberSuspenseContext';
+} from "./ReactFiberSuspenseContext";
 import {
   renderDidError,
   renderDidSuspendDelayIfPossible,
@@ -64,36 +56,32 @@ import {
   attachPingListener,
   restorePendingUpdaters,
   renderDidSuspend,
-} from './ReactFiberWorkLoop';
-import {propagateParentContextChangesToDeferredTree} from './ReactFiberNewContext';
-import {logCapturedError} from './ReactFiberErrorLogger';
-import {logComponentSuspended} from './DebugTracing';
-import {isDevToolsPresent} from './ReactFiberDevToolsHook';
+} from "./ReactFiberWorkLoop";
+import { propagateParentContextChangesToDeferredTree } from "./ReactFiberNewContext";
+import { logCapturedError } from "./ReactFiberErrorLogger";
+import { logComponentSuspended } from "./DebugTracing";
+import { isDevToolsPresent } from "./ReactFiberDevToolsHook";
 import {
   SyncLane,
   includesSomeLane,
   mergeLanes,
   pickArbitraryLane,
-} from './ReactFiberLane';
+} from "./ReactFiberLane";
 import {
   getIsHydrating,
   markDidThrowWhileHydratingDEV,
   queueHydrationError,
-} from './ReactFiberHydrationContext';
-import {ConcurrentRoot} from './ReactRootTags';
-import {noopSuspenseyCommitThenable} from './ReactFiberThenable';
+} from "./ReactFiberHydrationContext";
+import { ConcurrentRoot } from "./ReactRootTags";
+import { noopSuspenseyCommitThenable } from "./ReactFiberThenable";
 
-function createRootErrorUpdate(
-  fiber       ,
-  errorInfo                      ,
-  lane      ,
-)                {
+function createRootErrorUpdate(fiber, errorInfo, lane) {
   const update = createUpdate(lane);
   // Unmount the root by rendering null.
   update.tag = CaptureUpdate;
   // Caution: React DevTools currently depends on this property
   // being called "element".
-  update.payload = {element: null};
+  update.payload = { element: null };
   const error = errorInfo.value;
   update.callback = () => {
     onUncaughtError(error);
@@ -102,15 +90,11 @@ function createRootErrorUpdate(
   return update;
 }
 
-function createClassErrorUpdate(
-  fiber       ,
-  errorInfo                      ,
-  lane      ,
-)                {
+function createClassErrorUpdate(fiber, errorInfo, lane) {
   const update = createUpdate(lane);
   update.tag = CaptureUpdate;
   const getDerivedStateFromError = fiber.type.getDerivedStateFromError;
-  if (typeof getDerivedStateFromError === 'function') {
+  if (typeof getDerivedStateFromError === "function") {
     const error = errorInfo.value;
     update.payload = () => {
       return getDerivedStateFromError(error);
@@ -124,14 +108,14 @@ function createClassErrorUpdate(
   }
 
   const inst = fiber.stateNode;
-  if (inst !== null && typeof inst.componentDidCatch === 'function') {
+  if (inst !== null && typeof inst.componentDidCatch === "function") {
     // $FlowFixMe[missing-this-annot]
     update.callback = function callback() {
       if (__DEV__) {
         markFailedErrorBoundaryForHotReloading(fiber);
       }
       logCapturedError(fiber, errorInfo);
-      if (typeof getDerivedStateFromError !== 'function') {
+      if (typeof getDerivedStateFromError !== "function") {
         // To preserve the preexisting retry behavior of error boundaries,
         // we keep track of which ones already failed during this batch.
         // This gets reset before we yield back to the browser.
@@ -142,18 +126,18 @@ function createClassErrorUpdate(
       const error = errorInfo.value;
       const stack = errorInfo.stack;
       this.componentDidCatch(error, {
-        componentStack: stack !== null ? stack : '',
+        componentStack: stack !== null ? stack : "",
       });
       if (__DEV__) {
-        if (typeof getDerivedStateFromError !== 'function') {
+        if (typeof getDerivedStateFromError !== "function") {
           // If componentDidCatch is the only error boundary method defined,
           // then it needs to call setState to recover from errors.
           // If no state update is scheduled then the boundary will swallow the error.
-          if (!includesSomeLane(fiber.lanes, (SyncLane      ))) {
+          if (!includesSomeLane(fiber.lanes, SyncLane)) {
             console.error(
-              '%s: Error boundaries should implement getDerivedStateFromError(). ' +
-                'In that method, return a state update to display an error message or fallback UI.',
-              getComponentNameFromFiber(fiber) || 'Unknown',
+              "%s: Error boundaries should implement getDerivedStateFromError(). " +
+                "In that method, return a state update to display an error message or fallback UI.",
+              getComponentNameFromFiber(fiber) || "Unknown",
             );
           }
         }
@@ -163,7 +147,7 @@ function createClassErrorUpdate(
   return update;
 }
 
-function resetSuspendedComponent(sourceFiber       , rootRenderLanes       ) {
+function resetSuspendedComponent(sourceFiber, rootRenderLanes) {
   if (enableLazyContextPropagation) {
     const currentSourceFiber = sourceFiber.alternate;
     if (currentSourceFiber !== null) {
@@ -203,12 +187,12 @@ function resetSuspendedComponent(sourceFiber       , rootRenderLanes       ) {
 }
 
 function markSuspenseBoundaryShouldCapture(
-  suspenseBoundary       ,
-  returnFiber       ,
-  sourceFiber       ,
-  root           ,
-  rootRenderLanes       ,
-)               {
+  suspenseBoundary,
+  returnFiber,
+  sourceFiber,
+  root,
+  rootRenderLanes,
+) {
   // This marks a Suspense boundary so that when we're unwinding the stack,
   // it captures the suspended "exception" and does a second (fallback) pass.
   if ((suspenseBoundary.mode & ConcurrentMode) === NoMode) {
@@ -316,12 +300,12 @@ function markSuspenseBoundaryShouldCapture(
 }
 
 function throwException(
-  root           ,
-  returnFiber       ,
-  sourceFiber       ,
-  value       ,
-  rootRenderLanes       ,
-)       {
+  root,
+  returnFiber,
+  sourceFiber,
+  value,
+  rootRenderLanes,
+) {
   // The source fiber did not complete.
   sourceFiber.flags |= Incomplete;
 
@@ -334,11 +318,11 @@ function throwException(
 
   if (
     value !== null &&
-    typeof value === 'object' &&
-    typeof value.then === 'function'
+    typeof value === "object" &&
+    typeof value.then === "function"
   ) {
     // This is a wakeable. The component suspended.
-    const wakeable           = (value     );
+    const wakeable = value;
     resetSuspendedComponent(sourceFiber, rootRenderLanes);
 
     if (__DEV__) {
@@ -350,7 +334,7 @@ function throwException(
     if (__DEV__) {
       if (enableDebugTracing) {
         if (sourceFiber.mode & DebugTracingMode) {
-          const name = getComponentNameFromFiber(sourceFiber) || 'Unknown';
+          const name = getComponentNameFromFiber(sourceFiber) || "Unknown";
           logComponentSuspended(name, wakeable);
         }
       }
@@ -427,8 +411,7 @@ function throwException(
           if (isSuspenseyResource) {
             suspenseBoundary.flags |= ScheduleRetry;
           } else {
-            const retryQueue                    =
-              (suspenseBoundary.updateQueue     );
+            const retryQueue = suspenseBoundary.updateQueue;
             if (retryQueue === null) {
               suspenseBoundary.updateQueue = new Set([wakeable]);
             } else {
@@ -445,10 +428,9 @@ function throwException(
             if (isSuspenseyResource) {
               suspenseBoundary.flags |= ScheduleRetry;
             } else {
-              const offscreenQueue                        =
-                (suspenseBoundary.updateQueue     );
+              const offscreenQueue = suspenseBoundary.updateQueue;
               if (offscreenQueue === null) {
-                const newOffscreenQueue                 = {
+                const newOffscreenQueue = {
                   transitions: null,
                   markerInstances: null,
                   retryQueue: new Set([wakeable]),
@@ -470,7 +452,7 @@ function throwException(
         default: {
           throw new Error(
             `Unexpected Suspense handler tag (${suspenseBoundary.tag}). This ` +
-              'is a bug in React.',
+              "is a bug in React.",
           );
         }
       }
@@ -497,10 +479,10 @@ function throwException(
       } else {
         // In a legacy root, suspending without a boundary is always an error.
         const uncaughtSuspenseError = new Error(
-          'A component suspended while responding to synchronous input. This ' +
-            'will cause the UI to be replaced with a loading indicator. To ' +
-            'fix, updates that suspend should be wrapped ' +
-            'with startTransition.',
+          "A component suspended while responding to synchronous input. This " +
+            "will cause the UI to be replaced with a loading indicator. To " +
+            "fix, updates that suspend should be wrapped " +
+            "with startTransition.",
         );
         value = uncaughtSuspenseError;
       }
@@ -544,7 +526,7 @@ function throwException(
   // We didn't find a boundary that could handle this type of exception. Start
   // over and traverse parent path again, this time treating the exception
   // as an error.
-  let workInProgress        = returnFiber;
+  let workInProgress = returnFiber;
   do {
     switch (workInProgress.tag) {
       case HostRoot: {
@@ -563,9 +545,9 @@ function throwException(
         const instance = workInProgress.stateNode;
         if (
           (workInProgress.flags & DidCapture) === NoFlags &&
-          (typeof ctor.getDerivedStateFromError === 'function' ||
+          (typeof ctor.getDerivedStateFromError === "function" ||
             (instance !== null &&
-              typeof instance.componentDidCatch === 'function' &&
+              typeof instance.componentDidCatch === "function" &&
               !isAlreadyFailedLegacyErrorBoundary(instance)))
         ) {
           workInProgress.flags |= ShouldCapture;
@@ -589,4 +571,4 @@ function throwException(
   } while (workInProgress !== null);
 }
 
-export {throwException, createRootErrorUpdate, createClassErrorUpdate};
+export { throwException, createRootErrorUpdate, createClassErrorUpdate };

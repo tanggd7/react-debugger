@@ -4,16 +4,16 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 // Export all exports so that they're available in tests.
 // We can't use export * from in Flow for some reason.
 
-import ReactVersion from 'shared/ReactVersion';
-export {ReactVersion as version};
+import ReactVersion from "shared/ReactVersion";
+export { ReactVersion as version };
 
-export {default as __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED} from './src/ReactDOMSharedInternals';
+export { default as __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED } from "./src/ReactDOMSharedInternals";
 
 export {
   createPortal,
@@ -24,4 +24,4 @@ export {
   preinit,
   experimental_useFormStatus,
   unstable_batchedUpdates,
-} from './src/server/ReactDOMServerRenderingStub';
+} from "./src/server/ReactDOMServerRenderingStub";

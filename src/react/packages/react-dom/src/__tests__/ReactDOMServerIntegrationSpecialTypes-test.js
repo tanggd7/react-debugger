@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -25,15 +25,15 @@ let clearLog;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
   forwardRef = React.forwardRef;
   memo = React.memo;
 
   yieldedValues = [];
-  log = value => {
+  log = (value) => {
     yieldedValues.push(value);
   };
   clearLog = () => {
@@ -50,15 +50,15 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  itRenders('a forwardedRef component and its children', async render => {
-    const FunctionComponent = ({label, forwardedRef}) => (
+  itRenders("a forwardedRef component and its children", async (render) => {
+    const FunctionComponent = ({ label, forwardedRef }) => (
       <div ref={forwardedRef}>{label}</div>
     );
     const WrappedFunctionComponent = forwardRef((props, ref) => (
@@ -71,11 +71,11 @@ describe('ReactDOMServerIntegration', () => {
     );
     const parent = element.parentNode;
     const div = parent.childNodes[0];
-    expect(div.tagName).toBe('DIV');
-    expect(div.textContent).toBe('Test');
+    expect(div.tagName).toBe("DIV");
+    expect(div.textContent).toBe("Test");
   });
 
-  itRenders('a Profiler component and its children', async render => {
+  itRenders("a Profiler component and its children", async (render) => {
     const element = await render(
       <React.Profiler id="profiler" onRender={jest.fn()}>
         <div>Test</div>
@@ -83,31 +83,31 @@ describe('ReactDOMServerIntegration', () => {
     );
     const parent = element.parentNode;
     const div = parent.childNodes[0];
-    expect(div.tagName).toBe('DIV');
-    expect(div.textContent).toBe('Test');
+    expect(div.tagName).toBe("DIV");
+    expect(div.textContent).toBe("Test");
   });
 
-  describe('memoized function components', () => {
+  describe("memoized function components", () => {
     beforeEach(() => {
       resetModules();
     });
 
-    function Text({text}) {
+    function Text({ text }) {
       log(text);
       return <span>{text}</span>;
     }
 
-    function Counter({count}) {
-      return <Text text={'Count: ' + count} />;
+    function Counter({ count }) {
+      return <Text text={"Count: " + count} />;
     }
 
-    itRenders('basic render', async render => {
+    itRenders("basic render", async (render) => {
       const MemoCounter = memo(Counter);
       const domNode = await render(<MemoCounter count={0} />);
-      expect(domNode.textContent).toEqual('Count: 0');
+      expect(domNode.textContent).toEqual("Count: 0");
     });
 
-    itRenders('composition with forwardRef', async render => {
+    itRenders("composition with forwardRef", async (render) => {
       const RefCounter = (props, ref) => <Counter count={ref.current} />;
       const MemoRefCounter = memo(forwardRef(RefCounter));
 
@@ -115,25 +115,25 @@ describe('ReactDOMServerIntegration', () => {
       ref.current = 0;
       await render(<MemoRefCounter ref={ref} />);
 
-      expect(clearLog()).toEqual(['Count: 0']);
+      expect(clearLog()).toEqual(["Count: 0"]);
     });
 
-    itRenders('with comparator', async render => {
+    itRenders("with comparator", async (render) => {
       const MemoCounter = memo(Counter, (oldProps, newProps) => false);
       await render(<MemoCounter count={0} />);
-      expect(clearLog()).toEqual(['Count: 0']);
+      expect(clearLog()).toEqual(["Count: 0"]);
     });
 
     itRenders(
-      'comparator functions are not invoked on the server',
-      async render => {
+      "comparator functions are not invoked on the server",
+      async (render) => {
         const MemoCounter = React.memo(Counter, (oldProps, newProps) => {
           log(`Old count: ${oldProps.count}, New count: ${newProps.count}`);
           return oldProps.count === newProps.count;
         });
 
         await render(<MemoCounter count={0} />);
-        expect(clearLog()).toEqual(['Count: 0']);
+        expect(clearLog()).toEqual(["Count: 0"]);
       },
     );
   });

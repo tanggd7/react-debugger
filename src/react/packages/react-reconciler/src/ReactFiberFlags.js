@@ -4,12 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import {enableCreateEventHandleAPI} from 'shared/ReactFeatureFlags';
-
-                           
+import { enableCreateEventHandleAPI } from "shared/ReactFeatureFlags";
 
 // Don't change these values. They're used by React Dev Tools.
 export const NoFlags = /*                      */ 0b0000000000000000000000000000;
@@ -74,7 +72,7 @@ export const MountPassiveDev = /*              */ 0b1000000000000000000000000000
 // Groups of flags that are used in the commit phase to skip over trees that
 // don't contain effects, by checking subtreeFlags.
 
-export const BeforeMutationMask         =
+export const BeforeMutationMask =
   // TODO: Remove Update flag from before mutation phase by re-landing Visibility
   // flag logic (see #20043)
   Update |

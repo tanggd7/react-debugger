@@ -7,10 +7,10 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-const stream = require('stream');
-const shouldIgnoreConsoleError = require('../../../../../scripts/jest/shouldIgnoreConsoleError');
+const stream = require("stream");
+const shouldIgnoreConsoleError = require("../../../../../scripts/jest/shouldIgnoreConsoleError");
 
 module.exports = function (initModules) {
   let ReactDOM;
@@ -18,27 +18,27 @@ module.exports = function (initModules) {
   let act;
 
   function resetModules() {
-    ({ReactDOM, ReactDOMServer} = initModules());
-    act = require('internal-test-utils').act;
+    ({ ReactDOM, ReactDOMServer } = initModules());
+    act = require("internal-test-utils").act;
   }
 
   function shouldUseDocument(reactElement) {
     // Used for whole document tests.
-    return reactElement && reactElement.type === 'html';
+    return reactElement && reactElement.type === "html";
   }
 
   function getContainerFromMarkup(reactElement, markup) {
     if (shouldUseDocument(reactElement)) {
-      const doc = document.implementation.createHTMLDocument('');
+      const doc = document.implementation.createHTMLDocument("");
       doc.open();
       doc.write(
         markup ||
-          '<!doctype html><html><meta charset=utf-8><title>test doc</title>',
+          "<!doctype html><html><meta charset=utf-8><title>test doc</title>",
       );
       doc.close();
       return doc;
     } else {
-      const container = document.createElement('div');
+      const container = document.createElement("div");
       container.innerHTML = markup;
       return container;
     }
@@ -67,7 +67,7 @@ module.exports = function (initModules) {
     } else {
       // TODO: Rewrite tests that use this helper to enumerate expected errors.
       // This will enable the helper to use the .toErrorDev() matcher instead of spying.
-      spyOnDev(console, 'error').mockImplementation(() => {});
+      spyOnDev(console, "error").mockImplementation(() => {});
     }
 
     const result = await fn();
@@ -119,7 +119,7 @@ module.exports = function (initModules) {
   async function renderIntoString(reactElement, errorCount = 0) {
     return await expectErrors(
       () =>
-        new Promise(resolve =>
+        new Promise((resolve) =>
           resolve(ReactDOMServer.renderToString(reactElement)),
         ),
       errorCount,
@@ -139,7 +139,7 @@ module.exports = function (initModules) {
   class DrainWritable extends stream.Writable {
     constructor(options) {
       super(options);
-      this.buffer = '';
+      this.buffer = "";
     }
 
     _write(chunk, encoding, cb) {
@@ -159,7 +159,7 @@ module.exports = function (initModules) {
             },
           });
           s.pipe(writable);
-          writable.on('finish', () => resolve(writable.buffer));
+          writable.on("finish", () => resolve(writable.buffer));
         }),
       errorCount,
     );
@@ -183,7 +183,7 @@ module.exports = function (initModules) {
       // Documents can't be rendered from scratch.
       return clientRenderOnServerString(element, errorCount);
     }
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     return renderIntoDom(element, container, false, errorCount);
   };
 
@@ -242,16 +242,16 @@ module.exports = function (initModules) {
       // so instead, we'll render the children into the document element.
       cleanContainer = getContainerFromMarkup(
         element,
-        '<html></html>',
+        "<html></html>",
       ).documentElement;
       element = element.props.children;
     } else {
-      cleanContainer = document.createElement('div');
+      cleanContainer = document.createElement("div");
     }
     await asyncReactDOMRender(element, cleanContainer, true);
     // This gives us the expected text content.
     const cleanTextContent =
-      (cleanContainer.lastChild && cleanContainer.lastChild.textContent) || '';
+      (cleanContainer.lastChild && cleanContainer.lastChild.textContent) || "";
 
     // The only guarantee is that text content has been patched up if needed.
     expect(hydratedTextContent).toBe(cleanTextContent);
@@ -312,8 +312,8 @@ module.exports = function (initModules) {
   function itThrows(desc, testFn, partialMessage) {
     it(`throws ${desc}`, () => {
       return testFn().then(
-        () => expect(false).toBe('The promise resolved and should not have.'),
-        err => {
+        () => expect(false).toBe("The promise resolved and should not have."),
+        (err) => {
           expect(err).toBeInstanceOf(Error);
           expect(err.message).toContain(partialMessage);
         },

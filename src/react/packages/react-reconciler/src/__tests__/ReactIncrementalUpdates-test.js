@@ -8,7 +8,7 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
@@ -19,41 +19,41 @@ let waitForAll;
 let waitFor;
 let assertLog;
 
-describe('ReactIncrementalUpdates', () => {
+describe("ReactIncrementalUpdates", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     ContinuousEventPriority =
-      require('react-reconciler/constants').ContinuousEventPriority;
+      require("react-reconciler/constants").ContinuousEventPriority;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     waitFor = InternalTestUtils.waitFor;
     assertLog = InternalTestUtils.assertLog;
   });
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
 
-  it('applies updates in order of priority', async () => {
+  it("applies updates in order of priority", async () => {
     let state;
     class Foo extends React.Component {
       state = {};
       componentDidMount() {
-        Scheduler.log('commit');
+        Scheduler.log("commit");
         React.startTransition(() => {
           // Has low priority
-          this.setState({b: 'b'});
-          this.setState({c: 'c'});
+          this.setState({ b: "b" });
+          this.setState({ c: "c" });
         });
         // Has Task priority
-        this.setState({a: 'a'});
+        this.setState({ a: "a" });
       }
       render() {
         state = this.state;
@@ -62,22 +62,22 @@ describe('ReactIncrementalUpdates', () => {
     }
 
     ReactNoop.render(<Foo />);
-    await waitFor(['commit']);
+    await waitFor(["commit"]);
 
-    expect(state).toEqual({a: 'a'});
+    expect(state).toEqual({ a: "a" });
     await waitForAll([]);
-    expect(state).toEqual({a: 'a', b: 'b', c: 'c'});
+    expect(state).toEqual({ a: "a", b: "b", c: "c" });
   });
 
-  it('applies updates with equal priority in insertion order', async () => {
+  it("applies updates with equal priority in insertion order", async () => {
     let state;
     class Foo extends React.Component {
       state = {};
       componentDidMount() {
         // All have Task priority
-        this.setState({a: 'a'});
-        this.setState({b: 'b'});
-        this.setState({c: 'c'});
+        this.setState({ a: "a" });
+        this.setState({ b: "b" });
+        this.setState({ c: "c" });
       }
       render() {
         state = this.state;
@@ -87,59 +87,59 @@ describe('ReactIncrementalUpdates', () => {
 
     ReactNoop.render(<Foo />);
     await waitForAll([]);
-    expect(state).toEqual({a: 'a', b: 'b', c: 'c'});
+    expect(state).toEqual({ a: "a", b: "b", c: "c" });
   });
 
-  it('only drops updates with equal or lesser priority when replaceState is called', async () => {
+  it("only drops updates with equal or lesser priority when replaceState is called", async () => {
     let instance;
     class Foo extends React.Component {
       state = {};
       componentDidMount() {
-        Scheduler.log('componentDidMount');
+        Scheduler.log("componentDidMount");
       }
       componentDidUpdate() {
-        Scheduler.log('componentDidUpdate');
+        Scheduler.log("componentDidUpdate");
       }
       render() {
-        Scheduler.log('render');
+        Scheduler.log("render");
         instance = this;
         return <div />;
       }
     }
 
     ReactNoop.render(<Foo />);
-    await waitForAll(['render', 'componentDidMount']);
+    await waitForAll(["render", "componentDidMount"]);
 
     ReactNoop.flushSync(() => {
       React.startTransition(() => {
-        instance.setState({x: 'x'});
-        instance.setState({y: 'y'});
+        instance.setState({ x: "x" });
+        instance.setState({ y: "y" });
       });
-      instance.setState({a: 'a'});
-      instance.setState({b: 'b'});
+      instance.setState({ a: "a" });
+      instance.setState({ b: "b" });
       React.startTransition(() => {
-        instance.updater.enqueueReplaceState(instance, {c: 'c'});
-        instance.setState({d: 'd'});
+        instance.updater.enqueueReplaceState(instance, { c: "c" });
+        instance.setState({ d: "d" });
       });
     });
 
     // Even though a replaceState has been already scheduled, it hasn't been
     // flushed yet because it has async priority.
-    expect(instance.state).toEqual({a: 'a', b: 'b'});
-    assertLog(['render', 'componentDidUpdate']);
+    expect(instance.state).toEqual({ a: "a", b: "b" });
+    assertLog(["render", "componentDidUpdate"]);
 
-    await waitForAll(['render', 'componentDidUpdate']);
+    await waitForAll(["render", "componentDidUpdate"]);
     // Now the rest of the updates are flushed, including the replaceState.
-    expect(instance.state).toEqual({c: 'c', d: 'd'});
+    expect(instance.state).toEqual({ c: "c", d: "d" });
   });
 
-  it('can abort an update, schedule additional updates, and resume', async () => {
+  it("can abort an update, schedule additional updates, and resume", async () => {
     let instance;
     class Foo extends React.Component {
       state = {};
       render() {
         instance = this;
-        return <span prop={Object.keys(this.state).sort().join('')} />;
+        return <span prop={Object.keys(this.state).sort().join("")} />;
       }
     }
 
@@ -158,49 +158,49 @@ describe('ReactIncrementalUpdates', () => {
     // Schedule some async updates
     if (
       gate(
-        flags =>
+        (flags) =>
           !flags.forceConcurrentByDefaultForTesting ||
           flags.enableUnifiedSyncLane,
       )
     ) {
       React.startTransition(() => {
-        instance.setState(createUpdate('a'));
-        instance.setState(createUpdate('b'));
-        instance.setState(createUpdate('c'));
+        instance.setState(createUpdate("a"));
+        instance.setState(createUpdate("b"));
+        instance.setState(createUpdate("c"));
       });
     } else {
-      instance.setState(createUpdate('a'));
-      instance.setState(createUpdate('b'));
-      instance.setState(createUpdate('c'));
+      instance.setState(createUpdate("a"));
+      instance.setState(createUpdate("b"));
+      instance.setState(createUpdate("c"));
     }
 
     // Begin the updates but don't flush them yet
-    await waitFor(['a', 'b', 'c']);
+    await waitFor(["a", "b", "c"]);
     expect(ReactNoop).toMatchRenderedOutput(<span prop="" />);
 
     // Schedule some more updates at different priorities
-    instance.setState(createUpdate('d'));
+    instance.setState(createUpdate("d"));
     ReactNoop.flushSync(() => {
-      instance.setState(createUpdate('e'));
-      instance.setState(createUpdate('f'));
+      instance.setState(createUpdate("e"));
+      instance.setState(createUpdate("f"));
     });
     React.startTransition(() => {
-      instance.setState(createUpdate('g'));
+      instance.setState(createUpdate("g"));
     });
 
     // The sync updates should have flushed, but not the async ones.
     if (
       gate(
-        flags =>
+        (flags) =>
           !flags.forceConcurrentByDefaultForTesting &&
           flags.enableUnifiedSyncLane,
       )
     ) {
-      assertLog(['d', 'e', 'f']);
+      assertLog(["d", "e", "f"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="def" />);
     } else {
       // Update d was dropped and replaced by e.
-      assertLog(['e', 'f']);
+      assertLog(["e", "f"]);
       expect(ReactNoop).toMatchRenderedOutput(<span prop="ef" />);
     }
 
@@ -209,7 +209,7 @@ describe('ReactIncrementalUpdates', () => {
     // is deterministic.
     if (
       gate(
-        flags =>
+        (flags) =>
           !flags.forceConcurrentByDefaultForTesting &&
           !flags.enableUnifiedSyncLane,
       )
@@ -217,40 +217,40 @@ describe('ReactIncrementalUpdates', () => {
       await waitForAll([
         // Since 'g' is in a transition, we'll process 'd' separately first.
         // That causes us to process 'd' with 'e' and 'f' rebased.
-        'd',
-        'e',
-        'f',
+        "d",
+        "e",
+        "f",
         // Then we'll re-process everything for 'g'.
-        'a',
-        'b',
-        'c',
-        'd',
-        'e',
-        'f',
-        'g',
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
       ]);
     } else {
       await waitForAll([
         // Then we'll re-process everything for 'g'.
-        'a',
-        'b',
-        'c',
-        'd',
-        'e',
-        'f',
-        'g',
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
       ]);
     }
     expect(ReactNoop).toMatchRenderedOutput(<span prop="abcdefg" />);
   });
 
-  it('can abort an update, schedule a replaceState, and resume', async () => {
+  it("can abort an update, schedule a replaceState, and resume", async () => {
     let instance;
     class Foo extends React.Component {
       state = {};
       render() {
         instance = this;
-        return <span prop={Object.keys(this.state).sort().join('')} />;
+        return <span prop={Object.keys(this.state).sort().join("")} />;
       }
     }
 
@@ -269,51 +269,51 @@ describe('ReactIncrementalUpdates', () => {
     // Schedule some async updates
     if (
       gate(
-        flags =>
+        (flags) =>
           !flags.forceConcurrentByDefaultForTesting ||
           flags.enableUnifiedSyncLane,
       )
     ) {
       React.startTransition(() => {
-        instance.setState(createUpdate('a'));
-        instance.setState(createUpdate('b'));
-        instance.setState(createUpdate('c'));
+        instance.setState(createUpdate("a"));
+        instance.setState(createUpdate("b"));
+        instance.setState(createUpdate("c"));
       });
     } else {
-      instance.setState(createUpdate('a'));
-      instance.setState(createUpdate('b'));
-      instance.setState(createUpdate('c'));
+      instance.setState(createUpdate("a"));
+      instance.setState(createUpdate("b"));
+      instance.setState(createUpdate("c"));
     }
 
     // Begin the updates but don't flush them yet
-    await waitFor(['a', 'b', 'c']);
+    await waitFor(["a", "b", "c"]);
     expect(ReactNoop).toMatchRenderedOutput(<span prop="" />);
 
     // Schedule some more updates at different priorities
-    instance.setState(createUpdate('d'));
+    instance.setState(createUpdate("d"));
 
     ReactNoop.flushSync(() => {
-      instance.setState(createUpdate('e'));
+      instance.setState(createUpdate("e"));
       // No longer a public API, but we can test that it works internally by
       // reaching into the updater.
-      instance.updater.enqueueReplaceState(instance, createUpdate('f'));
+      instance.updater.enqueueReplaceState(instance, createUpdate("f"));
     });
     React.startTransition(() => {
-      instance.setState(createUpdate('g'));
+      instance.setState(createUpdate("g"));
     });
 
     // The sync updates should have flushed, but not the async ones.
     if (
       gate(
-        flags =>
+        (flags) =>
           !flags.forceConcurrentByDefaultForTesting &&
           flags.enableUnifiedSyncLane,
       )
     ) {
-      assertLog(['d', 'e', 'f']);
+      assertLog(["d", "e", "f"]);
     } else {
       // Update d was dropped and replaced by e.
-      assertLog(['e', 'f']);
+      assertLog(["e", "f"]);
     }
     expect(ReactNoop).toMatchRenderedOutput(<span prop="f" />);
 
@@ -322,7 +322,7 @@ describe('ReactIncrementalUpdates', () => {
     // is deterministic.
     if (
       gate(
-        flags =>
+        (flags) =>
           !flags.forceConcurrentByDefaultForTesting &&
           !flags.enableUnifiedSyncLane,
       )
@@ -330,34 +330,34 @@ describe('ReactIncrementalUpdates', () => {
       await waitForAll([
         // Since 'g' is in a transition, we'll process 'd' separately first.
         // That causes us to process 'd' with 'e' and 'f' rebased.
-        'd',
-        'e',
-        'f',
+        "d",
+        "e",
+        "f",
         // Then we'll re-process everything for 'g'.
-        'a',
-        'b',
-        'c',
-        'd',
-        'e',
-        'f',
-        'g',
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
       ]);
     } else {
       await waitForAll([
         // Then we'll re-process everything for 'g'.
-        'a',
-        'b',
-        'c',
-        'd',
-        'e',
-        'f',
-        'g',
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
       ]);
     }
     expect(ReactNoop).toMatchRenderedOutput(<span prop="fg" />);
   });
 
-  it('passes accumulation of previous updates to replaceState updater function', async () => {
+  it("passes accumulation of previous updates to replaceState updater function", async () => {
     let instance;
     class Foo extends React.Component {
       state = {};
@@ -369,81 +369,81 @@ describe('ReactIncrementalUpdates', () => {
     ReactNoop.render(<Foo />);
     await waitForAll([]);
 
-    instance.setState({a: 'a'});
-    instance.setState({b: 'b'});
+    instance.setState({ a: "a" });
+    instance.setState({ b: "b" });
     // No longer a public API, but we can test that it works internally by
     // reaching into the updater.
-    instance.updater.enqueueReplaceState(instance, previousState => ({
+    instance.updater.enqueueReplaceState(instance, (previousState) => ({
       previousState,
     }));
     await waitForAll([]);
-    expect(instance.state).toEqual({previousState: {a: 'a', b: 'b'}});
+    expect(instance.state).toEqual({ previousState: { a: "a", b: "b" } });
   });
 
-  it('does not call callbacks that are scheduled by another callback until a later commit', async () => {
+  it("does not call callbacks that are scheduled by another callback until a later commit", async () => {
     class Foo extends React.Component {
       state = {};
       componentDidMount() {
-        Scheduler.log('did mount');
-        this.setState({a: 'a'}, () => {
-          Scheduler.log('callback a');
-          this.setState({b: 'b'}, () => {
-            Scheduler.log('callback b');
+        Scheduler.log("did mount");
+        this.setState({ a: "a" }, () => {
+          Scheduler.log("callback a");
+          this.setState({ b: "b" }, () => {
+            Scheduler.log("callback b");
           });
         });
       }
       render() {
-        Scheduler.log('render');
+        Scheduler.log("render");
         return <div />;
       }
     }
 
     ReactNoop.render(<Foo />);
     await waitForAll([
-      'render',
-      'did mount',
-      'render',
-      'callback a',
-      'render',
-      'callback b',
+      "render",
+      "did mount",
+      "render",
+      "callback a",
+      "render",
+      "callback b",
     ]);
   });
 
-  it('gives setState during reconciliation the same priority as whatever level is currently reconciling', async () => {
+  it("gives setState during reconciliation the same priority as whatever level is currently reconciling", async () => {
     let instance;
 
     class Foo extends React.Component {
       state = {};
       UNSAFE_componentWillReceiveProps() {
-        Scheduler.log('componentWillReceiveProps');
-        this.setState({b: 'b'});
+        Scheduler.log("componentWillReceiveProps");
+        this.setState({ b: "b" });
       }
       render() {
-        Scheduler.log('render');
+        Scheduler.log("render");
         instance = this;
         return <div />;
       }
     }
     ReactNoop.render(<Foo />);
-    await waitForAll(['render']);
+    await waitForAll(["render"]);
 
     ReactNoop.flushSync(() => {
-      instance.setState({a: 'a'});
+      instance.setState({ a: "a" });
 
       ReactNoop.render(<Foo />); // Trigger componentWillReceiveProps
     });
 
-    expect(instance.state).toEqual({a: 'a', b: 'b'});
+    expect(instance.state).toEqual({ a: "a", b: "b" });
 
-    assertLog(['componentWillReceiveProps', 'render']);
+    assertLog(["componentWillReceiveProps", "render"]);
   });
 
-  it('updates triggered from inside a class setState updater', async () => {
+  it("updates triggered from inside a class setState updater", async () => {
     let instance;
     class Foo extends React.Component {
       state = {};
       render() {
-        Scheduler.log('render');
+        Scheduler.log("render");
         instance = this;
         return <div />;
       }
@@ -452,53 +452,53 @@ describe('ReactIncrementalUpdates', () => {
     ReactNoop.render(<Foo />);
     await waitForAll([
       // Initial render
-      'render',
+      "render",
     ]);
 
     instance.setState(function a() {
-      Scheduler.log('setState updater');
-      this.setState({b: 'b'});
-      return {a: 'a'};
+      Scheduler.log("setState updater");
+      this.setState({ b: "b" });
+      return { a: "a" };
     });
 
     await expect(
       async () =>
         await waitForAll([
-          'setState updater',
+          "setState updater",
           // Updates in the render phase receive the currently rendering
           // lane, so the update flushes immediately in the same render.
-          'render',
+          "render",
         ]),
     ).toErrorDev(
-      'An update (setState, replaceState, or forceUpdate) was scheduled ' +
-        'from inside an update function. Update functions should be pure, ' +
-        'with zero side-effects. Consider using componentDidUpdate or a ' +
-        'callback.\n\nPlease update the following component: Foo',
+      "An update (setState, replaceState, or forceUpdate) was scheduled " +
+        "from inside an update function. Update functions should be pure, " +
+        "with zero side-effects. Consider using componentDidUpdate or a " +
+        "callback.\n\nPlease update the following component: Foo",
     );
-    expect(instance.state).toEqual({a: 'a', b: 'b'});
+    expect(instance.state).toEqual({ a: "a", b: "b" });
 
     // Test deduplication (no additional warnings expected)
     instance.setState(function a() {
-      this.setState({a: 'a'});
-      return {b: 'b'};
+      this.setState({ a: "a" });
+      return { b: "b" };
     });
     await waitForAll(
-      gate(flags =>
+      gate((flags) =>
         // Updates in the render phase receive the currently rendering
         // lane, so the update flushes immediately in the same render.
-        ['render'],
+        ["render"],
       ),
     );
   });
 
-  it('getDerivedStateFromProps should update base state of updateQueue (based on product bug)', () => {
+  it("getDerivedStateFromProps should update base state of updateQueue (based on product bug)", () => {
     // Based on real-world bug.
 
     let foo;
     class Foo extends React.Component {
-      state = {value: 'initial state'};
+      state = { value: "initial state" };
       static getDerivedStateFromProps() {
-        return {value: 'derived state'};
+        return { value: "derived state" };
       }
       render() {
         foo = this;
@@ -529,7 +529,7 @@ describe('ReactIncrementalUpdates', () => {
       ReactNoop.render(<Foo />);
       // The noop callback is needed to trigger the specific internal path that
       // led to this bug. Removing it causes it to "accidentally" work.
-      foo.setState({value: 'update state'}, function noop() {});
+      foo.setState({ value: "update state" }, function noop() {});
     });
     expect(ReactNoop).toMatchRenderedOutput(<span prop="derived state" />);
 
@@ -539,17 +539,17 @@ describe('ReactIncrementalUpdates', () => {
     expect(ReactNoop).toMatchRenderedOutput(<span prop="derived state" />);
   });
 
-  it('regression: does not expire soon due to layout effects in the last batch', async () => {
-    const {useState, useLayoutEffect} = React;
+  it("regression: does not expire soon due to layout effects in the last batch", async () => {
+    const { useState, useLayoutEffect } = React;
 
     let setCount;
     function App() {
       const [count, _setCount] = useState(0);
       setCount = _setCount;
-      Scheduler.log('Render: ' + count);
+      Scheduler.log("Render: " + count);
       useLayoutEffect(() => {
         setCount(1);
-        Scheduler.log('Commit: ' + count);
+        Scheduler.log("Commit: " + count);
       }, []);
       return <Text text="Child" />;
     }
@@ -560,11 +560,11 @@ describe('ReactIncrementalUpdates', () => {
       });
       assertLog([]);
       await waitForAll([
-        'Render: 0',
-        'Child',
-        'Commit: 0',
-        'Render: 1',
-        'Child',
+        "Render: 0",
+        "Child",
+        "Commit: 0",
+        "Render: 1",
+        "Child",
       ]);
 
       Scheduler.unstable_advanceTime(10000);
@@ -573,17 +573,17 @@ describe('ReactIncrementalUpdates', () => {
       });
       // The transition should not have expired, so we should be able to
       // partially render it.
-      await waitFor(['Render: 2']);
+      await waitFor(["Render: 2"]);
       // Now do the rest
-      await waitForAll(['Child']);
+      await waitForAll(["Child"]);
     });
   });
 
-  it('regression: does not expire soon due to previous flushSync', async () => {
+  it("regression: does not expire soon due to previous flushSync", async () => {
     ReactNoop.flushSync(() => {
       ReactNoop.render(<Text text="A" />);
     });
-    assertLog(['A']);
+    assertLog(["A"]);
 
     Scheduler.unstable_advanceTime(10000);
 
@@ -599,12 +599,12 @@ describe('ReactIncrementalUpdates', () => {
     });
     // The transition should not have expired, so we should be able to
     // partially render it.
-    await waitFor(['A']);
-    await waitFor(['B']);
-    await waitForAll(['C', 'D']);
+    await waitFor(["A"]);
+    await waitFor(["B"]);
+    await waitForAll(["C", "D"]);
   });
 
-  it('regression: does not expire soon due to previous expired work', async () => {
+  it("regression: does not expire soon due to previous expired work", async () => {
     React.startTransition(() => {
       ReactNoop.render(
         <>
@@ -616,11 +616,11 @@ describe('ReactIncrementalUpdates', () => {
       );
     });
 
-    await waitFor(['A']);
+    await waitFor(["A"]);
     // This will expire the rest of the update
     Scheduler.unstable_advanceTime(10000);
-    await waitFor(['B'], {
-      additionalLogsAfterAttemptingToYield: ['C', 'D'],
+    await waitFor(["B"], {
+      additionalLogsAfterAttemptingToYield: ["C", "D"],
     });
 
     Scheduler.unstable_advanceTime(10000);
@@ -639,29 +639,29 @@ describe('ReactIncrementalUpdates', () => {
 
     // The transition should not have expired, so we should be able to
     // partially render it.
-    await waitFor(['A']);
-    await waitFor(['B']);
-    await waitForAll(['C', 'D']);
+    await waitFor(["A"]);
+    await waitFor(["B"]);
+    await waitForAll(["C", "D"]);
   });
 
-  it('when rebasing, does not exclude updates that were already committed, regardless of priority', async () => {
-    const {useState, useLayoutEffect} = React;
+  it("when rebasing, does not exclude updates that were already committed, regardless of priority", async () => {
+    const { useState, useLayoutEffect } = React;
 
     let pushToLog;
     function App() {
-      const [log, setLog] = useState('');
-      pushToLog = msg => {
-        setLog(prevLog => prevLog + msg);
+      const [log, setLog] = useState("");
+      pushToLog = (msg) => {
+        setLog((prevLog) => prevLog + msg);
       };
 
       useLayoutEffect(() => {
-        Scheduler.log('Committed: ' + log);
-        if (log === 'B') {
+        Scheduler.log("Committed: " + log);
+        if (log === "B") {
           // Right after B commits, schedule additional updates.
           ReactNoop.unstable_runWithPriority(ContinuousEventPriority, () =>
-            pushToLog('C'),
+            pushToLog("C"),
           );
-          setLog(prevLog => prevLog + 'D');
+          setLog((prevLog) => prevLog + "D");
         }
       }, [log]);
 
@@ -672,24 +672,24 @@ describe('ReactIncrementalUpdates', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['Committed: ']);
+    assertLog(["Committed: "]);
     expect(root).toMatchRenderedOutput(null);
 
     await act(() => {
       React.startTransition(() => {
-        pushToLog('A');
+        pushToLog("A");
       });
 
       ReactNoop.unstable_runWithPriority(ContinuousEventPriority, () =>
-        pushToLog('B'),
+        pushToLog("B"),
       );
     });
-    if (gate(flags => flags.enableUnifiedSyncLane)) {
-      assertLog(['Committed: B', 'Committed: BCD', 'Committed: ABCD']);
+    if (gate((flags) => flags.enableUnifiedSyncLane)) {
+      assertLog(["Committed: B", "Committed: BCD", "Committed: ABCD"]);
     } else {
       assertLog([
         // A and B are pending. B is higher priority, so we'll render that first.
-        'Committed: B',
+        "Committed: B",
         // Because A comes first in the queue, we're now in rebase mode. B must
         // be rebased on top of A. Also, in a layout effect, we received two new
         // updates: C and D. C is user-blocking and D is synchronous.
@@ -698,29 +698,29 @@ describe('ReactIncrementalUpdates', () => {
         // B *is not dropped* even though it has lower than sync priority. That's
         // because we already committed it. However, this render should not
         // include C, because that update wasn't already committed.
-        'Committed: BD',
-        'Committed: BCD',
-        'Committed: ABCD',
+        "Committed: BD",
+        "Committed: BCD",
+        "Committed: ABCD",
       ]);
     }
-    expect(root).toMatchRenderedOutput('ABCD');
+    expect(root).toMatchRenderedOutput("ABCD");
   });
 
-  it('when rebasing, does not exclude updates that were already committed, regardless of priority (classes)', async () => {
+  it("when rebasing, does not exclude updates that were already committed, regardless of priority (classes)", async () => {
     let pushToLog;
     class App extends React.Component {
-      state = {log: ''};
-      pushToLog = msg => {
-        this.setState(prevState => ({log: prevState.log + msg}));
+      state = { log: "" };
+      pushToLog = (msg) => {
+        this.setState((prevState) => ({ log: prevState.log + msg }));
       };
       componentDidUpdate() {
-        Scheduler.log('Committed: ' + this.state.log);
-        if (this.state.log === 'B') {
+        Scheduler.log("Committed: " + this.state.log);
+        if (this.state.log === "B") {
           // Right after B commits, schedule additional updates.
           ReactNoop.unstable_runWithPriority(ContinuousEventPriority, () =>
-            this.pushToLog('C'),
+            this.pushToLog("C"),
           );
-          this.pushToLog('D');
+          this.pushToLog("D");
         }
       }
       render() {
@@ -738,18 +738,18 @@ describe('ReactIncrementalUpdates', () => {
 
     await act(() => {
       React.startTransition(() => {
-        pushToLog('A');
+        pushToLog("A");
       });
       ReactNoop.unstable_runWithPriority(ContinuousEventPriority, () =>
-        pushToLog('B'),
+        pushToLog("B"),
       );
     });
-    if (gate(flags => flags.enableUnifiedSyncLane)) {
-      assertLog(['Committed: B', 'Committed: BCD', 'Committed: ABCD']);
+    if (gate((flags) => flags.enableUnifiedSyncLane)) {
+      assertLog(["Committed: B", "Committed: BCD", "Committed: ABCD"]);
     } else {
       assertLog([
         // A and B are pending. B is higher priority, so we'll render that first.
-        'Committed: B',
+        "Committed: B",
         // Because A comes first in the queue, we're now in rebase mode. B must
         // be rebased on top of A. Also, in a layout effect, we received two new
         // updates: C and D. C is user-blocking and D is synchronous.
@@ -758,12 +758,12 @@ describe('ReactIncrementalUpdates', () => {
         // B *is not dropped* even though it has lower than sync priority. That's
         // because we already committed it. However, this render should not
         // include C, because that update wasn't already committed.
-        'Committed: BD',
-        'Committed: BCD',
-        'Committed: ABCD',
+        "Committed: BD",
+        "Committed: BCD",
+        "Committed: ABCD",
       ]);
     }
-    expect(root).toMatchRenderedOutput('ABCD');
+    expect(root).toMatchRenderedOutput("ABCD");
   });
 
   it("base state of update queue is initialized to its fiber's memoized state", async () => {
@@ -773,7 +773,7 @@ describe('ReactIncrementalUpdates', () => {
     // the alternate fiber.
     let app;
     class App extends React.Component {
-      state = {prevProp: 'A', count: 0};
+      state = { prevProp: "A", count: 0 };
       static getDerivedStateFromProps(props, state) {
         // Add 100 whenever the label prop changes. The prev label is stored
         // in state. If the state is dropped incorrectly, we'll fail to detect
@@ -796,21 +796,21 @@ describe('ReactIncrementalUpdates', () => {
     await act(() => {
       root.render(<App prop="A" />);
     });
-    expect(root).toMatchRenderedOutput('0');
+    expect(root).toMatchRenderedOutput("0");
 
     // Changing the prop causes the count to increase by 100
     await act(() => {
       root.render(<App prop="B" />);
     });
-    expect(root).toMatchRenderedOutput('100');
+    expect(root).toMatchRenderedOutput("100");
 
     // Now increment the count by 1 with a state update. And, in the same
     // batch, change the prop back to its original value.
     await act(() => {
       root.render(<App prop="A" />);
-      app.setState(state => ({count: state.count + 1}));
+      app.setState((state) => ({ count: state.count + 1 }));
     });
     // There were two total prop changes, plus an increment.
-    expect(root).toMatchRenderedOutput('201');
+    expect(root).toMatchRenderedOutput("201");
   });
 });

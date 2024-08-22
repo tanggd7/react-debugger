@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('DebugTracing', () => {
+describe("DebugTracing", () => {
   let React;
   let ReactTestRenderer;
   let waitForPaint;
@@ -17,18 +17,18 @@ describe('DebugTracing', () => {
 
   let logs;
 
-  const SYNC_LANE_STRING = '0b0000000000000000000000000000010';
-  const DEFAULT_LANE_STRING = '0b0000000000000000000000000100000';
-  const RETRY_LANE_STRING = '0b0000000100000000000000000000000';
+  const SYNC_LANE_STRING = "0b0000000000000000000000000000010";
+  const DEFAULT_LANE_STRING = "0b0000000000000000000000000100000";
+  const RETRY_LANE_STRING = "0b0000000100000000000000000000000";
 
   global.IS_REACT_ACT_ENVIRONMENT = true;
 
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactTestRenderer = require('react-test-renderer');
-    const InternalTestUtils = require('internal-test-utils');
+    React = require("react");
+    ReactTestRenderer = require("react-test-renderer");
+    const InternalTestUtils = require("internal-test-utils");
     waitForPaint = InternalTestUtils.waitForPaint;
     waitForAll = InternalTestUtils.waitForAll;
 
@@ -36,21 +36,21 @@ describe('DebugTracing', () => {
 
     const groups = [];
 
-    spyOnDevAndProd(console, 'log').mockImplementation(message => {
-      logs.push(`log: ${message.replace(/%c/g, '')}`);
+    spyOnDevAndProd(console, "log").mockImplementation((message) => {
+      logs.push(`log: ${message.replace(/%c/g, "")}`);
     });
-    spyOnDevAndProd(console, 'group').mockImplementation(message => {
-      logs.push(`group: ${message.replace(/%c/g, '')}`);
+    spyOnDevAndProd(console, "group").mockImplementation((message) => {
+      logs.push(`group: ${message.replace(/%c/g, "")}`);
       groups.push(message);
     });
-    spyOnDevAndProd(console, 'groupEnd').mockImplementation(() => {
+    spyOnDevAndProd(console, "groupEnd").mockImplementation(() => {
       const message = groups.pop();
-      logs.push(`groupEnd: ${message.replace(/%c/g, '')}`);
+      logs.push(`groupEnd: ${message.replace(/%c/g, "")}`);
     });
   });
 
   // @gate enableDebugTracing
-  it('should not log anything for sync render without suspends or state updates', () => {
+  it("should not log anything for sync render without suspends or state updates", () => {
     ReactTestRenderer.create(
       <React.unstable_DebugTracingMode>
         <div />
@@ -61,23 +61,23 @@ describe('DebugTracing', () => {
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should not log anything for concurrent render without suspends or state updates', () => {
+  it("should not log anything for concurrent render without suspends or state updates", () => {
     ReactTestRenderer.act(() =>
       ReactTestRenderer.create(
         <React.unstable_DebugTracingMode>
           <div />
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       ),
     );
     expect(logs).toEqual([]);
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log sync render with suspense', async () => {
+  it("should log sync render with suspense", async () => {
     let resolveFakeSuspensePromise;
     let didResolve = false;
-    const fakeSuspensePromise = new Promise(resolve => {
+    const fakeSuspensePromise = new Promise((resolve) => {
       resolveFakeSuspensePromise = () => {
         didResolve = true;
         resolve();
@@ -103,7 +103,7 @@ describe('DebugTracing', () => {
 
     expect(logs).toEqual([
       `group: ⚛️ render (${SYNC_LANE_STRING})`,
-      'log: ⚛️ Example suspended',
+      "log: ⚛️ Example suspended",
       `groupEnd: ⚛️ render (${SYNC_LANE_STRING})`,
     ]);
 
@@ -112,18 +112,18 @@ describe('DebugTracing', () => {
     resolveFakeSuspensePromise();
     await waitForAll([]);
 
-    expect(logs).toEqual(['log: ⚛️ Example resolved']);
+    expect(logs).toEqual(["log: ⚛️ Example resolved"]);
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing && enableCPUSuspense
-  it('should log sync render with CPU suspense', async () => {
+  it("should log sync render with CPU suspense", async () => {
     function Example() {
-      console.log('<Example/>');
+      console.log("<Example/>");
       return null;
     }
 
-    function Wrapper({children}) {
-      console.log('<Wrapper/>');
+    function Wrapper({ children }) {
+      console.log("<Wrapper/>");
       return children;
     }
 
@@ -139,7 +139,7 @@ describe('DebugTracing', () => {
 
     expect(logs).toEqual([
       `group: ⚛️ render (${SYNC_LANE_STRING})`,
-      'log: <Wrapper/>',
+      "log: <Wrapper/>",
       `groupEnd: ⚛️ render (${SYNC_LANE_STRING})`,
     ]);
 
@@ -149,16 +149,16 @@ describe('DebugTracing', () => {
 
     expect(logs).toEqual([
       `group: ⚛️ render (${RETRY_LANE_STRING})`,
-      'log: <Example/>',
+      "log: <Example/>",
       `groupEnd: ⚛️ render (${RETRY_LANE_STRING})`,
     ]);
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log concurrent render with suspense', async () => {
+  it("should log concurrent render with suspense", async () => {
     let isResolved = false;
     let resolveFakeSuspensePromise;
-    const fakeSuspensePromise = new Promise(resolve => {
+    const fakeSuspensePromise = new Promise((resolve) => {
       resolveFakeSuspensePromise = () => {
         resolve();
         isResolved = true;
@@ -179,31 +179,31 @@ describe('DebugTracing', () => {
             <Example />
           </React.Suspense>
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       ),
     );
 
     expect(logs).toEqual([
       `group: ⚛️ render (${DEFAULT_LANE_STRING})`,
-      'log: ⚛️ Example suspended',
+      "log: ⚛️ Example suspended",
       `groupEnd: ⚛️ render (${DEFAULT_LANE_STRING})`,
     ]);
 
     logs.splice(0);
 
     await ReactTestRenderer.act(async () => await resolveFakeSuspensePromise());
-    expect(logs).toEqual(['log: ⚛️ Example resolved']);
+    expect(logs).toEqual(["log: ⚛️ Example resolved"]);
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing && enableCPUSuspense
-  it('should log concurrent render with CPU suspense', () => {
+  it("should log concurrent render with CPU suspense", () => {
     function Example() {
-      console.log('<Example/>');
+      console.log("<Example/>");
       return null;
     }
 
-    function Wrapper({children}) {
-      console.log('<Wrapper/>');
+    function Wrapper({ children }) {
+      console.log("<Wrapper/>");
       return children;
     }
 
@@ -216,26 +216,26 @@ describe('DebugTracing', () => {
             </React.Suspense>
           </Wrapper>
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       ),
     );
 
     expect(logs).toEqual([
       `group: ⚛️ render (${DEFAULT_LANE_STRING})`,
-      'log: <Wrapper/>',
+      "log: <Wrapper/>",
       `groupEnd: ⚛️ render (${DEFAULT_LANE_STRING})`,
       `group: ⚛️ render (${RETRY_LANE_STRING})`,
-      'log: <Example/>',
+      "log: <Example/>",
       `groupEnd: ⚛️ render (${RETRY_LANE_STRING})`,
     ]);
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log cascading class component updates', () => {
+  it("should log cascading class component updates", () => {
     class Example extends React.Component {
-      state = {didMount: false};
+      state = { didMount: false };
       componentDidMount() {
-        this.setState({didMount: true});
+        this.setState({ didMount: true });
       }
       render() {
         return null;
@@ -247,7 +247,7 @@ describe('DebugTracing', () => {
         <React.unstable_DebugTracingMode>
           <Example />
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       ),
     );
 
@@ -261,12 +261,12 @@ describe('DebugTracing', () => {
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log render phase state updates for class component', () => {
+  it("should log render phase state updates for class component", () => {
     class Example extends React.Component {
-      state = {didRender: false};
+      state = { didRender: false };
       render() {
         if (this.state.didRender === false) {
-          this.setState({didRender: true});
+          this.setState({ didRender: true });
         }
         return null;
       }
@@ -278,10 +278,10 @@ describe('DebugTracing', () => {
           <React.unstable_DebugTracingMode>
             <Example />
           </React.unstable_DebugTracingMode>,
-          {unstable_isConcurrent: true},
+          { unstable_isConcurrent: true },
         ),
       );
-    }).toErrorDev('Cannot update during an existing state transition');
+    }).toErrorDev("Cannot update during an existing state transition");
 
     expect(logs).toEqual([
       `group: ⚛️ render (${DEFAULT_LANE_STRING})`,
@@ -291,7 +291,7 @@ describe('DebugTracing', () => {
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log cascading layout updates', () => {
+  it("should log cascading layout updates", () => {
     function Example() {
       const [didMount, setDidMount] = React.useState(false);
       React.useLayoutEffect(() => {
@@ -305,7 +305,7 @@ describe('DebugTracing', () => {
         <React.unstable_DebugTracingMode>
           <Example />
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       ),
     );
 
@@ -319,7 +319,7 @@ describe('DebugTracing', () => {
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log cascading passive updates', () => {
+  it("should log cascading passive updates", () => {
     function Example() {
       const [didMount, setDidMount] = React.useState(false);
       React.useEffect(() => {
@@ -333,7 +333,7 @@ describe('DebugTracing', () => {
         <React.unstable_DebugTracingMode>
           <Example />
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       );
     });
     expect(logs).toEqual([
@@ -344,7 +344,7 @@ describe('DebugTracing', () => {
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log render phase updates', () => {
+  it("should log render phase updates", () => {
     function Example() {
       const [didRender, setDidRender] = React.useState(false);
       if (!didRender) {
@@ -358,7 +358,7 @@ describe('DebugTracing', () => {
         <React.unstable_DebugTracingMode>
           <Example />
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       );
     });
 
@@ -370,9 +370,9 @@ describe('DebugTracing', () => {
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should log when user code logs', () => {
+  it("should log when user code logs", () => {
     function Example() {
-      console.log('Hello from user code');
+      console.log("Hello from user code");
       return null;
     }
 
@@ -381,19 +381,19 @@ describe('DebugTracing', () => {
         <React.unstable_DebugTracingMode>
           <Example />
         </React.unstable_DebugTracingMode>,
-        {unstable_isConcurrent: true},
+        { unstable_isConcurrent: true },
       ),
     );
 
     expect(logs).toEqual([
       `group: ⚛️ render (${DEFAULT_LANE_STRING})`,
-      'log: Hello from user code',
+      "log: Hello from user code",
       `groupEnd: ⚛️ render (${DEFAULT_LANE_STRING})`,
     ]);
   });
 
   // @gate experimental && build === 'development' && enableDebugTracing
-  it('should not log anything outside of a unstable_DebugTracingMode subtree', () => {
+  it("should not log anything outside of a unstable_DebugTracingMode subtree", () => {
     function ExampleThatCascades() {
       const [didMount, setDidMount] = React.useState(false);
       React.useLayoutEffect(() => {
@@ -402,7 +402,7 @@ describe('DebugTracing', () => {
       return didMount;
     }
 
-    const fakeSuspensePromise = {then() {}};
+    const fakeSuspensePromise = { then() {} };
 
     function ExampleThatSuspends() {
       throw fakeSuspensePromise;

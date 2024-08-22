@@ -5,6 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-'use strict';
+"use strict";
 
-export * from './src/forks/Scheduler';
+export * from "./src/forks/Scheduler";

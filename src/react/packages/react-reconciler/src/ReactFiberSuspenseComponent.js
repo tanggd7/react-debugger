@@ -4,33 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                               
-                                                
-                                                         
-                                           
-                                                         
-
-import {SuspenseComponent, SuspenseListComponent} from './ReactWorkTags';
-import {NoFlags, DidCapture} from './ReactFiberFlags';
+import { SuspenseComponent, SuspenseListComponent } from "./ReactWorkTags";
+import { NoFlags, DidCapture } from "./ReactFiberFlags";
 import {
   isSuspenseInstancePending,
   isSuspenseInstanceFallback,
-} from './ReactFiberConfig';
-
-                             
-                           
-                           
-
-                                  
-                                                     
-
-                                       
-                                     
-                         
-  
+} from "./ReactFiberConfig";
 
 // A null SuspenseState represents an unsuspended normal Suspense boundary.
 // A non-null SuspenseState means that it is blocked for one reason or another.
@@ -39,43 +21,14 @@ import {
 //     isSuspenseInstanceFallback to query the reason for being dehydrated.
 // - A null dehydrated field means it's blocked by something suspending and
 //   we're currently showing a fallback instead.
-                             
-                                                                        
-                                                                       
-                                                    
-                                      
-                                  
-                                                                               
-                                                            
-                                                                                
-                  
-  
 
-                                                                 
-
-                                       
-                       
-                                      
-                          
-                                                                          
-                             
-                                               
-                     
-                                            
-                     
-                             
-                                 
-  
-
-                                       
-
-export function findFirstSuspended(row       )               {
+export function findFirstSuspended(row) {
   let node = row;
   while (node !== null) {
     if (node.tag === SuspenseComponent) {
-      const state                       = node.memoizedState;
+      const state = node.memoizedState;
       if (state !== null) {
-        const dehydrated                          = state.dehydrated;
+        const dehydrated = state.dehydrated;
         if (
           dehydrated === null ||
           isSuspenseInstancePending(dehydrated) ||

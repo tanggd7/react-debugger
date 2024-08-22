@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -19,10 +19,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -39,39 +39,39 @@ const {
   expectMarkupMatch,
 } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
 
-  describe('refs', function () {
-    it('should not run ref code on server', async () => {
+  describe("refs", function () {
+    it("should not run ref code on server", async () => {
       let refCount = 0;
       class RefsComponent extends React.Component {
         render() {
-          return <div ref={e => refCount++} />;
+          return <div ref={(e) => refCount++} />;
         }
       }
       await expectMarkupMatch(<RefsComponent />, <div />);
       expect(refCount).toBe(0);
     });
 
-    it('should run ref code on client', async () => {
+    it("should run ref code on client", async () => {
       let refCount = 0;
       class RefsComponent extends React.Component {
         render() {
-          return <div ref={e => refCount++} />;
+          return <div ref={(e) => refCount++} />;
         }
       }
       await expectMarkupMatch(<div />, <RefsComponent />);
       expect(refCount).toBe(1);
     });
 
-    it('should send the correct element to ref functions on client', async () => {
+    it("should send the correct element to ref functions on client", async () => {
       let refElement = null;
       class RefsComponent extends React.Component {
         render() {
-          return <div ref={e => (refElement = e)} />;
+          return <div ref={(e) => (refElement = e)} />;
         }
       }
       const e = await clientRenderOnServerString(<RefsComponent />);
@@ -79,7 +79,7 @@ describe('ReactDOMServerIntegration', () => {
       expect(refElement).toBe(e);
     });
 
-    it('should have string refs on client when rendered over server markup', async () => {
+    it("should have string refs on client when rendered over server markup", async () => {
       class RefsComponent extends React.Component {
         render() {
           return <div ref="myDiv" />;
@@ -87,28 +87,28 @@ describe('ReactDOMServerIntegration', () => {
       }
 
       const markup = ReactDOMServer.renderToString(<RefsComponent />);
-      const root = document.createElement('div');
+      const root = document.createElement("div");
       root.innerHTML = markup;
       let component = null;
       resetModules();
       await expect(async () => {
         await asyncReactDOMRender(
-          <RefsComponent ref={e => (component = e)} />,
+          <RefsComponent ref={(e) => (component = e)} />,
           root,
           true,
         );
       }).toErrorDev([
         'Warning: Component "RefsComponent" contains the string ref "myDiv". ' +
-          'Support for string refs will be removed in a future major release. ' +
-          'We recommend using useRef() or createRef() instead. ' +
-          'Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref\n' +
-          '    in RefsComponent (at **)',
+          "Support for string refs will be removed in a future major release. " +
+          "We recommend using useRef() or createRef() instead. " +
+          "Learn more about using refs safely here: https://reactjs.org/link/strict-mode-string-ref\n" +
+          "    in RefsComponent (at **)",
       ]);
       expect(component.refs.myDiv).toBe(root.firstChild);
     });
   });
 
-  it('should forward refs', async () => {
+  it("should forward refs", async () => {
     const divRef = React.createRef();
 
     class InnerComponent extends React.Component {
@@ -126,6 +126,6 @@ describe('ReactDOMServerIntegration', () => {
     );
 
     expect(divRef.current).not.toBe(null);
-    expect(divRef.current.textContent).toBe('hello');
+    expect(divRef.current.textContent).toBe("hello");
   });
 });

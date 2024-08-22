@@ -7,20 +7,20 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('SyntheticWheelEvent', () => {
+describe("SyntheticWheelEvent", () => {
   let container;
 
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
 
     // The container has to be attached for events to fire.
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -29,16 +29,16 @@ describe('SyntheticWheelEvent', () => {
     container = null;
   });
 
-  it('should normalize properties from the MouseEvent interface', () => {
+  it("should normalize properties from the MouseEvent interface", () => {
     const events = [];
-    const onWheel = event => {
+    const onWheel = (event) => {
       event.persist();
       events.push(event);
     };
     ReactDOM.render(<div onWheel={onWheel} />, container);
 
     container.firstChild.dispatchEvent(
-      new MouseEvent('wheel', {
+      new MouseEvent("wheel", {
         bubbles: true,
         button: 1,
       }),
@@ -48,15 +48,15 @@ describe('SyntheticWheelEvent', () => {
     expect(events[0].button).toBe(1);
   });
 
-  it('should normalize properties from the WheelEvent interface', () => {
+  it("should normalize properties from the WheelEvent interface", () => {
     const events = [];
-    const onWheel = event => {
+    const onWheel = (event) => {
       event.persist();
       events.push(event);
     };
     ReactDOM.render(<div onWheel={onWheel} />, container);
 
-    let event = new MouseEvent('wheel', {
+    let event = new MouseEvent("wheel", {
       bubbles: true,
     });
     // jsdom doesn't support these so we add them manually.
@@ -66,7 +66,7 @@ describe('SyntheticWheelEvent', () => {
     });
     container.firstChild.dispatchEvent(event);
 
-    event = new MouseEvent('wheel', {
+    event = new MouseEvent("wheel", {
       bubbles: true,
     });
     // jsdom doesn't support these so we add them manually.
@@ -83,9 +83,9 @@ describe('SyntheticWheelEvent', () => {
     expect(events[1].deltaY).toBe(-50);
   });
 
-  it('should be able to `preventDefault` and `stopPropagation`', () => {
+  it("should be able to `preventDefault` and `stopPropagation`", () => {
     const events = [];
-    const onWheel = event => {
+    const onWheel = (event) => {
       expect(event.isDefaultPrevented()).toBe(false);
       event.preventDefault();
       expect(event.isDefaultPrevented()).toBe(true);
@@ -95,7 +95,7 @@ describe('SyntheticWheelEvent', () => {
     ReactDOM.render(<div onWheel={onWheel} />, container);
 
     container.firstChild.dispatchEvent(
-      new MouseEvent('wheel', {
+      new MouseEvent("wheel", {
         bubbles: true,
         deltaX: 10,
         deltaY: -50,
@@ -103,7 +103,7 @@ describe('SyntheticWheelEvent', () => {
     );
 
     container.firstChild.dispatchEvent(
-      new MouseEvent('wheel', {
+      new MouseEvent("wheel", {
         bubbles: true,
         deltaX: 10,
         deltaY: -50,

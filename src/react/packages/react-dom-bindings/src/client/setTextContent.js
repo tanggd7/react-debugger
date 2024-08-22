@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import {TEXT_NODE} from './HTMLNodeType';
+import { TEXT_NODE } from "./HTMLNodeType";
 
 /**
  * Set the textContent property of a node. For text updates, it's faster
@@ -18,7 +18,7 @@ import {TEXT_NODE} from './HTMLNodeType';
  * @param {string} text
  * @internal
  */
-function setTextContent(node         , text        )       {
+function setTextContent(node, text) {
   if (text) {
     const firstChild = node.firstChild;
 

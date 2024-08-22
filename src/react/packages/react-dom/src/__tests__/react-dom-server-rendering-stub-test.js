@@ -7,26 +7,26 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 let ReactDOMFizzServer;
 
-describe('react-dom-server-rendering-stub', () => {
+describe("react-dom-server-rendering-stub", () => {
   beforeEach(() => {
-    jest.mock('react-dom', () => require('react-dom/server-rendering-stub'));
+    jest.mock("react-dom", () => require("react-dom/server-rendering-stub"));
 
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactDOMFizzServer = require('react-dom/server');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactDOMFizzServer = require("react-dom/server");
   });
 
-  it('exports a version', () => {
+  it("exports a version", () => {
     expect(ReactDOM.version).toBeTruthy();
   });
 
-  it('exports that are expected to be client only in the future are not exported', () => {
+  it("exports that are expected to be client only in the future are not exported", () => {
     expect(ReactDOM.createRoot).toBe(undefined);
     expect(ReactDOM.hydrateRoot).toBe(undefined);
     expect(ReactDOM.findDOMNode).toBe(undefined);
@@ -39,10 +39,10 @@ describe('react-dom-server-rendering-stub', () => {
   });
 
   // @gate enableFloat
-  it('provides preload and preinit exports', async () => {
+  it("provides preload and preinit exports", async () => {
     function App() {
-      ReactDOM.preload('foo', {as: 'style'});
-      ReactDOM.preinit('bar', {as: 'style'});
+      ReactDOM.preload("foo", { as: "style" });
+      ReactDOM.preinit("bar", { as: "style" });
       return <div>foo</div>;
     }
     const html = ReactDOMFizzServer.renderToString(<App />);
@@ -51,10 +51,10 @@ describe('react-dom-server-rendering-stub', () => {
     );
   });
 
-  it('provides preconnect and prefetchDNS exports', async () => {
+  it("provides preconnect and prefetchDNS exports", async () => {
     function App() {
-      ReactDOM.preconnect('foo', {crossOrigin: 'use-credentials'});
-      ReactDOM.prefetchDNS('bar');
+      ReactDOM.preconnect("foo", { crossOrigin: "use-credentials" });
+      ReactDOM.prefetchDNS("bar");
       return <div>foo</div>;
     }
     const html = ReactDOMFizzServer.renderToString(<App />);
@@ -63,33 +63,33 @@ describe('react-dom-server-rendering-stub', () => {
     );
   });
 
-  it('provides a stub for createPortal', async () => {
+  it("provides a stub for createPortal", async () => {
     expect(() => {
       ReactDOM.createPortal();
     }).toThrow(
-      'createPortal was called on the server. Portals are not currently supported on the server. Update your program to conditionally call createPortal on the client only.',
+      "createPortal was called on the server. Portals are not currently supported on the server. Update your program to conditionally call createPortal on the client only.",
     );
   });
 
-  it('provides a stub for flushSync', async () => {
+  it("provides a stub for flushSync", async () => {
     let x = false;
     expect(() => {
       ReactDOM.flushSync(() => (x = true));
     }).toThrow(
-      'flushSync was called on the server. This is likely caused by a function being called during render or in module scope that was intended to be called from an effect or event handler. Update your to not call flushSync no the server.',
+      "flushSync was called on the server. This is likely caused by a function being called during render or in module scope that was intended to be called from an effect or event handler. Update your to not call flushSync no the server.",
     );
     expect(x).toBe(false);
   });
 
   // @gate enableFormActions
   // @gate enableAsyncActions
-  it('exports experimental_useFormStatus', async () => {
+  it("exports experimental_useFormStatus", async () => {
     function App() {
-      const {pending} = ReactDOM.experimental_useFormStatus();
-      return 'Pending: ' + pending;
+      const { pending } = ReactDOM.experimental_useFormStatus();
+      return "Pending: " + pending;
     }
 
     const result = await ReactDOMFizzServer.renderToStaticMarkup(<App />);
-    expect(result).toEqual('Pending: false');
+    expect(result).toEqual("Pending: false");
   });
 });

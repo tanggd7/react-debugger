@@ -6,7 +6,7 @@
  */
 
 // This refers to a WWW module.
-const warningWWW = require('warning');
+const warningWWW = require("warning");
 
 let suppressWarning = false;
 export function setSuppressWarning(newSuppressWarning) {
@@ -18,7 +18,7 @@ export function setSuppressWarning(newSuppressWarning) {
 export function warn(format, ...args) {
   if (__DEV__) {
     if (!suppressWarning) {
-      printWarning('warn', format, args);
+      printWarning("warn", format, args);
     }
   }
 }
@@ -26,14 +26,14 @@ export function warn(format, ...args) {
 export function error(format, ...args) {
   if (__DEV__) {
     if (!suppressWarning) {
-      printWarning('error', format, args);
+      printWarning("error", format, args);
     }
   }
 }
 
 function printWarning(level, format, args) {
   if (__DEV__) {
-    const React = require('react');
+    const React = require("react");
     const ReactSharedInternals =
       React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
     // Defensive in case this is fired before React is initialized.
@@ -41,8 +41,8 @@ function printWarning(level, format, args) {
       const ReactDebugCurrentFrame =
         ReactSharedInternals.ReactDebugCurrentFrame;
       const stack = ReactDebugCurrentFrame.getStackAddendum();
-      if (stack !== '') {
-        format += '%s';
+      if (stack !== "") {
+        format += "%s";
         args.push(stack);
       }
     }

@@ -4,23 +4,21 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                     
-
-import isArray from 'shared/isArray';
+import isArray from "shared/isArray";
 import {
   getIteratorFn,
   REACT_ELEMENT_TYPE,
   REACT_PORTAL_TYPE,
-} from 'shared/ReactSymbols';
-import {checkKeyStringCoercion} from 'shared/CheckStringCoercion';
+} from "shared/ReactSymbols";
+import { checkKeyStringCoercion } from "shared/CheckStringCoercion";
 
-import {isValidElement, cloneAndReplaceKey} from './ReactElement';
+import { isValidElement, cloneAndReplaceKey } from "./ReactElement";
 
-const SEPARATOR = '.';
-const SUBSEPARATOR = ':';
+const SEPARATOR = ".";
+const SUBSEPARATOR = ":";
 
 /**
  * Escape and wrap key so it is safe to use as a reactid
@@ -28,17 +26,17 @@ const SUBSEPARATOR = ':';
  * @param {string} key to be escaped.
  * @return {string} the escaped key.
  */
-function escape(key        )         {
+function escape(key) {
   const escapeRegex = /[=:]/g;
   const escaperLookup = {
-    '=': '=0',
-    ':': '=2',
+    "=": "=0",
+    ":": "=2",
   };
   const escapedString = key.replace(escapeRegex, function (match) {
     return escaperLookup[match];
   });
 
-  return '$' + escapedString;
+  return "$" + escapedString;
 }
 
 /**
@@ -49,8 +47,8 @@ function escape(key        )         {
 let didWarnAboutMaps = false;
 
 const userProvidedKeyEscapeRegex = /\/+/g;
-function escapeUserProvidedKey(text        )         {
-  return text.replace(userProvidedKeyEscapeRegex, '$&/');
+function escapeUserProvidedKey(text) {
+  return text.replace(userProvidedKeyEscapeRegex, "$&/");
 }
 
 /**
@@ -60,30 +58,24 @@ function escapeUserProvidedKey(text        )         {
  * @param {number} index Index that is used if a manual key is not provided.
  * @return {string}
  */
-function getElementKey(element     , index        )         {
+function getElementKey(element, index) {
   // Do some typechecking here since we call this blindly. We want to ensure
   // that we don't block potential future ES APIs.
-  if (typeof element === 'object' && element !== null && element.key != null) {
+  if (typeof element === "object" && element !== null && element.key != null) {
     // Explicit key
     if (__DEV__) {
       checkKeyStringCoercion(element.key);
     }
-    return escape('' + element.key);
+    return escape("" + element.key);
   }
   // Implicit key determined by the index in the set
   return index.toString(36);
 }
 
-function mapIntoArray(
-  children                ,
-  array                   ,
-  escapedPrefix        ,
-  nameSoFar        ,
-  callback                                 ,
-)         {
+function mapIntoArray(children, array, escapedPrefix, nameSoFar, callback) {
   const type = typeof children;
 
-  if (type === 'undefined' || type === 'boolean') {
+  if (type === "undefined" || type === "boolean") {
     // All of the above are perceived as null.
     children = null;
   }
@@ -94,12 +86,12 @@ function mapIntoArray(
     invokeCallback = true;
   } else {
     switch (type) {
-      case 'string':
-      case 'number':
+      case "string":
+      case "number":
         invokeCallback = true;
         break;
-      case 'object':
-        switch ((children     ).$$typeof) {
+      case "object":
+        switch (children.$$typeof) {
           case REACT_ELEMENT_TYPE:
           case REACT_PORTAL_TYPE:
             invokeCallback = true;
@@ -113,13 +105,13 @@ function mapIntoArray(
     // If it's the only child, treat the name as if it was wrapped in an array
     // so that it's consistent if the number of children grows:
     const childKey =
-      nameSoFar === '' ? SEPARATOR + getElementKey(child, 0) : nameSoFar;
+      nameSoFar === "" ? SEPARATOR + getElementKey(child, 0) : nameSoFar;
     if (isArray(mappedChild)) {
-      let escapedChildKey = '';
+      let escapedChildKey = "";
       if (childKey != null) {
-        escapedChildKey = escapeUserProvidedKey(childKey) + '/';
+        escapedChildKey = escapeUserProvidedKey(childKey) + "/";
       }
-      mapIntoArray(mappedChild, array, escapedChildKey, '', c => c);
+      mapIntoArray(mappedChild, array, escapedChildKey, "", (c) => c);
     } else if (mappedChild != null) {
       if (isValidElement(mappedChild)) {
         if (__DEV__) {
@@ -139,9 +131,9 @@ function mapIntoArray(
             (mappedChild.key && (!child || child.key !== mappedChild.key)
               ? escapeUserProvidedKey(
                   // $FlowFixMe[unsafe-addition]
-                  '' + mappedChild.key, // eslint-disable-line react-internal/safe-string-coercion
-                ) + '/'
-              : '') +
+                  "" + mappedChild.key, // eslint-disable-line react-internal/safe-string-coercion
+                ) + "/"
+              : "") +
             childKey,
         );
       }
@@ -154,7 +146,7 @@ function mapIntoArray(
   let nextName;
   let subtreeCount = 0; // Count of children found in the current subtree.
   const nextNamePrefix =
-    nameSoFar === '' ? SEPARATOR : nameSoFar + SUBSEPARATOR;
+    nameSoFar === "" ? SEPARATOR : nameSoFar + SUBSEPARATOR;
 
   if (isArray(children)) {
     for (let i = 0; i < children.length; i++) {
@@ -170,18 +162,16 @@ function mapIntoArray(
     }
   } else {
     const iteratorFn = getIteratorFn(children);
-    if (typeof iteratorFn === 'function') {
-      const iterableChildren                          
-                     
-        = (children     );
+    if (typeof iteratorFn === "function") {
+      const iterableChildren = children;
 
       if (__DEV__) {
         // Warn about using Maps as children
         if (iteratorFn === iterableChildren.entries) {
           if (!didWarnAboutMaps) {
             console.warn(
-              'Using Maps as children is not supported. ' +
-                'Use an array of keyed ReactElements instead.',
+              "Using Maps as children is not supported. " +
+                "Use an array of keyed ReactElements instead.",
             );
           }
           didWarnAboutMaps = true;
@@ -203,28 +193,24 @@ function mapIntoArray(
           callback,
         );
       }
-    } else if (type === 'object') {
+    } else if (type === "object") {
       // eslint-disable-next-line react-internal/safe-string-coercion
-      const childrenString = String((children     ));
+      const childrenString = String(children);
 
       throw new Error(
         `Objects are not valid as a React child (found: ${
-          childrenString === '[object Object]'
-            ? 'object with keys {' +
-              Object.keys((children     )).join(', ') +
-              '}'
+          childrenString === "[object Object]"
+            ? "object with keys {" + Object.keys(children).join(", ") + "}"
             : childrenString
         }). ` +
-          'If you meant to render a collection of children, use an array ' +
-          'instead.',
+          "If you meant to render a collection of children, use an array " +
+          "instead.",
       );
     }
   }
 
   return subtreeCount;
 }
-
-                                                                     
 
 /**
  * Maps children that are typically specified as `props.children`.
@@ -239,17 +225,13 @@ function mapIntoArray(
  * @param {*} context Context for mapFunction.
  * @return {object} Object containing the ordered map of results.
  */
-function mapChildren(
-  children                ,
-  func         ,
-  context       ,
-)                     {
+function mapChildren(children, func, context) {
   if (children == null) {
     return children;
   }
-  const result                    = [];
+  const result = [];
   let count = 0;
-  mapIntoArray(children, result, '', '', function (child) {
+  mapIntoArray(children, result, "", "", function (child) {
     return func.call(context, child, count++);
   });
   return result;
@@ -264,7 +246,7 @@ function mapChildren(
  * @param {?*} children Children tree container.
  * @return {number} The number of children.
  */
-function countChildren(children                )         {
+function countChildren(children) {
   let n = 0;
   mapChildren(children, () => {
     n++;
@@ -272,8 +254,6 @@ function countChildren(children                )         {
   });
   return n;
 }
-
-                                                
 
 /**
  * Iterates through children that are typically specified as `props.children`.
@@ -287,11 +267,7 @@ function countChildren(children                )         {
  * @param {function(*, int)} forEachFunc
  * @param {*} forEachContext Context for forEachContext.
  */
-function forEachChildren(
-  children                ,
-  forEachFunc             ,
-  forEachContext       ,
-)       {
+function forEachChildren(children, forEachFunc, forEachContext) {
   mapChildren(
     children,
     // $FlowFixMe[missing-this-annot]
@@ -309,8 +285,8 @@ function forEachChildren(
  *
  * See https://reactjs.org/docs/react-api.html#reactchildrentoarray
  */
-function toArray(children                )                    {
-  return mapChildren(children, child => child) || [];
+function toArray(children) {
+  return mapChildren(children, (child) => child) || [];
 }
 
 /**
@@ -327,10 +303,10 @@ function toArray(children                )                    {
  * @return {ReactElement} The first and only `ReactElement` contained in the
  * structure.
  */
-function onlyChild   (children   )    {
+function onlyChild(children) {
   if (!isValidElement(children)) {
     throw new Error(
-      'React.Children.only expected to receive a single React element child.',
+      "React.Children.only expected to receive a single React element child.",
     );
   }
 

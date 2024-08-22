@@ -8,9 +8,9 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
-describe('ReactProfiler DevTools integration', () => {
+describe("ReactProfiler DevTools integration", () => {
   let React;
   let ReactFeatureFlags;
   let ReactTestRenderer;
@@ -30,13 +30,13 @@ describe('ReactProfiler DevTools integration', () => {
 
     jest.resetModules();
 
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
     ReactFeatureFlags.enableProfilerTimer = true;
-    Scheduler = require('scheduler');
-    React = require('react');
-    ReactTestRenderer = require('react-test-renderer');
+    Scheduler = require("scheduler");
+    React = require("react");
+    ReactTestRenderer = require("react-test-renderer");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     waitFor = InternalTestUtils.waitFor;
 
@@ -56,8 +56,8 @@ describe('ReactProfiler DevTools integration', () => {
     };
   });
 
-  it('should auto-Profile all fibers if the DevTools hook is detected', () => {
-    const App = ({multiplier}) => {
+  it("should auto-Profile all fibers if the DevTools hook is detected", () => {
+    const App = ({ multiplier }) => {
       Scheduler.unstable_advanceTime(2);
       return (
         <React.Profiler id="Profiler" onRender={onRender}>
@@ -79,7 +79,7 @@ describe('ReactProfiler DevTools integration', () => {
     // The time spent in App (above the Profiler) won't be included in the durations,
     // But needs to be accounted for in the offset times.
     expect(onRender).toHaveBeenCalledTimes(1);
-    expect(onRender).toHaveBeenCalledWith('Profiler', 'mount', 10, 10, 2, 12);
+    expect(onRender).toHaveBeenCalledWith("Profiler", "mount", 10, 10, 2, 12);
     onRender.mockClear();
 
     // Measure unobservable timing required by the DevTools profiler.
@@ -96,7 +96,7 @@ describe('ReactProfiler DevTools integration', () => {
     // The time spent in App (above the Profiler) won't be included in the durations,
     // But needs to be accounted for in the offset times.
     expect(onRender).toHaveBeenCalledTimes(1);
-    expect(onRender).toHaveBeenCalledWith('Profiler', 'update', 6, 13, 14, 20);
+    expect(onRender).toHaveBeenCalledWith("Profiler", "update", 6, 13, 14, 20);
 
     // Measure unobservable timing required by the DevTools profiler.
     // At this point, the base time should include both:
@@ -107,7 +107,7 @@ describe('ReactProfiler DevTools integration', () => {
     );
   });
 
-  it('should reset the fiber stack correctly after an error when profiling host roots', () => {
+  it("should reset the fiber stack correctly after an error when profiling host roots", () => {
     Scheduler.unstable_advanceTime(20);
 
     const rendered = ReactTestRenderer.create(
@@ -140,22 +140,24 @@ describe('ReactProfiler DevTools integration', () => {
     // It should not include time spent on the initial render,
     // Or time that elapsed between any of the above renders.
     expect(
-      rendered.root.findByType('div')._currentFiber().treeBaseDuration,
+      rendered.root.findByType("div")._currentFiber().treeBaseDuration,
     ).toBe(7);
   });
 
-  it('regression test: #17159', async () => {
-    function Text({text}) {
+  it("regression test: #17159", async () => {
+    function Text({ text }) {
       Scheduler.log(text);
       return text;
     }
 
-    const root = ReactTestRenderer.create(null, {unstable_isConcurrent: true});
+    const root = ReactTestRenderer.create(null, {
+      unstable_isConcurrent: true,
+    });
 
     // Commit something
     root.update(<Text text="A" />);
-    await waitForAll(['A']);
-    expect(root).toMatchRenderedOutput('A');
+    await waitForAll(["A"]);
+    expect(root).toMatchRenderedOutput("A");
 
     // Advance time by many seconds, larger than the default expiration time
     // for updates.
@@ -168,7 +170,7 @@ describe('ReactProfiler DevTools integration', () => {
     // Update B should not instantly expire.
     await waitFor([]);
 
-    await waitForAll(['B']);
-    expect(root).toMatchRenderedOutput('B');
+    await waitForAll(["B"]);
+    expect(root).toMatchRenderedOutput("B");
   });
 });

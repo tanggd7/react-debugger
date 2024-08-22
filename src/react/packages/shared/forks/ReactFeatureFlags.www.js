@@ -4,15 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                                    
-                                                              
-                                                                              
-
 // Re-export dynamic flags from the www version.
-const dynamicFeatureFlags                      = require('ReactFeatureFlags');
+const dynamicFeatureFlags = require("ReactFeatureFlags");
 
 export const {
   disableInputAttributeSyncing,
@@ -41,7 +37,7 @@ export const debugRenderPhaseSideEffectsForStrictMode = __DEV__;
 export const enableProfilerTimer = __PROFILE__;
 export const enableProfilerCommitHooks = __PROFILE__;
 export const enableProfilerNestedUpdatePhase = __PROFILE__;
-export const enableProfilerNestedUpdateScheduledHook          =
+export const enableProfilerNestedUpdateScheduledHook =
   __PROFILE__ && dynamicFeatureFlags.enableProfilerNestedUpdateScheduledHook;
 export const enableUpdaterTracking = __PROFILE__;
 
@@ -58,7 +54,7 @@ export const enableClientRenderFallbackOnTextMismatch = false;
 export const enableFilterEmptyStringAttributesDOM = true;
 
 // Logs additional User Timing API marks for use with an experimental profiling tool.
-export const enableSchedulingProfiler          =
+export const enableSchedulingProfiler =
   __PROFILE__ && dynamicFeatureFlags.enableSchedulingProfiler;
 
 // Note: we'll want to remove this when we to userland implementation.
@@ -108,4 +104,4 @@ export const enableFizzExternalRuntime = true;
 export const forceConcurrentByDefaultForTesting = false;
 
 // Flow magic to verify the exports of this file match the original version.
-((((null     )             )                  )             );
+null;

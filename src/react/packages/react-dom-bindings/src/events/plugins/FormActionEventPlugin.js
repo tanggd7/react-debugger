@@ -4,35 +4,28 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                        
-                                                   
-                                                           
-                                                          
-                                                                   
-                                                                                  
+import { getFiberCurrentPropsFromNode } from "../../client/ReactDOMComponentTree";
+import { startHostTransition } from "react-reconciler/src/ReactFiberReconciler";
 
-import {getFiberCurrentPropsFromNode} from '../../client/ReactDOMComponentTree';
-import {startHostTransition} from 'react-reconciler/src/ReactFiberReconciler';
-
-import {SyntheticEvent} from '../SyntheticEvent';
+import { SyntheticEvent } from "../SyntheticEvent";
 
 /**
  * This plugin invokes action functions on forms, inputs and buttons if
  * the form doesn't prevent default.
  */
 function extractEvents(
-  dispatchQueue               ,
-  domEventName              ,
-  maybeTargetInst              ,
-  nativeEvent                ,
-  nativeEventTarget                    ,
-  eventSystemFlags                  ,
-  targetContainer             ,
+  dispatchQueue,
+  domEventName,
+  maybeTargetInst,
+  nativeEvent,
+  nativeEventTarget,
+  eventSystemFlags,
+  targetContainer,
 ) {
-  if (domEventName !== 'submit') {
+  if (domEventName !== "submit") {
     return;
   }
   if (!maybeTargetInst || maybeTargetInst.stateNode !== nativeEventTarget) {
@@ -41,16 +34,15 @@ function extractEvents(
     return;
   }
   const formInst = maybeTargetInst;
-  const form                  = (nativeEventTarget     );
-  let action = (getFiberCurrentPropsFromNode(form)     ).action;
-  let submitter                                              =
-    (nativeEvent     ).submitter;
+  const form = nativeEventTarget;
+  let action = getFiberCurrentPropsFromNode(form).action;
+  let submitter = nativeEvent.submitter;
   let submitterAction;
   if (submitter) {
     const submitterProps = getFiberCurrentPropsFromNode(submitter);
     submitterAction = submitterProps
-      ? (submitterProps     ).formAction
-      : submitter.getAttribute('formAction');
+      ? submitterProps.formAction
+      : submitter.getAttribute("formAction");
     if (submitterAction != null) {
       // The submitter overrides the form action.
       action = submitterAction;
@@ -60,13 +52,13 @@ function extractEvents(
     }
   }
 
-  if (typeof action !== 'function') {
+  if (typeof action !== "function") {
     return;
   }
 
   const event = new SyntheticEvent(
-    'action',
-    'action',
+    "action",
+    "action",
     null,
     nativeEvent,
     nativeEventTarget,
@@ -89,17 +81,17 @@ function extractEvents(
       // TODO: FormData takes a second argument that it's the submitter but this
       // is fairly new so not all browsers support it yet. Switch to that technique
       // when available.
-      const temp = submitter.ownerDocument.createElement('input');
+      const temp = submitter.ownerDocument.createElement("input");
       temp.name = submitter.name;
       temp.value = submitter.value;
-      (submitter.parentNode     ).insertBefore(temp, submitter);
+      submitter.parentNode.insertBefore(temp, submitter);
       formData = new FormData(form);
-      (temp.parentNode     ).removeChild(temp);
+      temp.parentNode.removeChild(temp);
     } else {
       formData = new FormData(form);
     }
 
-    const pendingState             = {
+    const pendingState = {
       pending: true,
       data: formData,
       method: form.method,
@@ -123,15 +115,10 @@ function extractEvents(
   });
 }
 
-export {extractEvents};
+export { extractEvents };
 
-export function dispatchReplayedFormAction(
-  formInst       ,
-  form                 ,
-  action                                  ,
-  formData          ,
-)       {
-  const pendingState             = {
+export function dispatchReplayedFormAction(formInst, form, action, formData) {
+  const pendingState = {
     pending: true,
     data: formData,
     method: form.method,

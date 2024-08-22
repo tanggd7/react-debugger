@@ -7,20 +7,20 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('SyntheticClipboardEvent', () => {
+describe("SyntheticClipboardEvent", () => {
   let container;
 
   beforeEach(() => {
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
 
     // The container has to be attached for events to fire.
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -29,9 +29,9 @@ describe('SyntheticClipboardEvent', () => {
     container = null;
   });
 
-  describe('ClipboardEvent interface', () => {
-    describe('clipboardData', () => {
-      describe('when event has clipboardData', () => {
+  describe("ClipboardEvent interface", () => {
+    describe("clipboardData", () => {
+      describe("when event has clipboardData", () => {
         it("returns event's clipboardData", () => {
           let expectedCount = 0;
 
@@ -43,7 +43,7 @@ describe('SyntheticClipboardEvent', () => {
             items: null,
             types: null,
           };
-          const eventHandler = event => {
+          const eventHandler = (event) => {
             expect(event.clipboardData).toBe(clipboardData);
             expectedCount++;
           };
@@ -57,18 +57,18 @@ describe('SyntheticClipboardEvent', () => {
           );
 
           let event;
-          event = document.createEvent('Event');
-          event.initEvent('copy', true, true);
+          event = document.createEvent("Event");
+          event.initEvent("copy", true, true);
           event.clipboardData = clipboardData;
           div.dispatchEvent(event);
 
-          event = document.createEvent('Event');
-          event.initEvent('cut', true, true);
+          event = document.createEvent("Event");
+          event.initEvent("cut", true, true);
           event.clipboardData = clipboardData;
           div.dispatchEvent(event);
 
-          event = document.createEvent('Event');
-          event.initEvent('paste', true, true);
+          event = document.createEvent("Event");
+          event.initEvent("paste", true, true);
           event.clipboardData = clipboardData;
           div.dispatchEvent(event);
 
@@ -78,11 +78,11 @@ describe('SyntheticClipboardEvent', () => {
     });
   });
 
-  describe('EventInterface', () => {
-    it('is able to `preventDefault` and `stopPropagation`', () => {
+  describe("EventInterface", () => {
+    it("is able to `preventDefault` and `stopPropagation`", () => {
       let expectedCount = 0;
 
-      const eventHandler = event => {
+      const eventHandler = (event) => {
         expect(event.isDefaultPrevented()).toBe(false);
         event.preventDefault();
         expect(event.isDefaultPrevented()).toBe(true);
@@ -102,16 +102,16 @@ describe('SyntheticClipboardEvent', () => {
       );
 
       let event;
-      event = document.createEvent('Event');
-      event.initEvent('copy', true, true);
+      event = document.createEvent("Event");
+      event.initEvent("copy", true, true);
       div.dispatchEvent(event);
 
-      event = document.createEvent('Event');
-      event.initEvent('cut', true, true);
+      event = document.createEvent("Event");
+      event.initEvent("cut", true, true);
       div.dispatchEvent(event);
 
-      event = document.createEvent('Event');
-      event.initEvent('paste', true, true);
+      event = document.createEvent("Event");
+      event.initEvent("paste", true, true);
       div.dispatchEvent(event);
 
       expect(expectedCount).toBe(3);

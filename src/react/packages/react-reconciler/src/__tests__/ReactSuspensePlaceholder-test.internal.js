@@ -21,23 +21,23 @@ let waitForAll;
 let assertLog;
 let act;
 
-describe('ReactSuspensePlaceholder', () => {
+describe("ReactSuspensePlaceholder", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
 
     ReactFeatureFlags.enableProfilerTimer = true;
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    ReactCache = require('react-cache');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    ReactCache = require("react-cache");
 
     Profiler = React.Profiler;
     Suspense = React.Suspense;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     assertLog = InternalTestUtils.assertLog;
     act = InternalTestUtils.act;
@@ -45,37 +45,37 @@ describe('ReactSuspensePlaceholder', () => {
     TextResource = ReactCache.unstable_createResource(
       ([text, ms = 0]) => {
         let listeners = null;
-        let status = 'pending';
+        let status = "pending";
         let value = null;
         return {
           then(resolve, reject) {
             switch (status) {
-              case 'pending': {
+              case "pending": {
                 if (listeners === null) {
-                  listeners = [{resolve, reject}];
+                  listeners = [{ resolve, reject }];
                   setTimeout(() => {
                     if (textResourceShouldFail) {
                       Scheduler.log(`Promise rejected [${text}]`);
-                      status = 'rejected';
-                      value = new Error('Failed to load: ' + text);
-                      listeners.forEach(listener => listener.reject(value));
+                      status = "rejected";
+                      value = new Error("Failed to load: " + text);
+                      listeners.forEach((listener) => listener.reject(value));
                     } else {
                       Scheduler.log(`Promise resolved [${text}]`);
-                      status = 'resolved';
+                      status = "resolved";
                       value = text;
-                      listeners.forEach(listener => listener.resolve(value));
+                      listeners.forEach((listener) => listener.resolve(value));
                     }
                   }, ms);
                 } else {
-                  listeners.push({resolve, reject});
+                  listeners.push({ resolve, reject });
                 }
                 break;
               }
-              case 'resolved': {
+              case "resolved": {
                 resolve(value);
                 break;
               }
-              case 'rejected': {
+              case "rejected": {
                 reject(value);
                 break;
               }
@@ -88,20 +88,20 @@ describe('ReactSuspensePlaceholder', () => {
     textResourceShouldFail = false;
   });
 
-  function Text({fakeRenderDuration = 0, text = 'Text'}) {
+  function Text({ fakeRenderDuration = 0, text = "Text" }) {
     Scheduler.unstable_advanceTime(fakeRenderDuration);
     Scheduler.log(text);
     return text;
   }
 
-  function AsyncText({fakeRenderDuration = 0, ms, text}) {
+  function AsyncText({ fakeRenderDuration = 0, ms, text }) {
     Scheduler.unstable_advanceTime(fakeRenderDuration);
     try {
       TextResource.read([text, ms]);
       Scheduler.log(text);
       return text;
     } catch (promise) {
-      if (typeof promise.then === 'function') {
+      if (typeof promise.then === "function") {
         Scheduler.log(`Suspend! [${text}]`);
       } else {
         Scheduler.log(`Error! [${text}]`);
@@ -110,7 +110,7 @@ describe('ReactSuspensePlaceholder', () => {
     }
   }
 
-  it('times out children that are already hidden', async () => {
+  it("times out children that are already hidden", async () => {
     class HiddenText extends React.PureComponent {
       render() {
         const text = this.props.text;
@@ -136,11 +136,11 @@ describe('ReactSuspensePlaceholder', () => {
     // Initial mount
     ReactNoop.render(<App middleText="B" />);
 
-    await waitForAll(['A', 'Suspend! [B]', 'Loading...']);
-    expect(ReactNoop).toMatchRenderedOutput('Loading...');
+    await waitForAll(["A", "Suspend! [B]", "Loading..."]);
+    expect(ReactNoop).toMatchRenderedOutput("Loading...");
 
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [B]', 'A', 'B', 'C']);
+    assertLog(["Promise resolved [B]", "A", "B", "C"]);
 
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -152,7 +152,7 @@ describe('ReactSuspensePlaceholder', () => {
 
     // Update
     ReactNoop.render(<App middleText="B2" />);
-    await waitForAll(['Suspend! [B2]', 'Loading...']);
+    await waitForAll(["Suspend! [B2]", "Loading..."]);
 
     // Time out the update
     jest.advanceTimersByTime(750);
@@ -168,7 +168,7 @@ describe('ReactSuspensePlaceholder', () => {
 
     // Resolve the promise
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [B2]', 'B2', 'C']);
+    assertLog(["Promise resolved [B2]", "B2", "C"]);
 
     // Render the final update. A should still be hidden, because it was
     // given a `hidden` prop.
@@ -181,7 +181,7 @@ describe('ReactSuspensePlaceholder', () => {
     );
   });
 
-  it('times out text nodes', async () => {
+  it("times out text nodes", async () => {
     function App(props) {
       return (
         <Suspense fallback={<Text text="Loading..." />}>
@@ -195,32 +195,32 @@ describe('ReactSuspensePlaceholder', () => {
     // Initial mount
     ReactNoop.render(<App middleText="B" />);
 
-    await waitForAll(['A', 'Suspend! [B]', 'Loading...']);
+    await waitForAll(["A", "Suspend! [B]", "Loading..."]);
 
-    expect(ReactNoop).not.toMatchRenderedOutput('ABC');
+    expect(ReactNoop).not.toMatchRenderedOutput("ABC");
 
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [B]', 'A', 'B', 'C']);
-    expect(ReactNoop).toMatchRenderedOutput('ABC');
+    assertLog(["Promise resolved [B]", "A", "B", "C"]);
+    expect(ReactNoop).toMatchRenderedOutput("ABC");
 
     // Update
     ReactNoop.render(<App middleText="B2" />);
-    await waitForAll(['A', 'Suspend! [B2]', 'Loading...']);
+    await waitForAll(["A", "Suspend! [B2]", "Loading..."]);
     // Time out the update
     jest.advanceTimersByTime(750);
     await waitForAll([]);
-    expect(ReactNoop).toMatchRenderedOutput('Loading...');
+    expect(ReactNoop).toMatchRenderedOutput("Loading...");
 
     // Resolve the promise
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [B2]', 'A', 'B2', 'C']);
+    assertLog(["Promise resolved [B2]", "A", "B2", "C"]);
 
     // Render the final update. A should still be hidden, because it was
     // given a `hidden` prop.
-    expect(ReactNoop).toMatchRenderedOutput('AB2C');
+    expect(ReactNoop).toMatchRenderedOutput("AB2C");
   });
 
-  it('preserves host context for text nodes', async () => {
+  it("preserves host context for text nodes", async () => {
     function App(props) {
       return (
         // uppercase is a special type that causes React Noop to render child
@@ -238,17 +238,17 @@ describe('ReactSuspensePlaceholder', () => {
     // Initial mount
     ReactNoop.render(<App middleText="b" />);
 
-    await waitForAll(['a', 'Suspend! [b]', 'Loading...']);
+    await waitForAll(["a", "Suspend! [b]", "Loading..."]);
 
     expect(ReactNoop).toMatchRenderedOutput(<uppercase>LOADING...</uppercase>);
 
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [b]', 'a', 'b', 'c']);
+    assertLog(["Promise resolved [b]", "a", "b", "c"]);
     expect(ReactNoop).toMatchRenderedOutput(<uppercase>ABC</uppercase>);
 
     // Update
     ReactNoop.render(<App middleText="b2" />);
-    await waitForAll(['a', 'Suspend! [b2]', 'Loading...']);
+    await waitForAll(["a", "Suspend! [b2]", "Loading..."]);
     // Time out the update
     jest.advanceTimersByTime(750);
     await waitForAll([]);
@@ -256,14 +256,14 @@ describe('ReactSuspensePlaceholder', () => {
 
     // Resolve the promise
     await act(() => jest.advanceTimersByTime(1000));
-    assertLog(['Promise resolved [b2]', 'a', 'b2', 'c']);
+    assertLog(["Promise resolved [b2]", "a", "b2", "c"]);
 
     // Render the final update. A should still be hidden, because it was
     // given a `hidden` prop.
     expect(ReactNoop).toMatchRenderedOutput(<uppercase>AB2C</uppercase>);
   });
 
-  describe('profiler durations', () => {
+  describe("profiler durations", () => {
     let App;
     let onRender;
 
@@ -272,19 +272,19 @@ describe('ReactSuspensePlaceholder', () => {
       onRender = jest.fn();
 
       const Fallback = () => {
-        Scheduler.log('Fallback');
+        Scheduler.log("Fallback");
         Scheduler.unstable_advanceTime(10);
-        return 'Loading...';
+        return "Loading...";
       };
 
       const Suspending = () => {
-        Scheduler.log('Suspending');
+        Scheduler.log("Suspending");
         Scheduler.unstable_advanceTime(2);
         return <AsyncText ms={1000} text="Loaded" fakeRenderDuration={1} />;
       };
 
-      App = ({shouldSuspend, text = 'Text', textRenderDuration = 5}) => {
-        Scheduler.log('App');
+      App = ({ shouldSuspend, text = "Text", textRenderDuration = 5 }) => {
+        Scheduler.log("App");
         return (
           <Profiler id="root" onRender={onRender}>
             <Suspense fallback={<Fallback />}>
@@ -296,17 +296,17 @@ describe('ReactSuspensePlaceholder', () => {
       };
     });
 
-    describe('when suspending during mount', () => {
-      it('properly accounts for base durations when a suspended times out in a legacy tree', async () => {
+    describe("when suspending during mount", () => {
+      it("properly accounts for base durations when a suspended times out in a legacy tree", async () => {
         ReactNoop.renderLegacySyncRoot(<App shouldSuspend={true} />);
         assertLog([
-          'App',
-          'Suspending',
-          'Suspend! [Loaded]',
-          'Text',
-          'Fallback',
+          "App",
+          "Suspending",
+          "Suspend! [Loaded]",
+          "Text",
+          "Fallback",
         ]);
-        expect(ReactNoop).toMatchRenderedOutput('Loading...');
+        expect(ReactNoop).toMatchRenderedOutput("Loading...");
         expect(onRender).toHaveBeenCalledTimes(1);
 
         // Initial mount only shows the "Loading..." Fallback.
@@ -317,12 +317,12 @@ describe('ReactSuspensePlaceholder', () => {
 
         jest.advanceTimersByTime(1000);
 
-        assertLog(['Promise resolved [Loaded]']);
+        assertLog(["Promise resolved [Loaded]"]);
 
         ReactNoop.flushSync();
 
-        assertLog(['Loaded']);
-        expect(ReactNoop).toMatchRenderedOutput('LoadedText');
+        assertLog(["Loaded"]);
+        expect(ReactNoop).toMatchRenderedOutput("LoadedText");
         expect(onRender).toHaveBeenCalledTimes(2);
 
         // When the suspending data is resolved and our final UI is rendered,
@@ -332,18 +332,18 @@ describe('ReactSuspensePlaceholder', () => {
         expect(onRender.mock.calls[1][3]).toBe(8);
       });
 
-      it('properly accounts for base durations when a suspended times out in a concurrent tree', async () => {
+      it("properly accounts for base durations when a suspended times out in a concurrent tree", async () => {
         ReactNoop.render(<App shouldSuspend={true} />);
 
         await waitForAll([
-          'App',
-          'Suspending',
-          'Suspend! [Loaded]',
-          'Fallback',
+          "App",
+          "Suspending",
+          "Suspend! [Loaded]",
+          "Fallback",
         ]);
         // Since this is initial render we immediately commit the fallback. Another test below
         // deals with the update case where this suspends.
-        expect(ReactNoop).toMatchRenderedOutput('Loading...');
+        expect(ReactNoop).toMatchRenderedOutput("Loading...");
         expect(onRender).toHaveBeenCalledTimes(1);
 
         // Initial mount only shows the "Loading..." Fallback.
@@ -355,12 +355,12 @@ describe('ReactSuspensePlaceholder', () => {
         // Resolve the pending promise.
         await act(() => jest.advanceTimersByTime(1000));
         assertLog([
-          'Promise resolved [Loaded]',
-          'Suspending',
-          'Loaded',
-          'Text',
+          "Promise resolved [Loaded]",
+          "Suspending",
+          "Loaded",
+          "Text",
         ]);
-        expect(ReactNoop).toMatchRenderedOutput('LoadedText');
+        expect(ReactNoop).toMatchRenderedOutput("LoadedText");
         expect(onRender).toHaveBeenCalledTimes(2);
 
         // When the suspending data is resolved and our final UI is rendered,
@@ -370,13 +370,13 @@ describe('ReactSuspensePlaceholder', () => {
       });
     });
 
-    describe('when suspending during update', () => {
-      it('properly accounts for base durations when a suspended times out in a legacy tree', async () => {
+    describe("when suspending during update", () => {
+      it("properly accounts for base durations when a suspended times out in a legacy tree", async () => {
         ReactNoop.renderLegacySyncRoot(
           <App shouldSuspend={false} textRenderDuration={5} />,
         );
-        assertLog(['App', 'Text']);
-        expect(ReactNoop).toMatchRenderedOutput('Text');
+        assertLog(["App", "Text"]);
+        expect(ReactNoop).toMatchRenderedOutput("Text");
         expect(onRender).toHaveBeenCalledTimes(1);
 
         // Initial mount only shows the "Text" text.
@@ -386,13 +386,13 @@ describe('ReactSuspensePlaceholder', () => {
 
         ReactNoop.render(<App shouldSuspend={true} textRenderDuration={5} />);
         assertLog([
-          'App',
-          'Suspending',
-          'Suspend! [Loaded]',
-          'Text',
-          'Fallback',
+          "App",
+          "Suspending",
+          "Suspend! [Loaded]",
+          "Text",
+          "Fallback",
         ]);
-        expect(ReactNoop).toMatchRenderedOutput('Loading...');
+        expect(ReactNoop).toMatchRenderedOutput("Loading...");
         expect(onRender).toHaveBeenCalledTimes(2);
 
         // The suspense update should only show the "Loading..." Fallback.
@@ -406,25 +406,25 @@ describe('ReactSuspensePlaceholder', () => {
           <App shouldSuspend={true} text="New" textRenderDuration={6} />,
         );
         assertLog([
-          'App',
-          'Suspending',
-          'Suspend! [Loaded]',
-          'New',
-          'Fallback',
+          "App",
+          "Suspending",
+          "Suspend! [Loaded]",
+          "New",
+          "Fallback",
         ]);
-        expect(ReactNoop).toMatchRenderedOutput('Loading...');
+        expect(ReactNoop).toMatchRenderedOutput("Loading...");
         expect(onRender).toHaveBeenCalledTimes(3);
 
         expect(onRender.mock.calls[1][2]).toBe(18);
         expect(onRender.mock.calls[1][3]).toBe(10);
         jest.advanceTimersByTime(1000);
 
-        assertLog(['Promise resolved [Loaded]']);
+        assertLog(["Promise resolved [Loaded]"]);
 
         ReactNoop.flushSync();
 
-        assertLog(['Loaded']);
-        expect(ReactNoop).toMatchRenderedOutput('LoadedNew');
+        assertLog(["Loaded"]);
+        expect(ReactNoop).toMatchRenderedOutput("LoadedNew");
         expect(onRender).toHaveBeenCalledTimes(4);
 
         // When the suspending data is resolved and our final UI is rendered,
@@ -434,21 +434,21 @@ describe('ReactSuspensePlaceholder', () => {
         expect(onRender.mock.calls[3][3]).toBe(9);
       });
 
-      it('properly accounts for base durations when a suspended times out in a concurrent tree', async () => {
+      it("properly accounts for base durations when a suspended times out in a concurrent tree", async () => {
         const Fallback = () => {
-          Scheduler.log('Fallback');
+          Scheduler.log("Fallback");
           Scheduler.unstable_advanceTime(10);
-          return 'Loading...';
+          return "Loading...";
         };
 
         const Suspending = () => {
-          Scheduler.log('Suspending');
+          Scheduler.log("Suspending");
           Scheduler.unstable_advanceTime(2);
           return <AsyncText ms={1000} text="Loaded" fakeRenderDuration={1} />;
         };
 
-        App = ({shouldSuspend, text = 'Text', textRenderDuration = 5}) => {
-          Scheduler.log('App');
+        App = ({ shouldSuspend, text = "Text", textRenderDuration = 5 }) => {
+          Scheduler.log("App");
           return (
             <Profiler id="root" onRender={onRender}>
               <Suspense fallback={<Fallback />}>
@@ -466,8 +466,8 @@ describe('ReactSuspensePlaceholder', () => {
           </>,
         );
 
-        await waitForAll(['App', 'Text']);
-        expect(ReactNoop).toMatchRenderedOutput('Text');
+        await waitForAll(["App", "Text"]);
+        expect(ReactNoop).toMatchRenderedOutput("Text");
         expect(onRender).toHaveBeenCalledTimes(1);
 
         // Initial mount only shows the "Text" text.
@@ -482,13 +482,13 @@ describe('ReactSuspensePlaceholder', () => {
           </>,
         );
         await waitForAll([
-          'App',
-          'Suspending',
-          'Suspend! [Loaded]',
-          'Fallback',
+          "App",
+          "Suspending",
+          "Suspend! [Loaded]",
+          "Fallback",
         ]);
         // Show the fallback UI.
-        expect(ReactNoop).toMatchRenderedOutput('Loading...');
+        expect(ReactNoop).toMatchRenderedOutput("Loading...");
         expect(onRender).toHaveBeenCalledTimes(2);
 
         jest.advanceTimersByTime(900);
@@ -520,23 +520,23 @@ describe('ReactSuspensePlaceholder', () => {
         Scheduler.unstable_advanceTime(200);
 
         await waitForAll([
-          'App',
-          'Suspending',
-          'Suspend! [Loaded]',
-          'Fallback',
-          'Suspend! [Sibling]',
+          "App",
+          "Suspending",
+          "Suspend! [Loaded]",
+          "Fallback",
+          "Suspend! [Sibling]",
         ]);
-        expect(ReactNoop).toMatchRenderedOutput('Loading...');
+        expect(ReactNoop).toMatchRenderedOutput("Loading...");
         expect(onRender).toHaveBeenCalledTimes(3);
 
         // Resolve the pending promise.
         await act(async () => {
           jest.advanceTimersByTime(100);
           assertLog([
-            'Promise resolved [Loaded]',
-            'Promise resolved [Sibling]',
+            "Promise resolved [Loaded]",
+            "Promise resolved [Sibling]",
           ]);
-          await waitForAll(['Suspending', 'Loaded', 'New', 'Sibling']);
+          await waitForAll(["Suspending", "Loaded", "New", "Sibling"]);
         });
         expect(onRender).toHaveBeenCalledTimes(4);
 

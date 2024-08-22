@@ -4,10 +4,10 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-import {disableJavaScriptURLs} from 'shared/ReactFeatureFlags';
+import { disableJavaScriptURLs } from "shared/ReactFeatureFlags";
 
 // A javascript: URL can contain leading C0 control or \u0020 SPACE,
 // and any newline or tab are filtered out as if they're not part of the URL.
@@ -24,10 +24,10 @@ const isJavaScriptProtocol =
 
 let didWarn = false;
 
-function sanitizeURL   (url   )             {
+function sanitizeURL(url) {
   // We should never have symbols here because they get filtered out elsewhere.
   // eslint-disable-next-line react-internal/safe-string-coercion
-  const stringifiedURL = '' + (url     );
+  const stringifiedURL = "" + url;
   if (disableJavaScriptURLs) {
     if (isJavaScriptProtocol.test(stringifiedURL)) {
       // Return a different javascript: url that doesn't cause any side-effects and just
@@ -39,9 +39,9 @@ function sanitizeURL   (url   )             {
     if (!didWarn && isJavaScriptProtocol.test(stringifiedURL)) {
       didWarn = true;
       console.error(
-        'A future version of React will block javascript: URLs as a security precaution. ' +
-          'Use event handlers instead if you can. If you need to generate unsafe HTML try ' +
-          'using dangerouslySetInnerHTML instead. React was passed %s.',
+        "A future version of React will block javascript: URLs as a security precaution. " +
+          "Use event handlers instead if you can. If you need to generate unsafe HTML try " +
+          "using dangerouslySetInnerHTML instead. React was passed %s.",
         JSON.stringify(stringifiedURL),
       );
     }

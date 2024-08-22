@@ -8,26 +8,26 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoopPersistent;
 let waitForAll;
 
-describe('ReactPersistent', () => {
+describe("ReactPersistent", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoopPersistent = require('react-noop-renderer/persistent');
-    const InternalTestUtils = require('internal-test-utils');
+    React = require("react");
+    ReactNoopPersistent = require("react-noop-renderer/persistent");
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
   });
 
   // Inlined from shared folder so we can run this test on a bundle.
   function createPortal(children, containerInfo, implementation, key) {
     return {
-      $$typeof: Symbol.for('react.portal'),
+      $$typeof: Symbol.for("react.portal"),
       key: key == null ? null : String(key),
       children,
       containerInfo,
@@ -40,14 +40,14 @@ describe('ReactPersistent', () => {
   }
 
   function div(...children) {
-    children = children.map(c =>
-      typeof c === 'string' ? {text: c, hidden: false} : c,
+    children = children.map((c) =>
+      typeof c === "string" ? { text: c, hidden: false } : c,
     );
-    return {type: 'div', children, prop: undefined, hidden: false};
+    return { type: "div", children, prop: undefined, hidden: false };
   }
 
   function span(prop) {
-    return {type: 'span', children: [], prop, hidden: false};
+    return { type: "span", children: [], prop, hidden: false };
   }
 
   // For persistent renderers we have to mix deep equality and reference equality checks
@@ -58,7 +58,7 @@ describe('ReactPersistent', () => {
     return ReactNoopPersistent.dangerouslyGetChildren();
   }
 
-  it('can update child nodes of a host instance', async () => {
+  it("can update child nodes of a host instance", async () => {
     function Bar(props) {
       return <span>{props.text}</span>;
     }
@@ -67,7 +67,7 @@ describe('ReactPersistent', () => {
       return (
         <div>
           <Bar text={props.text} />
-          {props.text === 'World' ? <Bar text={props.text} /> : null}
+          {props.text === "World" ? <Bar text={props.text} /> : null}
         </div>
       );
     }
@@ -85,7 +85,7 @@ describe('ReactPersistent', () => {
     expect(originalChildren).toEqual([div(span())]);
   });
 
-  it('can reuse child nodes between updates', async () => {
+  it("can reuse child nodes between updates", async () => {
     function Baz(props) {
       return <span prop={props.text} />;
     }
@@ -101,7 +101,7 @@ describe('ReactPersistent', () => {
       return (
         <div>
           <Bar text={props.text} />
-          {props.text === 'World' ? <Bar text={props.text} /> : null}
+          {props.text === "World" ? <Bar text={props.text} /> : null}
         </div>
       );
     }
@@ -109,20 +109,20 @@ describe('ReactPersistent', () => {
     render(<Foo text="Hello" />);
     await waitForAll([]);
     const originalChildren = dangerouslyGetChildren();
-    expect(originalChildren).toEqual([div(span('Hello'))]);
+    expect(originalChildren).toEqual([div(span("Hello"))]);
 
     render(<Foo text="World" />);
     await waitForAll([]);
     const newChildren = dangerouslyGetChildren();
-    expect(newChildren).toEqual([div(span('Hello'), span('World'))]);
+    expect(newChildren).toEqual([div(span("Hello"), span("World"))]);
 
-    expect(originalChildren).toEqual([div(span('Hello'))]);
+    expect(originalChildren).toEqual([div(span("Hello"))]);
 
     // Reused node should have reference equality
     expect(newChildren[0].children[0]).toBe(originalChildren[0].children[0]);
   });
 
-  it('can update child text nodes', async () => {
+  it("can update child text nodes", async () => {
     function Foo(props) {
       return (
         <div>
@@ -135,17 +135,17 @@ describe('ReactPersistent', () => {
     render(<Foo text="Hello" />);
     await waitForAll([]);
     const originalChildren = dangerouslyGetChildren();
-    expect(originalChildren).toEqual([div('Hello', span())]);
+    expect(originalChildren).toEqual([div("Hello", span())]);
 
     render(<Foo text="World" />);
     await waitForAll([]);
     const newChildren = dangerouslyGetChildren();
-    expect(newChildren).toEqual([div('World', span())]);
+    expect(newChildren).toEqual([div("World", span())]);
 
-    expect(originalChildren).toEqual([div('Hello', span())]);
+    expect(originalChildren).toEqual([div("Hello", span())]);
   });
 
-  it('supports portals', async () => {
+  it("supports portals", async () => {
     function Parent(props) {
       return <div>{props.children}</div>;
     }
@@ -171,7 +171,7 @@ describe('ReactPersistent', () => {
         </div>
       );
     }
-    const portalContainer = {rootID: 'persistent-portal-test', children: []};
+    const portalContainer = { rootID: "persistent-portal-test", children: [] };
     const emptyPortalChildSet = portalContainer.children;
     render(<Parent>{createPortal(<Child />, portalContainer, null)}</Parent>);
     await waitForAll([]);
@@ -185,7 +185,7 @@ describe('ReactPersistent', () => {
 
     render(
       <Parent>
-        {createPortal(<Child>Hello {'World'}</Child>, portalContainer, null)}
+        {createPortal(<Child>Hello {"World"}</Child>, portalContainer, null)}
       </Parent>,
     );
     await waitForAll([]);
@@ -193,7 +193,7 @@ describe('ReactPersistent', () => {
     const newChildren = dangerouslyGetChildren();
     expect(newChildren).toEqual([div()]);
     const newPortalChildren = portalContainer.children;
-    expect(newPortalChildren).toEqual([div(span(), 'Hello ', 'World')]);
+    expect(newPortalChildren).toEqual([div(span(), "Hello ", "World")]);
 
     expect(originalChildren).toEqual([div()]);
     expect(originalPortalChildren).toEqual([div(span())]);
@@ -211,6 +211,6 @@ describe('ReactPersistent', () => {
     expect(clearedPortalChildren).toEqual([]);
 
     // The original is unchanged.
-    expect(newPortalChildren).toEqual([div(span(), 'Hello ', 'World')]);
+    expect(newPortalChildren).toEqual([div(span(), "Hello ", "World")]);
   });
 });

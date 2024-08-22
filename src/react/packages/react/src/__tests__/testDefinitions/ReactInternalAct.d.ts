@@ -12,6 +12,6 @@
  * just helpers for the unit test.
  */
 
-declare module 'jest-react' {
-  export function act(cb : () => any) : any
+declare module "jest-react" {
+  export function act(cb: () => any): any;
 }

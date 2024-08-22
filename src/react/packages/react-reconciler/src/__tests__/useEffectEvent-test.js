@@ -10,11 +10,11 @@
 
 /* eslint-disable no-func-assign */
 
-'use strict';
+"use strict";
 
-import {useInsertionEffect} from 'react';
+import { useInsertionEffect } from "react";
 
-describe('useEffectEvent', () => {
+describe("useEffectEvent", () => {
   let React;
   let ReactNoop;
   let Scheduler;
@@ -31,11 +31,11 @@ describe('useEffectEvent', () => {
   let waitForThrow;
 
   beforeEach(() => {
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
 
-    act = require('internal-test-utils').act;
+    act = require("internal-test-utils").act;
     createContext = React.createContext;
     useContext = React.useContext;
     useState = React.useState;
@@ -44,7 +44,7 @@ describe('useEffectEvent', () => {
     useLayoutEffect = React.useLayoutEffect;
     useMemo = React.useMemo;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
     assertLog = InternalTestUtils.assertLog;
     waitForThrow = InternalTestUtils.waitForThrow;
@@ -56,7 +56,7 @@ describe('useEffectEvent', () => {
   }
 
   // @gate enableUseEffectEventHook
-  it('memoizes basic case correctly', async () => {
+  it("memoizes basic case correctly", async () => {
     class IncrementButton extends React.PureComponent {
       increment = () => {
         this.props.onClick();
@@ -66,21 +66,21 @@ describe('useEffectEvent', () => {
       }
     }
 
-    function Counter({incrementBy}) {
+    function Counter({ incrementBy }) {
       const [count, updateCount] = useState(0);
-      const onClick = useEffectEvent(() => updateCount(c => c + incrementBy));
+      const onClick = useEffectEvent(() => updateCount((c) => c + incrementBy));
 
       return (
         <>
           <IncrementButton onClick={() => onClick()} ref={button} />
-          <Text text={'Count: ' + count} />
+          <Text text={"Count: " + count} />
         </>
       );
     }
 
     const button = React.createRef(null);
     ReactNoop.render(<Counter incrementBy={1} />);
-    await waitForAll(['Increment', 'Count: 0']);
+    await waitForAll(["Increment", "Count: 0"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -89,7 +89,7 @@ describe('useEffectEvent', () => {
     );
 
     await act(() => button.current.increment());
-    assertLog(['Increment', 'Count: 1']);
+    assertLog(["Increment", "Count: 1"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -99,9 +99,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Event should use the updated callback function closed over the new value.
-      'Count: 2',
+      "Count: 2",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -112,7 +112,7 @@ describe('useEffectEvent', () => {
 
     // Increase the increment prop amount
     ReactNoop.render(<Counter incrementBy={10} />);
-    await waitForAll(['Increment', 'Count: 2']);
+    await waitForAll(["Increment", "Count: 2"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -122,7 +122,7 @@ describe('useEffectEvent', () => {
 
     // Event uses the new prop
     await act(() => button.current.increment());
-    assertLog(['Increment', 'Count: 12']);
+    assertLog(["Increment", "Count: 12"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -132,7 +132,7 @@ describe('useEffectEvent', () => {
   });
 
   // @gate enableUseEffectEventHook
-  it('can be defined more than once', async () => {
+  it("can be defined more than once", async () => {
     class IncrementButton extends React.PureComponent {
       increment = () => {
         this.props.onClick();
@@ -145,11 +145,11 @@ describe('useEffectEvent', () => {
       }
     }
 
-    function Counter({incrementBy}) {
+    function Counter({ incrementBy }) {
       const [count, updateCount] = useState(0);
-      const onClick = useEffectEvent(() => updateCount(c => c + incrementBy));
+      const onClick = useEffectEvent(() => updateCount((c) => c + incrementBy));
       const onMouseEnter = useEffectEvent(() => {
-        updateCount(c => c * incrementBy);
+        updateCount((c) => c * incrementBy);
       });
 
       return (
@@ -159,14 +159,14 @@ describe('useEffectEvent', () => {
             onMouseEnter={() => onMouseEnter()}
             ref={button}
           />
-          <Text text={'Count: ' + count} />
+          <Text text={"Count: " + count} />
         </>
       );
     }
 
     const button = React.createRef(null);
     ReactNoop.render(<Counter incrementBy={5} />);
-    await waitForAll(['Increment', 'Count: 0']);
+    await waitForAll(["Increment", "Count: 0"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -175,7 +175,7 @@ describe('useEffectEvent', () => {
     );
 
     await act(() => button.current.increment());
-    assertLog(['Increment', 'Count: 5']);
+    assertLog(["Increment", "Count: 5"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -184,7 +184,7 @@ describe('useEffectEvent', () => {
     );
 
     await act(() => button.current.multiply());
-    assertLog(['Increment', 'Count: 25']);
+    assertLog(["Increment", "Count: 25"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -194,38 +194,38 @@ describe('useEffectEvent', () => {
   });
 
   // @gate enableUseEffectEventHook
-  it('does not preserve `this` in event functions', async () => {
+  it("does not preserve `this` in event functions", async () => {
     class GreetButton extends React.PureComponent {
       greet = () => {
         this.props.onClick();
       };
       render() {
-        return <Text text={'Say ' + this.props.hello} />;
+        return <Text text={"Say " + this.props.hello} />;
       }
     }
-    function Greeter({hello}) {
+    function Greeter({ hello }) {
       const person = {
         toString() {
-          return 'Jane';
+          return "Jane";
         },
         greet() {
-          return updateGreeting(this + ' says ' + hello);
+          return updateGreeting(this + " says " + hello);
         },
       };
-      const [greeting, updateGreeting] = useState('Seb says ' + hello);
+      const [greeting, updateGreeting] = useState("Seb says " + hello);
       const onClick = useEffectEvent(person.greet);
 
       return (
         <>
           <GreetButton hello={hello} onClick={() => onClick()} ref={button} />
-          <Text text={'Greeting: ' + greeting} />
+          <Text text={"Greeting: " + greeting} />
         </>
       );
     }
 
     const button = React.createRef(null);
-    ReactNoop.render(<Greeter hello={'hej'} />);
-    await waitForAll(['Say hej', 'Greeting: Seb says hej']);
+    ReactNoop.render(<Greeter hello={"hej"} />);
+    await waitForAll(["Say hej", "Greeting: Seb says hej"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Say hej" />
@@ -234,7 +234,7 @@ describe('useEffectEvent', () => {
     );
 
     await act(() => button.current.greet());
-    assertLog(['Say hej', 'Greeting: undefined says hej']);
+    assertLog(["Say hej", "Greeting: undefined says hej"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Say hej" />
@@ -244,7 +244,7 @@ describe('useEffectEvent', () => {
   });
 
   // @gate enableUseEffectEventHook
-  it('throws when called in render', async () => {
+  it("throws when called in render", async () => {
     class IncrementButton extends React.PureComponent {
       increment = () => {
         this.props.onClick();
@@ -258,14 +258,14 @@ describe('useEffectEvent', () => {
       }
     }
 
-    function Counter({incrementBy}) {
+    function Counter({ incrementBy }) {
       const [count, updateCount] = useState(0);
-      const onClick = useEffectEvent(() => updateCount(c => c + incrementBy));
+      const onClick = useEffectEvent(() => updateCount((c) => c + incrementBy));
 
       return (
         <>
           <IncrementButton onClick={() => onClick()} />
-          <Text text={'Count: ' + count} />
+          <Text text={"Count: " + count} />
         </>
       );
     }
@@ -288,21 +288,21 @@ describe('useEffectEvent', () => {
       }
     }
 
-    function Counter({incrementBy}) {
+    function Counter({ incrementBy }) {
       const [count, updateCount] = useState(0);
-      const increment = useEffectEvent(amount =>
-        updateCount(c => c + (amount || incrementBy)),
+      const increment = useEffectEvent((amount) =>
+        updateCount((c) => c + (amount || incrementBy)),
       );
 
       useLayoutEffect(() => {
-        Scheduler.log('Effect: by ' + incrementBy * 2);
+        Scheduler.log("Effect: by " + incrementBy * 2);
         increment(incrementBy * 2);
       }, [incrementBy]);
 
       return (
         <>
           <IncrementButton onClick={() => increment()} ref={button} />
-          <Text text={'Count: ' + count} />
+          <Text text={"Count: " + count} />
         </>
       );
     }
@@ -311,11 +311,11 @@ describe('useEffectEvent', () => {
     ReactNoop.render(<Counter incrementBy={1} />);
     assertLog([]);
     await waitForAll([
-      'Increment',
-      'Count: 0',
-      'Effect: by 2',
-      'Increment',
-      'Count: 2',
+      "Increment",
+      "Count: 0",
+      "Effect: by 2",
+      "Increment",
+      "Count: 2",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -326,9 +326,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Effect should not re-run because the dependency hasn't changed.
-      'Count: 3',
+      "Count: 3",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -339,9 +339,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Event should use the updated callback function closed over the new value.
-      'Count: 4',
+      "Count: 4",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -353,11 +353,11 @@ describe('useEffectEvent', () => {
     // Increase the increment prop amount
     ReactNoop.render(<Counter incrementBy={10} />);
     await waitForAll([
-      'Increment',
-      'Count: 4',
-      'Effect: by 20',
-      'Increment',
-      'Count: 24',
+      "Increment",
+      "Count: 4",
+      "Effect: by 20",
+      "Increment",
+      "Count: 24",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -368,7 +368,7 @@ describe('useEffectEvent', () => {
 
     // Event uses the new prop
     await act(() => button.current.increment());
-    assertLog(['Increment', 'Count: 34']);
+    assertLog(["Increment", "Count: 34"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -388,21 +388,21 @@ describe('useEffectEvent', () => {
       }
     }
 
-    function Counter({incrementBy}) {
+    function Counter({ incrementBy }) {
       const [count, updateCount] = useState(0);
-      const increment = useEffectEvent(amount =>
-        updateCount(c => c + (amount || incrementBy)),
+      const increment = useEffectEvent((amount) =>
+        updateCount((c) => c + (amount || incrementBy)),
       );
 
       useEffect(() => {
-        Scheduler.log('Effect: by ' + incrementBy * 2);
+        Scheduler.log("Effect: by " + incrementBy * 2);
         increment(incrementBy * 2);
       }, [incrementBy]);
 
       return (
         <>
           <IncrementButton onClick={() => increment()} ref={button} />
-          <Text text={'Count: ' + count} />
+          <Text text={"Count: " + count} />
         </>
       );
     }
@@ -410,11 +410,11 @@ describe('useEffectEvent', () => {
     const button = React.createRef(null);
     ReactNoop.render(<Counter incrementBy={1} />);
     await waitForAll([
-      'Increment',
-      'Count: 0',
-      'Effect: by 2',
-      'Increment',
-      'Count: 2',
+      "Increment",
+      "Count: 0",
+      "Effect: by 2",
+      "Increment",
+      "Count: 2",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -425,9 +425,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Effect should not re-run because the dependency hasn't changed.
-      'Count: 3',
+      "Count: 3",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -438,9 +438,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Event should use the updated callback function closed over the new value.
-      'Count: 4',
+      "Count: 4",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -452,11 +452,11 @@ describe('useEffectEvent', () => {
     // Increase the increment prop amount
     ReactNoop.render(<Counter incrementBy={10} />);
     await waitForAll([
-      'Increment',
-      'Count: 4',
-      'Effect: by 20',
-      'Increment',
-      'Count: 24',
+      "Increment",
+      "Count: 4",
+      "Effect: by 20",
+      "Increment",
+      "Count: 24",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -467,7 +467,7 @@ describe('useEffectEvent', () => {
 
     // Event uses the new prop
     await act(() => button.current.increment());
-    assertLog(['Increment', 'Count: 34']);
+    assertLog(["Increment", "Count: 34"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -477,7 +477,7 @@ describe('useEffectEvent', () => {
   });
 
   // @gate enableUseEffectEventHook
-  it('is stable in a custom hook', async () => {
+  it("is stable in a custom hook", async () => {
     class IncrementButton extends React.PureComponent {
       increment = () => {
         this.props.onClick();
@@ -489,25 +489,25 @@ describe('useEffectEvent', () => {
 
     function useCount(incrementBy) {
       const [count, updateCount] = useState(0);
-      const increment = useEffectEvent(amount =>
-        updateCount(c => c + (amount || incrementBy)),
+      const increment = useEffectEvent((amount) =>
+        updateCount((c) => c + (amount || incrementBy)),
       );
 
       return [count, increment];
     }
 
-    function Counter({incrementBy}) {
+    function Counter({ incrementBy }) {
       const [count, increment] = useCount(incrementBy);
 
       useEffect(() => {
-        Scheduler.log('Effect: by ' + incrementBy * 2);
+        Scheduler.log("Effect: by " + incrementBy * 2);
         increment(incrementBy * 2);
       }, [incrementBy]);
 
       return (
         <>
           <IncrementButton onClick={() => increment()} ref={button} />
-          <Text text={'Count: ' + count} />
+          <Text text={"Count: " + count} />
         </>
       );
     }
@@ -515,11 +515,11 @@ describe('useEffectEvent', () => {
     const button = React.createRef(null);
     ReactNoop.render(<Counter incrementBy={1} />);
     await waitForAll([
-      'Increment',
-      'Count: 0',
-      'Effect: by 2',
-      'Increment',
-      'Count: 2',
+      "Increment",
+      "Count: 0",
+      "Effect: by 2",
+      "Increment",
+      "Count: 2",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -530,9 +530,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Effect should not re-run because the dependency hasn't changed.
-      'Count: 3',
+      "Count: 3",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -543,9 +543,9 @@ describe('useEffectEvent', () => {
 
     await act(() => button.current.increment());
     assertLog([
-      'Increment',
+      "Increment",
       // Event should use the updated callback function closed over the new value.
-      'Count: 4',
+      "Count: 4",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -557,11 +557,11 @@ describe('useEffectEvent', () => {
     // Increase the increment prop amount
     ReactNoop.render(<Counter incrementBy={10} />);
     await waitForAll([
-      'Increment',
-      'Count: 4',
-      'Effect: by 20',
-      'Increment',
-      'Count: 24',
+      "Increment",
+      "Count: 4",
+      "Effect: by 20",
+      "Increment",
+      "Count: 24",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
@@ -572,7 +572,7 @@ describe('useEffectEvent', () => {
 
     // Event uses the new prop
     await act(() => button.current.increment());
-    assertLog(['Increment', 'Count: 34']);
+    assertLog(["Increment", "Count: 34"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <>
         <span prop="Increment" />
@@ -582,35 +582,35 @@ describe('useEffectEvent', () => {
   });
 
   // @gate enableUseEffectEventHook
-  it('is mutated before all other effects', async () => {
-    function Counter({value}) {
+  it("is mutated before all other effects", async () => {
+    function Counter({ value }) {
       useInsertionEffect(() => {
-        Scheduler.log('Effect value: ' + value);
+        Scheduler.log("Effect value: " + value);
         increment();
       }, [value]);
 
       // This is defined after the insertion effect, but it should
       // update the event fn _before_ the insertion effect fires.
       const increment = useEffectEvent(() => {
-        Scheduler.log('Event value: ' + value);
+        Scheduler.log("Event value: " + value);
       });
 
       return <></>;
     }
 
     ReactNoop.render(<Counter value={1} />);
-    await waitForAll(['Effect value: 1', 'Event value: 1']);
+    await waitForAll(["Effect value: 1", "Event value: 1"]);
 
     await act(() => ReactNoop.render(<Counter value={2} />));
-    assertLog(['Effect value: 2', 'Event value: 2']);
+    assertLog(["Effect value: 2", "Event value: 2"]);
   });
 
   // @gate enableUseEffectEventHook
   it("doesn't provide a stable identity", async () => {
-    function Counter({shouldRender, value}) {
+    function Counter({ shouldRender, value }) {
       const onClick = useEffectEvent(() => {
         Scheduler.log(
-          'onClick, shouldRender=' + shouldRender + ', value=' + value,
+          "onClick, shouldRender=" + shouldRender + ", value=" + value,
         );
       });
 
@@ -630,27 +630,27 @@ describe('useEffectEvent', () => {
 
     ReactNoop.render(<Counter shouldRender={true} value={0} />);
     await waitForAll([
-      'onClick, shouldRender=true, value=0',
-      'onClick, shouldRender=true, value=0',
+      "onClick, shouldRender=true, value=0",
+      "onClick, shouldRender=true, value=0",
     ]);
 
     ReactNoop.render(<Counter shouldRender={true} value={1} />);
-    await waitForAll(['onClick, shouldRender=true, value=1']);
+    await waitForAll(["onClick, shouldRender=true, value=1"]);
 
     ReactNoop.render(<Counter shouldRender={false} value={2} />);
     await waitForAll([
-      'onClick, shouldRender=false, value=2',
-      'onClick, shouldRender=false, value=2',
+      "onClick, shouldRender=false, value=2",
+      "onClick, shouldRender=false, value=2",
     ]);
   });
 
   // @gate enableUseEffectEventHook
-  it('event handlers always see the latest committed value', async () => {
+  it("event handlers always see the latest committed value", async () => {
     let committedEventHandler = null;
 
-    function App({value}) {
+    function App({ value }) {
       const event = useEffectEvent(() => {
-        return 'Value seen by useEffectEvent: ' + value;
+        return "Value seen by useEffectEvent: " + value;
       });
 
       // Set up an effect that registers the event handler with an external
@@ -659,7 +659,7 @@ describe('useEffectEvent', () => {
         () => {
           // Log when the effect fires. In the test below, we'll assert that this
           // only happens during initial render, not during updates.
-          Scheduler.log('Commit new event handler');
+          Scheduler.log("Commit new event handler");
           committedEventHandler = event;
           return () => {
             committedEventHandler = null;
@@ -670,7 +670,7 @@ describe('useEffectEvent', () => {
         // key feature of useEffectEvent that makes it different from a regular closure.
         [],
       );
-      return 'Latest rendered value ' + value;
+      return "Latest rendered value " + value;
     }
 
     // Initial render
@@ -678,9 +678,9 @@ describe('useEffectEvent', () => {
     await act(() => {
       root.render(<App value={1} />);
     });
-    assertLog(['Commit new event handler']);
-    expect(root).toMatchRenderedOutput('Latest rendered value 1');
-    expect(committedEventHandler()).toBe('Value seen by useEffectEvent: 1');
+    assertLog(["Commit new event handler"]);
+    expect(root).toMatchRenderedOutput("Latest rendered value 1");
+    expect(committedEventHandler()).toBe("Value seen by useEffectEvent: 1");
 
     // Update
     await act(() => {
@@ -690,12 +690,12 @@ describe('useEffectEvent', () => {
     // the dependency array.
     assertLog([]);
     // But the event handler should still be able to see the latest value.
-    expect(root).toMatchRenderedOutput('Latest rendered value 2');
-    expect(committedEventHandler()).toBe('Value seen by useEffectEvent: 2');
+    expect(root).toMatchRenderedOutput("Latest rendered value 2");
+    expect(committedEventHandler()).toBe("Value seen by useEffectEvent: 2");
   });
 
   // @gate enableUseEffectEventHook
-  it('integration: implements docs chat room example', async () => {
+  it("integration: implements docs chat room example", async () => {
     function createConnection() {
       let connectedCallback;
       let timeout;
@@ -709,9 +709,9 @@ describe('useEffectEvent', () => {
         },
         on(event, callback) {
           if (connectedCallback) {
-            throw Error('Cannot add the handler twice.');
+            throw Error("Cannot add the handler twice.");
           }
-          if (event !== 'connected') {
+          if (event !== "connected") {
             throw Error('Only "connected" event is supported.');
           }
           connectedCallback = callback;
@@ -722,14 +722,14 @@ describe('useEffectEvent', () => {
       };
     }
 
-    function ChatRoom({roomId, theme}) {
+    function ChatRoom({ roomId, theme }) {
       const onConnected = useEffectEvent(() => {
-        Scheduler.log('Connected! theme: ' + theme);
+        Scheduler.log("Connected! theme: " + theme);
       });
 
       useEffect(() => {
         const connection = createConnection(roomId);
-        connection.on('connected', () => {
+        connection.on("connected", () => {
           onConnected();
         });
         connection.connect();
@@ -743,7 +743,7 @@ describe('useEffectEvent', () => {
       ReactNoop.render(<ChatRoom roomId="general" theme="light" />),
     );
     await act(() => jest.runAllTimers());
-    assertLog(['Welcome to the general room!', 'Connected! theme: light']);
+    assertLog(["Welcome to the general room!", "Connected! theme: light"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <span prop="Welcome to the general room!" />,
     );
@@ -754,9 +754,9 @@ describe('useEffectEvent', () => {
     );
     await act(() => jest.runAllTimers());
     assertLog([
-      'Welcome to the music room!',
+      "Welcome to the music room!",
       // should trigger a reconnect
-      'Connected! theme: light',
+      "Connected! theme: light",
     ]);
 
     expect(ReactNoop).toMatchRenderedOutput(
@@ -767,7 +767,7 @@ describe('useEffectEvent', () => {
     await act(() => ReactNoop.render(<ChatRoom roomId="music" theme="dark" />));
     await act(() => jest.runAllTimers());
     // should not trigger a reconnect
-    assertLog(['Welcome to the music room!']);
+    assertLog(["Welcome to the music room!"]);
     expect(ReactNoop).toMatchRenderedOutput(
       <span prop="Welcome to the music room!" />,
     );
@@ -778,9 +778,9 @@ describe('useEffectEvent', () => {
     );
     await act(() => jest.runAllTimers());
     assertLog([
-      'Welcome to the travel room!',
+      "Welcome to the travel room!",
       // should trigger a reconnect
-      'Connected! theme: dark',
+      "Connected! theme: dark",
     ]);
     expect(ReactNoop).toMatchRenderedOutput(
       <span prop="Welcome to the travel room!" />,
@@ -788,7 +788,7 @@ describe('useEffectEvent', () => {
   });
 
   // @gate enableUseEffectEventHook
-  it('integration: implements the docs logVisit example', async () => {
+  it("integration: implements the docs logVisit example", async () => {
     class AddToCartButton extends React.PureComponent {
       addToCart = () => {
         this.props.onClick();
@@ -799,9 +799,12 @@ describe('useEffectEvent', () => {
     }
     const ShoppingCartContext = createContext(null);
 
-    function AppShell({children}) {
+    function AppShell({ children }) {
       const [items, updateItems] = useState([]);
-      const value = useMemo(() => ({items, updateItems}), [items, updateItems]);
+      const value = useMemo(
+        () => ({ items, updateItems }),
+        [items, updateItems],
+      );
 
       return (
         <ShoppingCartContext.Provider value={value}>
@@ -810,14 +813,14 @@ describe('useEffectEvent', () => {
       );
     }
 
-    function Page({url}) {
-      const {items, updateItems} = useContext(ShoppingCartContext);
+    function Page({ url }) {
+      const { items, updateItems } = useContext(ShoppingCartContext);
       const onClick = useEffectEvent(() => updateItems([...items, 1]));
       const numberOfItems = items.length;
 
-      const onVisit = useEffectEvent(visitedUrl => {
+      const onVisit = useEffectEvent((visitedUrl) => {
         Scheduler.log(
-          'url: ' + visitedUrl + ', numberOfItems: ' + numberOfItems,
+          "url: " + visitedUrl + ", numberOfItems: " + numberOfItems,
         );
       });
 
@@ -843,9 +846,9 @@ describe('useEffectEvent', () => {
         </AppShell>,
       ),
     );
-    assertLog(['Add to cart', 'url: /shop/1, numberOfItems: 0']);
+    assertLog(["Add to cart", "url: /shop/1, numberOfItems: 0"]);
     await act(() => button.current.addToCart());
-    assertLog(['Add to cart']);
+    assertLog(["Add to cart"]);
 
     await act(() =>
       ReactNoop.render(
@@ -854,6 +857,6 @@ describe('useEffectEvent', () => {
         </AppShell>,
       ),
     );
-    assertLog(['Add to cart', 'url: /shop/2, numberOfItems: 1']);
+    assertLog(["Add to cart", "url: /shop/2, numberOfItems: 1"]);
   });
 });

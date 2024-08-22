@@ -4,28 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-'use strict';
-
-                                                     
-             
-           
-                     
-                    
-                                   
+"use strict";
 
 import {
   createRoot as createRootImpl,
   hydrateRoot as hydrateRootImpl,
   __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED as Internals,
-} from './';
+} from "./";
 
-export function createRoot(
-  container                                       ,
-  options                    ,
-)           {
+export function createRoot(container, options) {
   if (__DEV__) {
     Internals.usingClientEntryPoint = true;
   }
@@ -38,11 +28,7 @@ export function createRoot(
   }
 }
 
-export function hydrateRoot(
-  container                    ,
-  children               ,
-  options                     ,
-)           {
+export function hydrateRoot(container, children, options) {
   if (__DEV__) {
     Internals.usingClientEntryPoint = true;
   }

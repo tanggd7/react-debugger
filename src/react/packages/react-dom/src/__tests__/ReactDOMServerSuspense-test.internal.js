@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -23,13 +23,13 @@ function initModules() {
   // Reset warning cache.
   jest.resetModules();
 
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMClient = require('react-dom/client');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
-  act = require('internal-test-utils').act;
-  if (gate(flags => flags.enableSuspenseList)) {
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMClient = require("react-dom/client");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
+  act = require("internal-test-utils").act;
+  if (gate((flags) => flags.enableSuspenseList)) {
     SuspenseList = React.unstable_SuspenseList;
   }
 
@@ -41,10 +41,10 @@ function initModules() {
   };
 }
 
-const {itThrowsWhenRendering, resetModules, serverRender} =
+const { itThrowsWhenRendering, resetModules, serverRender } =
   ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerSuspense', () => {
+describe("ReactDOMServerSuspense", () => {
   beforeEach(() => {
     resetModules();
   });
@@ -63,18 +63,18 @@ describe('ReactDOMServerSuspense', () => {
     while (node) {
       if (node.nodeType === 1) {
         if (
-          node.tagName !== 'SCRIPT' &&
-          node.tagName !== 'TEMPLATE' &&
-          node.tagName !== 'template' &&
-          !node.hasAttribute('hidden') &&
-          !node.hasAttribute('aria-hidden')
+          node.tagName !== "SCRIPT" &&
+          node.tagName !== "TEMPLATE" &&
+          node.tagName !== "template" &&
+          !node.hasAttribute("hidden") &&
+          !node.hasAttribute("aria-hidden")
         ) {
           const props = {};
           const attributes = node.attributes;
           for (let i = 0; i < attributes.length; i++) {
             if (
-              attributes[i].name === 'id' &&
-              attributes[i].value.includes(':')
+              attributes[i].name === "id" &&
+              attributes[i].value.includes(":")
             ) {
               // We assume this is a React added ID that's a non-visual implementation detail.
               continue;
@@ -92,11 +92,11 @@ describe('ReactDOMServerSuspense', () => {
     return children.length === 0
       ? undefined
       : children.length === 1
-      ? children[0]
-      : children;
+        ? children[0]
+        : children;
   }
 
-  it('should render the children when no promise is thrown', async () => {
+  it("should render the children when no promise is thrown", async () => {
     const c = await serverRender(
       <div>
         <React.Suspense fallback={<Text text="Fallback" />}>
@@ -107,7 +107,7 @@ describe('ReactDOMServerSuspense', () => {
     expect(getVisibleChildren(c)).toEqual(<div>Children</div>);
   });
 
-  it('should render the fallback when a promise thrown', async () => {
+  it("should render the fallback when a promise thrown", async () => {
     const c = await serverRender(
       <div>
         <React.Suspense fallback={<Text text="Fallback" />}>
@@ -118,7 +118,7 @@ describe('ReactDOMServerSuspense', () => {
     expect(getVisibleChildren(c)).toEqual(<div>Fallback</div>);
   });
 
-  it('should work with nested suspense components', async () => {
+  it("should work with nested suspense components", async () => {
     const c = await serverRender(
       <div>
         <React.Suspense fallback={<Text text="Fallback" />}>
@@ -141,7 +141,7 @@ describe('ReactDOMServerSuspense', () => {
   });
 
   // @gate enableSuspenseList
-  it('server renders a SuspenseList component and its children', async () => {
+  it("server renders a SuspenseList component and its children", async () => {
     const example = (
       <SuspenseList>
         <React.Suspense fallback="Loading A">
@@ -155,11 +155,11 @@ describe('ReactDOMServerSuspense', () => {
     const element = await serverRender(example);
     const parent = element.parentNode;
     const divA = parent.children[0];
-    expect(divA.tagName).toBe('DIV');
-    expect(divA.textContent).toBe('A');
+    expect(divA.tagName).toBe("DIV");
+    expect(divA.textContent).toBe("A");
     const divB = parent.children[1];
-    expect(divB.tagName).toBe('DIV');
-    expect(divB.textContent).toBe('B');
+    expect(divB.tagName).toBe("DIV");
+    expect(divB.textContent).toBe("B");
 
     await act(() => {
       ReactDOMClient.hydrateRoot(parent, example);
@@ -175,8 +175,8 @@ describe('ReactDOMServerSuspense', () => {
   // TODO: Remove this in favor of @gate pragma
   if (__EXPERIMENTAL__) {
     itThrowsWhenRendering(
-      'a suspending component outside a Suspense node',
-      async render => {
+      "a suspending component outside a Suspense node",
+      async (render) => {
         await render(
           <div>
             <React.Suspense />
@@ -186,12 +186,12 @@ describe('ReactDOMServerSuspense', () => {
           1,
         );
       },
-      'A component suspended while responding to synchronous input.',
+      "A component suspended while responding to synchronous input.",
     );
 
     itThrowsWhenRendering(
-      'a suspending component without a Suspense above',
-      async render => {
+      "a suspending component without a Suspense above",
+      async (render) => {
         await render(
           <div>
             <AsyncText text="Children" />
@@ -199,11 +199,11 @@ describe('ReactDOMServerSuspense', () => {
           1,
         );
       },
-      'A component suspended while responding to synchronous input.',
+      "A component suspended while responding to synchronous input.",
     );
   }
 
-  it('does not get confused by throwing null', () => {
+  it("does not get confused by throwing null", () => {
     function Bad() {
       // eslint-disable-next-line no-throw-literal
       throw null;
@@ -221,7 +221,7 @@ describe('ReactDOMServerSuspense', () => {
     expect(error).toBe(null);
   });
 
-  it('does not get confused by throwing undefined', () => {
+  it("does not get confused by throwing undefined", () => {
     function Bad() {
       // eslint-disable-next-line no-throw-literal
       throw undefined;
@@ -239,10 +239,10 @@ describe('ReactDOMServerSuspense', () => {
     expect(error).toBe(undefined);
   });
 
-  it('does not get confused by throwing a primitive', () => {
+  it("does not get confused by throwing a primitive", () => {
     function Bad() {
       // eslint-disable-next-line no-throw-literal
-      throw 'foo';
+      throw "foo";
     }
 
     let didError;
@@ -254,6 +254,6 @@ describe('ReactDOMServerSuspense', () => {
       error = err;
     }
     expect(didError).toBe(true);
-    expect(error).toBe('foo');
+    expect(error).toBe("foo");
   });
 });

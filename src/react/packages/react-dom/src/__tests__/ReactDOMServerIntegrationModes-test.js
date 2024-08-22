@@ -8,9 +8,9 @@
  * @jest-environment ./scripts/jest/ReactDOMServerIntegrationEnvironment
  */
 
-'use strict';
+"use strict";
 
-const ReactDOMServerIntegrationUtils = require('./utils/ReactDOMServerIntegrationTestUtils');
+const ReactDOMServerIntegrationUtils = require("./utils/ReactDOMServerIntegrationTestUtils");
 
 let React;
 let ReactDOM;
@@ -20,10 +20,10 @@ let ReactTestUtils;
 function initModules() {
   // Reset warning cache.
   jest.resetModules();
-  React = require('react');
-  ReactDOM = require('react-dom');
-  ReactDOMServer = require('react-dom/server');
-  ReactTestUtils = require('react-dom/test-utils');
+  React = require("react");
+  ReactDOM = require("react-dom");
+  ReactDOMServer = require("react-dom/server");
+  ReactTestUtils = require("react-dom/test-utils");
 
   // Make them available to the helpers.
   return {
@@ -33,9 +33,9 @@ function initModules() {
   };
 }
 
-const {resetModules, itRenders} = ReactDOMServerIntegrationUtils(initModules);
+const { resetModules, itRenders } = ReactDOMServerIntegrationUtils(initModules);
 
-describe('ReactDOMServerIntegration', () => {
+describe("ReactDOMServerIntegration", () => {
   beforeEach(() => {
     resetModules();
   });
@@ -43,28 +43,28 @@ describe('ReactDOMServerIntegration', () => {
   // Test pragmas don't support itRenders abstraction
   if (
     __EXPERIMENTAL__ &&
-    require('shared/ReactFeatureFlags').enableDebugTracing
+    require("shared/ReactFeatureFlags").enableDebugTracing
   ) {
-    describe('React.unstable_DebugTracingMode', () => {
+    describe("React.unstable_DebugTracingMode", () => {
       beforeEach(() => {
-        spyOnDevAndProd(console, 'log');
+        spyOnDevAndProd(console, "log");
       });
 
-      itRenders('with one child', async render => {
+      itRenders("with one child", async (render) => {
         const e = await render(
           <React.unstable_DebugTracingMode>
             <div>text1</div>
           </React.unstable_DebugTracingMode>,
         );
         const parent = e.parentNode;
-        expect(parent.childNodes[0].tagName).toBe('DIV');
+        expect(parent.childNodes[0].tagName).toBe("DIV");
       });
 
-      itRenders('mode with several children', async render => {
-        const Header = props => {
+      itRenders("mode with several children", async (render) => {
+        const Header = (props) => {
           return <p>header</p>;
         };
-        const Footer = props => {
+        const Footer = (props) => {
           return (
             <React.unstable_DebugTracingMode>
               <h2>footer</h2>
@@ -81,31 +81,31 @@ describe('ReactDOMServerIntegration', () => {
           </React.unstable_DebugTracingMode>,
         );
         const parent = e.parentNode;
-        expect(parent.childNodes[0].tagName).toBe('DIV');
-        expect(parent.childNodes[1].tagName).toBe('SPAN');
-        expect(parent.childNodes[2].tagName).toBe('P');
-        expect(parent.childNodes[3].tagName).toBe('H2');
-        expect(parent.childNodes[4].tagName).toBe('H3');
+        expect(parent.childNodes[0].tagName).toBe("DIV");
+        expect(parent.childNodes[1].tagName).toBe("SPAN");
+        expect(parent.childNodes[2].tagName).toBe("P");
+        expect(parent.childNodes[3].tagName).toBe("H2");
+        expect(parent.childNodes[4].tagName).toBe("H3");
       });
     });
   }
 
-  describe('React.StrictMode', () => {
-    itRenders('a strict mode with one child', async render => {
+  describe("React.StrictMode", () => {
+    itRenders("a strict mode with one child", async (render) => {
       const e = await render(
         <React.StrictMode>
           <div>text1</div>
         </React.StrictMode>,
       );
       const parent = e.parentNode;
-      expect(parent.childNodes[0].tagName).toBe('DIV');
+      expect(parent.childNodes[0].tagName).toBe("DIV");
     });
 
-    itRenders('a strict mode with several children', async render => {
-      const Header = props => {
+    itRenders("a strict mode with several children", async (render) => {
+      const Header = (props) => {
         return <p>header</p>;
       };
-      const Footer = props => {
+      const Footer = (props) => {
         return (
           <React.StrictMode>
             <h2>footer</h2>
@@ -122,14 +122,14 @@ describe('ReactDOMServerIntegration', () => {
         </React.StrictMode>,
       );
       const parent = e.parentNode;
-      expect(parent.childNodes[0].tagName).toBe('DIV');
-      expect(parent.childNodes[1].tagName).toBe('SPAN');
-      expect(parent.childNodes[2].tagName).toBe('P');
-      expect(parent.childNodes[3].tagName).toBe('H2');
-      expect(parent.childNodes[4].tagName).toBe('H3');
+      expect(parent.childNodes[0].tagName).toBe("DIV");
+      expect(parent.childNodes[1].tagName).toBe("SPAN");
+      expect(parent.childNodes[2].tagName).toBe("P");
+      expect(parent.childNodes[3].tagName).toBe("H2");
+      expect(parent.childNodes[4].tagName).toBe("H3");
     });
 
-    itRenders('a nested strict mode', async render => {
+    itRenders("a nested strict mode", async (render) => {
       const e = await render(
         <React.StrictMode>
           <React.StrictMode>
@@ -148,12 +148,12 @@ describe('ReactDOMServerIntegration', () => {
         </React.StrictMode>,
       );
       const parent = e.parentNode;
-      expect(parent.childNodes[0].tagName).toBe('DIV');
-      expect(parent.childNodes[1].tagName).toBe('SPAN');
-      expect(parent.childNodes[2].tagName).toBe('P');
+      expect(parent.childNodes[0].tagName).toBe("DIV");
+      expect(parent.childNodes[1].tagName).toBe("SPAN");
+      expect(parent.childNodes[2].tagName).toBe("P");
     });
 
-    itRenders('an empty strict mode', async render => {
+    itRenders("an empty strict mode", async (render) => {
       expect(
         (
           await render(

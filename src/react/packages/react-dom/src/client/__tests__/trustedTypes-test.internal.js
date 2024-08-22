@@ -7,9 +7,9 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('when Trusted Types are available in global object', () => {
+describe("when Trusted Types are available in global object", () => {
   let React;
   let ReactDOM;
   let ReactFeatureFlags;
@@ -19,7 +19,7 @@ describe('when Trusted Types are available in global object', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    container = document.createElement('div');
+    container = document.createElement("div");
     const fakeTTObjects = new Set();
     window.trustedTypes = {
       isHTML: function (value) {
@@ -31,18 +31,18 @@ describe('when Trusted Types are available in global object', () => {
       isScript: () => false,
       isScriptURL: () => false,
     };
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
     ReactFeatureFlags.enableTrustedTypesIntegration = true;
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
     ttObject1 = {
       toString() {
-        return '<b>Hi</b>';
+        return "<b>Hi</b>";
       },
     };
     ttObject2 = {
       toString() {
-        return '<b>Bye</b>';
+        return "<b>Bye</b>";
       },
     };
     fakeTTObjects.add(ttObject1);
@@ -53,14 +53,14 @@ describe('when Trusted Types are available in global object', () => {
     delete window.trustedTypes;
   });
 
-  it('should not stringify trusted values for dangerouslySetInnerHTML', () => {
+  it("should not stringify trusted values for dangerouslySetInnerHTML", () => {
     const innerHTMLDescriptor = Object.getOwnPropertyDescriptor(
       Element.prototype,
-      'innerHTML',
+      "innerHTML",
     );
     try {
       const innerHTMLCalls = [];
-      Object.defineProperty(Element.prototype, 'innerHTML', {
+      Object.defineProperty(Element.prototype, "innerHTML", {
         get() {
           return innerHTMLDescriptor.get.apply(this, arguments);
         },
@@ -70,33 +70,33 @@ describe('when Trusted Types are available in global object', () => {
         },
       });
       ReactDOM.render(
-        <div dangerouslySetInnerHTML={{__html: ttObject1}} />,
+        <div dangerouslySetInnerHTML={{ __html: ttObject1 }} />,
         container,
       );
-      expect(container.innerHTML).toBe('<div><b>Hi</b></div>');
+      expect(container.innerHTML).toBe("<div><b>Hi</b></div>");
       expect(innerHTMLCalls.length).toBe(1);
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(innerHTMLCalls[0]).toBe(ttObject1);
 
       innerHTMLCalls.length = 0;
       ReactDOM.render(
-        <div dangerouslySetInnerHTML={{__html: ttObject2}} />,
+        <div dangerouslySetInnerHTML={{ __html: ttObject2 }} />,
         container,
       );
-      expect(container.innerHTML).toBe('<div><b>Bye</b></div>');
+      expect(container.innerHTML).toBe("<div><b>Bye</b></div>");
       expect(innerHTMLCalls.length).toBe(1);
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(innerHTMLCalls[0]).toBe(ttObject2);
     } finally {
       Object.defineProperty(
         Element.prototype,
-        'innerHTML',
+        "innerHTML",
         innerHTMLDescriptor,
       );
     }
   });
 
-  it('should not stringify trusted values for setAttribute (unknown attribute)', () => {
+  it("should not stringify trusted values for setAttribute (unknown attribute)", () => {
     const setAttribute = Element.prototype.setAttribute;
     try {
       const setAttributeCalls = [];
@@ -108,7 +108,7 @@ describe('when Trusted Types are available in global object', () => {
       expect(container.innerHTML).toBe('<div data-foo="<b>Hi</b>"></div>');
       expect(setAttributeCalls.length).toBe(1);
       expect(setAttributeCalls[0][0]).toBe(container.firstChild);
-      expect(setAttributeCalls[0][1]).toBe('data-foo');
+      expect(setAttributeCalls[0][1]).toBe("data-foo");
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(setAttributeCalls[0][2]).toBe(ttObject1);
 
@@ -116,7 +116,7 @@ describe('when Trusted Types are available in global object', () => {
       ReactDOM.render(<div data-foo={ttObject2} />, container);
       expect(setAttributeCalls.length).toBe(1);
       expect(setAttributeCalls[0][0]).toBe(container.firstChild);
-      expect(setAttributeCalls[0][1]).toBe('data-foo');
+      expect(setAttributeCalls[0][1]).toBe("data-foo");
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(setAttributeCalls[0][2]).toBe(ttObject2);
     } finally {
@@ -124,7 +124,7 @@ describe('when Trusted Types are available in global object', () => {
     }
   });
 
-  it('should not stringify trusted values for setAttribute (known attribute)', () => {
+  it("should not stringify trusted values for setAttribute (known attribute)", () => {
     const setAttribute = Element.prototype.setAttribute;
     try {
       const setAttributeCalls = [];
@@ -136,7 +136,7 @@ describe('when Trusted Types are available in global object', () => {
       expect(container.innerHTML).toBe('<div class="<b>Hi</b>"></div>');
       expect(setAttributeCalls.length).toBe(1);
       expect(setAttributeCalls[0][0]).toBe(container.firstChild);
-      expect(setAttributeCalls[0][1]).toBe('class');
+      expect(setAttributeCalls[0][1]).toBe("class");
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(setAttributeCalls[0][2]).toBe(ttObject1);
 
@@ -144,7 +144,7 @@ describe('when Trusted Types are available in global object', () => {
       ReactDOM.render(<div className={ttObject2} />, container);
       expect(setAttributeCalls.length).toBe(1);
       expect(setAttributeCalls[0][0]).toBe(container.firstChild);
-      expect(setAttributeCalls[0][1]).toBe('class');
+      expect(setAttributeCalls[0][1]).toBe("class");
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(setAttributeCalls[0][2]).toBe(ttObject2);
     } finally {
@@ -152,7 +152,7 @@ describe('when Trusted Types are available in global object', () => {
     }
   });
 
-  it('should not stringify trusted values for setAttributeNS', () => {
+  it("should not stringify trusted values for setAttributeNS", () => {
     const setAttributeNS = Element.prototype.setAttributeNS;
     try {
       const setAttributeNSCalls = [];
@@ -164,8 +164,8 @@ describe('when Trusted Types are available in global object', () => {
       expect(container.innerHTML).toBe('<svg xlink:href="<b>Hi</b>"></svg>');
       expect(setAttributeNSCalls.length).toBe(1);
       expect(setAttributeNSCalls[0][0]).toBe(container.firstChild);
-      expect(setAttributeNSCalls[0][1]).toBe('http://www.w3.org/1999/xlink');
-      expect(setAttributeNSCalls[0][2]).toBe('xlink:href');
+      expect(setAttributeNSCalls[0][1]).toBe("http://www.w3.org/1999/xlink");
+      expect(setAttributeNSCalls[0][2]).toBe("xlink:href");
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(setAttributeNSCalls[0][3]).toBe(ttObject1);
 
@@ -173,8 +173,8 @@ describe('when Trusted Types are available in global object', () => {
       ReactDOM.render(<svg xlinkHref={ttObject2} />, container);
       expect(setAttributeNSCalls.length).toBe(1);
       expect(setAttributeNSCalls[0][0]).toBe(container.firstChild);
-      expect(setAttributeNSCalls[0][1]).toBe('http://www.w3.org/1999/xlink');
-      expect(setAttributeNSCalls[0][2]).toBe('xlink:href');
+      expect(setAttributeNSCalls[0][1]).toBe("http://www.w3.org/1999/xlink");
+      expect(setAttributeNSCalls[0][2]).toBe("xlink:href");
       // Ensure it didn't get stringified when passed to a DOM sink:
       expect(setAttributeNSCalls[0][3]).toBe(ttObject2);
     } finally {
@@ -182,19 +182,19 @@ describe('when Trusted Types are available in global object', () => {
     }
   });
 
-  describe('dangerouslySetInnerHTML in svg elements in Internet Explorer', () => {
+  describe("dangerouslySetInnerHTML in svg elements in Internet Explorer", () => {
     let innerHTMLDescriptor;
 
     // simulate svg elements in Internet Explorer which don't have 'innerHTML' property
     beforeEach(() => {
       innerHTMLDescriptor = Object.getOwnPropertyDescriptor(
         Element.prototype,
-        'innerHTML',
+        "innerHTML",
       );
       delete Element.prototype.innerHTML;
       Object.defineProperty(
         HTMLDivElement.prototype,
-        'innerHTML',
+        "innerHTML",
         innerHTMLDescriptor,
       );
     });
@@ -203,41 +203,41 @@ describe('when Trusted Types are available in global object', () => {
       delete HTMLDivElement.prototype.innerHTML;
       Object.defineProperty(
         Element.prototype,
-        'innerHTML',
+        "innerHTML",
         innerHTMLDescriptor,
       );
     });
 
     // @gate !disableIEWorkarounds
-    it('should log a warning', () => {
+    it("should log a warning", () => {
       class Component extends React.Component {
         render() {
-          return <svg dangerouslySetInnerHTML={{__html: 'unsafe html'}} />;
+          return <svg dangerouslySetInnerHTML={{ __html: "unsafe html" }} />;
         }
       }
       expect(() => {
         ReactDOM.render(<Component />, container);
       }).toErrorDev(
         "Warning: Using 'dangerouslySetInnerHTML' in an svg element with " +
-          'Trusted Types enabled in an Internet Explorer will cause ' +
-          'the trusted value to be converted to string. Assigning string ' +
+          "Trusted Types enabled in an Internet Explorer will cause " +
+          "the trusted value to be converted to string. Assigning string " +
           "to 'innerHTML' will throw an error if Trusted Types are enforced. " +
           "You can try to wrap your svg element inside a div and use 'dangerouslySetInnerHTML' " +
-          'on the enclosing div instead.',
+          "on the enclosing div instead.",
       );
-      expect(container.innerHTML).toBe('<svg>unsafe html</svg>');
+      expect(container.innerHTML).toBe("<svg>unsafe html</svg>");
     });
   });
 
-  it('should warn once when rendering script tag in jsx on client', () => {
+  it("should warn once when rendering script tag in jsx on client", () => {
     expect(() => {
       ReactDOM.render(<script>alert("I am not executed")</script>, container);
     }).toErrorDev(
-      'Warning: Encountered a script tag while rendering React component. ' +
-        'Scripts inside React components are never executed when rendering ' +
-        'on the client. Consider using template tag instead ' +
-        '(https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template).\n' +
-        '    in script (at **)',
+      "Warning: Encountered a script tag while rendering React component. " +
+        "Scripts inside React components are never executed when rendering " +
+        "on the client. Consider using template tag instead " +
+        "(https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template).\n" +
+        "    in script (at **)",
     );
 
     // check that the warning is printed only once

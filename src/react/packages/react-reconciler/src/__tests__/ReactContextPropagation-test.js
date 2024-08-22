@@ -11,22 +11,22 @@ let caches;
 let seededCache;
 let assertLog;
 
-describe('ReactLazyContextPropagation', () => {
+describe("ReactLazyContextPropagation", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     useState = React.useState;
     useContext = React.useContext;
     Suspense = React.Suspense;
-    if (gate(flags => flags.enableSuspenseList)) {
+    if (gate((flags) => flags.enableSuspenseList)) {
       SuspenseList = React.unstable_SuspenseList;
     }
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
 
     getCacheForType = React.unstable_getCacheForType;
@@ -59,30 +59,30 @@ describe('ReactLazyContextPropagation', () => {
         const record = data.get(text);
         if (record === undefined) {
           const newRecord = {
-            status: 'resolved',
+            status: "resolved",
             value: text,
           };
           data.set(text, newRecord);
-        } else if (record.status === 'pending') {
+        } else if (record.status === "pending") {
           const thenable = record.value;
-          record.status = 'resolved';
+          record.status = "resolved";
           record.value = text;
-          thenable.pings.forEach(t => t());
+          thenable.pings.forEach((t) => t());
         }
       },
       reject(text, error) {
         const record = data.get(text);
         if (record === undefined) {
           const newRecord = {
-            status: 'rejected',
+            status: "rejected",
             value: error,
           };
           data.set(text, newRecord);
-        } else if (record.status === 'pending') {
+        } else if (record.status === "pending") {
           const thenable = record.value;
-          record.status = 'rejected';
+          record.status = "rejected";
           record.value = error;
-          thenable.pings.forEach(t => t());
+          thenable.pings.forEach((t) => t());
         }
       },
     };
@@ -95,13 +95,13 @@ describe('ReactLazyContextPropagation', () => {
     const record = textCache.data.get(text);
     if (record !== undefined) {
       switch (record.status) {
-        case 'pending':
+        case "pending":
           Scheduler.log(`Suspend! [${text}]`);
           throw record.value;
-        case 'rejected':
+        case "rejected":
           Scheduler.log(`Error! [${text}]`);
           throw record.value;
-        case 'resolved':
+        case "resolved":
           return textCache.version;
       }
     } else {
@@ -110,7 +110,7 @@ describe('ReactLazyContextPropagation', () => {
       const thenable = {
         pings: [],
         then(resolve) {
-          if (newRecord.status === 'pending') {
+          if (newRecord.status === "pending") {
             thenable.pings.push(resolve);
           } else {
             Promise.resolve().then(() => resolve(newRecord.value));
@@ -119,7 +119,7 @@ describe('ReactLazyContextPropagation', () => {
       };
 
       const newRecord = {
-        status: 'pending',
+        status: "pending",
         value: thenable,
       };
       textCache.data.set(text, newRecord);
@@ -128,7 +128,7 @@ describe('ReactLazyContextPropagation', () => {
     }
   }
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
@@ -149,7 +149,7 @@ describe('ReactLazyContextPropagation', () => {
 
   function resolveMostRecentTextCache(text) {
     if (caches.length === 0) {
-      throw Error('Cache does not exist.');
+      throw Error("Cache does not exist.");
     } else {
       // Resolve the most recently created cache. An older cache can by
       // resolved with `caches[index].resolve(text)`.
@@ -170,8 +170,8 @@ describe('ReactLazyContextPropagation', () => {
   // }
 
   test(
-    'context change should prevent bailout of memoized component (useMemo -> ' +
-      'no intermediate fiber)',
+    "context change should prevent bailout of memoized component (useMemo -> " +
+      "no intermediate fiber)",
     async () => {
       const root = ReactNoop.createRoot();
 
@@ -199,7 +199,7 @@ describe('ReactLazyContextPropagation', () => {
         return <DeepChild value={value} />;
       }
 
-      function DeepChild({value}) {
+      function DeepChild({ value }) {
         return <Text text={value} />;
       }
 
@@ -207,17 +207,17 @@ describe('ReactLazyContextPropagation', () => {
         root.render(<App />);
       });
       assertLog([0]);
-      expect(root).toMatchRenderedOutput('0');
+      expect(root).toMatchRenderedOutput("0");
 
       await act(() => {
         setValue(1);
       });
       assertLog([1]);
-      expect(root).toMatchRenderedOutput('1');
+      expect(root).toMatchRenderedOutput("1");
     },
   );
 
-  test('context change should prevent bailout of memoized component (memo HOC)', async () => {
+  test("context change should prevent bailout of memoized component (memo HOC)", async () => {
     const root = ReactNoop.createRoot();
 
     const Context = React.createContext(0);
@@ -241,7 +241,7 @@ describe('ReactLazyContextPropagation', () => {
       return <DeepChild value={value} />;
     });
 
-    function DeepChild({value}) {
+    function DeepChild({ value }) {
       return <Text text={value} />;
     }
 
@@ -249,16 +249,16 @@ describe('ReactLazyContextPropagation', () => {
       root.render(<App />);
     });
     assertLog([0]);
-    expect(root).toMatchRenderedOutput('0');
+    expect(root).toMatchRenderedOutput("0");
 
     await act(() => {
       setValue(1);
     });
     assertLog([1]);
-    expect(root).toMatchRenderedOutput('1');
+    expect(root).toMatchRenderedOutput("1");
   });
 
-  test('context change should prevent bailout of memoized component (PureComponent)', async () => {
+  test("context change should prevent bailout of memoized component (PureComponent)", async () => {
     const root = ReactNoop.createRoot();
 
     const Context = React.createContext(0);
@@ -284,7 +284,7 @@ describe('ReactLazyContextPropagation', () => {
       }
     }
 
-    function DeepChild({value}) {
+    function DeepChild({ value }) {
       return <Text text={value} />;
     }
 
@@ -292,13 +292,13 @@ describe('ReactLazyContextPropagation', () => {
       root.render(<App />);
     });
     assertLog([0]);
-    expect(root).toMatchRenderedOutput('0');
+    expect(root).toMatchRenderedOutput("0");
 
     await act(() => {
       setValue(1);
     });
     assertLog([1]);
-    expect(root).toMatchRenderedOutput('1');
+    expect(root).toMatchRenderedOutput("1");
   });
 
   test("context consumer bails out if context hasn't changed", async () => {
@@ -321,7 +321,7 @@ describe('ReactLazyContextPropagation', () => {
       const [, _setOtherValue] = useState(0);
       setOtherValue = _setOtherValue;
 
-      Scheduler.log('Consumer');
+      Scheduler.log("Consumer");
 
       return <Text text={value} />;
     });
@@ -329,8 +329,8 @@ describe('ReactLazyContextPropagation', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['Consumer', 0]);
-    expect(root).toMatchRenderedOutput('0');
+    assertLog(["Consumer", 0]);
+    expect(root).toMatchRenderedOutput("0");
 
     await act(() => {
       // Intentionally calling setState to some other arbitrary value before
@@ -344,19 +344,19 @@ describe('ReactLazyContextPropagation', () => {
     // bailout mechanism kicked in. Because we're testing the _lazy_ bailout
     // mechanism, update this test to foil the _eager_ bailout, somehow. Perhaps
     // by switching to useReducer.
-    assertLog(['Consumer']);
-    expect(root).toMatchRenderedOutput('0');
+    assertLog(["Consumer"]);
+    expect(root).toMatchRenderedOutput("0");
   });
 
   // @gate enableLegacyCache
-  test('context is propagated across retries', async () => {
+  test("context is propagated across retries", async () => {
     const root = ReactNoop.createRoot();
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -387,39 +387,39 @@ describe('ReactLazyContextPropagation', () => {
       return <Text text={value} />;
     }
 
-    await seedNextTextCache('A');
+    await seedNextTextCache("A");
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
       // Intentionally not wrapping in startTransition, so that the fallback
       // the fallback displays despite this being a refresh.
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['Suspend! [B]', 'Loading...', 'B']);
-    expect(root).toMatchRenderedOutput('Loading...B');
+    assertLog(["Suspend! [B]", "Loading...", "B"]);
+    expect(root).toMatchRenderedOutput("Loading...B");
 
     await act(async () => {
-      await resolveText('B');
+      await resolveText("B");
     });
-    assertLog(['B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
   // @gate enableLegacyCache
-  test('multiple contexts are propagated across retries', async () => {
+  test("multiple contexts are propagated across retries", async () => {
     // Same as previous test, but with multiple context providers
     const root = ReactNoop.createRoot();
 
-    const Context1 = React.createContext('A');
-    const Context2 = React.createContext('A');
+    const Context1 = React.createContext("A");
+    const Context2 = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context1.Provider value={value}>
@@ -467,37 +467,37 @@ describe('ReactLazyContextPropagation', () => {
       return <Text text={value} />;
     }
 
-    await seedNextTextCache('A');
+    await seedNextTextCache("A");
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A', 'A']);
-    expect(root).toMatchRenderedOutput('AAA');
+    assertLog(["A", "A", "A"]);
+    expect(root).toMatchRenderedOutput("AAA");
 
     await act(() => {
       // Intentionally not wrapping in startTransition, so that the fallback
       // the fallback displays despite this being a refresh.
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['Suspend! [B]', 'Loading...', 'B']);
-    expect(root).toMatchRenderedOutput('Loading...B');
+    assertLog(["Suspend! [B]", "Loading...", "B"]);
+    expect(root).toMatchRenderedOutput("Loading...B");
 
     await act(async () => {
-      await resolveText('B');
+      await resolveText("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BBB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BBB");
   });
 
   // @gate enableLegacyCache
-  test('context is propagated across retries (legacy)', async () => {
+  test("context is propagated across retries (legacy)", async () => {
     const root = ReactNoop.createLegacyRoot();
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -528,39 +528,39 @@ describe('ReactLazyContextPropagation', () => {
       return <Text text={value} />;
     }
 
-    await seedNextTextCache('A');
+    await seedNextTextCache("A");
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
       // Intentionally not wrapping in startTransition, so that the fallback
       // the fallback displays despite this being a refresh.
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['Suspend! [B]', 'Loading...', 'B']);
-    expect(root).toMatchRenderedOutput('Loading...B');
+    assertLog(["Suspend! [B]", "Loading...", "B"]);
+    expect(root).toMatchRenderedOutput("Loading...B");
 
     await act(async () => {
-      await resolveText('B');
+      await resolveText("B");
     });
-    assertLog(['B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
   // @gate www
-  test('context is propagated through offscreen trees', async () => {
+  test("context is propagated through offscreen trees", async () => {
     const LegacyHidden = React.unstable_LegacyHidden;
 
     const root = ReactNoop.createRoot();
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -582,33 +582,33 @@ describe('ReactLazyContextPropagation', () => {
       return <Text text={value} />;
     }
 
-    await seedNextTextCache('A');
+    await seedNextTextCache("A");
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
   // @gate www
-  test('multiple contexts are propagated across through offscreen trees', async () => {
+  test("multiple contexts are propagated across through offscreen trees", async () => {
     // Same as previous test, but with multiple context providers
     const LegacyHidden = React.unstable_LegacyHidden;
 
     const root = ReactNoop.createRoot();
 
-    const Context1 = React.createContext('A');
-    const Context2 = React.createContext('A');
+    const Context1 = React.createContext("A");
+    const Context2 = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context1.Provider value={value}>
@@ -643,30 +643,30 @@ describe('ReactLazyContextPropagation', () => {
       return <Text text={value} />;
     }
 
-    await seedNextTextCache('A');
+    await seedNextTextCache("A");
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A', 'A']);
-    expect(root).toMatchRenderedOutput('AAA');
+    assertLog(["A", "A", "A"]);
+    expect(root).toMatchRenderedOutput("AAA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['B', 'B', 'B']);
-    expect(root).toMatchRenderedOutput('BBB');
+    assertLog(["B", "B", "B"]);
+    expect(root).toMatchRenderedOutput("BBB");
   });
 
   // @gate enableSuspenseList
-  test('contexts are propagated through SuspenseList', async () => {
+  test("contexts are propagated through SuspenseList", async () => {
     // This kinda tests an implementation detail. SuspenseList has an early
     // bailout that doesn't use `bailoutOnAlreadyFinishedWork`. It probably
     // should just use that function, though.
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       const children = React.useMemo(
         () => (
@@ -689,25 +689,25 @@ describe('ReactLazyContextPropagation', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
-  test('nested bailouts', async () => {
+  test("nested bailouts", async () => {
     // Lazy context propagation will stop propagating when it hits the first
     // match. If we bail out again inside that tree, we must resume propagating.
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -743,26 +743,26 @@ describe('ReactLazyContextPropagation', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
   // @gate enableLegacyCache
-  test('nested bailouts across retries', async () => {
+  test("nested bailouts across retries", async () => {
     // Lazy context propagation will stop propagating when it hits the first
     // match. If we bail out again inside that tree, we must resume propagating.
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -773,7 +773,7 @@ describe('ReactLazyContextPropagation', () => {
       );
     }
 
-    function Async({value}) {
+    function Async({ value }) {
       // When this suspends, we won't be able to visit its children during the
       // current render. So we must take extra care to propagate the context
       // change in such a way that they're aren't lost when we retry in a
@@ -802,38 +802,38 @@ describe('ReactLazyContextPropagation', () => {
     }
 
     const root = ReactNoop.createRoot();
-    await seedNextTextCache('A');
+    await seedNextTextCache("A");
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['Suspend! [B]', 'Loading...']);
-    expect(root).toMatchRenderedOutput('Loading...');
+    assertLog(["Suspend! [B]", "Loading..."]);
+    expect(root).toMatchRenderedOutput("Loading...");
 
     await act(async () => {
-      await resolveText('B');
+      await resolveText("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
   // @gate www
-  test('nested bailouts through offscreen trees', async () => {
+  test("nested bailouts through offscreen trees", async () => {
     // Lazy context propagation will stop propagating when it hits the first
     // match. If we bail out again inside that tree, we must resume propagating.
 
     const LegacyHidden = React.unstable_LegacyHidden;
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -867,25 +867,25 @@ describe('ReactLazyContextPropagation', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 
-  test('finds context consumers in multiple sibling branches', async () => {
+  test("finds context consumers in multiple sibling branches", async () => {
     // This test confirms that when we find a matching context consumer during
     // propagation, we continue propagating to its sibling branches.
 
-    const Context = React.createContext('A');
+    const Context = React.createContext("A");
 
     let setContext;
     function App() {
-      const [value, setValue] = useState('A');
+      const [value, setValue] = useState("A");
       setContext = setValue;
       return (
         <Context.Provider value={value}>
@@ -916,13 +916,13 @@ describe('ReactLazyContextPropagation', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A', 'A']);
-    expect(root).toMatchRenderedOutput('AA');
+    assertLog(["A", "A"]);
+    expect(root).toMatchRenderedOutput("AA");
 
     await act(() => {
-      setContext('B');
+      setContext("B");
     });
-    assertLog(['B', 'B']);
-    expect(root).toMatchRenderedOutput('BB');
+    assertLog(["B", "B"]);
+    expect(root).toMatchRenderedOutput("BB");
   });
 });

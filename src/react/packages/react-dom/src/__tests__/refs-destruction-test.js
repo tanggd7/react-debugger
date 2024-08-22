@@ -7,7 +7,7 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
@@ -15,13 +15,13 @@ let ReactTestUtils;
 
 let TestComponent;
 
-describe('refs-destruction', () => {
+describe("refs-destruction", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactTestUtils = require('react-dom/test-utils');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactTestUtils = require("react-dom/test-utils");
 
     class ClassComponent extends React.Component {
       render() {
@@ -55,8 +55,8 @@ describe('refs-destruction', () => {
     };
   });
 
-  it('should remove refs when destroying the parent', () => {
-    const container = document.createElement('div');
+  it("should remove refs when destroying the parent", () => {
+    const container = document.createElement("div");
     const testInstance = ReactDOM.render(<TestComponent />, container);
 
     expect(
@@ -70,8 +70,8 @@ describe('refs-destruction', () => {
     expect(testInstance.theInnerClassComponentRef.current).toBe(null);
   });
 
-  it('should remove refs when destroying the child', () => {
-    const container = document.createElement('div');
+  it("should remove refs when destroying the child", () => {
+    const container = document.createElement("div");
     const testInstance = ReactDOM.render(<TestComponent />, container);
     expect(
       ReactTestUtils.isDOMComponent(testInstance.theInnerDivRef.current),
@@ -84,8 +84,8 @@ describe('refs-destruction', () => {
     expect(testInstance.theInnerClassComponentRef.current).toBe(null);
   });
 
-  it('should remove refs when removing the child ref attribute', () => {
-    const container = document.createElement('div');
+  it("should remove refs when removing the child ref attribute", () => {
+    const container = document.createElement("div");
     const testInstance = ReactDOM.render(<TestComponent />, container);
 
     expect(
@@ -99,10 +99,10 @@ describe('refs-destruction', () => {
     expect(testInstance.theInnerClassComponentRef.current).toBe(null);
   });
 
-  it('should not error when destroying child with ref asynchronously', () => {
+  it("should not error when destroying child with ref asynchronously", () => {
     class Modal extends React.Component {
       componentDidMount() {
-        this.div = document.createElement('div');
+        this.div = document.createElement("div");
         document.body.appendChild(this.div);
         this.componentDidUpdate();
       }
@@ -143,7 +143,7 @@ describe('refs-destruction', () => {
       }
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     ReactDOM.render(<App />, container);
     ReactDOM.render(<App hidden={true} />, container);
     jest.runAllTimers();

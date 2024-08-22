@@ -6,7 +6,7 @@
  *
  * @jest-environment node
  */
-'use strict';
+"use strict";
 
 class MockMessageChannel {
   constructor() {
@@ -15,13 +15,13 @@ class MockMessageChannel {
   }
 }
 
-describe('Scheduling UMD bundle', () => {
+describe("Scheduling UMD bundle", () => {
   beforeEach(() => {
     // Fool SECRET_INTERNALS object into including UMD forwarding methods.
     global.__UMD__ = true;
 
     jest.resetModules();
-    jest.unmock('scheduler');
+    jest.unmock("scheduler");
 
     global.MessageChannel = MockMessageChannel;
   });
@@ -32,18 +32,18 @@ describe('Scheduling UMD bundle', () => {
 
   function validateForwardedAPIs(api, forwardedAPIs) {
     const apiKeys = Object.keys(api).sort();
-    forwardedAPIs.forEach(forwardedAPI => {
+    forwardedAPIs.forEach((forwardedAPI) => {
       expect(Object.keys(forwardedAPI).sort()).toEqual(apiKeys);
     });
   }
 
-  it('should define the same scheduling API', () => {
-    const api = require('../../index');
-    const umdAPIDev = require('../../npm/umd/scheduler.development');
-    const umdAPIProd = require('../../npm/umd/scheduler.production.min');
-    const umdAPIProfiling = require('../../npm/umd/scheduler.profiling.min');
+  it("should define the same scheduling API", () => {
+    const api = require("../../index");
+    const umdAPIDev = require("../../npm/umd/scheduler.development");
+    const umdAPIProd = require("../../npm/umd/scheduler.production.min");
+    const umdAPIProfiling = require("../../npm/umd/scheduler.profiling.min");
     const secretAPI =
-      require('react/src/forks/ReactSharedInternals.umd').default;
+      require("react/src/forks/ReactSharedInternals.umd").default;
     validateForwardedAPIs(api, [
       umdAPIDev,
       umdAPIProd,

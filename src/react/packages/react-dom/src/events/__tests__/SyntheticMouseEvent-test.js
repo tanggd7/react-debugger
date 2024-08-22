@@ -7,21 +7,21 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 
-describe('SyntheticMouseEvent', () => {
+describe("SyntheticMouseEvent", () => {
   let container;
 
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOM = require('react-dom');
+    React = require("react");
+    ReactDOM = require("react-dom");
 
     // The container has to be attached for events to fire.
-    container = document.createElement('div');
+    container = document.createElement("div");
     document.body.appendChild(container);
   });
 
@@ -30,13 +30,13 @@ describe('SyntheticMouseEvent', () => {
     container = null;
   });
 
-  it('should only use values from movementX/Y when event type is mousemove', () => {
+  it("should only use values from movementX/Y when event type is mousemove", () => {
     const events = [];
-    const onMouseMove = event => {
+    const onMouseMove = (event) => {
       events.push(event.movementX);
     };
 
-    const onMouseDown = event => {
+    const onMouseDown = (event) => {
       events.push(event.movementX);
     };
 
@@ -45,7 +45,7 @@ describe('SyntheticMouseEvent', () => {
       container,
     );
 
-    let event = new MouseEvent('mousemove', {
+    let event = new MouseEvent("mousemove", {
       relatedTarget: null,
       bubbles: true,
       screenX: 2,
@@ -54,7 +54,7 @@ describe('SyntheticMouseEvent', () => {
 
     node.dispatchEvent(event);
 
-    event = new MouseEvent('mousemove', {
+    event = new MouseEvent("mousemove", {
       relatedTarget: null,
       bubbles: true,
       screenX: 8,
@@ -64,7 +64,7 @@ describe('SyntheticMouseEvent', () => {
     node.dispatchEvent(event);
 
     // Now trigger a mousedown event to see if movementX has changed back to 0
-    event = new MouseEvent('mousedown', {
+    event = new MouseEvent("mousedown", {
       relatedTarget: null,
       bubbles: true,
       screenX: 25,
@@ -79,19 +79,19 @@ describe('SyntheticMouseEvent', () => {
     expect(events[2]).toBe(0); // mousedown event should have movementX at 0
   });
 
-  it('should correctly calculate movementX/Y for capture phase', () => {
+  it("should correctly calculate movementX/Y for capture phase", () => {
     const events = [];
-    const onMouseMove = event => {
-      events.push(['move', false, event.movementX, event.movementY]);
+    const onMouseMove = (event) => {
+      events.push(["move", false, event.movementX, event.movementY]);
     };
-    const onMouseMoveCapture = event => {
-      events.push(['move', true, event.movementX, event.movementY]);
+    const onMouseMoveCapture = (event) => {
+      events.push(["move", true, event.movementX, event.movementY]);
     };
-    const onMouseDown = event => {
-      events.push(['down', false, event.movementX, event.movementY]);
+    const onMouseDown = (event) => {
+      events.push(["down", false, event.movementX, event.movementY]);
     };
-    const onMouseDownCapture = event => {
-      events.push(['down', true, event.movementX, event.movementY]);
+    const onMouseDownCapture = (event) => {
+      events.push(["down", true, event.movementX, event.movementY]);
     };
 
     const node = ReactDOM.render(
@@ -104,7 +104,7 @@ describe('SyntheticMouseEvent', () => {
       container,
     );
 
-    let event = new MouseEvent('mousemove', {
+    let event = new MouseEvent("mousemove", {
       relatedTarget: null,
       bubbles: true,
       screenX: 2,
@@ -113,7 +113,7 @@ describe('SyntheticMouseEvent', () => {
 
     node.dispatchEvent(event);
 
-    event = new MouseEvent('mousemove', {
+    event = new MouseEvent("mousemove", {
       relatedTarget: null,
       bubbles: true,
       screenX: 8,
@@ -123,7 +123,7 @@ describe('SyntheticMouseEvent', () => {
     node.dispatchEvent(event);
 
     // Now trigger a mousedown event to see if movementX has changed back to 0
-    event = new MouseEvent('mousedown', {
+    event = new MouseEvent("mousedown", {
       relatedTarget: null,
       bubbles: true,
       screenX: 25,
@@ -133,12 +133,12 @@ describe('SyntheticMouseEvent', () => {
     node.dispatchEvent(event);
 
     expect(events).toEqual([
-      ['move', true, 0, 0],
-      ['move', false, 0, 0],
-      ['move', true, 6, 7],
-      ['move', false, 6, 7],
-      ['down', true, 0, 0],
-      ['down', false, 0, 0],
+      ["move", true, 0, 0],
+      ["move", false, 0, 0],
+      ["move", true, 6, 7],
+      ["move", false, 6, 7],
+      ["down", true, 0, 0],
+      ["down", false, 0, 0],
     ]);
   });
 });

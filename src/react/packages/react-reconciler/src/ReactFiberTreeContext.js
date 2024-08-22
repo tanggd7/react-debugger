@@ -4,7 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
 // Ids are base 32 strings whose binary representation corresponds to the
@@ -60,53 +60,43 @@
 // log2(32) = 5 bits. That means we can lop bits off the end 5 at a time without
 // affecting the final result.
 
-                                                                   
-
-import {getIsHydrating} from './ReactFiberHydrationContext';
-import {clz32} from './clz32';
-import {Forked, NoFlags} from './ReactFiberFlags';
-
-                           
-             
-                   
-  
+import { getIsHydrating } from "./ReactFiberHydrationContext";
+import { clz32 } from "./clz32";
+import { Forked, NoFlags } from "./ReactFiberFlags";
 
 // TODO: Use the unified fiber stack module instead of this local one?
 // Intentionally not using it yet to derisk the initial implementation, because
 // the way we push/pop these values is a bit unusual. If there's a mistake, I'd
 // rather the ids be wrong than crash the whole reconciler.
-const forkStack             = [];
-let forkStackIndex         = 0;
-let treeForkProvider               = null;
-let treeForkCount         = 0;
+const forkStack = [];
+let forkStackIndex = 0;
+let treeForkProvider = null;
+let treeForkCount = 0;
 
-const idStack             = [];
-let idStackIndex         = 0;
-let treeContextProvider               = null;
-let treeContextId         = 1;
-let treeContextOverflow         = '';
+const idStack = [];
+let idStackIndex = 0;
+let treeContextProvider = null;
+let treeContextId = 1;
+let treeContextOverflow = "";
 
-export function isForkedChild(workInProgress       )          {
+export function isForkedChild(workInProgress) {
   warnIfNotHydrating();
   return (workInProgress.flags & Forked) !== NoFlags;
 }
 
-export function getForksAtLevel(workInProgress       )         {
+export function getForksAtLevel(workInProgress) {
   warnIfNotHydrating();
   return treeForkCount;
 }
 
-export function getTreeId()         {
+export function getTreeId() {
   const overflow = treeContextOverflow;
   const idWithLeadingBit = treeContextId;
   const id = idWithLeadingBit & ~getLeadingBit(idWithLeadingBit);
   return id.toString(32) + overflow;
 }
 
-export function pushTreeFork(
-  workInProgress       ,
-  totalChildren        ,
-)       {
+export function pushTreeFork(workInProgress, totalChildren) {
   // This is called right after we reconcile an array (or iterator) of child
   // fibers, because that's the only place where we know how many children in
   // the whole set without doing extra work later, or storing addtional
@@ -131,11 +121,7 @@ export function pushTreeFork(
   treeForkCount = totalChildren;
 }
 
-export function pushTreeId(
-  workInProgress       ,
-  totalChildren        ,
-  index        ,
-) {
+export function pushTreeId(workInProgress, totalChildren, index) {
   warnIfNotHydrating();
 
   idStack[idStackIndex++] = treeContextId;
@@ -203,7 +189,7 @@ export function pushTreeId(
   }
 }
 
-export function pushMaterializedTreeId(workInProgress       ) {
+export function pushMaterializedTreeId(workInProgress) {
   warnIfNotHydrating();
 
   // This component materialized an id. This will affect any ids that appear
@@ -217,15 +203,15 @@ export function pushMaterializedTreeId(workInProgress       ) {
   }
 }
 
-function getBitLength(number        )         {
+function getBitLength(number) {
   return 32 - clz32(number);
 }
 
-function getLeadingBit(id        ) {
+function getLeadingBit(id) {
   return 1 << (getBitLength(id) - 1);
 }
 
-export function popTreeContext(workInProgress       ) {
+export function popTreeContext(workInProgress) {
   // Restore the previous values.
 
   // This is a bit more complicated than other context-like modules in Fiber
@@ -250,7 +236,7 @@ export function popTreeContext(workInProgress       ) {
   }
 }
 
-export function getSuspendedTreeContext()                     {
+export function getSuspendedTreeContext() {
   warnIfNotHydrating();
   if (treeContextProvider !== null) {
     return {
@@ -262,10 +248,7 @@ export function getSuspendedTreeContext()                     {
   }
 }
 
-export function restoreSuspendedTreeContext(
-  workInProgress       ,
-  suspendedContext             ,
-) {
+export function restoreSuspendedTreeContext(workInProgress, suspendedContext) {
   warnIfNotHydrating();
 
   idStack[idStackIndex++] = treeContextId;
@@ -281,8 +264,8 @@ function warnIfNotHydrating() {
   if (__DEV__) {
     if (!getIsHydrating()) {
       console.error(
-        'Expected to be hydrating. This is a bug in React. Please file ' +
-          'an issue.',
+        "Expected to be hydrating. This is a bug in React. Please file " +
+          "an issue.",
       );
     }
   }

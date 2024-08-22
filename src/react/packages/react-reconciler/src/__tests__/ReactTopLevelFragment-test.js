@@ -8,7 +8,7 @@
  * @jest-environment node
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactNoop;
@@ -16,17 +16,17 @@ let waitForAll;
 
 // This is a new feature in Fiber so I put it in its own test file. It could
 // probably move to one of the other test files once it is official.
-describe('ReactTopLevelFragment', function () {
+describe("ReactTopLevelFragment", function () {
   beforeEach(function () {
     jest.resetModules();
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForAll = InternalTestUtils.waitForAll;
   });
 
-  it('should render a simple fragment at the top of a component', async function () {
+  it("should render a simple fragment at the top of a component", async function () {
     function Fragment() {
       return [<div key="a">Hello</div>, <div key="b">World</div>];
     }
@@ -34,7 +34,7 @@ describe('ReactTopLevelFragment', function () {
     await waitForAll([]);
   });
 
-  it('should preserve state when switching from a single child', async function () {
+  it("should preserve state when switching from a single child", async function () {
     let instance = null;
 
     class Stateful extends React.Component {
@@ -44,7 +44,7 @@ describe('ReactTopLevelFragment', function () {
       }
     }
 
-    function Fragment({condition}) {
+    function Fragment({ condition }) {
       return condition ? (
         <Stateful key="a" />
       ) : (
@@ -66,7 +66,7 @@ describe('ReactTopLevelFragment', function () {
     expect(instanceB).toBe(instanceA);
   });
 
-  it('should not preserve state when switching to a nested array', async function () {
+  it("should not preserve state when switching to a nested array", async function () {
     let instance = null;
 
     class Stateful extends React.Component {
@@ -76,7 +76,7 @@ describe('ReactTopLevelFragment', function () {
       }
     }
 
-    function Fragment({condition}) {
+    function Fragment({ condition }) {
       return condition ? (
         <Stateful key="a" />
       ) : (
@@ -98,7 +98,7 @@ describe('ReactTopLevelFragment', function () {
     expect(instanceB).not.toBe(instanceA);
   });
 
-  it('preserves state if an implicit key slot switches from/to null', async function () {
+  it("preserves state if an implicit key slot switches from/to null", async function () {
     let instance = null;
 
     class Stateful extends React.Component {
@@ -108,7 +108,7 @@ describe('ReactTopLevelFragment', function () {
       }
     }
 
-    function Fragment({condition}) {
+    function Fragment({ condition }) {
       return condition
         ? [null, <Stateful key="a" />]
         : [<div key="b">Hello</div>, <Stateful key="a" />];
@@ -135,7 +135,7 @@ describe('ReactTopLevelFragment', function () {
     expect(instanceC === instanceA).toBe(true);
   });
 
-  it('should preserve state in a reorder', async function () {
+  it("should preserve state in a reorder", async function () {
     let instance = null;
 
     class Stateful extends React.Component {
@@ -145,7 +145,7 @@ describe('ReactTopLevelFragment', function () {
       }
     }
 
-    function Fragment({condition}) {
+    function Fragment({ condition }) {
       return condition
         ? [[<div key="b">World</div>, <Stateful key="a" />]]
         : [[<Stateful key="a" />, <div key="b">World</div>], <div key="c" />];

@@ -7,17 +7,17 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
-describe('ReactDOMInReactServer', () => {
+describe("ReactDOMInReactServer", () => {
   beforeEach(() => {
     jest.resetModules();
-    jest.mock('react', () => require('react/react.shared-subset'));
+    jest.mock("react", () => require("react/react.shared-subset"));
   });
 
-  it('can require react-dom', () => {
+  it("can require react-dom", () => {
     // In RSC this will be aliased.
-    require('react');
-    require('react-dom');
+    require("react");
+    require("react-dom");
   });
 });

@@ -6,8 +6,8 @@ let act;
 let ReactFeatureFlags;
 let Random;
 
-const SEED = process.env.FUZZ_TEST_SEED || 'default';
-const prettyFormatPkg = require('pretty-format');
+const SEED = process.env.FUZZ_TEST_SEED || "default";
+const prettyFormatPkg = require("pretty-format");
 
 function prettyFormat(thing) {
   return prettyFormatPkg.format(thing, {
@@ -18,24 +18,24 @@ function prettyFormat(thing) {
   });
 }
 
-describe('ReactSuspenseFuzz', () => {
+describe("ReactSuspenseFuzz", () => {
   beforeEach(() => {
     jest.resetModules();
-    ReactFeatureFlags = require('shared/ReactFeatureFlags');
+    ReactFeatureFlags = require("shared/ReactFeatureFlags");
 
     ReactFeatureFlags.replayFailedUnitOfWorkWithInvokeGuardedCallback = false;
-    React = require('react');
+    React = require("react");
     Suspense = React.Suspense;
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
-    Random = require('random-seed');
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
+    Random = require("random-seed");
   });
 
   jest.setTimeout(20000);
 
   function createFuzzer() {
-    const {useState, useContext, useLayoutEffect} = React;
+    const { useState, useContext, useLayoutEffect } = React;
 
     const ShouldSuspendContext = React.createContext(true);
 
@@ -47,13 +47,13 @@ describe('ReactSuspenseFuzz', () => {
       cache = new Map();
     }
 
-    function Container({children, updates}) {
+    function Container({ children, updates }) {
       const [step, setStep] = useState(0);
 
       useLayoutEffect(() => {
         if (updates !== undefined) {
           const cleanUps = new Set();
-          updates.forEach(({remountAfter}, i) => {
+          updates.forEach(({ remountAfter }, i) => {
             const task = {
               label: `Remount children after ${remountAfter}ms`,
             };
@@ -68,7 +68,7 @@ describe('ReactSuspenseFuzz', () => {
             });
           });
           return () => {
-            cleanUps.forEach(cleanUp => cleanUp());
+            cleanUps.forEach((cleanUp) => cleanUp());
           };
         }
       }, [updates]);
@@ -76,13 +76,13 @@ describe('ReactSuspenseFuzz', () => {
       return <React.Fragment key={step}>{children}</React.Fragment>;
     }
 
-    function Text({text, initialDelay = 0, updates}) {
+    function Text({ text, initialDelay = 0, updates }) {
       const [[step, delay], setStep] = useState([0, initialDelay]);
 
       useLayoutEffect(() => {
         if (updates !== undefined) {
           const cleanUps = new Set();
-          updates.forEach(({beginAfter, suspendFor}, i) => {
+          updates.forEach(({ beginAfter, suspendFor }, i) => {
             const task = {
               label: `Update ${beginAfter}ms after mount and suspend for ${suspendFor}ms [${text}]`,
             };
@@ -97,7 +97,7 @@ describe('ReactSuspenseFuzz', () => {
             });
           });
           return () => {
-            cleanUps.forEach(cleanUp => cleanUp());
+            cleanUps.forEach((cleanUp) => cleanUp());
           };
         }
       }, [updates]);
@@ -112,7 +112,7 @@ describe('ReactSuspenseFuzz', () => {
         if (resolvedText === undefined) {
           const thenable = {
             then(resolve) {
-              const task = {label: `Promise resolved [${fullText}]`};
+              const task = { label: `Promise resolved [${fullText}]` };
               pendingTasks.add(task);
               setTimeout(() => {
                 cache.set(fullText, fullText);
@@ -125,7 +125,7 @@ describe('ReactSuspenseFuzz', () => {
           cache.set(fullText, thenable);
           Scheduler.log(`Suspended! [${fullText}]`);
           throw thenable;
-        } else if (typeof resolvedText.then === 'function') {
+        } else if (typeof resolvedText.then === "function") {
           const thenable = resolvedText;
           Scheduler.log(`Suspended! [${fullText}]`);
           throw thenable;
@@ -191,7 +191,7 @@ describe('ReactSuspenseFuzz', () => {
       }
       let remainingWeight = rand.floatBetween(0, totalWeight);
       for (let i = 0; i < options.length; i++) {
-        const {value, weight} = options[i];
+        const { value, weight } = options[i];
         remainingWeight -= weight;
         if (remainingWeight <= 0) {
           return value;
@@ -204,25 +204,25 @@ describe('ReactSuspenseFuzz', () => {
 
       function createRandomChild(hasSibling) {
         const possibleActions = [
-          {value: 'return', weight: 1},
-          {value: 'text', weight: 1},
+          { value: "return", weight: 1 },
+          { value: "text", weight: 1 },
         ];
 
         if (hasSibling) {
-          possibleActions.push({value: 'container', weight: 1});
-          possibleActions.push({value: 'suspense', weight: 1});
+          possibleActions.push({ value: "container", weight: 1 });
+          possibleActions.push({ value: "suspense", weight: 1 });
         }
 
         const action = pickRandomWeighted(rand, possibleActions);
 
         switch (action) {
-          case 'text': {
+          case "text": {
             remainingElements--;
 
             const numberOfUpdates = pickRandomWeighted(rand, [
-              {value: 0, weight: 8},
-              {value: 1, weight: 4},
-              {value: 2, weight: 1},
+              { value: 0, weight: 8 },
+              { value: 1, weight: 4 },
+              { value: 2, weight: 1 },
             ]);
 
             const updates = [];
@@ -241,11 +241,11 @@ describe('ReactSuspenseFuzz', () => {
               />
             );
           }
-          case 'container': {
+          case "container": {
             const numberOfUpdates = pickRandomWeighted(rand, [
-              {value: 0, weight: 8},
-              {value: 1, weight: 4},
-              {value: 2, weight: 1},
+              { value: 0, weight: 8 },
+              { value: 1, weight: 4 },
+              { value: 2, weight: 1 },
             ]);
 
             const updates = [];
@@ -257,22 +257,22 @@ describe('ReactSuspenseFuzz', () => {
 
             remainingElements--;
             const children = createRandomChildren(3);
-            return React.createElement(Container, {updates}, ...children);
+            return React.createElement(Container, { updates }, ...children);
           }
-          case 'suspense': {
+          case "suspense": {
             remainingElements--;
             const children = createRandomChildren(3);
 
             const fallbackType = pickRandomWeighted(rand, [
-              {value: 'none', weight: 1},
-              {value: 'normal', weight: 1},
-              {value: 'nested suspense', weight: 1},
+              { value: "none", weight: 1 },
+              { value: "normal", weight: 1 },
+              { value: "nested suspense", weight: 1 },
             ]);
 
             let fallback;
-            if (fallbackType === 'normal') {
-              fallback = 'Loading...';
-            } else if (fallbackType === 'nested suspense') {
+            if (fallbackType === "normal") {
+              fallback = "Loading...";
+            } else if (fallbackType === "nested suspense") {
               fallback = React.createElement(
                 React.Fragment,
                 null,
@@ -280,9 +280,9 @@ describe('ReactSuspenseFuzz', () => {
               );
             }
 
-            return React.createElement(Suspense, {fallback}, ...children);
+            return React.createElement(Suspense, { fallback }, ...children);
           }
-          case 'return':
+          case "return":
           default:
             return null;
         }
@@ -300,25 +300,25 @@ describe('ReactSuspenseFuzz', () => {
       return React.createElement(React.Fragment, null, ...children);
     }
 
-    return {Container, Text, testResolvedOutput, generateTestCase};
+    return { Container, Text, testResolvedOutput, generateTestCase };
   }
 
-  it('basic cases', async () => {
+  it("basic cases", async () => {
     // This demonstrates that the testing primitives work
-    const {Container, Text, testResolvedOutput} = createFuzzer();
+    const { Container, Text, testResolvedOutput } = createFuzzer();
     await testResolvedOutput(
-      <Container updates={[{remountAfter: 150}]}>
+      <Container updates={[{ remountAfter: 150 }]}>
         <Text
           text="Hi"
           initialDelay={2000}
-          updates={[{beginAfter: 100, suspendFor: 200}]}
+          updates={[{ beginAfter: 100, suspendFor: 200 }]}
         />
       </Container>,
     );
   });
 
   it(`generative tests (random seed: ${SEED})`, async () => {
-    const {generateTestCase, testResolvedOutput} = createFuzzer();
+    const { generateTestCase, testResolvedOutput } = createFuzzer();
 
     const rand = Random.create(SEED);
 
@@ -345,21 +345,21 @@ Random seed is ${SEED}
     }
   });
 
-  describe('hard-coded cases', () => {
-    it('1', async () => {
-      const {Text, testResolvedOutput} = createFuzzer();
+  describe("hard-coded cases", () => {
+    it("1", async () => {
+      const { Text, testResolvedOutput } = createFuzzer();
       await testResolvedOutput(
         <>
           <Text
             initialDelay={20}
             text="A"
-            updates={[{beginAfter: 10, suspendFor: 20}]}
+            updates={[{ beginAfter: 10, suspendFor: 20 }]}
           />
           <Suspense fallback="Loading... (B)">
             <Text
               initialDelay={10}
               text="B"
-              updates={[{beginAfter: 30, suspendFor: 50}]}
+              updates={[{ beginAfter: 30, suspendFor: 50 }]}
             />
             <Text text="C" />
           </Suspense>
@@ -367,8 +367,8 @@ Random seed is ${SEED}
       );
     });
 
-    it('2', async () => {
-      const {Text, Container, testResolvedOutput} = createFuzzer();
+    it("2", async () => {
+      const { Text, Container, testResolvedOutput } = createFuzzer();
       await testResolvedOutput(
         <>
           <Suspense fallback="Loading...">
@@ -385,8 +385,8 @@ Random seed is ${SEED}
       );
     });
 
-    it('3', async () => {
-      const {Text, Container, testResolvedOutput} = createFuzzer();
+    it("3", async () => {
+      const { Text, Container, testResolvedOutput } = createFuzzer();
       await testResolvedOutput(
         <>
           <Suspense fallback="Loading...">
@@ -419,8 +419,8 @@ Random seed is ${SEED}
       );
     });
 
-    it('4', async () => {
-      const {Text, testResolvedOutput} = createFuzzer();
+    it("4", async () => {
+      const { Text, testResolvedOutput } = createFuzzer();
       await testResolvedOutput(
         <React.Suspense fallback="Loading...">
           <React.Suspense>

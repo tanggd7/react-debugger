@@ -20,46 +20,46 @@ let useState;
 let document;
 let writable;
 let container;
-let buffer = '';
+let buffer = "";
 let hasErrored = false;
 let fatalError = undefined;
 let waitForPaint;
 
-describe('useId', () => {
+describe("useId", () => {
   beforeEach(() => {
     jest.resetModules();
-    JSDOM = require('jsdom').JSDOM;
-    React = require('react');
-    ReactDOMClient = require('react-dom/client');
-    clientAct = require('internal-test-utils').act;
-    ReactDOMFizzServer = require('react-dom/server');
-    Stream = require('stream');
+    JSDOM = require("jsdom").JSDOM;
+    React = require("react");
+    ReactDOMClient = require("react-dom/client");
+    clientAct = require("internal-test-utils").act;
+    ReactDOMFizzServer = require("react-dom/server");
+    Stream = require("stream");
     Suspense = React.Suspense;
     useId = React.useId;
     useState = React.useState;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     waitForPaint = InternalTestUtils.waitForPaint;
 
     // Test Environment
     const jsdom = new JSDOM(
       '<!DOCTYPE html><html><head></head><body><div id="container">',
       {
-        runScripts: 'dangerously',
+        runScripts: "dangerously",
       },
     );
     document = jsdom.window.document;
-    container = document.getElementById('container');
+    container = document.getElementById("container");
 
-    buffer = '';
+    buffer = "";
     hasErrored = false;
 
     writable = new Stream.PassThrough();
-    writable.setEncoding('utf8');
-    writable.on('data', chunk => {
+    writable.setEncoding("utf8");
+    writable.on("data", (chunk) => {
       buffer += chunk;
     });
-    writable.on('error', error => {
+    writable.on("error", (error) => {
       hasErrored = true;
       fatalError = error;
     });
@@ -69,7 +69,7 @@ describe('useId', () => {
     await callback();
     // Await one turn around the event loop.
     // This assumes that we'll flush everything we have so far.
-    await new Promise(resolve => {
+    await new Promise((resolve) => {
       setImmediate(resolve);
     });
     if (hasErrored) {
@@ -79,13 +79,13 @@ describe('useId', () => {
     // We also want to execute any scripts that are embedded.
     // We assume that we have now received a proper fragment of HTML.
     const bufferedContent = buffer;
-    buffer = '';
-    const fakeBody = document.createElement('body');
+    buffer = "";
+    const fakeBody = document.createElement("body");
     fakeBody.innerHTML = bufferedContent;
     while (fakeBody.firstChild) {
       const node = fakeBody.firstChild;
-      if (node.nodeName === 'SCRIPT') {
-        const script = document.createElement('script');
+      if (node.nodeName === "SCRIPT") {
+        const script = document.createElement("script");
         script.textContent = node.textContent;
         fakeBody.removeChild(node);
         container.appendChild(script);
@@ -98,30 +98,30 @@ describe('useId', () => {
   function normalizeTreeIdForTesting(id) {
     const result = id.match(/:(R|r)([a-z0-9]*)(H([0-9]*))?:/);
     if (result === undefined) {
-      throw new Error('Invalid id format');
+      throw new Error("Invalid id format");
     }
     const [, serverClientPrefix, base32, hookIndex] = result;
-    if (serverClientPrefix.endsWith('r')) {
+    if (serverClientPrefix.endsWith("r")) {
       // Client ids aren't stable. For testing purposes, strip out the counter.
       return (
-        'CLIENT_GENERATED_ID' +
-        (hookIndex !== undefined ? ` (${hookIndex})` : '')
+        "CLIENT_GENERATED_ID" +
+        (hookIndex !== undefined ? ` (${hookIndex})` : "")
       );
     }
     // Formats the tree id as a binary sequence, so it's easier to visualize
     // the structure.
     return (
       parseInt(base32, 32).toString(2) +
-      (hookIndex !== undefined ? ` (${hookIndex})` : '')
+      (hookIndex !== undefined ? ` (${hookIndex})` : "")
     );
   }
 
-  function DivWithId({children}) {
+  function DivWithId({ children }) {
     const id = normalizeTreeIdForTesting(useId());
     return <div id={id}>{children}</div>;
   }
 
-  test('basic example', async () => {
+  test("basic example", async () => {
     function App() {
       return (
         <div>
@@ -135,7 +135,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -162,7 +162,7 @@ describe('useId', () => {
     `);
   });
 
-  test('indirections', async () => {
+  test("indirections", async () => {
     function App() {
       // There are no forks in this tree, but the parent and the child should
       // have different ids.
@@ -180,7 +180,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -207,8 +207,8 @@ describe('useId', () => {
     `);
   });
 
-  test('StrictMode double rendering', async () => {
-    const {StrictMode} = React;
+  test("StrictMode double rendering", async () => {
+    const { StrictMode } = React;
 
     function App() {
       return (
@@ -219,7 +219,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -236,7 +236,7 @@ describe('useId', () => {
     `);
   });
 
-  test('empty (null) children', async () => {
+  test("empty (null) children", async () => {
     // We don't treat empty children different from non-empty ones, which means
     // they get allocated a slot when generating ids. There's no inherent reason
     // to do this; Fiber happens to allocate a fiber for null children that
@@ -255,7 +255,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -275,7 +275,7 @@ describe('useId', () => {
     `);
   });
 
-  test('large ids', async () => {
+  test("large ids", async () => {
     // The component in this test outputs a recursive tree of nodes with ids,
     // where the underlying binary representation is an alternating series of 1s
     // and 0s. In other words, they are all of the form 101010101.
@@ -291,7 +291,7 @@ describe('useId', () => {
     // safe range (32 bits). The algorithm should theoretically support ids
     // of any size.
 
-    function Child({children}) {
+    function Child({ children }) {
       const id = useId();
       return <div id={id}>{children}</div>;
     }
@@ -310,13 +310,13 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
       ReactDOMClient.hydrateRoot(container, <App />);
     });
-    const divs = container.querySelectorAll('div');
+    const divs = container.querySelectorAll("div");
 
     // Confirm that every id matches the expected pattern
     for (let i = 0; i < divs.length; i++) {
@@ -325,7 +325,7 @@ describe('useId', () => {
     }
   });
 
-  test('multiple ids in a single component', async () => {
+  test("multiple ids in a single component", async () => {
     function App() {
       const id1 = useId();
       const id2 = useId();
@@ -334,7 +334,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -350,8 +350,8 @@ describe('useId', () => {
     `);
   });
 
-  test('local render phase updates', async () => {
-    function App({swap}) {
+  test("local render phase updates", async () => {
+    function App({ swap }) {
       const [count, setCount] = useState(0);
       if (count < 3) {
         setCount(count + 1);
@@ -360,7 +360,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -375,7 +375,7 @@ describe('useId', () => {
     `);
   });
 
-  test('basic incremental hydration', async () => {
+  test("basic incremental hydration", async () => {
     function App() {
       return (
         <div>
@@ -389,7 +389,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     await clientAct(async () => {
@@ -416,9 +416,9 @@ describe('useId', () => {
     `);
   });
 
-  test('inserting/deleting siblings outside a dehydrated Suspense boundary', async () => {
+  test("inserting/deleting siblings outside a dehydrated Suspense boundary", async () => {
     const span = React.createRef(null);
-    function App({swap}) {
+    function App({ swap }) {
       // Note: Using a dynamic array so these are treated as insertions and
       // deletions instead of updates, because Fiber currently allocates a node
       // even for empty children.
@@ -439,10 +439,10 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
-    const dehydratedSpan = container.getElementsByTagName('span')[0];
+    const dehydratedSpan = container.getElementsByTagName("span")[0];
     await clientAct(async () => {
       const root = ReactDOMClient.hydrateRoot(container, <App />);
       await waitForPaint([]);
@@ -500,9 +500,9 @@ describe('useId', () => {
     expect(span.current).toBe(dehydratedSpan);
   });
 
-  test('inserting/deleting siblings inside a dehydrated Suspense boundary', async () => {
+  test("inserting/deleting siblings inside a dehydrated Suspense boundary", async () => {
     const span = React.createRef(null);
-    function App({swap}) {
+    function App({ swap }) {
       // Note: Using a dynamic array so these are treated as insertions and
       // deletions instead of updates, because Fiber currently allocates a node
       // even for empty children.
@@ -520,10 +520,10 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
-    const dehydratedSpan = container.getElementsByTagName('span')[0];
+    const dehydratedSpan = container.getElementsByTagName("span")[0];
     await clientAct(async () => {
       const root = ReactDOMClient.hydrateRoot(container, <App />);
       await waitForPaint([]);
@@ -575,13 +575,13 @@ describe('useId', () => {
     expect(span.current).toBe(dehydratedSpan);
   });
 
-  test('identifierPrefix option', async () => {
+  test("identifierPrefix option", async () => {
     function Child() {
       const id = useId();
       return <div>{id}</div>;
     }
 
-    function App({showMore}) {
+    function App({ showMore }) {
       return (
         <>
           <Child />
@@ -592,15 +592,15 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />, {
-        identifierPrefix: 'custom-prefix-',
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />, {
+        identifierPrefix: "custom-prefix-",
       });
       pipe(writable);
     });
     let root;
     await clientAct(async () => {
       root = ReactDOMClient.hydrateRoot(container, <App />, {
-        identifierPrefix: 'custom-prefix-',
+        identifierPrefix: "custom-prefix-",
       });
     });
     expect(container).toMatchInlineSnapshot(`
@@ -641,7 +641,7 @@ describe('useId', () => {
   // re-rendering in strict mode caused the localIdCounter to be reset but it the rerender hook does not
   // increment it again. This only shows up as a problem for subsequent useId's because it affects child
   // and sibling counters not the initial one
-  it('does not forget it mounted an id when re-rendering in dev', async () => {
+  it("does not forget it mounted an id when re-rendering in dev", async () => {
     function Parent() {
       const id = useId();
       return (
@@ -655,7 +655,7 @@ describe('useId', () => {
       return <div>{id}</div>;
     }
 
-    function App({showMore}) {
+    function App({ showMore }) {
       return (
         <React.StrictMode>
           <Parent />
@@ -664,7 +664,7 @@ describe('useId', () => {
     }
 
     await serverAct(async () => {
-      const {pipe} = ReactDOMFizzServer.renderToPipeableStream(<App />);
+      const { pipe } = ReactDOMFizzServer.renderToPipeableStream(<App />);
       pipe(writable);
     });
     expect(container).toMatchInlineSnapshot(`

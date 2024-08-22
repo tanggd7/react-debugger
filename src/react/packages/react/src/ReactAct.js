@@ -4,13 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  *
- *      
+ *
  */
 
-                                                
-                                                         
-import ReactCurrentActQueue from './ReactCurrentActQueue';
-import queueMacrotask from 'shared/enqueueTask';
+import ReactCurrentActQueue from "./ReactCurrentActQueue";
+import queueMacrotask from "shared/enqueueTask";
 
 // `act` calls can be nested, so we track the depth. This represents the
 // number of `act` scopes on the stack.
@@ -19,7 +17,7 @@ let actScopeDepth = 0;
 // We only warn the first time you neglect to await an async `act` scope.
 let didWarnNoAwaitAct = false;
 
-export function act   (callback                       )              {
+export function act(callback) {
   if (__DEV__) {
     // When ReactCurrentActQueue.current is not null, it signals to React that
     // we're currently inside an `act` scope. React will push all its tasks to
@@ -78,9 +76,9 @@ export function act   (callback                       )              {
 
     if (
       result !== null &&
-      typeof result === 'object' &&
+      typeof result === "object" &&
       // $FlowFixMe[method-unbinding]
-      typeof result.then === 'function'
+      typeof result.then === "function"
     ) {
       // A promise/thenable was returned from the callback. Wait for it to
       // resolve before flushing the queue.
@@ -88,7 +86,7 @@ export function act   (callback                       )              {
       // If `act` were implemented as an async function, this whole block could
       // be a single `await` call. That's really the only difference between
       // this branch and the next one.
-      const thenable = ((result     )             );
+      const thenable = result;
 
       // Warn if the an `act` call with an async scope is not awaited. In a
       // future release, consider making this an error.
@@ -96,20 +94,20 @@ export function act   (callback                       )              {
         if (!didAwaitActCall && !didWarnNoAwaitAct) {
           didWarnNoAwaitAct = true;
           console.error(
-            'You called act(async () => ...) without await. ' +
-              'This could lead to unexpected testing behaviour, ' +
-              'interleaving multiple act calls and mixing their ' +
-              'scopes. ' +
-              'You should - await act(async () => ...);',
+            "You called act(async () => ...) without await. " +
+              "This could lead to unexpected testing behaviour, " +
+              "interleaving multiple act calls and mixing their " +
+              "scopes. " +
+              "You should - await act(async () => ...);",
           );
         }
       });
 
       return {
-        then(resolve            , reject                ) {
+        then(resolve, reject) {
           didAwaitActCall = true;
           thenable.then(
-            returnValue => {
+            (returnValue) => {
               popActScope(prevActQueue, prevActScopeDepth);
               if (prevActScopeDepth === 0) {
                 // We're exiting the outermost `act` scope. Flush the queue.
@@ -129,7 +127,7 @@ export function act   (callback                       )              {
                 resolve(returnValue);
               }
             },
-            error => {
+            (error) => {
               popActScope(prevActQueue, prevActScopeDepth);
               reject(error);
             },
@@ -137,7 +135,7 @@ export function act   (callback                       )              {
         },
       };
     } else {
-      const returnValue    = (result     );
+      const returnValue = result;
       // The callback is not an async function. Exit the current
       // scope immediately.
       popActScope(prevActQueue, prevActScopeDepth);
@@ -156,11 +154,11 @@ export function act   (callback                       )              {
             if (!didAwaitActCall && !didWarnNoAwaitAct) {
               didWarnNoAwaitAct = true;
               console.error(
-                'A component suspended inside an `act` scope, but the ' +
-                  '`act` call was not awaited. When testing React ' +
-                  'components that depend on asynchronous data, you must ' +
-                  'await the result:\n\n' +
-                  'await act(() => ...)',
+                "A component suspended inside an `act` scope, but the " +
+                  "`act` call was not awaited. When testing React " +
+                  "components that depend on asynchronous data, you must " +
+                  "await the result:\n\n" +
+                  "await act(() => ...)",
               );
             }
           });
@@ -184,7 +182,7 @@ export function act   (callback                       )              {
         ReactCurrentActQueue.current = null;
       }
       return {
-        then(resolve            , reject                ) {
+        then(resolve, reject) {
           didAwaitActCall = true;
           if (prevActScopeDepth === 0) {
             // If the `act` call is awaited, restore the queue we were
@@ -201,30 +199,23 @@ export function act   (callback                       )              {
       };
     }
   } else {
-    throw new Error('act(...) is not supported in production builds of React.');
+    throw new Error("act(...) is not supported in production builds of React.");
   }
 }
 
-function popActScope(
-  prevActQueue                            ,
-  prevActScopeDepth        ,
-) {
+function popActScope(prevActQueue, prevActScopeDepth) {
   if (__DEV__) {
     if (prevActScopeDepth !== actScopeDepth - 1) {
       console.error(
-        'You seem to have overlapping act() calls, this is not supported. ' +
-          'Be sure to await previous act() calls before making a new one. ',
+        "You seem to have overlapping act() calls, this is not supported. " +
+          "Be sure to await previous act() calls before making a new one. ",
       );
     }
     actScopeDepth = prevActScopeDepth;
   }
 }
 
-function recursivelyFlushAsyncActWork   (
-  returnValue   ,
-  resolve            ,
-  reject                ,
-) {
+function recursivelyFlushAsyncActWork(returnValue, resolve, reject) {
   if (__DEV__) {
     // Check if any tasks were scheduled asynchronously.
     const queue = ReactCurrentActQueue.current;
@@ -255,7 +246,7 @@ function recursivelyFlushAsyncActWork   (
 }
 
 let isFlushing = false;
-function flushActQueue(queue                     ) {
+function flushActQueue(queue) {
   if (__DEV__) {
     if (!isFlushing) {
       // Prevent re-entrance.
@@ -263,7 +254,7 @@ function flushActQueue(queue                     ) {
       let i = 0;
       try {
         for (; i < queue.length; i++) {
-          let callback               = queue[i];
+          let callback = queue[i];
           do {
             ReactCurrentActQueue.didUsePromise = false;
             const continuation = callback(false);
@@ -306,8 +297,8 @@ function flushActQueue(queue                     ) {
 // A macrotask would also work (and is the fallback) but depending on the test
 // environment it may cause the warning to fire too late.
 const queueSeveralMicrotasks =
-  typeof queueMicrotask === 'function'
-    ? (callback            ) => {
+  typeof queueMicrotask === "function"
+    ? (callback) => {
         queueMicrotask(() => queueMicrotask(callback));
       }
     : queueMacrotask;

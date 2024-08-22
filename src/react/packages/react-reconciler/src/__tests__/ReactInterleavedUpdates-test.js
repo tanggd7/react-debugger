@@ -9,30 +9,30 @@ let assertLog;
 let waitFor;
 let waitForPaint;
 
-describe('ReactInterleavedUpdates', () => {
+describe("ReactInterleavedUpdates", () => {
   beforeEach(() => {
     jest.resetModules();
 
-    React = require('react');
-    ReactNoop = require('react-noop-renderer');
-    Scheduler = require('scheduler');
-    act = require('internal-test-utils').act;
+    React = require("react");
+    ReactNoop = require("react-noop-renderer");
+    Scheduler = require("scheduler");
+    act = require("internal-test-utils").act;
     startTransition = React.startTransition;
     useState = React.useState;
     useEffect = React.useEffect;
 
-    const InternalTestUtils = require('internal-test-utils');
+    const InternalTestUtils = require("internal-test-utils");
     assertLog = InternalTestUtils.assertLog;
     waitFor = InternalTestUtils.waitFor;
     waitForPaint = InternalTestUtils.waitForPaint;
   });
 
-  function Text({text}) {
+  function Text({ text }) {
     Scheduler.log(text);
     return text;
   }
 
-  test('update during an interleaved event is not processed during the current render', async () => {
+  test("update during an interleaved event is not processed during the current render", async () => {
     const updaters = [];
 
     function Child() {
@@ -62,7 +62,7 @@ describe('ReactInterleavedUpdates', () => {
       );
     });
     assertLog([0, 0, 0]);
-    expect(root).toMatchRenderedOutput('000');
+    expect(root).toMatchRenderedOutput("000");
 
     await act(async () => {
       React.startTransition(() => {
@@ -79,15 +79,15 @@ describe('ReactInterleavedUpdates', () => {
 
       // We should continue rendering without including the interleaved updates.
       await waitForPaint([1, 1]);
-      expect(root).toMatchRenderedOutput('111');
+      expect(root).toMatchRenderedOutput("111");
     });
     // The interleaved updates flush in a separate render.
     assertLog([2, 2, 2]);
-    expect(root).toMatchRenderedOutput('222');
+    expect(root).toMatchRenderedOutput("222");
   });
 
   // @gate forceConcurrentByDefaultForTesting
-  test('low priority update during an interleaved event is not processed during the current render', async () => {
+  test("low priority update during an interleaved event is not processed during the current render", async () => {
     // Same as previous test, but the interleaved update is lower priority than
     // the in-progress render.
     const updaters = [];
@@ -119,7 +119,7 @@ describe('ReactInterleavedUpdates', () => {
       );
     });
     assertLog([0, 0, 0]);
-    expect(root).toMatchRenderedOutput('000');
+    expect(root).toMatchRenderedOutput("000");
 
     await act(async () => {
       updateChildren(1);
@@ -134,23 +134,23 @@ describe('ReactInterleavedUpdates', () => {
 
       // We should continue rendering without including the interleaved updates.
       await waitForPaint([1, 1]);
-      expect(root).toMatchRenderedOutput('111');
+      expect(root).toMatchRenderedOutput("111");
     });
     // The interleaved updates flush in a separate render.
     assertLog([2, 2, 2]);
-    expect(root).toMatchRenderedOutput('222');
+    expect(root).toMatchRenderedOutput("222");
   });
 
-  test('regression for #24350: does not add to main update queue until interleaved update queue has been cleared', async () => {
+  test("regression for #24350: does not add to main update queue until interleaved update queue has been cleared", async () => {
     let setStep;
     function App() {
       const [step, _setState] = useState(0);
       setStep = _setState;
       return (
         <>
-          <Text text={'A' + step} />
-          <Text text={'B' + step} />
-          <Text text={'C' + step} />
+          <Text text={"A" + step} />
+          <Text text={"B" + step} />
+          <Text text={"C" + step} />
         </>
       );
     }
@@ -159,15 +159,15 @@ describe('ReactInterleavedUpdates', () => {
     await act(() => {
       root.render(<App />);
     });
-    assertLog(['A0', 'B0', 'C0']);
-    expect(root).toMatchRenderedOutput('A0B0C0');
+    assertLog(["A0", "B0", "C0"]);
+    expect(root).toMatchRenderedOutput("A0B0C0");
 
     await act(async () => {
       // Start the render phase.
       startTransition(() => {
         setStep(1);
       });
-      await waitFor(['A1', 'B1']);
+      await waitFor(["A1", "B1"]);
 
       // Schedule an interleaved update. This gets placed on a special queue.
       startTransition(() => {
@@ -175,7 +175,7 @@ describe('ReactInterleavedUpdates', () => {
       });
 
       // Finish rendering the first update.
-      await waitForPaint(['C1']);
+      await waitForPaint(["C1"]);
 
       // Schedule another update. (In the regression case, this was treated
       // as a normal, non-interleaved update and it was inserted into the queue
@@ -185,7 +185,7 @@ describe('ReactInterleavedUpdates', () => {
       });
     });
     // The last update should win.
-    assertLog(['A3', 'B3', 'C3']);
-    expect(root).toMatchRenderedOutput('A3B3C3');
+    assertLog(["A3", "B3", "C3"]);
+    expect(root).toMatchRenderedOutput("A3B3C3");
   });
 });

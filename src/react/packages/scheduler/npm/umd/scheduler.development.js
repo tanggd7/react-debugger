@@ -9,104 +9,104 @@
 
 /* eslint-disable max-len */
 
-'use strict';
+"use strict";
 
 (function (global, factory) {
   // eslint-disable-next-line ft-flow/no-unused-expressions
-  typeof exports === 'object' && typeof module !== 'undefined'
-    ? (module.exports = factory(require('react')))
-    : typeof define === 'function' && define.amd // eslint-disable-line no-undef
-    ? define(['react'], factory) // eslint-disable-line no-undef
-    : (global.Scheduler = factory(global));
+  typeof exports === "object" && typeof module !== "undefined"
+    ? (module.exports = factory(require("react")))
+    : typeof define === "function" && define.amd // eslint-disable-line no-undef
+      ? define(["react"], factory) // eslint-disable-line no-undef
+      : (global.Scheduler = factory(global));
 })(this, function (global) {
   function unstable_now() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_now.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_scheduleCallback() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_scheduleCallback.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_cancelCallback() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_cancelCallback.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_shouldYield() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_shouldYield.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_requestPaint() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_requestPaint.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_runWithPriority() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_runWithPriority.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_next() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_next.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_wrapCallback() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_wrapCallback.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_getCurrentPriorityLevel() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_getCurrentPriorityLevel.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_getFirstCallbackNode() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_getFirstCallbackNode.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_pauseExecution() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_pauseExecution.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_continueExecution() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_continueExecution.apply(
       this,
-      arguments
+      arguments,
     );
   }
 
   function unstable_forceFrameRate() {
     return global.React.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.Scheduler.unstable_forceFrameRate.apply(
       this,
-      arguments
+      arguments,
     );
   }
 

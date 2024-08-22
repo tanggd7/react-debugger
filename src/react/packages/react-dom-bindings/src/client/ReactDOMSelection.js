@@ -5,15 +5,15 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getNodeForCharacterOffset from './getNodeForCharacterOffset';
-import {TEXT_NODE} from './HTMLNodeType';
+import getNodeForCharacterOffset from "./getNodeForCharacterOffset";
+import { TEXT_NODE } from "./HTMLNodeType";
 
 /**
  * @param {DOMElement} outerNode
  * @return {?object}
  */
 export function getOffsets(outerNode) {
-  const {ownerDocument} = outerNode;
+  const { ownerDocument } = outerNode;
   const win = (ownerDocument && ownerDocument.defaultView) || window;
   const selection = win.getSelection && win.getSelection();
 
@@ -21,7 +21,7 @@ export function getOffsets(outerNode) {
     return null;
   }
 
-  const {anchorNode, anchorOffset, focusNode, focusOffset} = selection;
+  const { anchorNode, anchorOffset, focusNode, focusOffset } = selection;
 
   // In Firefox, anchorNode and focusNode can be "anonymous divs", e.g. the
   // up/down buttons on an <input type="number">. Anonymous divs do not seem to

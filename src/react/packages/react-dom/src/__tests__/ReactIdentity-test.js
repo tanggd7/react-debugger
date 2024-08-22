@@ -7,30 +7,30 @@
  * @emails react-core
  */
 
-'use strict';
+"use strict";
 
 let React;
 let ReactDOM;
 let ReactTestUtils;
 
-describe('ReactIdentity', () => {
+describe("ReactIdentity", () => {
   beforeEach(() => {
     jest.resetModules();
-    React = require('react');
-    ReactDOM = require('react-dom');
-    ReactTestUtils = require('react-dom/test-utils');
+    React = require("react");
+    ReactDOM = require("react-dom");
+    ReactTestUtils = require("react-dom/test-utils");
   });
 
-  it('should allow key property to express identity', () => {
+  it("should allow key property to express identity", () => {
     let node;
-    const Component = props => (
-      <div ref={c => (node = c)}>
-        <div key={props.swap ? 'banana' : 'apple'} />
-        <div key={props.swap ? 'apple' : 'banana'} />
+    const Component = (props) => (
+      <div ref={(c) => (node = c)}>
+        <div key={props.swap ? "banana" : "apple"} />
+        <div key={props.swap ? "apple" : "banana"} />
       </div>
     );
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     ReactDOM.render(<Component />, container);
     const origChildren = Array.from(node.childNodes);
     ReactDOM.render(<Component swap={true} />, container);
@@ -39,25 +39,25 @@ describe('ReactIdentity', () => {
     expect(origChildren[1]).toBe(newChildren[0]);
   });
 
-  it('should use composite identity', () => {
+  it("should use composite identity", () => {
     class Wrapper extends React.Component {
       render() {
         return <a>{this.props.children}</a>;
       }
     }
 
-    const container = document.createElement('div');
+    const container = document.createElement("div");
     let node1;
     let node2;
     ReactDOM.render(
       <Wrapper key="wrap1">
-        <span ref={c => (node1 = c)} />
+        <span ref={(c) => (node1 = c)} />
       </Wrapper>,
       container,
     );
     ReactDOM.render(
       <Wrapper key="wrap2">
-        <span ref={c => (node2 = c)} />
+        <span ref={(c) => (node2 = c)} />
       </Wrapper>,
       container,
     );
@@ -82,15 +82,15 @@ describe('ReactIdentity', () => {
     expect(span).not.toBe(null);
   }
 
-  it('should allow any character as a key, in a detached parent', () => {
-    const detachedContainer = document.createElement('div');
+  it("should allow any character as a key, in a detached parent", () => {
+    const detachedContainer = document.createElement("div");
     renderAComponentWithKeyIntoContainer("<'WEIRD/&\\key'>", detachedContainer);
   });
 
-  it('should allow any character as a key, in an attached parent', () => {
+  it("should allow any character as a key, in an attached parent", () => {
     // This test exists to protect against implementation details that
     // incorrectly query escaped IDs using DOM tools like getElementById.
-    const attachedContainer = document.createElement('div');
+    const attachedContainer = document.createElement("div");
     document.body.appendChild(attachedContainer);
 
     renderAComponentWithKeyIntoContainer("<'WEIRD/&\\key'>", attachedContainer);
@@ -98,11 +98,11 @@ describe('ReactIdentity', () => {
     document.body.removeChild(attachedContainer);
   });
 
-  it('should not allow scripts in keys to execute', () => {
+  it("should not allow scripts in keys to execute", () => {
     const h4x0rKey =
-      '"><script>window[\'YOUVEBEENH4X0RED\']=true;</script><div id="';
+      "\"><script>window['YOUVEBEENH4X0RED']=true;</script><div id=\"";
 
-    const attachedContainer = document.createElement('div');
+    const attachedContainer = document.createElement("div");
     document.body.appendChild(attachedContainer);
 
     renderAComponentWithKeyIntoContainer(h4x0rKey, attachedContainer);
@@ -113,7 +113,7 @@ describe('ReactIdentity', () => {
     expect(window.YOUVEBEENH4X0RED).toBe(undefined);
   });
 
-  it('should let restructured components retain their uniqueness', () => {
+  it("should let restructured components retain their uniqueness", () => {
     const instance0 = <span />;
     const instance1 = <span />;
     const instance2 = <span />;
@@ -146,7 +146,7 @@ describe('ReactIdentity', () => {
     }).not.toThrow();
   });
 
-  it('should let nested restructures retain their uniqueness', () => {
+  it("should let nested restructures retain their uniqueness", () => {
     const instance0 = <span />;
     const instance1 = <span />;
     const instance2 = <span />;
@@ -181,7 +181,7 @@ describe('ReactIdentity', () => {
     }).not.toThrow();
   });
 
-  it('should let text nodes retain their uniqueness', () => {
+  it("should let text nodes retain their uniqueness", () => {
     class TestComponent extends React.Component {
       render() {
         return (
@@ -198,7 +198,7 @@ describe('ReactIdentity', () => {
         return (
           <TestComponent>
             <div />
-            {'second'}
+            {"second"}
           </TestComponent>
         );
       }
@@ -209,7 +209,7 @@ describe('ReactIdentity', () => {
     }).not.toThrow();
   });
 
-  it('should retain key during updates in composite components', () => {
+  it("should retain key during updates in composite components", () => {
     class TestComponent extends React.Component {
       render() {
         return <div>{this.props.children}</div>;
@@ -217,10 +217,10 @@ describe('ReactIdentity', () => {
     }
 
     class TestContainer extends React.Component {
-      state = {swapped: false};
+      state = { swapped: false };
 
       swap = () => {
-        this.setState({swapped: true});
+        this.setState({ swapped: true });
       };
 
       render() {
@@ -238,7 +238,7 @@ describe('ReactIdentity', () => {
 
     let wrapped = <TestContainer first={instance0} second={instance1} />;
 
-    wrapped = ReactDOM.render(wrapped, document.createElement('div'));
+    wrapped = ReactDOM.render(wrapped, document.createElement("div"));
     const div = ReactDOM.findDOMNode(wrapped);
 
     const beforeA = div.childNodes[0];
@@ -251,7 +251,7 @@ describe('ReactIdentity', () => {
     expect(beforeB).toBe(afterB);
   });
 
-  it('should not allow implicit and explicit keys to collide', () => {
+  it("should not allow implicit and explicit keys to collide", () => {
     const component = (
       <div>
         <span />
@@ -264,19 +264,19 @@ describe('ReactIdentity', () => {
     }).not.toThrow();
   });
 
-  it('should throw if key is a Temporal-like object', () => {
+  it("should throw if key is a Temporal-like object", () => {
     class TemporalLike {
       valueOf() {
         // Throwing here is the behavior of ECMAScript "Temporal" date/time API.
         // See https://tc39.es/proposal-temporal/docs/plaindate.html#valueOf
-        throw new TypeError('prod message');
+        throw new TypeError("prod message");
       }
       toString() {
-        return '2020-01-01';
+        return "2020-01-01";
       }
     }
 
-    const el = document.createElement('div');
+    const el = document.createElement("div");
     const test = () =>
       ReactDOM.render(
         <div>
@@ -285,11 +285,11 @@ describe('ReactIdentity', () => {
         el,
       );
     expect(() =>
-      expect(test).toThrowError(new TypeError('prod message')),
+      expect(test).toThrowError(new TypeError("prod message")),
     ).toErrorDev(
-      'The provided key is an unsupported type TemporalLike.' +
-        ' This value must be coerced to a string before before using it here.',
-      {withoutStack: true},
+      "The provided key is an unsupported type TemporalLike." +
+        " This value must be coerced to a string before before using it here.",
+      { withoutStack: true },
     );
   });
 });
